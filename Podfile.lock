@@ -5,19 +5,22 @@ PODS:
     - SwiftWebSocket (~> 2.6.5)
     - XCGLogger
   - SwiftWebSocket (2.6.5)
+  - ViewDeck (3.0.0)
   - XCGLogger (4.0.0):
     - XCGLogger/Core (= 4.0.0)
   - XCGLogger/Core (4.0.0)
 
 DEPENDENCIES:
   - SwiftDDP (~> 0.4.0)
+  - ViewDeck
 
 SPEC CHECKSUMS:
   CryptoSwift: 88592381b73f36e192124539390a7c9bacda76af
   SwiftDDP: b575009a2c83bde917b9f2f00decada31cefd7ef
   SwiftWebSocket: 1ef8a0efb023544643bdf480c1ec4a62b204f293
+  ViewDeck: 9ad8c4ca95ffe21245ee411515c424807e6c7cfa
   XCGLogger: 38063ea89b4c8b23232d18efd2e12eb0005f3ea4
 
-PODFILE CHECKSUM: 542abe76c91b65897c2726b3a59d6d7b12be50b1
+PODFILE CHECKSUM: b1e35c6d57ea574bf99018c99103e4448040f83c
 
 COCOAPODS: 1.1.1

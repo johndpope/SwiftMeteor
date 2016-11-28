@@ -10,7 +10,9 @@ import UIKit
 import SwiftDDP
 
 class FirstViewController: UIViewController {
-
+    @IBAction func leftBarButton(button: UIBarButtonItem) {
+        RVViewDeck.sharedInstance.toggleSide(side: RVViewDeck.Side.left)
+    }
     override func viewDidLoad() {
         super.viewDidLoad()
         Meteor.client.allowSelfSignedSSL = true // Connect to a server that users a self signed ssl certificate

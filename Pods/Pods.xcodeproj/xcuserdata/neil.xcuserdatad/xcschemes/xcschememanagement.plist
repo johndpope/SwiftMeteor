@@ -24,6 +24,11 @@
 			<key>isShown</key>
 			<false/>
 		</dict>
+		<key>ViewDeck.xcscheme</key>
+		<dict>
+			<key>isShown</key>
+			<false/>
+		</dict>
 		<key>XCGLogger.xcscheme</key>
 		<dict>
 			<key>isShown</key>
@@ -32,27 +37,32 @@
 	</dict>
 	<key>SuppressBuildableAutocreation</key>
 	<dict>
-		<key>13F7A20C9DB3E99E9E4D2607FA26AEE2</key>
+		<key>18049F81286E33E6694417B0920D37DE</key>
 		<dict>
 			<key>primary</key>
 			<true/>
 		</dict>
-		<key>2AAE8B09CF9D2A045D214F9F3B40892D</key>
+		<key>454A935C17637900F46FA6E7EB632E30</key>
 		<dict>
 			<key>primary</key>
 			<true/>
 		</dict>
-		<key>4A3DAF1E91024B0F7EAAF6503DFAAE61</key>
-		<dict>
-			<key>primary</key>
-			<true/>
-		</dict>
-		<key>62EEF59E1F5D826E18447F7040D9AD5C</key>
+		<key>56C7B77BF6B70F7C32A6A6A48A8FC15C</key>
 		<dict>
 			<key>primary</key>
 			<true/>
 		</dict>
 		<key>6BB1C1403B2419F911818DA8413FDA07</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>D0EF28DC23E4CA95E2CA694A9090F9F5</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>E846F75AB270053403FCAE2483D665E7</key>
 		<dict>
 			<key>primary</key>
 			<true/>

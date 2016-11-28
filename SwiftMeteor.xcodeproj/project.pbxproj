@@ -7,6 +7,13 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		284FBAC91DEC125D00446C86 /* RVViewDeck.swift in Sources */ = {isa = PBXBuildFile; fileRef = 284FBAC81DEC125D00446C86 /* RVViewDeck.swift */; };
+		284FBACB1DEC136300446C86 /* File.swift in Sources */ = {isa = PBXBuildFile; fileRef = 284FBACA1DEC136300446C86 /* File.swift */; };
+		284FBACD1DEC139100446C86 /* RVLeftMenuViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 284FBACC1DEC139100446C86 /* RVLeftMenuViewController.swift */; };
+		284FBAD01DEC13B600446C86 /* RVBaseViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 284FBACF1DEC13B600446C86 /* RVBaseViewController.swift */; };
+		284FBAD21DEC13FE00446C86 /* RVRightMenuViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 284FBAD11DEC13FE00446C86 /* RVRightMenuViewController.swift */; };
+		284FBAD41DEC142B00446C86 /* RVMainTabViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 284FBAD31DEC142B00446C86 /* RVMainTabViewController.swift */; };
+		284FBAD71DEC161000446C86 /* UIColor+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 284FBAD61DEC161000446C86 /* UIColor+Extension.swift */; };
 		28F53E6D1DEB5F71009641F0 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 28F53E6C1DEB5F71009641F0 /* AppDelegate.swift */; };
 		28F53E6F1DEB5F71009641F0 /* FirstViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 28F53E6E1DEB5F71009641F0 /* FirstViewController.swift */; };
 		28F53E711DEB5F71009641F0 /* SecondViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 28F53E701DEB5F71009641F0 /* SecondViewController.swift */; };
@@ -37,6 +44,13 @@
 
 /* Begin PBXFileReference section */
 		07BD65EBD12BB5752CC9715C /* Pods-SwiftMeteor.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SwiftMeteor.debug.xcconfig"; path = "Pods/Target Support Files/Pods-SwiftMeteor/Pods-SwiftMeteor.debug.xcconfig"; sourceTree = "<group>"; };
+		284FBAC81DEC125D00446C86 /* RVViewDeck.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RVViewDeck.swift; sourceTree = "<group>"; };
+		284FBACA1DEC136300446C86 /* File.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = File.swift; sourceTree = "<group>"; };
+		284FBACC1DEC139100446C86 /* RVLeftMenuViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RVLeftMenuViewController.swift; sourceTree = "<group>"; };
+		284FBACF1DEC13B600446C86 /* RVBaseViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RVBaseViewController.swift; sourceTree = "<group>"; };
+		284FBAD11DEC13FE00446C86 /* RVRightMenuViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RVRightMenuViewController.swift; sourceTree = "<group>"; };
+		284FBAD31DEC142B00446C86 /* RVMainTabViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RVMainTabViewController.swift; sourceTree = "<group>"; };
+		284FBAD61DEC161000446C86 /* UIColor+Extension.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UIColor+Extension.swift"; sourceTree = "<group>"; };
 		28F53E691DEB5F71009641F0 /* SwiftMeteor.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = SwiftMeteor.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		28F53E6C1DEB5F71009641F0 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		28F53E6E1DEB5F71009641F0 /* FirstViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FirstViewController.swift; sourceTree = "<group>"; };
@@ -83,6 +97,34 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		284FBAC71DEC123E00446C86 /* VIewDeck */ = {
+			isa = PBXGroup;
+			children = (
+				284FBAC81DEC125D00446C86 /* RVViewDeck.swift */,
+				284FBACA1DEC136300446C86 /* File.swift */,
+				284FBACC1DEC139100446C86 /* RVLeftMenuViewController.swift */,
+				284FBAD11DEC13FE00446C86 /* RVRightMenuViewController.swift */,
+				284FBAD31DEC142B00446C86 /* RVMainTabViewController.swift */,
+			);
+			name = VIewDeck;
+			sourceTree = "<group>";
+		};
+		284FBACE1DEC13A500446C86 /* BaseClasses */ = {
+			isa = PBXGroup;
+			children = (
+				284FBACF1DEC13B600446C86 /* RVBaseViewController.swift */,
+			);
+			name = BaseClasses;
+			sourceTree = "<group>";
+		};
+		284FBAD51DEC15FE00446C86 /* Extensions */ = {
+			isa = PBXGroup;
+			children = (
+				284FBAD61DEC161000446C86 /* UIColor+Extension.swift */,
+			);
+			name = Extensions;
+			sourceTree = "<group>";
+		};
 		28F53E601DEB5F71009641F0 = {
 			isa = PBXGroup;
 			children = (
@@ -108,6 +150,9 @@
 		28F53E6B1DEB5F71009641F0 /* SwiftMeteor */ = {
 			isa = PBXGroup;
 			children = (
+				284FBAD51DEC15FE00446C86 /* Extensions */,
+				284FBACE1DEC13A500446C86 /* BaseClasses */,
+				284FBAC71DEC123E00446C86 /* VIewDeck */,
 				28F53E6C1DEB5F71009641F0 /* AppDelegate.swift */,
 				28F53E6E1DEB5F71009641F0 /* FirstViewController.swift */,
 				28F53E701DEB5F71009641F0 /* SecondViewController.swift */,
@@ -344,9 +389,16 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				284FBACB1DEC136300446C86 /* File.swift in Sources */,
 				28F53E711DEB5F71009641F0 /* SecondViewController.swift in Sources */,
+				284FBAD01DEC13B600446C86 /* RVBaseViewController.swift in Sources */,
+				284FBAD41DEC142B00446C86 /* RVMainTabViewController.swift in Sources */,
+				284FBACD1DEC139100446C86 /* RVLeftMenuViewController.swift in Sources */,
+				284FBAD21DEC13FE00446C86 /* RVRightMenuViewController.swift in Sources */,
+				284FBAC91DEC125D00446C86 /* RVViewDeck.swift in Sources */,
 				28F53E6D1DEB5F71009641F0 /* AppDelegate.swift in Sources */,
 				28F53E6F1DEB5F71009641F0 /* FirstViewController.swift in Sources */,
+				284FBAD71DEC161000446C86 /* UIColor+Extension.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

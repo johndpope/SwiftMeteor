@@ -7,6 +7,7 @@ target 'SwiftMeteor' do
 
   # Pods for SwiftMeteor
   pod "SwiftDDP", "~> 0.4.0"
+  pod 'ViewDeck'
 
   #target 'SwiftMeteorTests' do
   #  inherit! :search_paths
