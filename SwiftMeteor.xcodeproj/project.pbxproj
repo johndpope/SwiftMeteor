@@ -15,6 +15,7 @@
 		28F53E791DEB5F71009641F0 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 28F53E771DEB5F71009641F0 /* LaunchScreen.storyboard */; };
 		28F53E841DEB5F72009641F0 /* SwiftMeteorTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 28F53E831DEB5F72009641F0 /* SwiftMeteorTests.swift */; };
 		28F53E8F1DEB5F72009641F0 /* SwiftMeteorUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 28F53E8E1DEB5F72009641F0 /* SwiftMeteorUITests.swift */; };
+		362E89CA5B849A39F0EE578F /* Pods_SwiftMeteor.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6B286D927E0BD7C69A075554 /* Pods_SwiftMeteor.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -35,6 +36,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		07BD65EBD12BB5752CC9715C /* Pods-SwiftMeteor.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SwiftMeteor.debug.xcconfig"; path = "Pods/Target Support Files/Pods-SwiftMeteor/Pods-SwiftMeteor.debug.xcconfig"; sourceTree = "<group>"; };
 		28F53E691DEB5F71009641F0 /* SwiftMeteor.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = SwiftMeteor.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		28F53E6C1DEB5F71009641F0 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		28F53E6E1DEB5F71009641F0 /* FirstViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FirstViewController.swift; sourceTree = "<group>"; };
@@ -49,6 +51,10 @@
 		28F53E8A1DEB5F72009641F0 /* SwiftMeteorUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = SwiftMeteorUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		28F53E8E1DEB5F72009641F0 /* SwiftMeteorUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwiftMeteorUITests.swift; sourceTree = "<group>"; };
 		28F53E901DEB5F72009641F0 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		3F442EC15311267BF21BD64D /* Pods_SwiftMeteorTests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_SwiftMeteorTests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		6877A64A500AD32A39F63091 /* Pods-SwiftMeteor.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SwiftMeteor.release.xcconfig"; path = "Pods/Target Support Files/Pods-SwiftMeteor/Pods-SwiftMeteor.release.xcconfig"; sourceTree = "<group>"; };
+		6B286D927E0BD7C69A075554 /* Pods_SwiftMeteor.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_SwiftMeteor.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		BCB1E2F8788A23E72677C6EF /* Pods_SwiftMeteorUITests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_SwiftMeteorUITests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -56,6 +62,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				362E89CA5B849A39F0EE578F /* Pods_SwiftMeteor.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -83,6 +90,8 @@
 				28F53E821DEB5F72009641F0 /* SwiftMeteorTests */,
 				28F53E8D1DEB5F72009641F0 /* SwiftMeteorUITests */,
 				28F53E6A1DEB5F71009641F0 /* Products */,
+				DBDA687706B64E6C49F83A23 /* Pods */,
+				520186C895D6DBF10188B438 /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
@@ -128,6 +137,25 @@
 			path = SwiftMeteorUITests;
 			sourceTree = "<group>";
 		};
+		520186C895D6DBF10188B438 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				6B286D927E0BD7C69A075554 /* Pods_SwiftMeteor.framework */,
+				3F442EC15311267BF21BD64D /* Pods_SwiftMeteorTests.framework */,
+				BCB1E2F8788A23E72677C6EF /* Pods_SwiftMeteorUITests.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		DBDA687706B64E6C49F83A23 /* Pods */ = {
+			isa = PBXGroup;
+			children = (
+				07BD65EBD12BB5752CC9715C /* Pods-SwiftMeteor.debug.xcconfig */,
+				6877A64A500AD32A39F63091 /* Pods-SwiftMeteor.release.xcconfig */,
+			);
+			name = Pods;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -135,9 +163,12 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 28F53E931DEB5F72009641F0 /* Build configuration list for PBXNativeTarget "SwiftMeteor" */;
 			buildPhases = (
+				DC3B48FEAB3280F1245580CB /* [CP] Check Pods Manifest.lock */,
 				28F53E651DEB5F71009641F0 /* Sources */,
 				28F53E661DEB5F71009641F0 /* Frameworks */,
 				28F53E671DEB5F71009641F0 /* Resources */,
+				375A3FAC94EC990F1DCEA90E /* [CP] Embed Pods Frameworks */,
+				E96E9C90C4DB2F772D749898 /* [CP] Copy Pods Resources */,
 			);
 			buildRules = (
 			);
@@ -260,6 +291,54 @@
 		};
 /* End PBXResourcesBuildPhase section */
 
+/* Begin PBXShellScriptBuildPhase section */
+		375A3FAC94EC990F1DCEA90E /* [CP] Embed Pods Frameworks */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "[CP] Embed Pods Frameworks";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-SwiftMeteor/Pods-SwiftMeteor-frameworks.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+		DC3B48FEAB3280F1245580CB /* [CP] Check Pods Manifest.lock */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "[CP] Check Pods Manifest.lock";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "diff \"${PODS_ROOT}/../Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n";
+			showEnvVarsInLog = 0;
+		};
+		E96E9C90C4DB2F772D749898 /* [CP] Copy Pods Resources */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "[CP] Copy Pods Resources";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-SwiftMeteor/Pods-SwiftMeteor-resources.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+/* End PBXShellScriptBuildPhase section */
+
 /* Begin PBXSourcesBuildPhase section */
 		28F53E651DEB5F71009641F0 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
@@ -340,6 +419,7 @@
 				CLANG_WARN_INFINITE_RECURSION = YES;
 				CLANG_WARN_INT_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
 				CLANG_WARN_SUSPICIOUS_MOVES = YES;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
@@ -390,6 +470,7 @@
 				CLANG_WARN_INFINITE_RECURSION = YES;
 				CLANG_WARN_INT_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
 				CLANG_WARN_SUSPICIOUS_MOVES = YES;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
@@ -417,6 +498,7 @@
 		};
 		28F53E941DEB5F72009641F0 /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 07BD65EBD12BB5752CC9715C /* Pods-SwiftMeteor.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				DEVELOPMENT_TEAM = UN3VABR8Q8;
@@ -430,6 +512,7 @@
 		};
 		28F53E951DEB5F72009641F0 /* Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 6877A64A500AD32A39F63091 /* Pods-SwiftMeteor.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				DEVELOPMENT_TEAM = UN3VABR8Q8;
@@ -518,6 +601,7 @@
 				28F53E951DEB5F72009641F0 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 		28F53E961DEB5F72009641F0 /* Build configuration list for PBXNativeTarget "SwiftMeteorTests" */ = {
 			isa = XCConfigurationList;
@@ -526,6 +610,7 @@
 				28F53E981DEB5F72009641F0 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 		28F53E991DEB5F72009641F0 /* Build configuration list for PBXNativeTarget "SwiftMeteorUITests" */ = {
 			isa = XCConfigurationList;
@@ -534,6 +619,7 @@
 				28F53E9B1DEB5F72009641F0 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};
