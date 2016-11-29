@@ -1,4 +1,17 @@
 PODS:
+  - AWSAutoScaling (2.4.12):
+    - AWSCore (= 2.4.12)
+  - AWSCloudWatch (2.4.12):
+    - AWSCore (= 2.4.12)
+  - AWSCognito (2.4.12):
+    - AWSCore (= 2.4.12)
+  - AWSCognitoIdentityProvider (2.4.12):
+    - AWSCore (= 2.4.12)
+  - AWSCore (2.4.12)
+  - AWSLambda (2.4.12):
+    - AWSCore (= 2.4.12)
+  - AWSS3 (2.4.12):
+    - AWSCore (= 2.4.12)
   - CryptoSwift (0.6.6)
   - SwiftDDP (0.4.0):
     - CryptoSwift (~> 0.6.6)
@@ -11,16 +24,29 @@ PODS:
   - XCGLogger/Core (4.0.0)
 
 DEPENDENCIES:
+  - AWSAutoScaling
+  - AWSCloudWatch
+  - AWSCognito
+  - AWSCognitoIdentityProvider
+  - AWSLambda
+  - AWSS3
   - SwiftDDP (~> 0.4.0)
   - ViewDeck
 
 SPEC CHECKSUMS:
+  AWSAutoScaling: 9414a14d57e027794582e04769d222a26a630067
+  AWSCloudWatch: b2c61666bfd0bec33bd013ac36b4b825aee7aee2
+  AWSCognito: 3c897210f6bfbb04585332388dff2036a3f39540
+  AWSCognitoIdentityProvider: 219628dfb0110d9763e18a2f4d6895e9ad963382
+  AWSCore: 8ee5b1dc06a0fd562429fe7120113ca93cbfbca6
+  AWSLambda: 39c628a20f48bcdb8d9ab469fbfe866236668a62
+  AWSS3: 7bb3e095a37ed8334a0b868bbca74ab574b37a4f
   CryptoSwift: 88592381b73f36e192124539390a7c9bacda76af
   SwiftDDP: b575009a2c83bde917b9f2f00decada31cefd7ef
   SwiftWebSocket: 1ef8a0efb023544643bdf480c1ec4a62b204f293
   ViewDeck: 9ad8c4ca95ffe21245ee411515c424807e6c7cfa
   XCGLogger: 38063ea89b4c8b23232d18efd2e12eb0005f3ea4
 
-PODFILE CHECKSUM: b1e35c6d57ea574bf99018c99103e4448040f83c
+PODFILE CHECKSUM: cb2f0d44141e052a2044a207873cd122683a38d5
 
 COCOAPODS: 1.1.1

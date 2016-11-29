@@ -8,6 +8,12 @@ target 'SwiftMeteor' do
   # Pods for SwiftMeteor
   pod "SwiftDDP", "~> 0.4.0"
   pod 'ViewDeck'
+  pod 'AWSAutoScaling'
+  pod 'AWSCloudWatch'
+  pod 'AWSCognito'
+  pod 'AWSCognitoIdentityProvider'
+  pod 'AWSLambda'
+  pod 'AWSS3'
 
   #target 'SwiftMeteorTests' do
   #  inherit! :search_paths

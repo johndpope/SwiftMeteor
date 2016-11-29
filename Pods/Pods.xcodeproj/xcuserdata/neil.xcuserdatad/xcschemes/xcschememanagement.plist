@@ -4,6 +4,41 @@
 <dict>
 	<key>SchemeUserState</key>
 	<dict>
+		<key>AWSAutoScaling.xcscheme</key>
+		<dict>
+			<key>isShown</key>
+			<false/>
+		</dict>
+		<key>AWSCloudWatch.xcscheme</key>
+		<dict>
+			<key>isShown</key>
+			<false/>
+		</dict>
+		<key>AWSCognito.xcscheme</key>
+		<dict>
+			<key>isShown</key>
+			<false/>
+		</dict>
+		<key>AWSCognitoIdentityProvider.xcscheme</key>
+		<dict>
+			<key>isShown</key>
+			<false/>
+		</dict>
+		<key>AWSCore.xcscheme</key>
+		<dict>
+			<key>isShown</key>
+			<false/>
+		</dict>
+		<key>AWSLambda.xcscheme</key>
+		<dict>
+			<key>isShown</key>
+			<false/>
+		</dict>
+		<key>AWSS3.xcscheme</key>
+		<dict>
+			<key>isShown</key>
+			<false/>
+		</dict>
 		<key>CryptoSwift.xcscheme</key>
 		<dict>
 			<key>isShown</key>
@@ -37,17 +72,37 @@
 	</dict>
 	<key>SuppressBuildableAutocreation</key>
 	<dict>
-		<key>18049F81286E33E6694417B0920D37DE</key>
+		<key>11DFC6F885BFA9BCE8EB6EA0458ABFF8</key>
 		<dict>
 			<key>primary</key>
 			<true/>
 		</dict>
-		<key>454A935C17637900F46FA6E7EB632E30</key>
+		<key>162CAD95CC0F402AED98F345659DC633</key>
 		<dict>
 			<key>primary</key>
 			<true/>
 		</dict>
-		<key>56C7B77BF6B70F7C32A6A6A48A8FC15C</key>
+		<key>19E3C711F9EACBCF0F7A7F799730FDE5</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>2150DBB0093D8C0C0DFEC4F535A84353</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>53C6112213829CB147F47E473C93F271</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>567A58272C63E96877C320B73F956506</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>6920C0904C72D38BDB3C22A01918066E</key>
 		<dict>
 			<key>primary</key>
 			<true/>
@@ -57,12 +112,27 @@
 			<key>primary</key>
 			<true/>
 		</dict>
-		<key>D0EF28DC23E4CA95E2CA694A9090F9F5</key>
+		<key>71D5D237EADCD6B185F470E64128590F</key>
 		<dict>
 			<key>primary</key>
 			<true/>
 		</dict>
-		<key>E846F75AB270053403FCAE2483D665E7</key>
+		<key>9F7098779713B711F6C591B62A41F242</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>9FC549016533CEAB044C636D1C5E09D2</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>C14498E8A4F7BC06FEBC95C50C9B88BD</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>E0A26A5ACCD761A61B6278218AE19966</key>
 		<dict>
 			<key>primary</key>
 			<true/>
