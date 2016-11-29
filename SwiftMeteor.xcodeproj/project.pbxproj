@@ -15,6 +15,8 @@
 		284FBAD41DEC142B00446C86 /* RVMainTabViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 284FBAD31DEC142B00446C86 /* RVMainTabViewController.swift */; };
 		284FBAD71DEC161000446C86 /* UIColor+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 284FBAD61DEC161000446C86 /* UIColor+Extension.swift */; };
 		2870CCD11DECD81F005C6FB5 /* AWSUserFileManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2870CCD01DECD81F005C6FB5 /* AWSUserFileManager.swift */; };
+		2870CCD61DEDE2A9005C6FB5 /* RVAWS.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2870CCD51DEDE2A9005C6FB5 /* RVAWS.swift */; };
+		2870CCD81DEDE72F005C6FB5 /* RVError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2870CCD71DEDE72F005C6FB5 /* RVError.swift */; };
 		2873C9111DECA4D400DCB2DF /* AWSMobileClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2873C9101DECA4D400DCB2DF /* AWSMobileClient.swift */; };
 		2873C9131DECAA2F00DCB2DF /* AWSIdentityManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2873C9121DECAA2F00DCB2DF /* AWSIdentityManager.swift */; };
 		2873C9151DECBFF000DCB2DF /* AWSSignInProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2873C9141DECBFF000DCB2DF /* AWSSignInProvider.swift */; };
@@ -56,6 +58,8 @@
 		284FBAD31DEC142B00446C86 /* RVMainTabViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RVMainTabViewController.swift; sourceTree = "<group>"; };
 		284FBAD61DEC161000446C86 /* UIColor+Extension.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UIColor+Extension.swift"; sourceTree = "<group>"; };
 		2870CCD01DECD81F005C6FB5 /* AWSUserFileManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AWSUserFileManager.swift; sourceTree = "<group>"; };
+		2870CCD51DEDE2A9005C6FB5 /* RVAWS.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RVAWS.swift; sourceTree = "<group>"; };
+		2870CCD71DEDE72F005C6FB5 /* RVError.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RVError.swift; sourceTree = "<group>"; };
 		2873C9101DECA4D400DCB2DF /* AWSMobileClient.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AWSMobileClient.swift; sourceTree = "<group>"; };
 		2873C9121DECAA2F00DCB2DF /* AWSIdentityManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AWSIdentityManager.swift; sourceTree = "<group>"; };
 		2873C9141DECBFF000DCB2DF /* AWSSignInProvider.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AWSSignInProvider.swift; sourceTree = "<group>"; };
@@ -133,6 +137,15 @@
 			name = Extensions;
 			sourceTree = "<group>";
 		};
+		2870CCD41DEDE296005C6FB5 /* AWS */ = {
+			isa = PBXGroup;
+			children = (
+				2870CCD51DEDE2A9005C6FB5 /* RVAWS.swift */,
+				2870CCD71DEDE72F005C6FB5 /* RVError.swift */,
+			);
+			name = AWS;
+			sourceTree = "<group>";
+		};
 		2873C90F1DECA4C600DCB2DF /* Services */ = {
 			isa = PBXGroup;
 			children = (
@@ -169,6 +182,7 @@
 		28F53E6B1DEB5F71009641F0 /* SwiftMeteor */ = {
 			isa = PBXGroup;
 			children = (
+				2870CCD41DEDE296005C6FB5 /* AWS */,
 				2873C90F1DECA4C600DCB2DF /* Services */,
 				284FBAD51DEC15FE00446C86 /* Extensions */,
 				284FBACE1DEC13A500446C86 /* BaseClasses */,
@@ -415,9 +429,11 @@
 				284FBAD01DEC13B600446C86 /* RVBaseViewController.swift in Sources */,
 				2873C9131DECAA2F00DCB2DF /* AWSIdentityManager.swift in Sources */,
 				2873C9111DECA4D400DCB2DF /* AWSMobileClient.swift in Sources */,
+				2870CCD61DEDE2A9005C6FB5 /* RVAWS.swift in Sources */,
 				284FBAD41DEC142B00446C86 /* RVMainTabViewController.swift in Sources */,
 				284FBACD1DEC139100446C86 /* RVLeftMenuViewController.swift in Sources */,
 				2873C9151DECBFF000DCB2DF /* AWSSignInProvider.swift in Sources */,
+				2870CCD81DEDE72F005C6FB5 /* RVError.swift in Sources */,
 				284FBAD21DEC13FE00446C86 /* RVRightMenuViewController.swift in Sources */,
 				284FBAC91DEC125D00446C86 /* RVViewDeck.swift in Sources */,
 				28F53E6D1DEB5F71009641F0 /* AppDelegate.swift in Sources */,
