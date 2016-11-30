@@ -21,7 +21,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         UIDevice.current.beginGeneratingDeviceOrientationNotifications()
         //let _ = AWSMobileClient.sharedInstance.didFinishLaunching(application: application, withOptions: launchOptions)
         RVAWSDirect.sharedInstance.launch()
-       // RVAWSDirect.sharedInstance.tryIt()
+
         return true
     }
 
