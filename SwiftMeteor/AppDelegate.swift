@@ -19,7 +19,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -> Bool {
         RVViewDeck.sharedInstance.initialize(appDelegate: self)
         UIDevice.current.beginGeneratingDeviceOrientationNotifications()
-        let _ = AWSMobileClient.sharedInstance.didFinishLaunching(application: application, withOptions: launchOptions)
+        //let _ = AWSMobileClient.sharedInstance.didFinishLaunching(application: application, withOptions: launchOptions)
+        RVAWSDirect.sharedInstance.launch()
+       // RVAWSDirect.sharedInstance.tryIt()
         return true
     }
 

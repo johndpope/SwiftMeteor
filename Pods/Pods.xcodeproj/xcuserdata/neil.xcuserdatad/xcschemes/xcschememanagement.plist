@@ -4,6 +4,16 @@
 <dict>
 	<key>SchemeUserState</key>
 	<dict>
+		<key>AFNetworkActivityLogger.xcscheme</key>
+		<dict>
+			<key>isShown</key>
+			<false/>
+		</dict>
+		<key>AFNetworking.xcscheme</key>
+		<dict>
+			<key>isShown</key>
+			<false/>
+		</dict>
 		<key>AWSAutoScaling.xcscheme</key>
 		<dict>
 			<key>isShown</key>
@@ -49,6 +59,11 @@
 			<key>isShown</key>
 			<false/>
 		</dict>
+		<key>SDWebImage.xcscheme</key>
+		<dict>
+			<key>isShown</key>
+			<false/>
+		</dict>
 		<key>SwiftDDP.xcscheme</key>
 		<dict>
 			<key>isShown</key>
@@ -82,12 +97,12 @@
 			<key>primary</key>
 			<true/>
 		</dict>
-		<key>19E3C711F9EACBCF0F7A7F799730FDE5</key>
+		<key>2058E76F3B2C6630291C536EFFAD87F9</key>
 		<dict>
 			<key>primary</key>
 			<true/>
 		</dict>
-		<key>2150DBB0093D8C0C0DFEC4F535A84353</key>
+		<key>4B2CEA20D7A062C77EAD082240DEEEDD</key>
 		<dict>
 			<key>primary</key>
 			<true/>
@@ -102,17 +117,12 @@
 			<key>primary</key>
 			<true/>
 		</dict>
-		<key>6920C0904C72D38BDB3C22A01918066E</key>
-		<dict>
-			<key>primary</key>
-			<true/>
-		</dict>
 		<key>6BB1C1403B2419F911818DA8413FDA07</key>
 		<dict>
 			<key>primary</key>
 			<true/>
 		</dict>
-		<key>71D5D237EADCD6B185F470E64128590F</key>
+		<key>91EA7F837976530F9A53975F9CB05F79</key>
 		<dict>
 			<key>primary</key>
 			<true/>
@@ -127,12 +137,32 @@
 			<key>primary</key>
 			<true/>
 		</dict>
+		<key>ABE490DDBAB35BF3834D4E702B7EF376</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>B25474DF50658971279CADB4829DAD9F</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>B727F37AFD60FFCCDA16304767C1E16E</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
 		<key>C14498E8A4F7BC06FEBC95C50C9B88BD</key>
 		<dict>
 			<key>primary</key>
 			<true/>
 		</dict>
-		<key>E0A26A5ACCD761A61B6278218AE19966</key>
+		<key>D7C25F7D290580A238731D354024C1C1</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>F21594634C7E6805771670282D6DCE18</key>
 		<dict>
 			<key>primary</key>
 			<true/>

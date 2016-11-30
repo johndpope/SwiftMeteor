@@ -11,11 +11,12 @@ import UIKit
 
 import UIKit
 import AWSS3
-//import AFNetworking
-// import AFAmazonS3Manager
-//import SDWebImage
+import AFNetworking
+//import AFAmazonS3Manager
+import SDWebImage
 
 class RVAWS:NSObject {
+    /*
     enum ContentType: String {
         case JPEG = "image/jpeg"
         case PNG = "image/png"
@@ -130,7 +131,7 @@ class RVAWS:NSObject {
                         print("in \(self.classForCoder).runTest upload got error \(error)")
                     } else if let _ = url {
                         if let url = NSURL(string: uploadPath, relativeTo: RVAWS.baseURL as URL) {
-                            SDWebImageManager.sharedManager().downloadImageWithURL(url, options: SDWebImageOptions(rawValue: 0), progress: { (soFar, ExpectedTotal) -> Void in
+                            SDWebImageManager.shared().downloadImageWithURL(url as URL!, options: SDWebImageOptions(rawValue: 0), progress: { (soFar, ExpectedTotal) -> Void in
                                 
                             }, completed: { (image: UIImage!, error: NSError!, SDImageCacheType, finished: Bool, url: NSURL!) -> Void in
                                 if let error = error {
@@ -318,5 +319,6 @@ class RVAWS:NSObject {
             return nil
         }
     }
+ */
     
 }

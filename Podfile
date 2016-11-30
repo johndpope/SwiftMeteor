@@ -14,6 +14,10 @@ target 'SwiftMeteor' do
   pod 'AWSCognitoIdentityProvider'
   pod 'AWSLambda'
   pod 'AWSS3'
+  pod 'SDWebImage', '~>3.8'
+  pod 'AFNetworkActivityLogger', :git => 'https://github.com/AFNetworking/AFNetworkActivityLogger.git', :branch => '3_0_0'
+  pod 'AFNetworking', '~> 3.0'
+
 
   #target 'SwiftMeteorTests' do
   #  inherit! :search_paths

@@ -36,14 +36,15 @@ class RVError: NSError {
         super.init(coder: aDecoder)
     }
     func append(message: String) {
-        self.messages.insert(message, atIndex: 0)
+        self.messages.insert(message, at: 0)
     }
     func output() -> String {
         var messages = ""
-        for message in self.messages.enumerate() {
+        for message in self.messages.enumerated() {
             messages += "\(message)\n"
         }
-        var output = "--- at \(RVDateFormatter.ddHHmmsssss.stringFromDate(time)) Error in \(fileName)\(functionName).\(lineNumber)\n\(messages)"
+        var output = "Need to replace "
+//        var output = "--- at \(RVDateFormatter.ddHHmmsssss.stringFromDate(time)) Error in \(fileName)\(functionName).\(lineNumber)\n\(messages)"
         if let error = self.sourceError {
             output += "\(error)"
         }

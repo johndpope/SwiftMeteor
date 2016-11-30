@@ -29,9 +29,9 @@ class FirstViewController: UIViewController {
         func userDidLogout() {
             print("The user just signed out!")
         }
-        Meteor.connect("wss://rnmpassword-nweintraut.c9users.io/websocket") {
+ //       Meteor.connect("wss://rnmpassword-nweintraut.c9users.io/websocket") {
             // do something after the client connects
-            print("Returned after connect")
+ //           print("Returned after connect")
             /*
             Meteor.loginWithUsername("neil.weintraut@gmail.com", password: "password", callback: { (result, error: DDPError?) in
                 if let error = error {
@@ -42,7 +42,7 @@ class FirstViewController: UIViewController {
             })
  */
             
-        }
+  //      }
 
         
     }
