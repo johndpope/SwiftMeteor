@@ -12,23 +12,27 @@ import AWSS3
 import AWSCognito
 
 public class RVAWSDirect: NSObject {
-   // let region = AWSRegionType.usEast1
+
     let defaultServiceRegionType = AWSRegionType.usWest1
     static let s3domainAddress     = "s3.amazonaws.com"
     static let amazonDomainAddress = "amazonaws.com"
     let transferManagerIdentifier: String = "USWest2S3TransferManager"
     let identityPoolId = "us-west-2:035aed25-71d4-4d56-afab-9dfc4a1be60a"
+
+    static let bucket = "swiftmeteor"
+    
+
+    let cognitoRegion = AWSRegionType.usWest2
+    let S3Region = AWSRegionType.usWest1
+    
+    static let accessKey           = "AKIAIMIHTAKR4RY7R2HA"
+    static let secret              = "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"
     
     
-    //let identityPoolId: String = "us-east-1:c87f0067-d1bf-44f8-b77f-d5ad70dc2946"
-    let bucket = "swiftmeteor"
-    
-    //let identityPoolId: String = "us-west-2:c2265fbf-241f-45ba-b2a9-2f651228b868"
-    let region = AWSRegionType.usWest2
-    
-    
-    let accessKey           = "AKIAIMIHTAKR4RY7R2HA"
-    let secret              = "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"
+    // Attached path in the format of: directoryi/directoryii.../filename (note no leading slash)
+    static let baseURL: URL = {
+        URL(string: "https://\(RVAWSDirect.bucket).\(RVAWSDirect.s3domainAddress)")!
+    }()
     private static var _sharedInstance: RVAWSDirect = RVAWSDirect()
     
     public static var sharedInstance: RVAWSDirect {
@@ -39,9 +43,26 @@ public class RVAWSDirect: NSObject {
     
     public func launch() {
         AWSLogger.default().logLevel = AWSLogLevel.verbose
-        let credentialsProvider: AWSCognitoCredentialsProvider = AWSCognitoCredentialsProvider(regionType: region, identityPoolId: identityPoolId)
-        let configuration: AWSServiceConfiguration = AWSServiceConfiguration(region: AWSRegionType.usWest1, credentialsProvider: credentialsProvider)
+        //URLProtocol.registerClass(RVS3URLProtocol.self)
+        let credentialsProvider: AWSCognitoCredentialsProvider = AWSCognitoCredentialsProvider(regionType: self.cognitoRegion, identityPoolId: self.identityPoolId)
+        let configuration: AWSServiceConfiguration = AWSServiceConfiguration(region: self.S3Region, credentialsProvider: credentialsProvider)
         AWSServiceManager.default().defaultServiceConfiguration = configuration
+        //   RVAWSDirect.sharedInstance.tryIt()
+        //RVAWSDirect.sharedInstance.downloadFromS3()
+       
+
+        RVAWSDirect.sharedInstance.download0(path: "elmerfudd.jpg")
+        let path = "elmerfudd.jpg"
+        RVAWSDirect.sharedInstance.download1(path: path, completionHandler: self.processIt)
+        
+        //RVAWSDirect.sharedInstance.tryIt2()
+        //self.listObjects()
+
+        
+
+        print("--------------- END OF LAUNCH ------------\n")
+    }
+    func syncTest() {
         let syncClient = AWSCognito.default()
         if let  dataset = syncClient?.openOrCreateDataset("myDataset") {
             dataset.setString("myValue....zzzzz", forKey: "myKey")
@@ -51,26 +72,169 @@ public class RVAWSDirect: NSObject {
                 } else if let result  = task.result {
                     print("Result: \(result)")
                 } else {
-                    print("try")
+                    print("In AWSDirect.syncTest no error but no result")
                 }
-                if let cognitoId: String = credentialsProvider.identityId {
-                    print("Id = \(cognitoId)")
-                } else {
-                    print("No id")
-                }
-                    //   RVAWSDirect.sharedInstance.tryIt()
-                RVAWSDirect.sharedInstance.downloadFromS3()
-                //RVAWSDirect.sharedInstance.tryIt2()
-               //self.listObjects()
+
                 return nil
             })
         } else {
             print("No dataset")
         }
-
+    }
+    
+    func processIt(err: Error?, response: URLResponse?, url: URL?) throws -> Void  {
+        if let _ = err {
+            
+        } else if let response = response {
+            if let response = response as? HTTPURLResponse {
+                if response.statusCode == 200 {
+                    //
+                    if let url = url {
+                        do {
+                            let _ = try Data(contentsOf: url)
+                        } catch {
+                            
+                        }
+                    }
+                    //
+                }
+            }
+        }
+    }
+    
+    func download1(path: String, completionHandler: @escaping (Error?, URLResponse?, URL?) throws -> Void  ) {
         
+        let getPresignedURLRequest = AWSS3GetPreSignedURLRequest()
+        
+        getPresignedURLRequest.bucket = RVAWSDirect.bucket
+        getPresignedURLRequest.key = path
+        getPresignedURLRequest.httpMethod = AWSHTTPMethod.GET
+        getPresignedURLRequest.expires = NSDate(timeIntervalSinceNow: 3600) as Date
+        let t = AWSS3PreSignedURLBuilder.default().getPreSignedURL(getPresignedURLRequest)
+        t.continue(successBlock: { (task: AWSTask!) -> AnyObject! in
+            if let error = task.error {
+                print(error)
+            } else if let exception = task.exception {
+                print(exception)
+            } else if let presignedURL = task.result  {
+                print("Got presignedURL")
+                print("download presigned URL is: \(presignedURL)\n\n")
+                
+                let request = NSMutableURLRequest(url: presignedURL as URL)
+                //  request.httpMethod = "GET"
+                // request.setValue(fileContentTypeString, forHTTPHeaderField: "Content-Type")
+                
+                let downloadTask =  URLSession.shared.downloadTask(with: request as URLRequest , completionHandler: { (url: URL?, response: URLResponse?, error) in
+                    //NSNotificationCenter.defaultCenter().postNotificationName("RVS3URLProtocolProgress", object: self, userInfo: ["progress" : percentage, "totalBytesExpected": totalExpected, "path": path])
+                    do {
+                        try completionHandler(error, response, url)
+                    } catch {
+                        
+                    }
+                    
+                    if let error = error {
+                        print("In download0, got error \(error)")
+                    } else if let response = response  {
+                        if let response = response as? HTTPURLResponse {
+                            print("In download0, got response: \(response.statusCode)")
+                            if response.statusCode == 200 {
+                                //if let url = url {
+                                    
+                                    /*
+                                     do {
+                                     let data = try Data(contentsOf: url)
+                                     let image = UIImage(data: data)
+                                     } catch error {
+                                     print("\(error)")
+                                     }
+                                     */
+                                    
+                             //   }
+                            }
+                            
+                        }
+                        
+                    }
+                    if let url = url {
+                        print("In download0, get URL \(url)")
+                    }
+                })
+                
+                downloadTask.resume()
+                
+                
+            } else {
+                print("In \(self.classForCoder).upload in task closure, no presignURL")
+            }
+            return nil
+        })
+    }
+    
+    // http://docs.aws.amazon.com/mobile/sdkforios/developerguide/s3transfermanager.html
+    // Upload in background
+    func download0(path: String) {
+        
+        let getPresignedURLRequest = AWSS3GetPreSignedURLRequest()
+        let S3BucketName = "swiftmeteor"
+        getPresignedURLRequest.bucket = S3BucketName
+        getPresignedURLRequest.key = path
+        getPresignedURLRequest.httpMethod = AWSHTTPMethod.GET
+        getPresignedURLRequest.expires = NSDate(timeIntervalSinceNow: 3600) as Date
+       // let fileContentTypeString = contentType
+      //  getPresignedURLRequest.contentType = fileContentTypeString
+        
+        let t = AWSS3PreSignedURLBuilder.default().getPreSignedURL(getPresignedURLRequest)
+        
+        
+        t.continue(successBlock: { (task: AWSTask!) -> AnyObject! in
+            if let error = task.error {
+                print(error)
+            } else if let exception = task.exception {
+                print(exception)
+            } else if let presignedURL = task.result  {
+                     print("Got presignedURL")
+                     print("download presigned URL is: \(presignedURL)\n\n")
 
-        print("--------------- END OF LAUNCH ------------\n")
+                let request = NSMutableURLRequest(url: presignedURL as URL)
+              //  request.httpMethod = "GET"
+               // request.setValue(fileContentTypeString, forHTTPHeaderField: "Content-Type")
+                
+                let downloadTask =  URLSession.shared.downloadTask(with: request as URLRequest , completionHandler: { (url: URL?, response: URLResponse?, error) in
+                    if let error = error {
+                        print("In download0, got error \(error)")
+                    } else if let response = response  {
+                        if let response = response as? HTTPURLResponse {
+                            print("In download0, got response: \(response.statusCode)")
+                            if response.statusCode == 200 {
+                                if url != nil {
+                                    /*
+                                    do {
+                                        let data = try Data(contentsOf: url)
+                                     let image = UIImage(data: data)
+                                    } catch error {
+                                        print("\(error)")
+                                    }
+                                    */
+                                    
+                                }
+                            }
+
+                        }
+
+                    }
+                    if let url = url {
+                        print("In download0, get URL \(url)")
+                    }
+                })
+
+                downloadTask.resume()
+
+                
+            } else {
+                print("In \(self.classForCoder).upload in task closure, no presignURL")
+            }
+            return nil
+        })
     }
     
     // http://docs.aws.amazon.com/mobile/sdkforios/developerguide/s3transfermanager.html
@@ -144,7 +308,10 @@ public class RVAWSDirect: NSObject {
                 } else if let result = task.result  {
                     if let contents = result.contents {
                         for s3Object in contents {
-                            print(s3Object.key)
+                            if let key = s3Object.key{
+                                print(key)
+                            }
+                            
                         }
                     }
                 } else {
@@ -225,7 +392,7 @@ public class RVAWSDirect: NSObject {
     }
     public func tryIt() {
         if let uploadingPath = getTestFilePath() {
-            self.upload(bucket: bucket, filename: "elmerfudd.jpg", sourceURL: URL(fileURLWithPath: uploadingPath))
+            self.upload(bucket: RVAWSDirect.bucket, filename: "elmerfudd.jpg", sourceURL: URL(fileURLWithPath: uploadingPath))
         }
     }
     public func tryIt2() {
@@ -248,7 +415,7 @@ public class RVAWSDirect: NSObject {
             print("have path \(path)")
             let pathFinal = path.appendingPathComponent("elmo.jpg")
             print("URL is.... \(pathFinal.path)")
-            self.download(bucket: self.bucket, sourcePath: "ranch.jpg", destinationFileURL: pathFinal)
+            self.download(bucket: RVAWSDirect.bucket, sourcePath: "ranch.jpg", destinationFileURL: pathFinal)
         
     }
     public func getData() -> Data? {

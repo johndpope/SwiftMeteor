@@ -30,6 +30,7 @@ PODS:
   - AWSS3 (2.4.12):
     - AWSCore (= 2.4.12)
   - CryptoSwift (0.6.6)
+  - IDZSwiftCommonCrypto (0.9.0)
   - SDWebImage (3.8.2):
     - SDWebImage/Core (= 3.8.2)
   - SDWebImage/Core (3.8.2)
@@ -52,6 +53,7 @@ DEPENDENCIES:
   - AWSCognitoIdentityProvider
   - AWSLambda
   - AWSS3
+  - IDZSwiftCommonCrypto (~> 0.9.x)
   - SDWebImage (~> 3.8)
   - SwiftDDP (~> 0.4.0)
   - ViewDeck
@@ -77,12 +79,13 @@ SPEC CHECKSUMS:
   AWSLambda: 39c628a20f48bcdb8d9ab469fbfe866236668a62
   AWSS3: 7bb3e095a37ed8334a0b868bbca74ab574b37a4f
   CryptoSwift: 88592381b73f36e192124539390a7c9bacda76af
+  IDZSwiftCommonCrypto: 60f14492730da20117ce5875b890c7a6fc38ab8c
   SDWebImage: 098e97e6176540799c27e804c96653ee0833d13c
   SwiftDDP: b575009a2c83bde917b9f2f00decada31cefd7ef
   SwiftWebSocket: 1ef8a0efb023544643bdf480c1ec4a62b204f293
   ViewDeck: 9ad8c4ca95ffe21245ee411515c424807e6c7cfa
   XCGLogger: 38063ea89b4c8b23232d18efd2e12eb0005f3ea4
 
-PODFILE CHECKSUM: 378b6b464f541aff453f7cb2367db8ffb8eba1f1
+PODFILE CHECKSUM: 4217a45830e13c4d95d953587403c529b6bfaaff
 
 COCOAPODS: 1.1.1

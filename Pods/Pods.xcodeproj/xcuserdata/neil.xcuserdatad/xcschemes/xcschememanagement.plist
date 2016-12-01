@@ -54,6 +54,11 @@
 			<key>isShown</key>
 			<false/>
 		</dict>
+		<key>IDZSwiftCommonCrypto.xcscheme</key>
+		<dict>
+			<key>isShown</key>
+			<false/>
+		</dict>
 		<key>Pods-SwiftMeteor.xcscheme</key>
 		<dict>
 			<key>isShown</key>
@@ -97,12 +102,12 @@
 			<key>primary</key>
 			<true/>
 		</dict>
-		<key>2058E76F3B2C6630291C536EFFAD87F9</key>
+		<key>2C0514141C10E6DD400F4687FAF1D958</key>
 		<dict>
 			<key>primary</key>
 			<true/>
 		</dict>
-		<key>4B2CEA20D7A062C77EAD082240DEEEDD</key>
+		<key>35F6C1A6340E052B806E7CAFAB67735A</key>
 		<dict>
 			<key>primary</key>
 			<true/>
@@ -117,7 +122,17 @@
 			<key>primary</key>
 			<true/>
 		</dict>
+		<key>6A5A6D99460D54275D2AA39A67C73AC7</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
 		<key>6BB1C1403B2419F911818DA8413FDA07</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>8856AFC4DB85231B85297D1EEFF816AF</key>
 		<dict>
 			<key>primary</key>
 			<true/>
@@ -137,17 +152,12 @@
 			<key>primary</key>
 			<true/>
 		</dict>
-		<key>ABE490DDBAB35BF3834D4E702B7EF376</key>
-		<dict>
-			<key>primary</key>
-			<true/>
-		</dict>
 		<key>B25474DF50658971279CADB4829DAD9F</key>
 		<dict>
 			<key>primary</key>
 			<true/>
 		</dict>
-		<key>B727F37AFD60FFCCDA16304767C1E16E</key>
+		<key>B9C897336FE52012BB2511C6F9A2C8BD</key>
 		<dict>
 			<key>primary</key>
 			<true/>
@@ -157,12 +167,12 @@
 			<key>primary</key>
 			<true/>
 		</dict>
-		<key>D7C25F7D290580A238731D354024C1C1</key>
+		<key>D66F1F9B0D8BC672C8C3CDFD3BB3EED5</key>
 		<dict>
 			<key>primary</key>
 			<true/>
 		</dict>
-		<key>F21594634C7E6805771670282D6DCE18</key>
+		<key>FAB836DCA7865B6BFA072BF92AB52E4D</key>
 		<dict>
 			<key>primary</key>
 			<true/>
