@@ -10,9 +10,56 @@ import UIKit
 import AWSCore
 import AWSS3
 import AWSCognito
+class Download: NSObject {
+    
+    var url: String
+    var isDownloading = false
+    var progress: Float = 0.0
+    
+    var downloadTask: URLSessionDownloadTask?
+    var resumeData: Data?
+    
+    init(url: String) {
+        self.url = url
+    }
+}
+extension RVAWSDirect: URLSessionDownloadDelegate {
+    /* Sent when a download task that has completed a download.  The delegate should
+     * copy or move the file at the given location to a new location as it will be
+     * removed when the delegate message returns. URLSession:task:didCompleteWithError: will
+     * still be called.
+     */
+    public func urlSession(_ session: URLSession, downloadTask: URLSessionDownloadTask, didFinishDownloadingTo location: URL) {
+        print("In Delegate, didFinishLoadingTo.... URL \(location)")
+    }
+    
+    
+    /* Sent periodically to notify the delegate of download progress. */
+    public func urlSession(_ session: URLSession, downloadTask: URLSessionDownloadTask, didWriteData bytesWritten: Int64, totalBytesWritten: Int64, totalBytesExpectedToWrite: Int64) {
+        print("In download delegate, bytesWritten \(totalBytesWritten) total: \(totalBytesExpectedToWrite)")
+        if let downloadURL = downloadTask.originalRequest?.url?.absoluteString {
+            if let download = activeDownloads[downloadURL] {
+                download.progress = Float(totalBytesWritten)/Float(totalBytesExpectedToWrite)
+               // let totalSize = ByteCountFormatter.string(fromByteCount: totalBytesExpectedToWrite, countStyle: ByteCountFormatter.CountStyle.binary)
+            }
+        }
+    }
+    
+    
+    /* Sent when a download has been resumed. If a download failed with an
+     * error, the -userInfo dictionary of the error will contain an
+     * NSURLSessionDownloadTaskResumeData key, whose value is the resume
+     * data.
+     */
+
+    public func urlSession(_ session: URLSession, downloadTask: URLSessionDownloadTask, didResumeAtOffset fileOffset: Int64, expectedTotalBytes: Int64) {
+        
+    }
+}
 
 public class RVAWSDirect: NSObject {
 
+    var activeDownloads = [Int: Download]()
     let defaultServiceRegionType = AWSRegionType.usWest1
     static let s3domainAddress     = "s3.amazonaws.com"
     static let amazonDomainAddress = "amazonaws.com"
@@ -51,7 +98,7 @@ public class RVAWSDirect: NSObject {
         //RVAWSDirect.sharedInstance.downloadFromS3()
        
 
-        RVAWSDirect.sharedInstance.download0(path: "elmerfudd.jpg")
+     //   RVAWSDirect.sharedInstance.download0(path: "elmerfudd.jpg")
         let path = "elmerfudd.jpg"
         RVAWSDirect.sharedInstance.download1(path: path, completionHandler: self.processIt)
         
@@ -83,23 +130,57 @@ public class RVAWSDirect: NSObject {
     }
     
     func processIt(err: Error?, response: URLResponse?, url: URL?) throws -> Void  {
-        if let _ = err {
-            
+        if let err = err {
+            print("RVAWSDirect processIt error \(err)")
         } else if let response = response {
             if let response = response as? HTTPURLResponse {
                 if response.statusCode == 200 {
-                    //
+                    
                     if let url = url {
                         do {
                             let _ = try Data(contentsOf: url)
-                        } catch {
-                            
+                            print("Successfully got data. AWSDirect processIt")
+                        } catch   {
+                            print("Data retrieval error \(error)")
                         }
                     }
                     //
                 }
             }
         }
+    }
+    
+    func download2(path: String, completionHandler: @escaping (Data?, URLResponse?, Error?) -> Void  ) {
+        let getPresignedURLRequest = AWSS3GetPreSignedURLRequest()
+        getPresignedURLRequest.bucket = RVAWSDirect.bucket
+        getPresignedURLRequest.key = path
+        getPresignedURLRequest.httpMethod = AWSHTTPMethod.GET
+        getPresignedURLRequest.expires = NSDate(timeIntervalSinceNow: 3600) as Date
+        let t = AWSS3PreSignedURLBuilder.default().getPreSignedURL(getPresignedURLRequest)
+        t.continue(successBlock: { (task: AWSTask!) -> AnyObject! in
+            if let error = task.error {
+                print(error)
+            } else if let exception = task.exception {
+                print(exception)
+            } else if let presignedURL = task.result  {
+                print("download presigned URL is: \(presignedURL)\n\n")
+                let request = URLRequest(url: presignedURL as URL)
+                UIApplication.shared.isNetworkActivityIndicatorVisible = true
+                let session = URLSession(configuration: URLSessionConfiguration.ephemeral, delegate: RVAWSDirect.sharedInstance, delegateQueue: OperationQueue.main)
+                self.activeDownloads[session.hashValue] = session
+                let downloadTask = session.dataTask(with: request, completionHandler: { (data, response, error) in
+                    DispatchQueue.main.async {
+                        UIApplication.shared.isNetworkActivityIndicatorVisible = false
+                        
+                        completionHandler(data, response, error)
+                    }
+                })
+                downloadTask.resume()
+            } else {
+                print("In \(self.classForCoder).upload in task closure, no presignURL")
+            }
+            return nil
+        })
     }
     
     func download1(path: String, completionHandler: @escaping (Error?, URLResponse?, URL?) throws -> Void  ) {
@@ -117,52 +198,20 @@ public class RVAWSDirect: NSObject {
             } else if let exception = task.exception {
                 print(exception)
             } else if let presignedURL = task.result  {
-                print("Got presignedURL")
                 print("download presigned URL is: \(presignedURL)\n\n")
-                
                 let request = NSMutableURLRequest(url: presignedURL as URL)
-                //  request.httpMethod = "GET"
-                // request.setValue(fileContentTypeString, forHTTPHeaderField: "Content-Type")
+                UIApplication.shared.isNetworkActivityIndicatorVisible = true
                 
                 let downloadTask =  URLSession.shared.downloadTask(with: request as URLRequest , completionHandler: { (url: URL?, response: URLResponse?, error) in
+                    UIApplication.shared.isNetworkActivityIndicatorVisible = false
                     //NSNotificationCenter.defaultCenter().postNotificationName("RVS3URLProtocolProgress", object: self, userInfo: ["progress" : percentage, "totalBytesExpected": totalExpected, "path": path])
                     do {
                         try completionHandler(error, response, url)
                     } catch {
-                        
-                    }
-                    
-                    if let error = error {
-                        print("In download0, got error \(error)")
-                    } else if let response = response  {
-                        if let response = response as? HTTPURLResponse {
-                            print("In download0, got response: \(response.statusCode)")
-                            if response.statusCode == 200 {
-                                //if let url = url {
-                                    
-                                    /*
-                                     do {
-                                     let data = try Data(contentsOf: url)
-                                     let image = UIImage(data: data)
-                                     } catch error {
-                                     print("\(error)")
-                                     }
-                                     */
-                                    
-                             //   }
-                            }
-                            
-                        }
-                        
-                    }
-                    if let url = url {
-                        print("In download0, get URL \(url)")
+                        print("In AWSDirect.download1, got exception with handler \(error)")
                     }
                 })
-                
                 downloadTask.resume()
-                
-                
             } else {
                 print("In \(self.classForCoder).upload in task closure, no presignURL")
             }
