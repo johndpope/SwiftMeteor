@@ -8,6 +8,7 @@
 
 import UIKit
 import SwiftDDP
+import SDWebImage
 
 class FirstViewController: UIViewController {
     @IBAction func leftBarButton(button: UIBarButtonItem) {
@@ -15,6 +16,29 @@ class FirstViewController: UIViewController {
     }
     override func viewDidLoad() {
         super.viewDidLoad()
+        let string = "\(RVAWSDirect.baseURL)/elmerfudd.jpg"
+        let _ = RVAWSDirect.sharedInstance
+        if let url = URL(string: string) {
+            print("In FirstViewController URL is \(url.absoluteString)")
+            SDWebImageManager.shared().downloadImage(with: url, options: SDWebImageOptions(rawValue: 0), progress: { (some, total) in
+                
+            }, completed: { (image, error, cache: SDImageCacheType, finished: Bool, url: URL?) in
+                if let error = error {
+                    print("FirstViewController.viewDidLoad() Error \(error)")
+                } else if finished {
+                    if let image = image {
+                        print("FirstViewController.viewDidLoad() Have image \(image.size)")
+                    } else {
+                        print("FirstViewController.viewDidLoad() No image")
+                    }
+                } else {
+                    print("FirstViewController.viewDidLoad() Not finished")
+                }
+            })
+        } else {
+            print("Failed to create URL for \(string)")
+        }
+
         Meteor.client.allowSelfSignedSSL = true // Connect to a server that users a self signed ssl certificate
         Meteor.client.logLevel = .info // Options are: .Verbose, .Debug, .Info, .Warning, .Error, .Severe, .None
 

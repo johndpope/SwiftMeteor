@@ -18,10 +18,35 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -> Bool {
         RVViewDeck.sharedInstance.initialize(appDelegate: self)
+        let _ = RVAWSDirect.sharedInstance
         UIDevice.current.beginGeneratingDeviceOrientationNotifications()
         //let _ = AWSMobileClient.sharedInstance.didFinishLaunching(application: application, withOptions: launchOptions)
-        RVAWSDirect.sharedInstance.launch()
+        //RVAWSDirect.sharedInstance.launch()
 
+        
+        
+        let path = "elmerfudd.jpg"
+        RVAWSDirect.sharedInstance.download2(path: path, completionHandler: {(data: Data?, response: URLResponse?, error: Error?) in
+            if let error = error {
+                print("Got Error RVAWSDirect.download2 \(error)")
+            } else if let response = response as? HTTPURLResponse {
+                if response.statusCode == 200 {
+                    print("Successful RVAWSDirect.download2)")
+                    if let data = data {
+                        print("Successful RVAWDDirect.download2 data \(data.bytes.count)")
+                    }
+                }
+            } else {
+                print("In RVAWSDirect.download2 no error no response")
+            }
+        })
+ 
+   //     let u = URLRequest(url: URL(string: "http://www.google.com/goober")!)
+ //       let session = URLSession.shared.downloadTask(with: u , completionHandler: {(url: URL?, respone: URLResponse?, error: Error?) in })
+//        session.resume()
+   //     let session2 = URLSession.shared.dataTask(with: u)
+     //   session2.resume()
+        
         return true
     }
 

@@ -10,19 +10,7 @@ import UIKit
 import AWSCore
 import AWSS3
 import AWSCognito
-class Download: NSObject {
-    
-    var url: String
-    var isDownloading = false
-    var progress: Float = 0.0
-    
-    var downloadTask: URLSessionDownloadTask?
-    var resumeData: Data?
-    
-    init(url: String) {
-        self.url = url
-    }
-}
+
 extension RVAWSDirect: URLSessionDownloadDelegate {
     /* Sent when a download task that has completed a download.  The delegate should
      * copy or move the file at the given location to a new location as it will be
@@ -31,6 +19,12 @@ extension RVAWSDirect: URLSessionDownloadDelegate {
      */
     public func urlSession(_ session: URLSession, downloadTask: URLSessionDownloadTask, didFinishDownloadingTo location: URL) {
         print("In Delegate, didFinishLoadingTo.... URL \(location)")
+        if let downloadURL = downloadTask.originalRequest?.url?.absoluteString {
+            RVAWSDirect.sharedInstance.activeDownloads.removeValue(forKey: downloadURL)
+            DispatchQueue.main.sync {
+                RVActivityIndicator.sharedInstance.decrementIndicatorCount()
+            }
+        }
     }
     
     
@@ -59,56 +53,49 @@ extension RVAWSDirect: URLSessionDownloadDelegate {
 
 public class RVAWSDirect: NSObject {
 
-    var activeDownloads = [Int: Download]()
+    var activeDownloads = [String: RVDataTask]()
     let defaultServiceRegionType = AWSRegionType.usWest1
-    static let s3domainAddress     = "s3.amazonaws.com"
-    static let amazonDomainAddress = "amazonaws.com"
+    private static let s3domainAddress     = "s3.amazonaws.com"
+    private static let amazonDomainAddress = "amazonaws.com"
     let transferManagerIdentifier: String = "USWest2S3TransferManager"
-    let identityPoolId = "us-west-2:035aed25-71d4-4d56-afab-9dfc4a1be60a"
+    private static let identityPoolId = "us-west-2:035aed25-71d4-4d56-afab-9dfc4a1be60a"
 
     static let bucket = "swiftmeteor"
     
 
-    let cognitoRegion = AWSRegionType.usWest2
-    let S3Region = AWSRegionType.usWest1
+    private static let cognitoRegion = AWSRegionType.usWest2
+    private static let S3Region = AWSRegionType.usWest1
+    private static let S3RegionString = "s3-us-west-1"
     
-    static let accessKey           = "AKIAIMIHTAKR4RY7R2HA"
-    static let secret              = "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"
+    private static let accessKey           = "AKIAIMIHTAKR4RY7R2HA"
+    private static let secret              = "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"
     
     
     // Attached path in the format of: directoryi/directoryii.../filename (note no leading slash)
     static let baseURL: URL = {
-        URL(string: "https://\(RVAWSDirect.bucket).\(RVAWSDirect.s3domainAddress)")!
+        URL(string: "https://\(RVAWSDirect.bucket).\(RVAWSDirect.S3RegionString).\(RVAWSDirect.amazonDomainAddress)")!
     }()
-    private static var _sharedInstance: RVAWSDirect = RVAWSDirect()
+    private static var _sharedInstance: RVAWSDirect?
     
     public static var sharedInstance: RVAWSDirect {
         get {
-            return _sharedInstance
+            if let sharedInstance = _sharedInstance { return sharedInstance}
+            AWSLogger.default().logLevel = AWSLogLevel.verbose
+            if URLProtocol.registerClass(RVS3URLProtocol.self) {
+                print("Successful register")
+            } else {
+                print("Not successful register")
+            }
+            //URLProtocol.registerClass(RVS3URLProtocol.self)
+            let credentialsProvider: AWSCognitoCredentialsProvider = AWSCognitoCredentialsProvider(regionType: RVAWSDirect.cognitoRegion, identityPoolId: RVAWSDirect.identityPoolId)
+            let configuration: AWSServiceConfiguration = AWSServiceConfiguration(region: RVAWSDirect.S3Region, credentialsProvider: credentialsProvider)
+            AWSServiceManager.default().defaultServiceConfiguration = configuration
+            let rvaws = RVAWSDirect()
+            RVAWSDirect._sharedInstance = rvaws 
+            return rvaws
         }
     }
     
-    public func launch() {
-        AWSLogger.default().logLevel = AWSLogLevel.verbose
-        //URLProtocol.registerClass(RVS3URLProtocol.self)
-        let credentialsProvider: AWSCognitoCredentialsProvider = AWSCognitoCredentialsProvider(regionType: self.cognitoRegion, identityPoolId: self.identityPoolId)
-        let configuration: AWSServiceConfiguration = AWSServiceConfiguration(region: self.S3Region, credentialsProvider: credentialsProvider)
-        AWSServiceManager.default().defaultServiceConfiguration = configuration
-        //   RVAWSDirect.sharedInstance.tryIt()
-        //RVAWSDirect.sharedInstance.downloadFromS3()
-       
-
-     //   RVAWSDirect.sharedInstance.download0(path: "elmerfudd.jpg")
-        let path = "elmerfudd.jpg"
-        RVAWSDirect.sharedInstance.download1(path: path, completionHandler: self.processIt)
-        
-        //RVAWSDirect.sharedInstance.tryIt2()
-        //self.listObjects()
-
-        
-
-        print("--------------- END OF LAUNCH ------------\n")
-    }
     func syncTest() {
         let syncClient = AWSCognito.default()
         if let  dataset = syncClient?.openOrCreateDataset("myDataset") {
@@ -156,28 +143,45 @@ public class RVAWSDirect: NSObject {
         getPresignedURLRequest.key = path
         getPresignedURLRequest.httpMethod = AWSHTTPMethod.GET
         getPresignedURLRequest.expires = NSDate(timeIntervalSinceNow: 3600) as Date
-        let t = AWSS3PreSignedURLBuilder.default().getPreSignedURL(getPresignedURLRequest)
-        t.continue(successBlock: { (task: AWSTask!) -> AnyObject! in
+        let presignedTask = AWSS3PreSignedURLBuilder.default().getPreSignedURL(getPresignedURLRequest)
+        RVActivityIndicator.sharedInstance.incrementIndicatorCount()
+        presignedTask.continue(successBlock: { (task: AWSTask!) -> AnyObject! in
             if let error = task.error {
-                print(error)
+                DispatchQueue.main.async {
+                    RVActivityIndicator.sharedInstance.decrementIndicatorCount()
+                    let error = RVError(message: "Got AWS Presigned URL error", sourceError: error )
+                    completionHandler(nil, nil, error)
+                }
+                return nil
             } else if let exception = task.exception {
-                print(exception)
-            } else if let presignedURL = task.result  {
+                DispatchQueue.main.sync {
+                    RVActivityIndicator.sharedInstance.decrementIndicatorCount()
+                    let error = RVError(message: "Got AWS Presigned URL exceptoin \(exception)", sourceError: nil )
+                    completionHandler(nil, nil, error)
+                }
+                return nil
+            } else if let presignedURL = task.result as? URL  {
                 print("download presigned URL is: \(presignedURL)\n\n")
-                let request = URLRequest(url: presignedURL as URL)
-                UIApplication.shared.isNetworkActivityIndicatorVisible = true
-                let session = URLSession(configuration: URLSessionConfiguration.ephemeral, delegate: RVAWSDirect.sharedInstance, delegateQueue: OperationQueue.main)
-                self.activeDownloads[session.hashValue] = session
-                let downloadTask = session.dataTask(with: request, completionHandler: { (data, response, error) in
+                // let session = URLSession(configuration: URLSessionConfiguration.ephemeral, delegate: RVAWSDirect.sharedInstance, delegateQueue: OperationQueue.main)
+                let session = URLSession.shared
+                let d = session.dataTask(with: (NSMutableURLRequest(url: presignedURL) as URLRequest), completionHandler: completionHandler)
+                d.resume()
+                /*
+                let downloadTask = session.dataTask(with: presignedURL , completionHandler: { (data, response, error) in
                     DispatchQueue.main.async {
-                        UIApplication.shared.isNetworkActivityIndicatorVisible = false
-                        
                         completionHandler(data, response, error)
                     }
                 })
+                self.activeDownloads[presignedURL.absoluteString] = RVDataTask(downloadTask: downloadTask)
                 downloadTask.resume()
+ */
+                RVActivityIndicator.sharedInstance.decrementIndicatorCount()
             } else {
-                print("In \(self.classForCoder).upload in task closure, no presignURL")
+                DispatchQueue.main.async {
+                    RVActivityIndicator.sharedInstance.decrementIndicatorCount()
+                    let error = RVError(message: "failed to get presignedURL", sourceError: nil)
+                    completionHandler(nil , nil, error)
+                }
             }
             return nil
         })

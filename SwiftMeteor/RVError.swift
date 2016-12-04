@@ -19,14 +19,14 @@ import UIKit
 
 class RVError: NSError {
     static var domain: String = "RV"
-    var sourceError: NSError? = nil
+    var sourceError: Error? = nil
     var messages = [String]()
     var fileName: String = ""
     var functionName: String = ""
     var time = NSDate()
     var lineNumber: Int = -1
     
-    init(message: String, sourceError: NSError? = nil) {
+    init(message: String, sourceError: Error? = nil) {
         super.init(domain: RVError.domain, code: 0, userInfo: ["message": message])
         self.messages = [message]
         if let error = sourceError { self.sourceError = error }

@@ -4,16 +4,6 @@
 <dict>
 	<key>SchemeUserState</key>
 	<dict>
-		<key>AFNetworkActivityLogger.xcscheme</key>
-		<dict>
-			<key>isShown</key>
-			<false/>
-		</dict>
-		<key>AFNetworking.xcscheme</key>
-		<dict>
-			<key>isShown</key>
-			<false/>
-		</dict>
 		<key>AWSAutoScaling.xcscheme</key>
 		<dict>
 			<key>isShown</key>
@@ -54,11 +44,6 @@
 			<key>isShown</key>
 			<false/>
 		</dict>
-		<key>IDZSwiftCommonCrypto.xcscheme</key>
-		<dict>
-			<key>isShown</key>
-			<false/>
-		</dict>
 		<key>Pods-SwiftMeteor.xcscheme</key>
 		<dict>
 			<key>isShown</key>
@@ -92,6 +77,11 @@
 	</dict>
 	<key>SuppressBuildableAutocreation</key>
 	<dict>
+		<key>0969A9ACC22ECCD4B66C628AB0114A43</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
 		<key>11DFC6F885BFA9BCE8EB6EA0458ABFF8</key>
 		<dict>
 			<key>primary</key>
@@ -102,12 +92,12 @@
 			<key>primary</key>
 			<true/>
 		</dict>
-		<key>2C0514141C10E6DD400F4687FAF1D958</key>
+		<key>370BBA6E4556043A8D2903FDD5C4D000</key>
 		<dict>
 			<key>primary</key>
 			<true/>
 		</dict>
-		<key>35F6C1A6340E052B806E7CAFAB67735A</key>
+		<key>4C7A814ABA8E6CEC42C9880C4F48A8A3</key>
 		<dict>
 			<key>primary</key>
 			<true/>
@@ -122,22 +112,12 @@
 			<key>primary</key>
 			<true/>
 		</dict>
-		<key>6A5A6D99460D54275D2AA39A67C73AC7</key>
+		<key>5CAC79AEE4A0EDE1E023F5A584480499</key>
 		<dict>
 			<key>primary</key>
 			<true/>
 		</dict>
 		<key>6BB1C1403B2419F911818DA8413FDA07</key>
-		<dict>
-			<key>primary</key>
-			<true/>
-		</dict>
-		<key>8856AFC4DB85231B85297D1EEFF816AF</key>
-		<dict>
-			<key>primary</key>
-			<true/>
-		</dict>
-		<key>91EA7F837976530F9A53975F9CB05F79</key>
 		<dict>
 			<key>primary</key>
 			<true/>
@@ -152,12 +132,7 @@
 			<key>primary</key>
 			<true/>
 		</dict>
-		<key>B25474DF50658971279CADB4829DAD9F</key>
-		<dict>
-			<key>primary</key>
-			<true/>
-		</dict>
-		<key>B9C897336FE52012BB2511C6F9A2C8BD</key>
+		<key>AC9E4B7AFDAE610C7A380AE090FD07B1</key>
 		<dict>
 			<key>primary</key>
 			<true/>
@@ -167,12 +142,7 @@
 			<key>primary</key>
 			<true/>
 		</dict>
-		<key>D66F1F9B0D8BC672C8C3CDFD3BB3EED5</key>
-		<dict>
-			<key>primary</key>
-			<true/>
-		</dict>
-		<key>FAB836DCA7865B6BFA072BF92AB52E4D</key>
+		<key>DDE4BD8DBEC17D650FCBCB8F41D3DB33</key>
 		<dict>
 			<key>primary</key>
 			<true/>

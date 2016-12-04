@@ -8,32 +8,52 @@
 
 import UIKit
 import AWSS3
-import AFNetworking
+//import AFNetworking
 
 import AWSCore
-import IDZSwiftCommonCrypto
 
 
 class RVS3URLProtocol: URLProtocol {
- 
-
-    
-    
-    class func canonicalRequest(request: URLRequest) -> URLRequest {
+    override class func canonicalRequest(for request: URLRequest) -> URLRequest {
         return request
     }
-    
     override class func requestIsCacheEquivalent(_ a: URLRequest,
-                                                 to b: URLRequest) -> Bool {
+                                                to b: URLRequest) -> Bool {
         return super.requestIsCacheEquivalent(a , to: b)
     }
-    class func canInitWithRequest(request: NSURLRequest) -> Bool {
+
+    override class func canInit(with task: URLSessionTask) -> Bool {
+         print("In RVS3URLProtocol can init with task")
+        if let task = task as? URLSessionDataTask {
+            print("Have URLSessionDataTask")
+            if let host: String = task.originalRequest?.url?.host {
+                print("In RVS3Protocol.canInit(with task, Host is \(host)")
+                /*
+                if let sourceHost = RVAWSDirect.baseURL.host {
+                    print("Source Host is \(sourceHost)")
+                    if host == sourceHost {
+                        print("In RVS3URLProtocol, passed canInit with task \(host)")
+                        return true
+                    }
+                }
+ */
+            }
+            
+            return false
+        } else {
+            return false
+        }
+    }
+    
+
+    override class func canInit(with request: URLRequest) -> Bool {
         // If the host is not Amazon S3 Server, return 'NO' to indicate default handling
-        
+        print("In RVS3URLProtocol")
         if let method = request.httpMethod {
             if method == "PUT" {return false}
         }
         if let url = request.url {
+            print("&&&&&&&&&&&&&&&&&&&&&   In RVS3URLProtocol, url is \(url.absoluteString))")
             if let host = url.host {
                 if let sourceHost = RVAWSDirect.baseURL.host {
                     if host == sourceHost {
@@ -48,12 +68,13 @@ class RVS3URLProtocol: URLProtocol {
         }
         return false
     }
+ 
     override func startLoading() {
         // Extract the key from the request
         if let url = request.url {
             let path = url.path
             print("In RVS3URLProtocol, path is \(path)")
-                getFile(path: path)
+                getFile2(path: path)
                 return
         } else {
             let error = NSError(domain: "io.rendevu", code: 404, userInfo: [NSLocalizedFailureReasonErrorKey: "No url"])
@@ -68,6 +89,29 @@ class RVS3URLProtocol: URLProtocol {
             requestOperation = nil
         }
  */
+    }
+    func getFile2(path: String) {
+        RVAWSDirect.sharedInstance.download2(path: path, completionHandler: {(data: Data?, response: URLResponse?, error: Error?) in
+            if let client = self.client {
+                if let error = error {
+                    client.urlProtocol(self, didFailWithError: error)
+                } else if let response = response {
+                    if let response = response as? HTTPURLResponse {
+                        client.urlProtocol(self, didReceive: response, cacheStoragePolicy: URLCache.StoragePolicy.allowed)
+                        if response.statusCode == 200 {
+                            if let data = data {
+                                client.urlProtocol(self, didLoad: data)
+                                client.urlProtocolDidFinishLoading(self)
+                                return
+                            }
+                        }
+                        
+                    }
+                }
+                client.urlProtocolDidFinishLoading(self)
+            }
+        })
+        
     }
 //    var requestOperation: AFHTTPRequestOperation? = nil
     func getFile(path: String ) {
@@ -98,22 +142,9 @@ class RVS3URLProtocol: URLProtocol {
  */
     }
 }
-class RVAWSS3Manager: AFHTTPSessionManager {
-    private var bucket: String
-    private var region: AWSRegionType
-    private var accessKedId: String = RVAWSDirect.accessKey
-    private var secret: String = RVAWSDirect.secret
-    init(bucket: String, region: AWSRegionType) {
-        self.bucket = bucket
-        self.region = region
-        super.init(baseURL: RVAWSDirect.baseURL, sessionConfiguration: URLSessionConfiguration.default)
-    }
-    required init?(coder aDecoder: NSCoder) {
-        self.bucket = RVAWSDirect.bucket
-        self.region = RVAWSDirect.sharedInstance.S3Region
-        super.init(coder: aDecoder)
-    }
-}
+
+
+
 /*
 class RVAWSS3ManagerRequestSerializer: AFHTTPRequestSerializer {
     static let DefaultExpirationTimeInterval: TimeInterval = 60 * 60
