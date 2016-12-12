@@ -23,11 +23,11 @@ class RVS3URLProtocol: URLProtocol {
     }
 
     override class func canInit(with task: URLSessionTask) -> Bool {
-         print("In RVS3URLProtocol can init with task")
+        // print("In RVS3URLProtocol can init with task")
         if let task = task as? URLSessionDataTask {
-            print("Have URLSessionDataTask")
-            if let host: String = task.originalRequest?.url?.host {
-                print("In RVS3Protocol.canInit(with task, Host is \(host)")
+          //  print("In RVS3URLProtocl.canInit with taks, Have URLSessionDataTask")
+            if let _ = task.originalRequest?.url?.host {
+            //    print("In RVS3URLProtocol.canInit(with task, Host is \(host)")
                 /*
                 if let sourceHost = RVAWSDirect.baseURL.host {
                     print("Source Host is \(sourceHost)")

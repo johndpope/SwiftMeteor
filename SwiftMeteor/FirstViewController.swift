@@ -16,47 +16,16 @@ class FirstViewController: UIViewController {
     }
     override func viewDidLoad() {
         super.viewDidLoad()
-        let string = "\(RVAWSDirect.baseURL)/elmerfudd.jpg"
-        let _ = RVAWSDirect.sharedInstance
-        if let url = URL(string: string) {
-            print("In FirstViewController URL is \(url.absoluteString)")
-            SDWebImageManager.shared().downloadImage(with: url, options: SDWebImageOptions(rawValue: 0), progress: { (some, total) in
-                
-            }, completed: { (image, error, cache: SDImageCacheType, finished: Bool, url: URL?) in
-                if let error = error {
-                    print("FirstViewController.viewDidLoad() Error \(error)")
-                } else if finished {
-                    if let image = image {
-                        print("FirstViewController.viewDidLoad() Have image \(image.size)")
-                    } else {
-                        print("FirstViewController.viewDidLoad() No image")
-                    }
-                } else {
-                    print("FirstViewController.viewDidLoad() Not finished")
-                }
-            })
-        } else {
-            print("Failed to create URL for \(string)")
-        }
-
         Meteor.client.allowSelfSignedSSL = true // Connect to a server that users a self signed ssl certificate
         Meteor.client.logLevel = .info // Options are: .Verbose, .Debug, .Info, .Warning, .Error, .Severe, .None
 
         NotificationCenter.default.addObserver(self, selector: #selector(FirstViewController.userDidLogin), name: NSNotification.Name(rawValue: DDP_USER_DID_LOGIN), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(FirstViewController.userDidLogout), name: NSNotification.Name(rawValue: DDP_USER_DID_LOGOUT), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(FirstViewController.collectionDidChange), name: NSNotification.Name(rawValue: METEOR_COLLECTION_SET_DID_CHANGE), object: nil)
-    
-        func userDidLogin() {
-            print("The user just signed in!")
-        }
-        
-        func userDidLogout() {
-            print("The user just signed out!")
-        }
- //       Meteor.connect("wss://rnmpassword-nweintraut.c9users.io/websocket") {
+        print("Just before connect")
+        Meteor.connect("wss://rnmpassword-nweintraut.c9users.io/websocket") {
             // do something after the client connects
- //           print("Returned after connect")
-            /*
+            print("Returned after connect")
             Meteor.loginWithUsername("neil.weintraut@gmail.com", password: "password", callback: { (result, error: DDPError?) in
                 if let error = error {
                     print(error)
@@ -64,12 +33,11 @@ class FirstViewController: UIViewController {
                     print("\(result)")
                 }
             })
- */
             
-  //      }
+        }
 
-        
     }
+
     func collectionDidChange() {
         print("Collection Did Change")
     }
@@ -78,7 +46,7 @@ class FirstViewController: UIViewController {
         subscribeToTasks()
     }
     func subscribeToTasks() {
-                    _ = TaskCollection(name: "tasks")
+        _ = TaskCollection(name: "tasks")
         let handle = Meteor.subscribe("tasks") {
             // Do something when the todos subscription is ready
             print("Subscribed to Tasks")
@@ -86,7 +54,7 @@ class FirstViewController: UIViewController {
             //let task = Task(id: Meteor.client.getId(), fields: [ "text": "Some text", "username": "Elmo"])
             //tasks.insert(task)
 
-            Meteor.call("tasks.insert", params: ["Some text 2"], callback: { (result, error) in
+            Meteor.call("tasks.insert", params: ["Some text 3"], callback: { (result, error) in
                 if let error = error {
                     print("Insert error: \(error)")
                 } else if let result = result {
@@ -199,6 +167,62 @@ class TaskCollection: AbstractCollection {
             }
         })
         
+    }
+}
+extension FirstViewController {
+    func imageTest() {
+        let string = "\(RVAWS.baseURL)/elmerfudd.jpg"
+        if let url = URL(string: string) {
+            print("In FirstViewController URL is \(url.absoluteString)")
+            SDWebImageManager.shared().downloadImage(with: url, options: SDWebImageOptions(rawValue: 0), progress: { (some, total) in
+                
+            }, completed: { (image, error, cache: SDImageCacheType, finished: Bool, url: URL?) in
+                if let error = error {
+                    print("FirstViewController.viewDidLoad() Error \(error)")
+                } else if finished {
+                    if let image = image {
+                        print("FirstViewController.viewDidLoad() Have image \(image.size)")
+                    } else {
+                        print("FirstViewController.viewDidLoad() No image")
+                    }
+                } else {
+                    print("FirstViewController.viewDidLoad() Not finished")
+                }
+            })
+        } else {
+            print("Failed to create URL for \(string)")
+        }
+        let imageName = "ranch.jpg"
+        let path = "goofy/something.jpg"
+        if let image = UIImage(named: imageName) {
+            if let data = UIImageJPEGRepresentation(image, 1.0) {
+                RVAWS.sharedInstance.upload(data: data, path: path, contentType: "image/jpeg", callback: {(data, response, error) in
+                    if let error = error {
+                        print("In FirstViewController Got Error uploading image \(error)")
+                        return
+                    } else if let response = response as? HTTPURLResponse {
+                        if response.statusCode == 200 {
+                            if let _ = response.url?.absoluteString {
+                                print("In FirstViewController Successfully uploaded to path \(path)")
+                                if let url = URL(string: "https://swiftmeteor.s3-us-west-1.amazonaws.com/goofy/ranch.jpg") {
+                                    SDWebImageManager.shared().downloadImage(with: url, options: SDWebImageOptions(rawValue: 0), progress: nil, completed: { (image , error , SDImageCacheType, success, url) in
+                                        if let error = error {
+                                            print("In FirstViewController, error uploading \(path) \(error)")
+                                        } else if let image = image {
+                                            print("In FirtViewController, successfully download image \(image.size)")
+                                        } else {
+                                            print("In FirstViewController, no error, no image downloaded")
+                                        }
+                                    })
+                                    return
+                                }
+                            }
+                        }
+                    }
+                    print("In FirstViewController, uploading \(path) no error but no results")
+                })
+            }
+        }
     }
 }
 

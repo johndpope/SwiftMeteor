@@ -162,10 +162,12 @@ public class RVAWSDirect: NSObject {
                 return nil
             } else if let presignedURL = task.result as? URL  {
                 print("download presigned URL is: \(presignedURL)\n\n")
-                // let session = URLSession(configuration: URLSessionConfiguration.ephemeral, delegate: RVAWSDirect.sharedInstance, delegateQueue: OperationQueue.main)
+                //let session = URLSession(configuration: URLSessionConfiguration.ephemeral, delegate: RVAWSDirect.sharedInstance, delegateQueue: OperationQueue.main)
                 let session = URLSession.shared
                 let d = session.dataTask(with: (NSMutableURLRequest(url: presignedURL) as URLRequest), completionHandler: completionHandler)
                 d.resume()
+                
+
                 /*
                 let downloadTask = session.dataTask(with: presignedURL , completionHandler: { (data, response, error) in
                     DispatchQueue.main.async {
@@ -292,7 +294,7 @@ public class RVAWSDirect: NSObject {
     
     // http://docs.aws.amazon.com/mobile/sdkforios/developerguide/s3transfermanager.html
     // Upload in background
-    func upload0(data: Data, path: String, contentType: String, callback: @escaping (Error?, String?)-> Void ) {
+    func upload0(data: Data, path: String, contentType: String, callback: @escaping (Data? , URLResponse?  , Error?)-> Void ) {
         
         let getPresignedURLRequest = AWSS3GetPreSignedURLRequest()
         let S3BucketName = "swiftmeteor"
@@ -320,22 +322,7 @@ public class RVAWSDirect: NSObject {
                 request.setValue(fileContentTypeString, forHTTPHeaderField: "Content-Type")
                 
                 let uploatTask = URLSession.shared.uploadTask(with: request as URLRequest, from: data, completionHandler: { (data, response, error) in
-                    if let error = error {
-                        print(error)
-                       // let error = RVError(message: "In \(self.classForCoder).upload0", sourceError: error)
-                        callback(error, nil)
-                        return
-                    } else {
-                        print("Completed uploading \(path) ")
-                        if let response = response as? HTTPURLResponse {
-                            print("In \(self.classForCoder).upload, ResponseStatus: \(response.statusCode)")
-                            callback(nil, response.url?.absoluteString)
-                        }
-                        
-                        //       print(response)
-                        
-                        //self.listObjects()
-                    }
+                    callback(data, response, error)
                 })
                 
                 uploatTask.resume()
@@ -449,6 +436,7 @@ public class RVAWSDirect: NSObject {
         }
     }
     public func tryIt2() {
+        /*
         if let data = getData() {
             self.upload0(data: data, path: "upload0.jpg", contentType: "jpg", callback: { (error, result) in
                 if let error = error {
@@ -460,6 +448,7 @@ public class RVAWSDirect: NSObject {
                 }
             })
         }
+ */
     }
     public func downloadFromS3() {
         let dir = NSTemporaryDirectory()
