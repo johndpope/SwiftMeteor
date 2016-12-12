@@ -56,12 +56,41 @@ class FirstViewController: UIViewController {
             // let tasks = MeteorCollection<Task>(name: "tasks")
             //let task = Task(id: Meteor.client.getId(), fields: [ "text": "Some text", "username": "Elmo"])
             //tasks.insert(task)
-
+/*
             Meteor.call("tasks.insert", params: ["Some text 5"], callback: { (result, error) in
                 if let error = error {
                     print("Insert error: \(error)")
                 } else if let result = result {
                     print("Insert result: \(result)")
+                } else {
+                    print("No error but no result on insert")
+                }
+            })
+            */
+            
+            let fields = ["text" : "Figuring this out", "testDate":  EJSON.convertToEJSONDate(Date()) ] as [String : Any]
+            Meteor.call("tasks.insert2", params: [fields], callback: { (result, error) in
+                if let error = error {
+                    print("Insert error: \(error)")
+                } else if let result = result {
+                    print("Insert result: \(result)")
+                    if let result = result as? [String : AnyObject] {
+                        if let _id = result["_id"] {
+                            if let _id = _id as? String {
+                                Meteor.call("tasks.find", params: [_id], callback: {(result, error) in
+                                    if let error = error {
+                                        print("In retrieving task with id \(_id), error \(error)")
+                                    } else if let result = result {
+                                        print("In retrieving task with id \(result), success")
+                                    } else {
+                                        print("In retrieving task with id \(_id), no error but no result");
+                                    }
+                                })
+                            }
+                        }
+                    
+
+                    }
                 } else {
                     print("No error but no result on insert")
                 }
