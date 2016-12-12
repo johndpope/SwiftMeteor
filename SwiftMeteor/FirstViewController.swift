@@ -23,18 +23,21 @@ class FirstViewController: UIViewController {
         NotificationCenter.default.addObserver(self, selector: #selector(FirstViewController.userDidLogout), name: NSNotification.Name(rawValue: DDP_USER_DID_LOGOUT), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(FirstViewController.collectionDidChange), name: NSNotification.Name(rawValue: METEOR_COLLECTION_SET_DID_CHANGE), object: nil)
         print("Just before connect")
+        
         Meteor.connect("wss://rnmpassword-nweintraut.c9users.io/websocket") {
             // do something after the client connects
             print("Returned after connect")
+            /*
             Meteor.loginWithUsername("neil.weintraut@gmail.com", password: "password", callback: { (result, error: DDPError?) in
                 if let error = error {
                     print(error)
                 } else {
-                    print("\(result)")
+                    print("After loginWIthUsernmae \(result)")
                 }
             })
-            
+         */   
         }
+ 
 
     }
 
@@ -54,7 +57,7 @@ class FirstViewController: UIViewController {
             //let task = Task(id: Meteor.client.getId(), fields: [ "text": "Some text", "username": "Elmo"])
             //tasks.insert(task)
 
-            Meteor.call("tasks.insert", params: ["Some text 3"], callback: { (result, error) in
+            Meteor.call("tasks.insert", params: ["Some text 5"], callback: { (result, error) in
                 if let error = error {
                     print("Insert error: \(error)")
                 } else if let result = result {
