@@ -68,7 +68,7 @@ class FirstViewController: UIViewController {
             })
             */
             let task = RVTask()
-            task.text = "Using Task Object"
+            task.text = "---------- Using Task Object"
             task.image = RVImage()
             let fields = task.objects
             print(task.toString())
@@ -171,8 +171,10 @@ class TaskCollection: AbstractCollection {
             task.update(fields: fields)
             tasks[index] = task
             print("Task was changed: \(task._id) \(task.text)")
+        } else {
+            print("Task was changed but not in local array: \(id)")
         }
-        print("Task was changed but not in local array: \(id)")
+        
     }
     override public func documentWasRemoved(_ collection: String, id: String) {
         if let index = tasks.index(where: {task in return task._id == id}) {

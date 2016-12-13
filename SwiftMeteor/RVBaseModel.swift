@@ -83,6 +83,7 @@ class RVBaseModel: MeteorDocument {
         return dictionary as NSDictionary
     }
     override func update(_ fields: NSDictionary?, cleared: [String]?) {
+        print("In \(instanceType).update ] \(fields))")
         if let fields = fields {
             for (key, value) in fields {
                 if let key = key as? String {
