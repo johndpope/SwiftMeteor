@@ -17,4 +17,11 @@ class RVImage: RVBaseModel {
     override class func collectionType() -> RVModelType {
         return RVModelType.image
     }
+    override func innerUpdate(key: RVKeys, value: AnyObject?) -> Bool {
+        if super.innerUpdate(key: key, value: value) == true {
+            return true
+        } else {
+            return false
+        }
+    }
 }

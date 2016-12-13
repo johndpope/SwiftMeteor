@@ -13,5 +13,5 @@ enum RVModelType: String  {
     case baseModel = "baseModel"
     case userProfile = "userProfile"
     case image = "image"
-    case task = "task"
+    case task = "tasks"
 }

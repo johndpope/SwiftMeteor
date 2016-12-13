@@ -17,7 +17,7 @@ class RVBaseModel: MeteorDocument {
         }
     }
     static var noID = "No_ID"
-    var noID: Bool = true
+  //  var noID: Bool = true
     var objects = [String : AnyObject]()
     var dirties = [String : AnyObject]()
     var instanceType: String {
@@ -45,8 +45,8 @@ class RVBaseModel: MeteorDocument {
         }
     }
     init() {
-        super.init(_id: RVBaseModel.noID)
-        self.noID = true
+        super.init(_id: Meteor.client.getId())
+        //self.noID = true
         let me = type(of: self)
         self.collection = me.collectionType()
         self.modelType = self.collection
@@ -56,7 +56,8 @@ class RVBaseModel: MeteorDocument {
         if let _id = objects[RVKeys._id.rawValue] as? String {
             super.init(_id: _id)
         } else {
-            self.noID = true
+            print("Error.......... \(type(of: self)).init(objections no ID provided")
+            //self.noID = true
             super.init(_id: RVBaseModel.noID)
         }
         let me = type(of: self)
@@ -83,12 +84,14 @@ class RVBaseModel: MeteorDocument {
         return dictionary as NSDictionary
     }
     override func update(_ fields: NSDictionary?, cleared: [String]?) {
-        print("In \(instanceType).update ] \(fields))")
         if let fields = fields {
             for (key, value) in fields {
                 if let key = key as? String {
                     if let key = RVKeys(rawValue: key) {
-                        let _ = innerUpdate(key: key, value: value as AnyObject?)
+                        if !innerUpdate(key: key, value: value as AnyObject?) {
+                            print("In \(instanceType).update, failed updating key: \(key) with value: \(value)")
+                        }
+
                     } else {
                         print("Erroneous field \(key) in updating a model")
                     }
@@ -106,7 +109,10 @@ class RVBaseModel: MeteorDocument {
     func innerUpdate(key: RVKeys, value: AnyObject?) -> Bool {
         var found: Bool = true
         switch (key) {
-        case ._id, .username,.ownerId, .owner, .parentId,.title, .text, .description :
+        case ._id:
+            print("In \(instanceType).innerUpdate, attempted to update _id (with \(value)). This should not happen")
+            found = false
+        case .username,.ownerId, .owner, .parentId,.title, .text, .description :
             if let value = value as? String? {
                 updateString(key: key, value: value)
             } else {
@@ -146,7 +152,6 @@ class RVBaseModel: MeteorDocument {
                 print("In RVBaseModel.innerUpdate, value is not an Array. key: \(key), value: \(value)")
             }
         default:
-            print("In RVBaseModel.innerUpdate, no case for key: \(key.rawValue) with value: \(value)")
             found = false
         }
         return found
@@ -245,7 +250,35 @@ class RVBaseModel: MeteorDocument {
     func updateString(key: RVKeys, value: String? ) {
         updateString(key: key.rawValue, value: value)
     }
-
+    func updateBool(key: RVKeys, value: Bool?) {
+        updateBool(key: key.rawValue, value: value)
+    }
+    func updateBool(key: String, value: Bool?) {
+        if let current = objects[key] as? Bool {
+            if let value = value {
+                if current != value {
+                    objects[key] = value as AnyObject?
+                    dirties[key] = value as AnyObject?
+                } else {
+                    // same, so do nothing
+                }
+            } else {
+                // new value is nil....
+                objects[key] = NSNull()
+                dirties[key] = NSNull()
+            }
+        } else {
+            // no current
+            if let value = value {
+                objects[key] = value as AnyObject?
+                dirties[key] = value as AnyObject?
+            } else {
+                // new value is nil ....
+                objects[key] = NSNull()
+                dirties[key] = NSNull()
+            }
+        }
+    }
     func updateString(key: String, value: String?) {
         if let current = objects[key] {
             if let current = current as? String {

@@ -24,4 +24,7 @@ enum RVKeys: String {
     case `description`  = "description"
     case JSONdate       = "$date"
     case image          = "image"
+    
+    // task
+    case checked        = "checked"
 }

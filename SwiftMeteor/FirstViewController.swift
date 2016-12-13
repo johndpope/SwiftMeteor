@@ -49,7 +49,7 @@ class FirstViewController: UIViewController {
         subscribeToTasks()
     }
     func subscribeToTasks() {
-        _ = TaskCollection(name: "tasks")
+        _ = TaskCollection2(name: "tasks")
         let handle = Meteor.subscribe("tasks") {
             // Do something when the todos subscription is ready
             print("Subscribed to Tasks")
@@ -198,6 +198,55 @@ class TaskCollection: AbstractCollection {
         //client.insert(self.name, document: []) {}
         
         Meteor.call("tasks.insert", params: [task.text!], callback: { (result, error) in
+            if let error = error {
+                print("Insert error: \(error)")
+            } else if let result = result {
+                print("Insert result: \(result)")
+            } else {
+                print("No error but no result on insert")
+            }
+        })
+        
+    }
+}
+class TaskCollection2: AbstractCollection {
+    var tasks = [RVTask]()
+    override public func documentWasAdded(_ collection: String, id: String, fields: NSDictionary?) {
+        let task = (RVTask(id: id, fields: fields))
+        print("Appending task: \(task._id) \(task.text) \(task.createdAt) ")
+        tasks.append(task)
+    }
+    override public func documentWasChanged(_ collection: String, id: String, fields: NSDictionary?, cleared: [String]?) {
+        if let index = tasks.index(where: {task in return task._id == id}) {
+            let task = tasks[index]
+            task.update(fields, cleared: nil)
+            tasks[index] = task
+            print("Task was changed: \(task._id) \(task.text)")
+        } else {
+            print("Task was changed but not in local array: \(id)")
+        }
+        
+    }
+    override public func documentWasRemoved(_ collection: String, id: String) {
+        if let index = tasks.index(where: {task in return task._id == id}) {
+            tasks.remove(at: index)
+        }
+        print("Task was removed: \(id)")
+    }
+    public func insert(task: RVTask) {
+        // save the document to the tasks array
+        let id = task._id
+            if let index = tasks.index(where: {candidate in return candidate._id == id}) {
+                tasks[index] = task
+            } else {
+                tasks.append(task)
+            }
+
+        
+        // try to insert the doucment on the server
+        //client.insert(self.name, document: []) {}
+        
+        Meteor.call("tasks.insert2", params: [task.text!], callback: { (result, error) in
             if let error = error {
                 print("Insert error: \(error)")
             } else if let result = result {
