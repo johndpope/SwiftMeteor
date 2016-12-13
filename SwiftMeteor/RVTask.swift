@@ -1,20 +1,20 @@
 //
-//  RVImage.swift
+//  Task.swift
 //  SwiftMeteor
 //
 //  Created by Neil Weintraut on 12/11/16.
 //  Copyright © 2016 Neil Weintraut. All rights reserved.
 //
 
-import Foundation
+import UIKit
 
-class RVImage: RVBaseModel {
+class RVTask: RVBaseModel {
     override class var insertMethod: RVMeteorMethods {
         get {
-            return RVMeteorMethods.InsertImage
+            return RVMeteorMethods.InsertTask
         }
     }
     override class func collectionType() -> RVModelType {
-        return RVModelType.image
+       return RVModelType.task
     }
 }

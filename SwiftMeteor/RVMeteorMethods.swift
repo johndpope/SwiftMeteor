@@ -12,4 +12,5 @@ import Foundation
 enum RVMeteorMethods: String {
     case InsertBase = "bad.insert"
     case InsertImage = "images.insert"
+    case InsertTask = "tasks.insert2"
 }

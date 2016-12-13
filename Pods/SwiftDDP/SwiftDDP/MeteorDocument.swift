@@ -22,8 +22,12 @@ import Foundation
 
 open class MeteorDocument: NSObject {
     
-    var _id:String
+    public var _id:String
     
+    public init(_id: String) {
+        self._id = _id
+        super.init()
+    }
     required public init(id: String, fields: NSDictionary?) {
         self._id = id
         super.init()

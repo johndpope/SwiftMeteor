@@ -67,21 +67,27 @@ class FirstViewController: UIViewController {
                 }
             })
             */
-            
-            let fields = ["text" : "Figuring this out", "testDate":  EJSON.convertToEJSONDate(Date()) ] as [String : Any]
+            let task = RVTask()
+            task.text = "Using Task Object"
+            task.image = RVImage()
+            let fields = task.objects
+            print(task.toString())
+            //let fields = [RVKeys.text.rawValue: "Figuring this out", RVKeys.updatedAt.rawValue:  EJSON.convertToEJSONDate(Date()), RVKeys.modelType.rawValue: RVModelType.task.rawValue ] as [String : Any]
             Meteor.call("tasks.insert2", params: [fields], callback: { (result, error) in
                 if let error = error {
                     print("Insert error: \(error)")
                 } else if let result = result {
-                    print("Insert result: \(result)")
+                   // print("Insert result: \(result)")
                     if let result = result as? [String : AnyObject] {
                         if let _id = result["_id"] {
                             if let _id = _id as? String {
                                 Meteor.call("tasks.find", params: [_id], callback: {(result, error) in
                                     if let error = error {
                                         print("In retrieving task with id \(_id), error \(error)")
-                                    } else if let result = result {
-                                        print("In retrieving task with id \(result), success")
+                                    } else if let result = result as? [String: AnyObject] {
+                                        print("In retrieving task \(result)")
+                                        let task = RVTask(objects: result)
+                                        print(task.toString())
                                     } else {
                                         print("In retrieving task with id \(_id), no error but no result");
                                     }
