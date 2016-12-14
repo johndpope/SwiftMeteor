@@ -77,7 +77,7 @@ class FirstViewController: UIViewController {
                 if let error = error {
                     print("Insert error: \(error)")
                 } else if let result = result {
-                   // print("Insert result: \(result)")
+                   print("Insert result: \(result)")
                     if let result = result as? [String : AnyObject] {
                         if let _id = result["_id"] {
                             if let _id = _id as? String {
@@ -87,6 +87,16 @@ class FirstViewController: UIViewController {
                                     } else if let result = result as? [String: AnyObject] {
                                         print("In retrieving task \(result)")
                                         let task = RVTask(objects: result)
+                                        let updateDictionary = ["description": "updated description"]
+                                        Meteor.call("tasks.update", params: [task._id, updateDictionary], callback: {(result, error) in
+                                            if let error = error {
+                                                print("In updated task with id \(_id), got error \(error)")
+                                            } else if let result = result {
+                                                print("In updated task got result \(result)")
+                                            } else {
+                                                print("In updated task no error no result")
+                                            }
+                                        });
                                         print(task.toString())
                                     } else {
                                         print("In retrieving task with id \(_id), no error but no result");
@@ -219,9 +229,13 @@ class TaskCollection2: AbstractCollection {
     override public func documentWasChanged(_ collection: String, id: String, fields: NSDictionary?, cleared: [String]?) {
         if let index = tasks.index(where: {task in return task._id == id}) {
             let task = tasks[index]
-            task.update(fields, cleared: nil)
+            print("========= Fields are: ")
+            print(fields)
+            print(task.toString())
+            task.update(fields, cleared: cleared)
+            print(task.toString())
             tasks[index] = task
-            print("Task was changed: \(task._id) \(task.text)")
+            print("In TaskCollection2 Task was changed: \(task._id) \(task.text)")
         } else {
             print("Task was changed but not in local array: \(id)")
         }

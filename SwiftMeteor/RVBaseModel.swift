@@ -10,13 +10,18 @@ import UIKit
 import SwiftDDP
 
 class RVBaseModel: MeteorDocument {
-
+    
     class var insertMethod: RVMeteorMethods {
-        get {
-            return RVMeteorMethods.InsertBase
-        }
+        get { return RVMeteorMethods.InsertBase }
+    }
+    class var updateMethod: RVMeteorMethods {
+        get { return RVMeteorMethods.UpdateBase }
+    }
+    class var deleteMethod: RVMeteorMethods {
+        get { return RVMeteorMethods.DeleteBase }
     }
     static var noID = "No_ID"
+    var notSavedOnServer: Bool = false
   //  var noID: Bool = true
     var objects = [String : AnyObject]()
     var dirties = [String : AnyObject]()
@@ -46,19 +51,23 @@ class RVBaseModel: MeteorDocument {
     }
     init() {
         super.init(_id: Meteor.client.getId())
+        notSavedOnServer = true
         //self.noID = true
+        objects[RVKeys._id.rawValue] = self._id as AnyObject?
         let me = type(of: self)
         self.collection = me.collectionType()
         self.modelType = self.collection
     }
     init(objects: [String : AnyObject]) {
         self.objects = objects
+        self.dirties = [String: AnyObject]()
         if let _id = objects[RVKeys._id.rawValue] as? String {
             super.init(_id: _id)
         } else {
-            print("Error.......... \(type(of: self)).init(objections no ID provided")
+            print("Error.......... \(type(of: self)).init(objects no ID provided")
             //self.noID = true
             super.init(_id: RVBaseModel.noID)
+            self.objects[RVKeys._id.rawValue] = self._id as AnyObject?
         }
         let me = type(of: self)
         if self.collection != me.collectionType() {
@@ -429,6 +438,20 @@ class RVBaseModel: MeteorDocument {
 }
 extension RVBaseModel {
     func insert(callback: @escaping (_ error: RVError?) -> Void ) {
+        var (_, fields) = fieldsAndId
+        fields.removeValue(forKey: RVKeys._id.rawValue)
+        fields.removeValue(forKey: RVKeys.createdAt.rawValue)
+        fields.removeValue(forKey: RVKeys.updatedAt.rawValue)
+        Meteor.call(type(of: self).insertMethod.rawValue, params: [fields]) {(result, error: DDPError?) in
+            if let _ = error {
+                
+            } else if let _ = result {
+                
+            } else {
+                
+            }
+        }
+        
         objects.removeValue(forKey: RVKeys._id.rawValue)
         Meteor.call(RVMeteorMethods.InsertImage.rawValue , params: [objects]) { (result, error: DDPError? ) in
             if let error = error {
@@ -479,10 +502,15 @@ extension RVBaseModel {
         } else {
             output = "\(output)ownerId = <nil>, "
         }
-        if let image = image {
-            output = "\n\(output)\nimage = id: \(image._id), \(image.objects), "
+        if let description = regularDescription {
+            output = "\(output)\nDescription = \(description)\n"
         } else {
-            output = "\n\(output)\nimage = <no image>,"
+            output = "\(output)\nDescription < no description>\n"
+        }
+        if let image = image {
+            output = "\(output)\nimage = id: \(image._id), \(image.objects), "
+        } else {
+            output = "\(output)\nimage = <no image>,"
         }
         output = output + "\n---------------------------------------------------------------------------------\n"
         return output
