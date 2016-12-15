@@ -56,6 +56,8 @@ class FirstViewController: UIViewController {
   //      query.addAnd(queryItem: RVQueryItem(term: .createdAt, value: EJSON.convertToEJSONDate(Date()) as AnyObject, comparison: .lte))
         query.addOr(queryItem: RVQueryItem(term: .owner, value: "Goober" as AnyObject, comparison: .eq))
         query.addOr(queryItem: RVQueryItem(term: .private, value: true as AnyObject, comparison: .ne))
+        query.addProjection(projectionItem: RVProjectionItem(field: .text, include: .include))
+        query.addProjection(projectionItem: RVProjectionItem(field: .createdAt))
         let (filters, projections) = query.query()
         let handle = Meteor.subscribe("tasksWQuery", params: [filters as AnyObject, projections as AnyObject ]) {
             // Do something when the todos subscription is ready
@@ -244,7 +246,7 @@ class TaskCollection2: AbstractCollection {
         if let index = tasks.index(where: {task in return task._id == id}) {
             let task = tasks[index]
             print("========= Fields are: ")
-            print(fields)
+            print(fields as Any)
             print(task.toString())
             task.update(fields, cleared: cleared)
             print(task.toString())

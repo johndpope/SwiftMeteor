@@ -55,8 +55,9 @@ class RVQueryItem {
         return [term.rawValue : [comparison.rawValue : value ] as AnyObject ]
     }
 }
+
 class RVQuery {
-    enum commands: String {
+    enum Projection: String {
         case sort = "sort"
         case fields = "fields"
         case limit = "limit"
@@ -68,6 +69,7 @@ class RVQuery {
     var sortTerm: RVKeys        = .createdAt
     var ands    = [RVQueryItem]()
     var ors     = [RVQueryItem]()
+    var projections = [RVProjectionItem]()
     var limit   = 100
     init() {
     }
@@ -77,10 +79,21 @@ class RVQuery {
     func addOr(queryItem: RVQueryItem) {
         self.ors.append(queryItem)
     }
+    func addProjection(projectionItem:RVProjectionItem) {
+        self.projections.append(projectionItem)
+    }
     func query() -> ([String : AnyObject], [String : AnyObject]) {
         var projections = [String: AnyObject]()
-        projections[commands.sort.rawValue] = [sortTerm.rawValue : sortOrder.rawValue] as AnyObject
-        projections[commands.limit.rawValue] = self.limit as AnyObject
+        projections[Projection.sort.rawValue] = [sortTerm.rawValue : sortOrder.rawValue] as AnyObject
+        projections[Projection.limit.rawValue] = self.limit as AnyObject
+        var fields = [String : Int]()
+        for projection in self.projections {
+            let (field, include) = projection.project()
+            fields[field] = include
+        }
+        if fields.count > 0 {
+            projections[Projection.fields.rawValue] = fields as AnyObject
+        }
         var filters = [String : AnyObject]()
         var andQuery = [AnyObject]()
         for and in ands {
@@ -97,13 +110,18 @@ class RVQuery {
 }
 
 
-class RVProjection {
-    enum include: Int {
+class RVProjectionItem {
+    var field: RVKeys
+    var include: Include
+    init(field: RVKeys, include: RVProjectionItem.Include = .include) {
+        self.field = field
+        self.include = include
+    }
+    enum Include: Int {
         case include = 1
         case exclude = 0
     }
-    enum commands: String {
-        case sort = "sort"
-        case fields = "fields"
+    func project() -> (String, Int) {
+        return (self.field.rawValue, self.include.rawValue)
     }
 }
