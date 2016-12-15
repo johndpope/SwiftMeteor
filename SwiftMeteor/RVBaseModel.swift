@@ -10,65 +10,101 @@ import UIKit
 import SwiftDDP
 
 class RVBaseModel: MeteorDocument {
-    
-    class var insertMethod: RVMeteorMethods {
-        get { return RVMeteorMethods.InsertBase }
-    }
-    class var updateMethod: RVMeteorMethods {
-        get { return RVMeteorMethods.UpdateBase }
-    }
-    class var deleteMethod: RVMeteorMethods {
-        get { return RVMeteorMethods.DeleteBase }
-    }
+    class func collectionType() -> RVModelType { return RVModelType.baseModel }
+    class var insertMethod: RVMeteorMethods { get { return RVMeteorMethods.InsertBase } }
+    class var updateMethod: RVMeteorMethods { get { return RVMeteorMethods.UpdateBase } }
+    class var deleteMethod: RVMeteorMethods { get { return RVMeteorMethods.DeleteBase } }
     static var noID = "No_ID"
     var notSavedOnServer: Bool = false
-  //  var noID: Bool = true
-    var objects = [String : AnyObject]()
-    var dirties = [String : AnyObject]()
-    var instanceType: String {
-        get {
-            return String(describing: type(of: self))
+
+    var instanceType: String { get { return String(describing: type(of: self)) } }
+    var rvFields: [String : AnyObject] { get { return getRVFields(onlyDirties: false) } }
+    func getRVFields(onlyDirties: Bool) -> [String : AnyObject] {
+        var dict = [String : AnyObject]()
+        dict[RVKeys._id.rawValue] = self._id as AnyObject
+        dict[RVKeys.modelType.rawValue] = self.modelType.rawValue as AnyObject
+        self._modelType.dirty = false
+        if !onlyDirties || (onlyDirties && self._collection.dirty) {
+            dict[RVKeys.collection.rawValue] = self.collection.rawValue as AnyObject
+            self._collection.dirty = false
         }
-    }
-    var fieldsAndId: (String, [String: AnyObject]) {
-        get {
-            var dictionary = [String : AnyObject]()
-            for (key, value) in self.objects {
-                dictionary[key] = value
+        if !onlyDirties || (self._parentModelType.dirty) {
+            if let type = self.parentModelType {
+                dict[RVKeys.parentModelType.rawValue] = type.rawValue as AnyObject
+            } else {  dict[RVKeys.parentModelType.rawValue] = NSNull() }
+            self._parentModelType.dirty = false
+        }
+        if !onlyDirties || (onlyDirties && self._ownerId.dirty) {
+            if let ownerId = self.ownerId { dict[RVKeys.ownerId.rawValue] = ownerId as AnyObject
+            } else {dict[RVKeys.ownerId.rawValue] = NSNull() }
+            self._ownerId.dirty = false
+        }
+        if !onlyDirties || (onlyDirties && self._owner.dirty) {
+            if let owner = self.owner { dict[RVKeys.owner.rawValue] = owner as AnyObject}
+            else { dict[RVKeys.owner.rawValue] = NSNull()}
+            self._owner.dirty = false
+        }
+        if !onlyDirties || (onlyDirties && self._username.dirty) {
+            if let username = self.username { dict[RVKeys.owner.rawValue] = username as AnyObject }
+            else { dict[RVKeys.username.rawValue] = NSNull() }
+            self._username.dirty = false
+        }
+        if !onlyDirties || (onlyDirties && self._title.dirty) {
+            if let title = self.title { dict[RVKeys.title.rawValue] = title as AnyObject }
+            else { dict[RVKeys.title.rawValue] = NSNull() }
+            self._title.dirty = false
+        }
+        if !onlyDirties || (onlyDirties && self._text.dirty) {
+            if let text = self.text { dict[RVKeys.text.rawValue] = text as AnyObject }
+            else { dict[RVKeys.text.rawValue] = NSNull() }
+            self._text.dirty = false
+        }
+        if !onlyDirties || (onlyDirties && self._regularDescription.dirty) {
+            if let regularDescription = self.regularDescription { dict[RVKeys.description.rawValue] = regularDescription as AnyObject }
+            else { dict[RVKeys.description.rawValue] = NSNull() }
+            self._regularDescription.dirty = false
+        }
+        if !onlyDirties || (onlyDirties && self._parentId.dirty) {
+            if let parentId = self.parentId { dict[RVKeys.parentId.rawValue] = parentId as AnyObject }
+            else { dict[RVKeys.parentId.rawValue] = NSNull() }
+            self._parentId.dirty = false
+        }
+        if !onlyDirties {
+            if let createdAt = self.createdAt { dict[RVKeys.createdAt.rawValue] = EJSON.convertToEJSONDate(createdAt) as AnyObject }
+        }
+        self._createdAt.dirty = false
+        if !onlyDirties {
+            if let updatedAt = self.updatedAt { dict[RVKeys.updatedAt.rawValue] = EJSON.convertToEJSONDate(updatedAt) as AnyObject }
+        }
+        self._updatedAt.dirty = false
+        self._updatedAt.dirty = false
+        if !onlyDirties || (onlyDirties && self._image.dirty) {
+            if let image = self.image {
+                dict[RVKeys.image.rawValue] = image.rvFields as AnyObject
+            } else {
+                dict[RVKeys.image.rawValue] = NSNull()
             }
-            return (self._id, dictionary)
+            self._image.dirty = false
         }
+        return dict
     }
-    var fieldsWithId: [String : AnyObject] {
-        get {
-            var dictionary = [String : AnyObject]()
-            for (key, value) in self.objects {
-                dictionary[key] = value
-            }
-            dictionary[RVKeys._id.rawValue] = self._id as AnyObject?
-            return dictionary
-        }
-    }
+    var dirties: [String: AnyObject] { get { return getRVFields(onlyDirties: true)} }
+
     init() {
         super.init(_id: Meteor.client.getId())
         notSavedOnServer = true
-        //self.noID = true
-        objects[RVKeys._id.rawValue] = self._id as AnyObject?
         let me = type(of: self)
         self.collection = me.collectionType()
         self.modelType = self.collection
     }
     init(objects: [String : AnyObject]) {
-        self.objects = objects
-        self.dirties = [String: AnyObject]()
-        if let _id = objects[RVKeys._id.rawValue] as? String {
-            super.init(_id: _id)
+        var _id = RVBaseModel.noID
+        if let actualId = objects[RVKeys._id.rawValue] as? String { _id = actualId
         } else {
             print("Error.......... \(type(of: self)).init(objects no ID provided")
-            //self.noID = true
-            super.init(_id: RVBaseModel.noID)
-            self.objects[RVKeys._id.rawValue] = self._id as AnyObject?
         }
+        super.init(_id: _id)
+        self.update(objects as NSDictionary, cleared: nil)
         let me = type(of: self)
         if self.collection != me.collectionType() {
             self.collection = me.collectionType()
@@ -78,32 +114,25 @@ class RVBaseModel: MeteorDocument {
     
     required init(id: String, fields: NSDictionary?) {
         super.init(_id: id)
-        if let fields = fields as? [String: AnyObject] {
-            self.objects = fields
+        if let fields = fields {
+            self.update(fields, cleared: nil)
         } else {
             print("Error initializing \(type(of: self)) fields did not cast as [String : AnyObject]")
         }
-        print(toString())
     }
-    override func fields() -> NSDictionary {
-        var (id, dictionary) = fieldsAndId
-        if (id != RVBaseModel.noID) {
-            dictionary[RVKeys._id.rawValue] = id as AnyObject?
-        }
-        return dictionary as NSDictionary
-    }
-    override func update(_ fields: NSDictionary?, cleared: [String]?) {
-        if let fields = fields {
-            for (key, value) in fields {
-                if let key = key as? String {
-                    if let key = RVKeys(rawValue: key) {
-                        if !innerUpdate(key: key, value: value as AnyObject?) {
-                            print("In \(instanceType).update, failed updating key: \(key) with value: \(value)")
-                        }
 
-                    } else {
-                        print("Erroneous field \(key) in updating a model")
+    override func update(_ fields: NSDictionary?, cleared: [String]?) {
+        if let fields = fields as? [String : AnyObject] {
+            for (key, value) in fields {
+                if let key = RVKeys(rawValue: key) {
+                   // print("In RVBaseModel.update \(key) to \(value)")
+                   // if let value = value as? String { print("Value is a string: \(value)") }
+                   // else { print("Value is not a string \(String(describing: value))") }
+                    if !innerUpdate(key: key, value: value as AnyObject?) {
+                        print("In \(instanceType).update, failed updating key: \(key) with value: \(value)")
                     }
+                } else {
+                    print("Erroneous field \(key) in updating a model")
                 }
             }
         }
@@ -119,308 +148,213 @@ class RVBaseModel: MeteorDocument {
         var found: Bool = true
         switch (key) {
         case ._id:
-            print("In \(instanceType).innerUpdate, attempted to update _id (with \(value)). This should not happen")
-            found = false
-        case .username,.ownerId, .owner, .parentId,.title, .text, .description :
-            if let value = value as? String? {
-                updateString(key: key, value: value)
-            } else {
-                print("In RVBaseModel.innerUpdate, value is not a String?. key: \(key), value: \(value)")
-            }
-        case .createdAt, .updatedAt:
-            if let value = value as? [String : Double] {
-                updateDateTime(key: key.rawValue, value: value)
-            } else if value == nil {
-                setToValue(key: key.rawValue, value: NSNull())
-            } else {
-                print("In RVBaseModel.innerUpdate, value is not an Array. key: \(key), value: \(value)")
-            }
-        case .collection, .modelType, .parentModelType:
-            if let value = value as? String {
-                if let type = RVModelType(rawValue: value) {
-                    if key == RVKeys.collection {
-                        self.collection = type
-                    } else if key == RVKeys.modelType {
-                        self.modelType = type
-                    } else if key == RVKeys.parentModelType {
-                        self.parentModelType = type
-                    }
-                } else {
-                    
+            found = true
+            //print("In \(instanceType).innerUpdate, attempted to update _id (with \(value)). This should not happen")
+            //found = false
+        case .username:
+            let _ = self._username.updateString(newValue: value)
+        case .ownerId:
+            let _ = self._ownerId.updateString(newValue: value)
+        case .owner:
+            let _ = self._owner.updateString(newValue: value)
+        case .parentId:
+            let _ = self._parentId.updateString(newValue: value)
+        case .title:
+            let _ = self._title.updateString(newValue: value)
+        case .text:
+            let _ = self._text.updateString(newValue: value)
+        case .description:
+            let _ = self._regularDescription.updateString(newValue: value)
+        case .createdAt:
+         //   print("Have Created at \(value)")
+            let _ = self._createdAt.updateDateArray(newValue: value)
+        case .updatedAt:
+            let _ = self._updatedAt.updateDateArray(newValue: value)
+        case .collection:
+            if let rawValue = value as? String {
+                if let _ = RVModelType(rawValue: rawValue) {
+                    let _ = self._collection.updateString(newValue: value)
                 }
-            } else {
-                
+            }
+        case .modelType:
+            if let rawValue = value as? String {
+                if let _ = RVModelType(rawValue: rawValue) {
+                    let _ = self._modelType.updateString(newValue: value)
+                }
+            }
+        case .parentModelType:
+            if let rawValue = value as? String {
+                if let _ = RVModelType(rawValue: rawValue) {
+                    let _ = self._modelType.updateString(newValue: value)
+                }
             }
         case .image:
             if let value = value as? [String : AnyObject] {
-                let image = RVImage(objects: value)
-                self.image = image
-            } else if value == nil {
-                setToValue(key: key.rawValue, value: NSNull())
+               // let image = RVImage(objects: value)
+               // print("Image source array = \(value)")
+               // print("Image fields array = \(image.rvFields)")
+                //self.image = image
+                let _ = self._image.updateArray(newValue: value as AnyObject)
+            } else if let value = value {
+                if value as! NSObject == NSNull() {
+                    let _ = self._image.updateArray(newValue: NSNull())
+                } else {
+                    print("In RVBaseModel.innerUpdate, value is not an Array. key: \(key), value: \(value)")
+                }
             } else {
-                print("In RVBaseModel.innerUpdate, value is not an Array. key: \(key), value: \(value)")
+                let _ = self._image.updateArray(newValue: NSNull())
             }
         default:
             found = false
         }
         return found
     }
-    class func collectionType() -> RVModelType {
-        return RVModelType.baseModel
-    }
-    private func scrubbedFields(fields: [RVKeys: AnyObject]) -> [String: AnyObject] {
-        var scrubbed = [String : AnyObject ]()
-        for (key, value) in fields {
-            if let value = value as? [RVKeys: AnyObject] {
-                let scrubbedValue = self.scrubbedFields(fields: value) as AnyObject
-                scrubbed[key.rawValue] = scrubbedValue
-            } else {
-                scrubbed[key.rawValue] = value
-            }
-        }
-        return scrubbed
-    }
 
+    var _modelType = RVRecord(fieldName: RVKeys.modelType)
     var modelType: RVModelType {
         get {
-            if let rawValue = getString(key: RVKeys.modelType) {
-                if let modelType = RVModelType(rawValue: rawValue) { return modelType }
-                return RVModelType.unknownModel
-            } else {
-                return RVModelType.unknownModel
-            }
-        }
-        set { updateString(key: RVKeys.modelType, value: newValue.rawValue) }
-    }
-    var ownerId: String? {
-        get { return getString(key: RVKeys.ownerId) }
-        set { updateString(key: RVKeys.ownerId, value: newValue) }
-    }
-    var owner: String? {
-        get { return getString(key: RVKeys.owner) }
-        set { updateString(key: RVKeys.owner, value: newValue) }
-    }
-    var parentId: String? {
-        get { return getString(key: RVKeys.parentId) }
-        set { updateString(key: RVKeys.parentId, value: newValue) }
-    }
-    var parentModelType: RVModelType {
-        get {
-            if let rawValue = getString(key: RVKeys.parentModelType) {
-                if let modelType = RVModelType(rawValue: rawValue) { return modelType }
-                return RVModelType.unknownModel
-            } else {
-                return RVModelType.unknownModel
-            }
-        }
-        set { updateString(key: RVKeys.parentModelType, value: newValue.rawValue) }
-    }
-    var collection: RVModelType {
-        get {
-            if let rawValue = objects[RVKeys.collection.rawValue] as? String {
-                if let type = RVModelType(rawValue: rawValue) {
-                    return type
+            if let rawValue = _modelType.value as? String {
+                if let modelType = RVModelType(rawValue: rawValue) {
+                    return modelType
                 }
             }
             return RVModelType.unknownModel
         }
-        set { updateString(key: RVKeys.collection, value: newValue.rawValue) }
+        set {
+            let _ = _modelType.changeString(newValue: newValue.rawValue as AnyObject)
+        }
     }
+    var _ownerId = RVRecord(fieldName: RVKeys.ownerId)
+    var ownerId: String? {
+        get {
+            if let string = _ownerId.value as? String { return string}
+            return nil
+        }
+        set { let _ = _ownerId.changeString(newValue: newValue as AnyObject)}
+    }
+    var _owner = RVRecord(fieldName: RVKeys.owner)
+    var owner: String? {
+        get {
+            if let string = _owner.value as? String { return string}
+            return nil
+        }
+        set { let _ = _owner.changeString(newValue: newValue as AnyObject)}
+    }
+    var _parentId = RVRecord(fieldName: RVKeys.parentId)
+    var parentId: String? {
+        get {
+            if let string = _parentId.value as? String { return string}
+            return nil
+        }
+        set { let _ = _parentId.changeString(newValue: newValue as AnyObject)}
+    }
+    var _parentModelType = RVRecord(fieldName: RVKeys.parentModelType)
+    var parentModelType: RVModelType? {
+        get {
+            if let rawValue = _parentModelType.value as? String {
+                if let modelType = RVModelType(rawValue: rawValue) {
+                    return modelType
+                }
+            }
+            return nil
+        }
+        set {
+            if let newValue = newValue {
+                let _ = _parentModelType.changeString(newValue: newValue.rawValue as AnyObject)
+            } else {
+                let _ = _parentModelType.changeString(newValue: nil)
+            }
+            
+        }
+    }
+    var _collection = RVRecord(fieldName: RVKeys.collection)
+    var collection: RVModelType {
+        get {
+            if let rawValue = _collection.value as? String {
+                if let modelType = RVModelType(rawValue: rawValue) {
+                    return modelType
+                }
+            }
+            return RVModelType.unknownModel
+        }
+        set {
+            let _ = _collection.changeString(newValue: newValue.rawValue as AnyObject)
+        }
+    }
+    var _title = RVRecord(fieldName: RVKeys.title)
     var title: String? {
-        get { return getString(key: RVKeys.title) }
-        set { updateString(key: RVKeys.title, value: newValue) }
+        get {
+            if let string = _title.value as? String { return string}
+            return nil
+        }
+        set { let _ = _title.changeString(newValue: newValue as AnyObject)}
     }
+    var _text = RVRecord(fieldName: RVKeys.text)
     var text: String? {
-        get { return getString(key: RVKeys.text) }
-        set { updateString(key: RVKeys.text, value: newValue) }
+        get {
+            if let string = _text.value as? String { return string}
+            return nil
+        }
+        set { let _ = _text.changeString(newValue: newValue as AnyObject)}
     }
+    var _regularDescription = RVRecord(fieldName: RVKeys.description)
     var regularDescription: String? {
-        get { return getString(key: RVKeys.description) }
-        set { updateString(key: RVKeys.description, value: newValue) }
+        get {
+            if let string = _regularDescription.value as? String { return string}
+            return nil
+        }
+        set { let _ = _regularDescription.changeString(newValue: newValue as AnyObject)}
     }
+    var _username = RVRecord(fieldName: RVKeys.username)
     var username: String? {
-        get { return getString(key: RVKeys.username) }
-        set { updateString(key: RVKeys.username, value: newValue) }
-    }
-    func getString(key: RVKeys) -> String? {
-        if let value = objects[key.rawValue] as? String { return value }
-        else { return nil }
-    }
-    func setToNSNull(key: String) {
-        objects[key] = NSNull()
-        dirties[key] = NSNull()
-        ///super.update(nil, cleared: [key])
-    }
-    func setToValue(key: String, value: AnyObject) {
-        objects[key] = value
-        dirties[key] = value
-       // super.update([key: value], cleared: nil)
-    }
-    func updateString(key: RVKeys, value: String? ) {
-        updateString(key: key.rawValue, value: value)
-    }
-    func updateBool(key: RVKeys, value: Bool?) {
-        updateBool(key: key.rawValue, value: value)
-    }
-    func updateBool(key: String, value: Bool?) {
-        if let current = objects[key] as? Bool {
-            if let value = value {
-                if current != value {
-                    objects[key] = value as AnyObject?
-                    dirties[key] = value as AnyObject?
-                } else {
-                    // same, so do nothing
-                }
-            } else {
-                // new value is nil....
-                objects[key] = NSNull()
-                dirties[key] = NSNull()
-            }
-        } else {
-            // no current
-            if let value = value {
-                objects[key] = value as AnyObject?
-                dirties[key] = value as AnyObject?
-            } else {
-                // new value is nil ....
-                objects[key] = NSNull()
-                dirties[key] = NSNull()
-            }
+        get {
+            if let string = _username.value as? String { return string}
+            return nil
         }
+        set { let _ = _username.changeString(newValue: newValue as AnyObject)}
     }
-    func updateString(key: String, value: String?) {
-        if let current = objects[key] {
-            if let current = current as? String {
-                // There is a current value and that value is a String
-                if let value = value {
-                    if current == value {
-                        // do nothing
-                    } else {
-                        // value exists and not equal to current
-                        setToValue(key: key, value: value as AnyObject )
-                    }
-                } else {
-                    // new Value is nil
-                    setToNSNull(key: key)
-                }
-            } else {
-                // Current Value assumed to be NSNull
-                if let value = value {
-                    setToValue(key: key, value: value as AnyObject)
-                } else {
-                    setToNSNull(key: key)
-                }
-            }
-        } else {
-            // No current value so can just update
-            if let value = value {
-                setToValue(key: key, value: value as AnyObject)
-            } else {
-                setToNSNull(key: key)
-            }
-        }
-    }
-    func updateNumber(key: String, value: NSNumber?) {
-        print("In updateNumber: \(key) \(value)")
-        if let current = objects[key] {
-            if let current = current as? NSNumber {
-                // There is a current value and that value is a Number
-                if let value = value {
-                    if current == value {
-                        // do nothing
-                    } else {
-                        // value exists and not equal to current
-                        setToValue(key: key, value: value as AnyObject )
-                    }
-                } else {
-                    // new Value is nil
-                    setToNSNull(key: key)
-                }
-            } else {
-                // Current Value assumed to be NSNull
-                if let value = value {
-                    setToValue(key: key, value: value as AnyObject)
-                } else {
-                    setToNSNull(key: key)
-                }
-            }
-        } else {
-            // No current value so can just update
-            if let value = value {
-                setToValue(key: key, value: value as AnyObject)
-            } else {
-                setToNSNull(key: key)
-            }
-        }
-    }
-    func updateDateTime(key: String, value: [String: Double]) {
-        if let current = objects[key] {
-            if let current = current as? [String : Double] {
-                // There is a current value and that value is an Array
-                if let currentNumber = current[RVKeys.JSONdate.rawValue] {
-                    if let newValue = value[RVKeys.JSONdate.rawValue] {
-                        if currentNumber == newValue {
-                            // do nothing
-                        } else {
-                            setToValue(key: key, value: value as AnyObject )
-                        }
-                    } else {
-                        // wrong submission
-                        print("RVBaseModel Attempted to update a date that isn't a NSNumber")
-                    }
-                } else {
-                    setToValue(key: key, value: value as AnyObject)
-                }
-            } else {
-                // Current Value assumed to be NSNull
-                setToValue(key: key, value: value as AnyObject)
-            }
-        } else {
-            // No current value so can just update
-            setToValue(key: key, value: value as AnyObject)
-        }
-    }
-    
-    func setArray(key: String, value: [String: AnyObject]? ) {
-        if let value = value {
-            objects[key] = value as AnyObject
-            dirties[key] = value as AnyObject
-        } else {
-            objects[key] = NSNull()
-            dirties[key] = NSNull()
-        }
-    }
+    var _image = RVRecord(fieldName: RVKeys.image)
     var image: RVImage? {
         get {
-            if let image = objects[RVKeys.image.rawValue] as? [String: AnyObject] {
-                return RVImage(objects: image)
+            if let imageArray = _image.value as? [String : AnyObject] {
+                return RVImage(objects: imageArray)
             }
             return nil
         }
         set {
-            if let value = newValue {
-                setArray(key: RVKeys.image.rawValue, value: value.objects )
+            if let image = newValue {
+                let _ = _image.changeArray(newValue: image.rvFields as AnyObject?)
             } else {
-                setArray(key: RVKeys.image.rawValue, value: nil)
+                let _ = _image.changeArray(newValue: NSNull())
             }
+            
         }
     }
+    
+    var _createdAt = RVRecord(fieldName: RVKeys.createdAt)
     var createdAt: Date? {
         get {
-            if let dateArray = objects[RVKeys.createdAt.rawValue] as? [String : NSNumber] {
+            if let dateArray = _createdAt.value as? [String: Double] {
                 if let interval = dateArray[RVKeys.JSONdate.rawValue] {
-                    return Date(timeIntervalSince1970: interval.doubleValue / 1000.0 )
+                    return Date(timeIntervalSince1970: interval / 1000.0 )
                 }
             }
             return nil
         }
         set {
-            // do nothing
+            if let date = newValue {
+                let dateArray: [String: Double] = EJSON.convertToEJSONDate(date)
+                let _ = _createdAt.changeDateArray(newValue: dateArray as AnyObject)
+            } else {
+                let _ = _createdAt.changeDateArray(newValue: NSNull())
+            }
         }
+
     }
+    var _updatedAt = RVRecord(fieldName: RVKeys.updatedAt)
     var updatedAt: Date? {
         get {
-            if let dateArray = objects[RVKeys.updatedAt.rawValue] as? [String : NSNumber] {
+            if let dateArray = _updatedAt.value as? [String: NSNumber] {
                 if let interval = dateArray[RVKeys.JSONdate.rawValue] {
                     return Date(timeIntervalSince1970: interval.doubleValue / 1000.0 )
                 }
@@ -428,18 +362,18 @@ class RVBaseModel: MeteorDocument {
             return nil
         }
         set {
-            if let dateValue = newValue {
-                updateDateTime(key: RVKeys.updatedAt.rawValue, value: EJSON.convertToEJSONDate(dateValue))
+            if let date = newValue {
+                let dateArray: [String: Double] = EJSON.convertToEJSONDate(date)
+                let _ = _updatedAt.changeDateArray(newValue: dateArray as AnyObject)
+            } else {
+                let _ = _updatedAt.changeDateArray(newValue: nil)
             }
         }
     }
-
-    
 }
 extension RVBaseModel {
     func insert(callback: @escaping (_ error: RVError?) -> Void ) {
-        var (_, fields) = fieldsAndId
-        fields.removeValue(forKey: RVKeys._id.rawValue)
+        var fields = self.rvFields
         fields.removeValue(forKey: RVKeys.createdAt.rawValue)
         fields.removeValue(forKey: RVKeys.updatedAt.rawValue)
         Meteor.call(type(of: self).insertMethod.rawValue, params: [fields]) {(result, error: DDPError?) in
@@ -452,6 +386,7 @@ extension RVBaseModel {
             }
         }
         
+        /*
         objects.removeValue(forKey: RVKeys._id.rawValue)
         Meteor.call(RVMeteorMethods.InsertImage.rawValue , params: [objects]) { (result, error: DDPError? ) in
             if let error = error {
@@ -465,6 +400,7 @@ extension RVBaseModel {
                 callback(nil)
             }
         }
+ */
     }
     func toString() -> String {
         var output = "-------------------------------\(instanceType) instance --------------------------------\n"
@@ -502,13 +438,13 @@ extension RVBaseModel {
         } else {
             output = "\(output)ownerId = <nil>, "
         }
-        if let description = regularDescription {
-            output = "\(output)\nDescription = \(description)\n"
+        if let _ = regularDescription {
+            output = "\(output)\nDescription = \(regularDescription)\n"
         } else {
             output = "\(output)\nDescription < no description>\n"
         }
         if let image = image {
-            output = "\(output)\nimage = id: \(image._id), \(image.objects), "
+            output = "\(output)\nimage = id: \(image._id), \(image.rvFields), "
         } else {
             output = "\(output)\nimage = <no image>,"
         }

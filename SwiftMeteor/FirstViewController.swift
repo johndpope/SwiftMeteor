@@ -50,7 +50,14 @@ class FirstViewController: UIViewController {
     }
     func subscribeToTasks() {
         _ = TaskCollection2(name: "tasks")
-        let handle = Meteor.subscribe("tasks") {
+        let query = RVQuery()
+        query.limit = 50
+        query.sortOrder = .descending
+  //      query.addAnd(queryItem: RVQueryItem(term: .createdAt, value: EJSON.convertToEJSONDate(Date()) as AnyObject, comparison: .lte))
+        query.addOr(queryItem: RVQueryItem(term: .owner, value: "Goober" as AnyObject, comparison: .eq))
+        query.addOr(queryItem: RVQueryItem(term: .private, value: true as AnyObject, comparison: .ne))
+        let (filters, projections) = query.query()
+        let handle = Meteor.subscribe("tasksWQuery", params: [filters as AnyObject, projections as AnyObject ]) {
             // Do something when the todos subscription is ready
             print("Subscribed to Tasks")
             // let tasks = MeteorCollection<Task>(name: "tasks")
@@ -67,17 +74,18 @@ class FirstViewController: UIViewController {
                 }
             })
             */
+            
             let task = RVTask()
-            task.text = "---------- Using Task Object"
+            task.text = "---------- New Stuff Using Task Object"
             task.image = RVImage()
-            let fields = task.objects
-            print(task.toString())
+            let fields = task.rvFields
+          //  print(task.toString())
             //let fields = [RVKeys.text.rawValue: "Figuring this out", RVKeys.updatedAt.rawValue:  EJSON.convertToEJSONDate(Date()), RVKeys.modelType.rawValue: RVModelType.task.rawValue ] as [String : Any]
             Meteor.call("tasks.insert2", params: [fields], callback: { (result, error) in
                 if let error = error {
                     print("Insert error: \(error)")
                 } else if let result = result {
-                   print("Insert result: \(result)")
+                 //  print("Insert result: \(result)")
                     if let result = result as? [String : AnyObject] {
                         if let _id = result["_id"] {
                             if let _id = _id as? String {
@@ -85,14 +93,14 @@ class FirstViewController: UIViewController {
                                     if let error = error {
                                         print("In retrieving task with id \(_id), error \(error)")
                                     } else if let result = result as? [String: AnyObject] {
-                                        print("In retrieving task \(result)")
+                                 //       print("In retrieving task \(result)")
                                         let task = RVTask(objects: result)
                                         let updateDictionary = ["description": "updated description"]
                                         Meteor.call("tasks.update", params: [task._id, updateDictionary], callback: {(result, error) in
                                             if let error = error {
                                                 print("In updated task with id \(_id), got error \(error)")
                                             } else if let result = result {
-                                                print("In updated task got result \(result)")
+                                               // print("In updated task got result \(result)")
                                             } else {
                                                 print("In updated task no error no result")
                                             }
@@ -111,6 +119,7 @@ class FirstViewController: UIViewController {
                     print("No error but no result on insert")
                 }
             })
+ 
             
         }
         print("Handle is: \(handle)")
@@ -170,9 +179,12 @@ struct TaskStruct {
 }
 class TaskCollection: AbstractCollection {
     var tasks = [TaskStruct]()
+    var count = 0
     override public func documentWasAdded(_ collection: String, id: String, fields: NSDictionary?) {
         let task = (TaskStruct(id: id, fields: fields))
-        print("Appending task: \(task._id) \(task.text) \(task.createdAt) ")
+        
+        print("\(count)  Appending task: \(task._id) \(task.text) \(task.createdAt) ")
+        count = count + 1
         tasks.append(task)
     }
     override public func documentWasChanged(_ collection: String, id: String, fields: NSDictionary?, cleared: [String]?) {
@@ -221,9 +233,11 @@ class TaskCollection: AbstractCollection {
 }
 class TaskCollection2: AbstractCollection {
     var tasks = [RVTask]()
+    var count = 0
     override public func documentWasAdded(_ collection: String, id: String, fields: NSDictionary?) {
         let task = (RVTask(id: id, fields: fields))
-        print("Appending task: \(task._id) \(task.text) \(task.createdAt) ")
+        count = count + 1
+        print("\(count)  Appending task: \(task._id) \(task.text) \(task.createdAt) ")
         tasks.append(task)
     }
     override public func documentWasChanged(_ collection: String, id: String, fields: NSDictionary?, cleared: [String]?) {

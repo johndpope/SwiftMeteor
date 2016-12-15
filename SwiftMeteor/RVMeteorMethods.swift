@@ -15,4 +15,6 @@ enum RVMeteorMethods: String {
     case DeleteBase = "base.delete"
     case InsertImage = "images.insert"
     case InsertTask = "tasks.insert2"
+    case UpdateTask = "tasks.update"
+    case DeleteTask = "tasks.delete"
 }
