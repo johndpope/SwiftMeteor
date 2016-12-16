@@ -27,4 +27,11 @@ enum RVKeys: String {
     
     // task
     case checked        = "checked"
+    
+    // imagme
+    case height         = "height"
+    case width          = "width"
+    case bytes          = "bytes"
+    case urlString      = "urlString"
+    case filetype       = "filetype"
 }

@@ -51,6 +51,8 @@ class FirstViewController: UIViewController {
     }
     func insertATask() {
         let task = RVTask()
+
+        insertAnImage(parent: task)
         task.text = "---------- Thursday evening 2"
         task.regularDescription = "As regular description of something"
         task.title = "Original Title"
@@ -59,8 +61,6 @@ class FirstViewController: UIViewController {
             if let error = error {
                 error.printError()
             } else {
-
-                    
                 print("$$$\nIn \(self.instanceType).insertATask \(task._id), no error\n $$$")
                 task.regularDescription = "A different description"
                 task.text = "A different Text Entry"
@@ -82,7 +82,20 @@ class FirstViewController: UIViewController {
                         })
                     }
                 })
+ 
             }
+        }
+    }
+    func insertAnImage(parent: RVBaseModel?) {
+        let imageName = "ranch.jpg"
+        let path = "thursday/"
+        let filename = "hope"
+        if let uiImage = UIImage(named: imageName) {
+            RVImage.saveImage(image: uiImage, path: path, filename: filename, filetype: RVFileType.jpeg, parent: parent, params: [RVKeys.title.rawValue: "Caption for image" as AnyObject], callback: { (rvImage, error ) in
+                if let error = error {
+                    error.printError()
+                }
+            })
         }
     }
     func documentListener(notification: Notification) {

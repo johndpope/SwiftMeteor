@@ -21,7 +21,7 @@ class RVBaseModel: MeteorDocument {
     var listeners = [String]()
     var instanceType: String { get { return String(describing: type(of: self)) } }
     var rvFields: [String : AnyObject] { get { return getRVFields(onlyDirties: false) } }
-
+    var initializing: Bool = true
     func getRVFields(onlyDirties: Bool) -> [String : AnyObject] {
         var dict = [String : AnyObject]()
         dict[RVKeys._id.rawValue] = self._id as AnyObject
@@ -97,6 +97,7 @@ class RVBaseModel: MeteorDocument {
 
     init() {
         super.init(_id: Meteor.client.getId())
+        initializeProperties()
         notSavedOnServer = true
         let me = type(of: self)
         self.collection = me.collectionType()
@@ -104,6 +105,7 @@ class RVBaseModel: MeteorDocument {
         setupCallback()
     }
     init(fields: [String : AnyObject]) {
+        self.initializing = false
         var _id = RVBaseModel.noID
         if let actualId = fields[RVKeys._id.rawValue] as? String { _id = actualId
         } else {
@@ -121,12 +123,16 @@ class RVBaseModel: MeteorDocument {
     
     required init(id: String, fields: NSDictionary?) {
         super.init(_id: id)
+        self.initializing = false
         if let fields = fields {
             self.update(fields, cleared: nil)
         } else {
             print("Error initializing \(type(of: self)) fields did not cast as [String : AnyObject]")
         }
         setupCallback()
+    }
+    func initializeProperties() {
+        
     }
     func setupCallback() {
         self._username.model = self
@@ -419,6 +425,7 @@ extension RVBaseModel {
                 let rvError = RVError(message: "In \(self.instanceType).insert \(#line) got DDPError for id: \(self._id)", sourceError: error)
                 callback(rvError)
             } else if let _ = result {
+                self.initializing = false
                 callback(nil)
             } else {
                 print("In \(self.instanceType).insert \(#line), no error but no result. id = \(self._id)")
@@ -504,6 +511,7 @@ extension RVBaseModel {
         } else {
             output = "\(output)\nDescription < no description>\n"
         }
+        output = output + additionalToString()
         if let image = image {
             output = "\(output)image = id: \(image._id), \(image.rvFields), "
         } else {
@@ -512,8 +520,12 @@ extension RVBaseModel {
         output = output + "\n---------------------------------------------------------------------------------\n"
         return output
     }
+    func additionalToString() -> String {
+        return ""
+    }
     func valueChanged(field: RVKeys, value: AnyObject?) {
        // print("IN value changed ------------------------")
+        if initializing { return }
         self.update { (error) in
             if let error = error {
                 print("In \(self.instanceType).valueChanged error changingn \(field.rawValue) \(value). \n\(error)")

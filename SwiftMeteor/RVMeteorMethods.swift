@@ -16,9 +16,13 @@ enum RVMeteorMethods: String {
     case FindBase = "base.findInstance"
     case DeleteBase = "base.delete"
     case InsertImage = "images.insert"
+    case UpdateImage = "images.update"
+    case DeleteImage = "images.delete"
+    case FindImage  = "images.find"
     case QueryTask  = "tasksWQuery"
     case InsertTask = "tasks.insert2"
     case UpdateTask = "tasks.update"
     case DeleteTask = "tasks.remove"
     case FindTask   = "tasks.find"
+    case GetUserId = "userId"
 }

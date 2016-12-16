@@ -45,6 +45,15 @@ class RVTask: RVBaseModel {
             }
         }
     }
+    override func getRVFields(onlyDirties: Bool) -> [String : AnyObject] {
+        var dict = super.getRVFields(onlyDirties: onlyDirties)
+        if !onlyDirties || (onlyDirties && self._checked.dirty) {
+            if let checked = self.checked { dict[RVKeys.checked.rawValue] = checked as AnyObject }
+            else { dict[RVKeys.checked.rawValue] = NSNull() }
+            self._checked.dirty = false
+        }
+        return dict
+    }
     override func setupCallback() {
         super.setupCallback()
         self._checked.model = self
