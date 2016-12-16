@@ -94,6 +94,28 @@ class FirstViewController: UIViewController {
             RVImage.saveImage(image: uiImage, path: path, filename: filename, filetype: RVFileType.jpeg, parent: parent, params: [RVKeys.title.rawValue: "Caption for image" as AnyObject], callback: { (rvImage, error ) in
                 if let error = error {
                     error.printError()
+                } else if let rvImage = rvImage {
+                    print(rvImage.toString())
+                    if let urlString = rvImage.urlString {
+                        if let url = URL(string: urlString) {
+                            SDWebImageManager.shared().downloadImage(with: url, options: SDWebImageOptions(rawValue: 0), progress: nil, completed: { (image , error , SDImageCacheType, success, url) in
+                                if let error = error {
+                                    print("In FirstViewController, error uploading \(path) \(error)")
+                                } else if let image = image {
+                                    print("In FirtViewController, successfully download image \(image.size)")
+                                } else {
+                                    print("In FirstViewController, no error, no image downloaded")
+                                }
+                            })
+                        } else {
+                            print("In FirstViewController.insertAnImage, got RVImage urlString failed to create URL")
+                        }
+                    } else {
+                         print("In FirstViewController.insertAnImage, got RVImage but no urlString")
+                    }
+
+                } else {
+                    print("In FirstViewController.insertAnImage, no RVImage returned")
                 }
             })
         }

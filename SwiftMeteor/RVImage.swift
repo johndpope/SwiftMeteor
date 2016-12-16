@@ -201,31 +201,19 @@ extension RVImage {
                                             error.append(message: "In RVImage.saveImage, got error creating RVImage record, id: \(rvImage._id)")
                                             callback(nil, error)
                                         } else {
-                                            callback(rvImage, nil)
                                             RVImage.retrieveInstance(id: rvImage._id, callback: { (model , error) in
                                                 if let error = error {
-                                                    error.printError()
-                                                } else if let model = model {
-                                                    print(model.toString())
+                                                    error.append(message: "Error in RVImage.saveImage")
+                                                    callback(nil , error)
+                                                } else if let rvImage = model as? RVImage {
+                                                    callback(rvImage, nil)
                                                 } else {
-                                                    print("In RVImage.saveImage, failed to retrieve model. No Error")
+                                                    let rvError = RVError(message: "In RVImage.saveImage, saved image but failed to retrieve rvImage record with id \(rvImage._id)")
+                                                    callback(nil , rvError)
                                                 }
                                             })
                                         }
                                     })
-                                    /*
-                                     if let url = URL(string: urlString) {
-                                     SDWebImageManager.shared().downloadImage(with: url, options: SDWebImageOptions(rawValue: 0), progress: nil, completed: { (image , error , SDImageCacheType, success, url) in
-                                     if let error = error {
-                                     print("In FirstViewController, error uploading \(path) \(error)")
-                                     } else if let image = image {
-                                     print("In FirtViewController, successfully download image \(image.size)")
-                                     } else {
-                                     print("In FirstViewController, no error, no image downloaded")
-                                     }
-                                     })
-                                     }
-                                     */
                                 }
                             }
                         }
