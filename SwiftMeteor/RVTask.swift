@@ -13,7 +13,8 @@ class RVTask: RVBaseModel {
     override class var insertMethod: RVMeteorMethods { get { return RVMeteorMethods.InsertTask } }
     override class var updateMethod: RVMeteorMethods { get { return RVMeteorMethods.UpdateTask } }
     override class var deleteMethod: RVMeteorMethods { get { return RVMeteorMethods.DeleteTask } }
-
+    override class var findMethod: RVMeteorMethods { get { return RVMeteorMethods.FindTask}}
+    override class func createInstance(fields: [String : AnyObject])-> RVBaseModel { return RVTask(fields: fields) }
     var _checked = RVRecord(fieldName: RVKeys.checked)
     var checked: Bool? {
         get {
@@ -43,5 +44,9 @@ class RVTask: RVBaseModel {
                 return false
             }
         }
+    }
+    override func setupCallback() {
+        super.setupCallback()
+        self._checked.model = self
     }
 }

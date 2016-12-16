@@ -14,21 +14,26 @@ class RVBaseModel: MeteorDocument {
     class var insertMethod: RVMeteorMethods { get { return RVMeteorMethods.InsertBase } }
     class var updateMethod: RVMeteorMethods { get { return RVMeteorMethods.UpdateBase } }
     class var deleteMethod: RVMeteorMethods { get { return RVMeteorMethods.DeleteBase } }
+    class var findMethod: RVMeteorMethods { get { return RVMeteorMethods.FindBase}}
+    class func createInstance(fields: [String : AnyObject])-> RVBaseModel { return RVBaseModel(fields: fields) }
     static var noID = "No_ID"
     var notSavedOnServer: Bool = false
-
+    var listeners = [String]()
     var instanceType: String { get { return String(describing: type(of: self)) } }
     var rvFields: [String : AnyObject] { get { return getRVFields(onlyDirties: false) } }
+
     func getRVFields(onlyDirties: Bool) -> [String : AnyObject] {
         var dict = [String : AnyObject]()
         dict[RVKeys._id.rawValue] = self._id as AnyObject
-        dict[RVKeys.modelType.rawValue] = self.modelType.rawValue as AnyObject
-        self._modelType.dirty = false
+        if !onlyDirties || (onlyDirties && self._modelType.dirty) {
+            dict[RVKeys.modelType.rawValue] = self.modelType.rawValue as AnyObject
+            self._modelType.dirty = false
+        }
         if !onlyDirties || (onlyDirties && self._collection.dirty) {
             dict[RVKeys.collection.rawValue] = self.collection.rawValue as AnyObject
             self._collection.dirty = false
         }
-        if !onlyDirties || (self._parentModelType.dirty) {
+        if !onlyDirties || (onlyDirties && self._parentModelType.dirty) {
             if let type = self.parentModelType {
                 dict[RVKeys.parentModelType.rawValue] = type.rawValue as AnyObject
             } else {  dict[RVKeys.parentModelType.rawValue] = NSNull() }
@@ -96,20 +101,22 @@ class RVBaseModel: MeteorDocument {
         let me = type(of: self)
         self.collection = me.collectionType()
         self.modelType = self.collection
+        setupCallback()
     }
-    init(objects: [String : AnyObject]) {
+    init(fields: [String : AnyObject]) {
         var _id = RVBaseModel.noID
-        if let actualId = objects[RVKeys._id.rawValue] as? String { _id = actualId
+        if let actualId = fields[RVKeys._id.rawValue] as? String { _id = actualId
         } else {
             print("Error.......... \(type(of: self)).init(objects no ID provided")
         }
         super.init(_id: _id)
-        self.update(objects as NSDictionary, cleared: nil)
+        self.update(fields as NSDictionary, cleared: nil)
         let me = type(of: self)
         if self.collection != me.collectionType() {
             self.collection = me.collectionType()
             self.modelType = self.collection
         }
+        setupCallback()
     }
     
     required init(id: String, fields: NSDictionary?) {
@@ -119,8 +126,22 @@ class RVBaseModel: MeteorDocument {
         } else {
             print("Error initializing \(type(of: self)) fields did not cast as [String : AnyObject]")
         }
+        setupCallback()
     }
-
+    func setupCallback() {
+        self._username.model = self
+        self._ownerId.model = self
+        self._owner.model = self
+        self._parentId.model = self
+        self._title.model = self
+        self._text.model = self
+        self._regularDescription.model = self
+        self._createdAt.model = self
+        self._updatedAt.model = self
+        self._collection.model = self
+        self._modelType.model = self
+        self._parentModelType.model = self
+    }
     override func update(_ fields: NSDictionary?, cleared: [String]?) {
         if let fields = fields as? [String : AnyObject] {
             for (key, value) in fields {
@@ -185,7 +206,7 @@ class RVBaseModel: MeteorDocument {
         case .parentModelType:
             if let rawValue = value as? String {
                 if let _ = RVModelType(rawValue: rawValue) {
-                    let _ = self._modelType.updateString(newValue: value)
+                    let _ = self._parentModelType.updateString(newValue: value)
                 }
             }
         case .image:
@@ -317,7 +338,7 @@ class RVBaseModel: MeteorDocument {
     var image: RVImage? {
         get {
             if let imageArray = _image.value as? [String : AnyObject] {
-                return RVImage(objects: imageArray)
+                return RVImage(fields: imageArray)
             }
             return nil
         }
@@ -370,37 +391,77 @@ class RVBaseModel: MeteorDocument {
             }
         }
     }
+    func setParent(parent:RVBaseModel) {
+        self.parentId = parent._id
+        self.parentModelType = parent.modelType
+    }
 }
 extension RVBaseModel {
-    func insert(callback: @escaping (_ error: RVError?) -> Void ) {
+    class func retrieveInstance(id: String, callback: @escaping (_ item: RVBaseModel? , _ error: RVError?) -> Void) {
+        Meteor.call(findMethod.rawValue, params: [ id as AnyObject]) { (result: Any?, error: DDPError?) in
+            if let error = error {
+                let rvError = RVError(message: "In \(classForCoder()).findInstance \(#line) got DDPError for id: \(id)", sourceError: error)
+                callback(nil, rvError)
+            } else if let fields = result as? [String : AnyObject] {
+                callback(createInstance(fields: fields), nil)
+            } else {
+                print("In \(classForCoder()).findInstance \(#line), no error but no result. id = \(id)")
+                callback(nil, nil)
+            }
+        }
+    }
+    func create(callback: @escaping (_ error: RVError?) -> Void ) {
         var fields = self.rvFields
         fields.removeValue(forKey: RVKeys.createdAt.rawValue)
         fields.removeValue(forKey: RVKeys.updatedAt.rawValue)
         Meteor.call(type(of: self).insertMethod.rawValue, params: [fields]) {(result, error: DDPError?) in
-            if let _ = error {
-                
-            } else if let _ = result {
-                
-            } else {
-                
-            }
-        }
-        
-        /*
-        objects.removeValue(forKey: RVKeys._id.rawValue)
-        Meteor.call(RVMeteorMethods.InsertImage.rawValue , params: [objects]) { (result, error: DDPError? ) in
             if let error = error {
-                let rvError = RVError(message: "RVBaseModel.insert, got DDPError", sourceError: error)
+                let rvError = RVError(message: "In \(self.instanceType).insert \(#line) got DDPError for id: \(self._id)", sourceError: error)
                 callback(rvError)
-            } else if let result = result {
-                print("In RVBaseModel.insert, have result \(result)")
+            } else if let _ = result {
                 callback(nil)
             } else {
-                print("In RVBaseModel.insert no error no result")
+                print("In \(self.instanceType).insert \(#line), no error but no result. id = \(self._id)")
                 callback(nil)
             }
         }
- */
+    }
+    func update(callback: @escaping(_ error: RVError?) -> Void) {
+        let dirties = self.dirties
+    //    print("In \(self.instanceType).update, id: \(self._id) and dirties = \(dirties)")
+    //    let updateDictionary = ["text": "updated description 555"]
+        //[ self._id as AnyObject, self.dirties as AnyObject]
+        if dirties.count <= 1 {
+            callback(nil)
+        } else {
+            Meteor.call(type(of: self).updateMethod.rawValue, params: [ self._id as AnyObject, dirties as AnyObject]) { (result: Any? , error: DDPError?) in
+                if let error = error {
+                    let rvError = RVError(message: "In \(self.instanceType).update \(#line) got DDPError for id: \(self._id)", sourceError: error)
+                    callback(rvError)
+                } else if let _ = result {
+                   // print("In \(self.instanceType).update result is \(result)")
+                    callback(nil)
+                } else {
+                    print("In \(self.instanceType).update \(#line), no error but no result. id = \(self._id)")
+                    callback(nil)
+                }
+            }
+        }
+
+    }
+    func delete(callback: @escaping(_ error: RVError?) -> Void) {
+        print("--------------------   In delete ---------------------------------")
+        Meteor.call(type(of: self).deleteMethod.rawValue, params: [ self._id as AnyObject]) { (result: Any?, error: DDPError?) in
+            if let error = error {
+                let rvError = RVError(message: "In \(self.instanceType).delete \(#line) got DDPError for id: \(self._id)", sourceError: error)
+                callback(rvError)
+            } else if let _ = result {
+                callback(nil)
+            } else {
+                print("In \(self.instanceType).delete \(#line), no error but no result. id = \(self._id)")
+                callback(nil)
+            }
+        }
     }
     func toString() -> String {
         var output = "-------------------------------\(instanceType) instance --------------------------------\n"
@@ -438,18 +499,52 @@ extension RVBaseModel {
         } else {
             output = "\(output)ownerId = <nil>, "
         }
-        if let _ = regularDescription {
+        if let regularDescription = regularDescription {
             output = "\(output)\nDescription = \(regularDescription)\n"
         } else {
             output = "\(output)\nDescription < no description>\n"
         }
         if let image = image {
-            output = "\(output)\nimage = id: \(image._id), \(image.rvFields), "
+            output = "\(output)image = id: \(image._id), \(image.rvFields), "
         } else {
             output = "\(output)\nimage = <no image>,"
         }
         output = output + "\n---------------------------------------------------------------------------------\n"
         return output
+    }
+    func valueChanged(field: RVKeys, value: AnyObject?) {
+       // print("IN value changed ------------------------")
+        self.update { (error) in
+            if let error = error {
+                print("In \(self.instanceType).valueChanged error changingn \(field.rawValue) \(value). \n\(error)")
+            }
+        }
+    }
+    func addListener(name: String) {
+        if let _ = listeners.index(where: {notification in return notification == name}) {
+            // do nothing
+        } else {
+            var newListeners = self.listeners.map { $0 }
+            newListeners.append(name)
+            self.listeners = newListeners
+        }
+    }
+    func removeListener(name: String) {
+        var newListeners = self.listeners.map { $0 }
+        newListeners.append(name)
+        self.listeners = newListeners
+        if let index = newListeners.index(where: {notification in return notification == name}) {
+            newListeners.remove(at: index)
+            self.listeners = newListeners
+        } else {
+            // do nothing
+        }
+    }
+    func publish() {
+        let listeners = self.listeners
+        for listener in listeners {
+            NotificationCenter.default.post(name: Notification.Name(rawValue: listener), object: nil, userInfo: ["model": self])
+        }
     }
     func formatDate(date: Date) -> String {
         return "\(date)"

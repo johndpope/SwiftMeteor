@@ -10,11 +10,15 @@
 import Foundation
 
 enum RVMeteorMethods: String {
+    case QueryBase  = "base.query"
     case InsertBase = "base.insert"
     case UpdateBase = "base.update"
+    case FindBase = "base.findInstance"
     case DeleteBase = "base.delete"
     case InsertImage = "images.insert"
+    case QueryTask  = "tasksWQuery"
     case InsertTask = "tasks.insert2"
     case UpdateTask = "tasks.update"
-    case DeleteTask = "tasks.delete"
+    case DeleteTask = "tasks.remove"
+    case FindTask   = "tasks.find"
 }

@@ -11,6 +11,7 @@ import SwiftDDP
 import SDWebImage
 
 class FirstViewController: UIViewController {
+        var instanceType: String { get { return String(describing: type(of: self)) } }
     @IBAction func leftBarButton(button: UIBarButtonItem) {
         RVViewDeck.sharedInstance.toggleSide(side: RVViewDeck.Side.left)
     }
@@ -48,8 +49,77 @@ class FirstViewController: UIViewController {
         print("The user just signed in!")
         subscribeToTasks()
     }
+    func insertATask() {
+        let task = RVTask()
+        task.text = "---------- Thursday evening 2"
+        task.regularDescription = "As regular description of something"
+        task.title = "Original Title"
+        task.image = RVImage()
+        task.create { (error: RVError?) in
+            if let error = error {
+                error.printError()
+            } else {
+
+                    
+                print("$$$\nIn \(self.instanceType).insertATask \(task._id), no error\n $$$")
+                task.regularDescription = "A different description"
+                task.text = "A different Text Entry"
+                task.title = "A different Title"
+                
+                task.update(callback: { (error) in
+                    if let error = error {
+                        error.printError()
+                    } else {
+                        print("In \(self.instanceType).insertATask, update returned OK")
+                        RVTask.retrieveInstance(id: task._id, callback: { (model, error) in
+                            if let error = error {
+                                error.printError()
+                            } else if let model = model as? RVTask {
+                                print(model.toString())
+                            } else {
+                                print("In \(self.instanceType).insertATask, no error but no result for id: \(task._id)")
+                            }
+                        })
+                    }
+                })
+            }
+        }
+    }
+    func documentListener(notification: Notification) {
+        if let userInfo = notification.userInfo {
+            if let id = userInfo["id"] as? String {
+                // print("In \(instanceType).documentListener, id is \(id)")
+                if let rawValue = userInfo["eventType"] as? String {
+                    if let event = RVBaseCollection.eventType(rawValue: rawValue) {
+                        if event == RVBaseCollection.eventType.changed {
+                            print("In \(instanceType).documentListiner, eventType is \(rawValue) \(id)")
+                        }
+                    }
+                }
+            }
+        }
+    }
     func subscribeToTasks() {
-        _ = TaskCollection2(name: "tasks")
+        let collection = RVTaskCollection()
+        let query = RVQuery()
+        query.limit = 60
+        query.sortOrder = .descending
+        //      query.addAnd(queryItem: RVQueryItem(term: .createdAt, value: EJSON.convertToEJSONDate(Date()) as AnyObject, comparison: .lte))
+        query.addOr(queryItem: RVQueryItem(term: .owner, value: "Goober" as AnyObject, comparison: .eq))
+        query.addOr(queryItem: RVQueryItem(term: .private, value: true as AnyObject, comparison: .ne))
+        query.addProjection(projectionItem: RVProjectionItem(field: .text, include: .include))
+        query.addProjection(projectionItem: RVProjectionItem(field: .createdAt))
+        query.addProjection(projectionItem: RVProjectionItem(field: .updatedAt))
+        collection.query = query
+        let listenerName = "FirstView"
+        NotificationCenter.default.addObserver(forName: Notification.Name(rawValue: listenerName), object: nil, queue: nil, using: documentListener)
+        collection.addListener(name: listenerName)
+        let _ = collection.subscribe()
+        insertATask()
+        
+    }
+    func subscribeToTasks2() {
+        let _ = TaskCollection2(name: "tasks")
         let query = RVQuery()
         query.limit = 50
         query.sortOrder = .descending
@@ -59,6 +129,18 @@ class FirstViewController: UIViewController {
         query.addProjection(projectionItem: RVProjectionItem(field: .text, include: .include))
         query.addProjection(projectionItem: RVProjectionItem(field: .createdAt))
         let (filters, projections) = query.query()
+        print("Just before Tasks.query")
+        let _ = Meteor.call("tasks.query", params: [filters as AnyObject, projections as AnyObject]) { (result: Any?, error: DDPError?) in
+            if let error = error {
+                print("FirstController.subscribeToTasks, error \(error)")
+            } else if let result = result {
+                print("In FirstViewController.subscribeToTasks, have result")
+                print(result)
+            } else {
+                print("In FirstViewController.subscribeToTasks, no error but no results")
+            }
+        }
+        /*
         let handle = Meteor.subscribe("tasksWQuery", params: [filters as AnyObject, projections as AnyObject ]) {
             // Do something when the todos subscription is ready
             print("Subscribed to Tasks")
@@ -126,6 +208,7 @@ class FirstViewController: UIViewController {
         }
         print("Handle is: \(handle)")
        // Meteor.unsubscribe(withId: handle)
+ */
     }
     func userDidLogout() {
         print("The user just signed out!")

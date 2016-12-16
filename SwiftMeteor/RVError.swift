@@ -18,6 +18,8 @@ import UIKit
 
 
 class RVError: NSError {
+    // __FILE__
+    // __LINE__
     static var domain: String = "RV"
     var sourceError: Error? = nil
     var messages = [String]()

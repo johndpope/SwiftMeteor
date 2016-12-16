@@ -13,6 +13,7 @@ class RVRecord {
     var value: AnyObject?
     var dirty: Bool = false
     var fieldName: RVKeys
+    weak var model: RVBaseModel? = nil
     var instanceType: String {
         get {
             return String(describing: type(of: self))
@@ -56,7 +57,10 @@ class RVRecord {
         return updateArray(newValue: newValue, dirty: false)
     }
     func valueChanged() {
-       // print("\(instanceType) valueChanged for \(self.fieldName.rawValue), to [\(self.value)]")
+     //  print("\(instanceType) valueChanged for \(self.fieldName.rawValue), to [\(self.value)]")
+        if let model = model {
+            model.valueChanged(field: self.fieldName, value: self.value)
+        }
     }
     func updateString(newValue: AnyObject?, dirty: Bool) -> Bool {
         //print("Updating String \(self.fieldName) to \(newValue)")
