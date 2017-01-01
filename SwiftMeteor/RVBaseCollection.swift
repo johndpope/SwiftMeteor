@@ -65,13 +65,13 @@ class RVBaseCollection: AbstractCollection {
         }
     }
     override public func documentWasAdded(_ collection: String, id: String, fields: NSDictionary?) {
-        print("RBVBaseCollectio. In document was added")
+       // print("RBVBaseCollectio. In document was added")
         if let fields = fields {
             let document = populate(id: id, fields: fields)
             var copy = self.elements.map { $0 }
             copy.append(document)
             self.elements = copy
-            print("In \(#file) #\(#line).documentWasAdded id: \(id)")
+          //  print("In \(#file) #\(#line).documentWasAdded id: \(id)")
             self.publish(eventType: .changed, model: document, id: id)
         } else {
             print("In \(#file) #\(#line).documentWasAdded fields is nil")
@@ -110,6 +110,7 @@ extension RVBaseCollection {
         self.subscriptionID = Meteor.subscribe(meteorMethod.rawValue, params: [filters as AnyObject, projections as AnyObject])
         return self.subscriptionID!
     }
+
     
     /**
      Sends a subscription request to the server.

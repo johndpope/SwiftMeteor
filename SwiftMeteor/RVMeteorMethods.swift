@@ -25,4 +25,7 @@ enum RVMeteorMethods: String {
     case DeleteTask = "tasks.remove"
     case FindTask   = "tasks.find"
     case GetUserId = "userId"
+    
+    
+    case BulkTask = "tasks.bulk"
 }

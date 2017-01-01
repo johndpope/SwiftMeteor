@@ -14,6 +14,7 @@ class RVBaseModel: MeteorDocument {
     class var insertMethod: RVMeteorMethods { get { return RVMeteorMethods.InsertBase } }
     class var updateMethod: RVMeteorMethods { get { return RVMeteorMethods.UpdateBase } }
     class var deleteMethod: RVMeteorMethods { get { return RVMeteorMethods.DeleteBase } }
+    class var bulkQueryMethod: RVMeteorMethods { get { return RVMeteorMethods.BulkTask } }
     class var findMethod: RVMeteorMethods { get { return RVMeteorMethods.FindBase}}
     class func createInstance(fields: [String : AnyObject])-> RVBaseModel { return RVBaseModel(fields: fields) }
     static var noID = "No_ID"
@@ -455,6 +456,32 @@ extension RVBaseModel {
             }
         }
 
+    }
+    class func modelFromFields(fields: [String: AnyObject]) -> RVBaseModel {
+        return RVBaseModel(fields: fields)
+    }
+    class func bulkQuery(query: RVQuery, callback: @escaping(_ items: [RVBaseModel]?, _ error: RVError?)-> Void) {
+        let (filters, projection) = query.query()
+        Meteor.call(bulkQueryMethod.rawValue, params: [filters as AnyObject, projection as AnyObject]) { (result: Any?, error : DDPError?) in
+            if let error = error {
+                let rvError = RVError(message: "In RVBaseModel.bulkQuery, got Meteor Error", sourceError: error)
+                callback(nil , rvError)
+                return
+            } else if let items = result as? [[String: AnyObject]] {
+                var models = [RVBaseModel]()
+                for fields in items {
+                    models.append(modelFromFields(fields: fields))
+                }
+                callback(models, nil)
+                return
+            } else if let results = result {
+                print("In RVBaseModel.bulkQuery, no error, but results are: \n\(results)")
+                callback(nil, nil)
+            } else {
+                print("In RVBaseModel.bulkQuery, no error but no results")
+                callback(nil, nil)
+            }
+        }
     }
     func delete(callback: @escaping(_ error: RVError?) -> Void) {
         print("--------------------   In delete ---------------------------------")

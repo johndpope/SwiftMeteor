@@ -11,4 +11,5 @@ import Foundation
 class RVDSOperation {
     var active: Bool = false
     var cancelled: Bool = false
+    let identifier = NSDate().timeIntervalSince1970
 }

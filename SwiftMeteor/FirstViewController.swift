@@ -11,11 +11,20 @@ import SwiftDDP
 import SDWebImage
 
 class FirstViewController: UIViewController {
-        var instanceType: String { get { return String(describing: type(of: self)) } }
+    
+    @IBOutlet weak var tableView: UITableView!
+    var instanceType: String { get { return String(describing: type(of: self)) } }
+    var manager = RVDSManager()
+    
     @IBAction func leftBarButton(button: UIBarButtonItem) {
         RVViewDeck.sharedInstance.toggleSide(side: RVViewDeck.Side.left)
     }
     override func viewDidLoad() {
+     //   tableView.delegate = self
+      //  tableView.dataSource = self
+        manager = RVDSManager()
+        let datasource = RVBaseDataSource(scrollView: tableView, manager: manager)
+        manager.addSection(section: datasource)
         super.viewDidLoad()
         Meteor.client.allowSelfSignedSSL = true // Connect to a server that users a self signed ssl certificate
         Meteor.client.logLevel = .info // Options are: .Verbose, .Debug, .Info, .Warning, .Error, .Severe, .None
@@ -122,12 +131,12 @@ class FirstViewController: UIViewController {
     }
     func documentListener(notification: Notification) {
         if let userInfo = notification.userInfo {
-            if let id = userInfo["id"] as? String {
+            if let _ = userInfo["id"] as? String {
                 // print("In \(instanceType).documentListener, id is \(id)")
                 if let rawValue = userInfo["eventType"] as? String {
                     if let event = RVBaseCollection.eventType(rawValue: rawValue) {
                         if event == RVBaseCollection.eventType.changed {
-                            print("In \(instanceType).documentListiner, eventType is \(rawValue) \(id)")
+                           // print("In \(instanceType).documentListiner, eventType is \(rawValue) \(id)")
                         }
                     }
                 }
@@ -137,7 +146,7 @@ class FirstViewController: UIViewController {
     func subscribeToTasks() {
         let collection = RVTaskCollection()
         let query = RVQuery()
-        query.limit = 60
+        query.limit = 70
         query.sortOrder = .descending
         //      query.addAnd(queryItem: RVQueryItem(term: .createdAt, value: EJSON.convertToEJSONDate(Date()) as AnyObject, comparison: .lte))
         query.addOr(queryItem: RVQueryItem(term: .owner, value: "Goober" as AnyObject, comparison: .eq))
@@ -149,7 +158,23 @@ class FirstViewController: UIViewController {
         let listenerName = "FirstView"
         NotificationCenter.default.addObserver(forName: Notification.Name(rawValue: listenerName), object: nil, queue: nil, using: documentListener)
         collection.addListener(name: listenerName)
-        let _ = collection.subscribe()
+     //   let _ = collection.subscribe()
+        RVTask.bulkQuery(query: query) { (models: [RVBaseModel]?, error: RVError?) in
+            if let error = error {
+                print("In \(self.instanceType).subscribeToTasks, got error")
+                error.printError()
+            } else if let models = models as? [RVTask] {
+                var index = 0
+                for model in models {
+                //    print("\(index): \(model.text!)")
+                    index = index + 1
+                }
+            } else {
+                print("In \(self.instanceType).subscribeToTasks, no error but no results")
+            }
+        }
+        let ds = manager.sections[0]
+        ds.testQuery(query: query)
      //   insertATask()
         
     }
@@ -463,4 +488,36 @@ extension FirstViewController {
     }
 }
 
+extension FirstViewController: UITableViewDelegate {
+
+}
+extension FirstViewController: UITableViewDataSource {
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+    //    print("In \(self.instanceType).cellForRow...")
+        if let cell = tableView.dequeueReusableCell(withIdentifier: "first", for: indexPath) as? RVFirstViewTableCell {
+            if let item = manager.item(indexPath: indexPath) {
+             //    print("In \(self.instanceType).cellForRow, have item at section: \(indexPath.section), rwo: \(indexPath.row)")
+                if let text = item.text {
+                    if let label = cell.customTextLabel {
+                        label.text = text
+                    }
+                }
+            } else {
+                print("In \(self.instanceType).cellForRow, no item at section: \(indexPath.section), rwo: \(indexPath.row)")
+            }
+            return cell
+        } else {
+            print("In \(self.instanceType).cellForRowAt, did not dequeue first cell type")
+        }
+        return UITableViewCell()
+    }
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+       // print("In \(self.classForCoder).numberOfRowsInSection \(section) \(manager.numberOfItems(section: section))")
+        return manager.numberOfItems(section: section)
+    }
+    func numberOfSections(in tableView: UITableView) -> Int {
+       // print("In \(self.classForCoder).numberOfSections... \(manager.sections.count)")
+        return manager.sections.count
+    }
+}
 
