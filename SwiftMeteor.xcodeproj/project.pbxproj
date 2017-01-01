@@ -30,6 +30,9 @@
 		2873C9151DECBFF000DCB2DF /* AWSSignInProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2873C9141DECBFF000DCB2DF /* AWSSignInProvider.swift */; };
 		288961091DEDED2C00FC34DB /* RVAWSDirect.swift in Sources */ = {isa = PBXBuildFile; fileRef = 288961081DEDED2C00FC34DB /* RVAWSDirect.swift */; };
 		2889610C1DEDF22F00FC34DB /* ranch.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 2889610B1DEDF22F00FC34DB /* ranch.jpg */; };
+		28928CD11E18BE09003538B8 /* RVDSArray.swift in Sources */ = {isa = PBXBuildFile; fileRef = 28928CD01E18BE09003538B8 /* RVDSArray.swift */; };
+		28928CD31E18C6C7003538B8 /* RVDSManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 28928CD21E18C6C7003538B8 /* RVDSManager.swift */; };
+		28928CD51E18E226003538B8 /* RVDSOperation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 28928CD41E18E226003538B8 /* RVDSOperation.swift */; };
 		28D534CD1DF3E9A50003DC11 /* RVActivityIndicator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 28D534CC1DF3E9A50003DC11 /* RVActivityIndicator.swift */; };
 		28D534CF1DF3EAC20003DC11 /* RVDownloadTask.swift in Sources */ = {isa = PBXBuildFile; fileRef = 28D534CE1DF3EAC20003DC11 /* RVDownloadTask.swift */; };
 		28DE2D971DFE47E900EFEECB /* RVTask.swift in Sources */ = {isa = PBXBuildFile; fileRef = 28DE2D961DFE47E900EFEECB /* RVTask.swift */; };
@@ -90,6 +93,9 @@
 		2873C9141DECBFF000DCB2DF /* AWSSignInProvider.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AWSSignInProvider.swift; sourceTree = "<group>"; };
 		288961081DEDED2C00FC34DB /* RVAWSDirect.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RVAWSDirect.swift; sourceTree = "<group>"; };
 		2889610B1DEDF22F00FC34DB /* ranch.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; name = ranch.jpg; path = ../../../Assets/ranch.jpg; sourceTree = "<group>"; };
+		28928CD01E18BE09003538B8 /* RVDSArray.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RVDSArray.swift; sourceTree = "<group>"; };
+		28928CD21E18C6C7003538B8 /* RVDSManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RVDSManager.swift; sourceTree = "<group>"; };
+		28928CD41E18E226003538B8 /* RVDSOperation.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RVDSOperation.swift; sourceTree = "<group>"; };
 		28D534CC1DF3E9A50003DC11 /* RVActivityIndicator.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RVActivityIndicator.swift; sourceTree = "<group>"; };
 		28D534CE1DF3EAC20003DC11 /* RVDownloadTask.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RVDownloadTask.swift; sourceTree = "<group>"; };
 		28DE2D961DFE47E900EFEECB /* RVTask.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RVTask.swift; sourceTree = "<group>"; };
@@ -212,6 +218,16 @@
 			name = Assets;
 			sourceTree = "<group>";
 		};
+		28928CCF1E18BDF5003538B8 /* Datasource */ = {
+			isa = PBXGroup;
+			children = (
+				28928CD01E18BE09003538B8 /* RVDSArray.swift */,
+				28928CD21E18C6C7003538B8 /* RVDSManager.swift */,
+				28928CD41E18E226003538B8 /* RVDSOperation.swift */,
+			);
+			name = Datasource;
+			sourceTree = "<group>";
+		};
 		28DE2D951DFE47C900EFEECB /* Models */ = {
 			isa = PBXGroup;
 			children = (
@@ -254,6 +270,7 @@
 		28F53E6B1DEB5F71009641F0 /* SwiftMeteor */ = {
 			isa = PBXGroup;
 			children = (
+				28928CCF1E18BDF5003538B8 /* Datasource */,
 				28360E141E034C6500E62384 /* Collections */,
 				28DE2D951DFE47C900EFEECB /* Models */,
 				2889610A1DEDF21700FC34DB /* Assets */,
@@ -507,11 +524,13 @@
 				284FBAD01DEC13B600446C86 /* RVBaseViewController.swift in Sources */,
 				2873C9131DECAA2F00DCB2DF /* AWSIdentityManager.swift in Sources */,
 				2873C9111DECA4D400DCB2DF /* AWSMobileClient.swift in Sources */,
+				28928CD31E18C6C7003538B8 /* RVDSManager.swift in Sources */,
 				28D534CD1DF3E9A50003DC11 /* RVActivityIndicator.swift in Sources */,
 				288961091DEDED2C00FC34DB /* RVAWSDirect.swift in Sources */,
 				28DE2D9F1DFE713300EFEECB /* RVMeteorMethods.swift in Sources */,
 				284FBAD41DEC142B00446C86 /* RVMainTabViewController.swift in Sources */,
 				28360E161E034C7A00E62384 /* RVTaskCollection.swift in Sources */,
+				28928CD51E18E226003538B8 /* RVDSOperation.swift in Sources */,
 				28DE2D9B1DFE665400EFEECB /* RVModelType.swift in Sources */,
 				28360E1A1E046C0700E62384 /* RVUser.swift in Sources */,
 				280E0F781DFFBF3100E597B4 /* RVBaseModel2.swift in Sources */,
@@ -519,6 +538,7 @@
 				2873C9151DECBFF000DCB2DF /* AWSSignInProvider.swift in Sources */,
 				28360E181E0352C400E62384 /* RVBaseCollection.swift in Sources */,
 				2870CCD81DEDE72F005C6FB5 /* RVError.swift in Sources */,
+				28928CD11E18BE09003538B8 /* RVDSArray.swift in Sources */,
 				284FBAD21DEC13FE00446C86 /* RVRightMenuViewController.swift in Sources */,
 				280E0F761DFFBEDF00E597B4 /* RVKeys.swift in Sources */,
 				284FBAC91DEC125D00446C86 /* RVViewDeck.swift in Sources */,

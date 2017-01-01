@@ -28,7 +28,7 @@ class FirstViewController: UIViewController {
         Meteor.connect("wss://rnmpassword-nweintraut.c9users.io/websocket") {
             // do something after the client connects
             print("Returned after connect")
-            /*
+        /*
             Meteor.loginWithUsername("neil.weintraut@gmail.com", password: "password", callback: { (result, error: DDPError?) in
                 if let error = error {
                     print(error)
@@ -36,7 +36,7 @@ class FirstViewController: UIViewController {
                     print("After loginWIthUsernmae \(result)")
                 }
             })
-         */   
+          */
         }
  
 
@@ -150,7 +150,7 @@ class FirstViewController: UIViewController {
         NotificationCenter.default.addObserver(forName: Notification.Name(rawValue: listenerName), object: nil, queue: nil, using: documentListener)
         collection.addListener(name: listenerName)
         let _ = collection.subscribe()
-        insertATask()
+     //   insertATask()
         
     }
     func subscribeToTasks2() {
