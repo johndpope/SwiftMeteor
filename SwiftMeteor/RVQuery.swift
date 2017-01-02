@@ -57,6 +57,23 @@ class RVQueryItem {
 }
 
 class RVQuery {
+    func duplicate() -> RVQuery {
+        let query = RVQuery()
+        query.comment = self.comment
+        query.sortOrder = self.sortOrder
+        query.sortTerm = self.sortTerm
+        for andTerm in self.ands {
+            query.ands.append(andTerm)
+        }
+        for orTerm in self.ors {
+            query.ors.append(orTerm)
+        }
+        for projection in projections {
+            query.projections.append(projection)
+        }
+        query.limit = self.limit
+        return query
+    }
     enum Projection: String {
         case sort = "sort"
         case fields = "fields"
@@ -72,6 +89,14 @@ class RVQuery {
     var projections = [RVProjectionItem]()
     var limit   = 100
     init() {
+    }
+    func findAndTerm(term: RVKeys) -> RVQueryItem? {
+        for item in ands {
+            if item.term == term {
+                return item
+            }
+        }
+        return nil
     }
     func addAnd(queryItem: RVQueryItem) {
         self.ands.append(queryItem)

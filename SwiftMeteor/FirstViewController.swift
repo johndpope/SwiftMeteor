@@ -58,18 +58,40 @@ class FirstViewController: UIViewController {
         print("The user just signed in!")
         subscribeToTasks()
     }
-    func insertATask() {
-        let task = RVTask()
+    func insertOuter(count: Int) {
+        self.insertATask(count: count) { (error) in
+        
+            if let error = error {
+                error.printError()
+            } else {
+                let count = count + 1
+                if count < 200 {
+                    Timer.scheduledTimer(withTimeInterval: 0.5, repeats: false, block: { (timer: Timer) in
+                        print("Inserted \(count)")
+                        self.insertOuter(count: count)
+                    })
 
+                } else {
+                    print("Ended insert")
+                }
+            }
+        }
+    }
+    func insertATask(count: Int, callback: @escaping(_ error: RVError?) -> Void) {
+        let task = RVTask()
         insertAnImage(parent: task)
-        task.text = "---------- Thursday evening 2"
-        task.regularDescription = "As regular description of something"
-        task.title = "Original Title"
+        task.text = "Z ---------- \(200 - count) \(Date())"
+        task.regularDescription = "Time: \(Date())"
+        task.title = "Z Original Title \(count)"
         task.image = RVImage()
         task.create { (error: RVError?) in
             if let error = error {
                 error.printError()
+                callback(RVError(message: "In \(self.classForCoder).insertATask got error", sourceError: error))
+                return
             } else {
+                callback(nil)
+                /*
                 print("$$$\nIn \(self.instanceType).insertATask \(task._id), no error\n $$$")
                 task.regularDescription = "A different description"
                 task.text = "A different Text Entry"
@@ -91,6 +113,7 @@ class FirstViewController: UIViewController {
                         })
                     }
                 })
+                 */
  
             }
         }
@@ -148,7 +171,8 @@ class FirstViewController: UIViewController {
         let query = RVQuery()
         query.limit = 70
         query.sortOrder = .descending
-        //      query.addAnd(queryItem: RVQueryItem(term: .createdAt, value: EJSON.convertToEJSONDate(Date()) as AnyObject, comparison: .lte))
+        query.sortTerm = .createdAt
+        query.addAnd(queryItem: RVQueryItem(term: .createdAt, value: EJSON.convertToEJSONDate(Date()) as AnyObject, comparison: .lte))
         query.addOr(queryItem: RVQueryItem(term: .owner, value: "Goober" as AnyObject, comparison: .eq))
         query.addOr(queryItem: RVQueryItem(term: .private, value: true as AnyObject, comparison: .ne))
         query.addProjection(projectionItem: RVProjectionItem(field: .text, include: .include))
@@ -165,7 +189,7 @@ class FirstViewController: UIViewController {
                 error.printError()
             } else if let models = models as? [RVTask] {
                 var index = 0
-                for model in models {
+                for _ in models {
                 //    print("\(index): \(model.text!)")
                     index = index + 1
                 }
@@ -174,8 +198,10 @@ class FirstViewController: UIViewController {
             }
         }
         let ds = manager.sections[0]
-        ds.testQuery(query: query)
+        ds.baseQuery = query
+        ds.testQuery()
      //   insertATask()
+       // insertOuter(count: 0)
         
     }
     func subscribeToTasks2() {
