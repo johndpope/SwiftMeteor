@@ -17,6 +17,7 @@ class RVBaseDataSource {
     var frontTimer: Bool = false
     var frontTime: TimeInterval = Date().timeIntervalSince1970
     var backTime: TimeInterval = Date().timeIntervalSince1970
+    let minimumInterval: TimeInterval = 1.0
     var backTimer: Bool = false
     var array = [RVBaseModel]()
     var baseQuery: RVQuery? = nil
@@ -47,6 +48,7 @@ class RVBaseDataSource {
         if let query = self.baseQuery {
             if !operation.active {
                 operation.active = true
+               // print("In \(self.instanceType).testQuery() about to do bulkQuery")
                 RVTask.bulkQuery(query: query) { (models: [RVBaseModel]?, error: RVError?) in
                     if let error = error {
                         print("In \(self.instanceType).subscribeToTasks, got error")
@@ -124,7 +126,7 @@ class RVBaseDataSource {
                     default:
                         print("In \(self.instanceType).queryForBack, have unserviced sortTerm: \(query.sortTerm.rawValue)")
                     }
-                    
+                               //   print("In \(self.instanceType).queryForFront() about to do bulkQuery")
                     RVTask.bulkQuery(query: query , callback: { (models, error) in
                         if let error = error {
                             print("In \(self.instanceType).subscribeToTasks, got error")
@@ -165,7 +167,6 @@ class RVBaseDataSource {
                                    // if queryTerm.comparison == .lte { queryTerm.comparison = .lt}
                                    // else if queryTerm.comparison == .gte { queryTerm.comparison = .gt}
                                 } else {
-                                    
                                     print("In \(self.instanceType).queryForBack no queryTerm for createdAt")
                                 }
                             }
@@ -187,6 +188,7 @@ class RVBaseDataSource {
         }
     }
     func queryForBackHelper(query: RVQuery, operation: RVDSOperation, callback: @escaping(_ error: RVError?)-> Void) {
+       // print("In \(self.instanceType).queryForBackHelper() about to do bulkQuery")
         RVTask.bulkQuery(query: query) { (models: [RVBaseModel]?, error: RVError?) in
             if let error = error {
                 print("In \(self.instanceType).subscribeToTasks, got error")
@@ -230,7 +232,7 @@ class RVBaseDataSource {
     }
     func inFrontZone(location: Int) {
       //  print("In \(self.instanceType).inFrontZone. location = \(location), offset = \(self.offset), array count = \(self.array.count)")
-        if (Date().timeIntervalSince1970 - self.frontTime) < 2.0 { return }
+        if (Date().timeIntervalSince1970 - self.frontTime) < minimumInterval { return }
         if frontTimer { return }
         frontTimer = true
         if self.backOperation.active {
@@ -275,7 +277,7 @@ class RVBaseDataSource {
         }
     }
     func loadFront() {
-        if (Date().timeIntervalSince1970 - self.frontTime) < 2.0 { return }
+        if (Date().timeIntervalSince1970 - self.frontTime) < minimumInterval { return }
         if frontTimer { return }
         frontTimer = true
         if self.backOperation.active {
@@ -309,7 +311,7 @@ class RVBaseDataSource {
     }
     func inBackZone(location: Int) {
        // print("In \(self.instanceType).inBackZone. location = \(location), offset = \(self.offset), array count = \(self.array.count)")
-        if Date().timeIntervalSince1970 - self.backTime < 2.0 { return }
+        if Date().timeIntervalSince1970 - self.backTime < minimumInterval { return }
         if backTimer { return }
         backTimer = true
         if self.frontOperation.active {
@@ -383,192 +385,221 @@ class RVBaseDataSource {
         if let manager = self.manager {
             var sizedItems = maxItems(items: items) // Limits the number of new items to the maximum array size
             if sizedItems.count > 0 {
-                var clone = cloneData()
-                //var currentCount = clone.count
-                let room = clone.count - self.maximumArrayLength
-                var currentOffset = self.offset
-                var start = 0
-                if let tableView = self.scrollView as? UITableView {
-                    if (offset > 0) && (room > 0) {
-                        // Have room in array to reduce the offset without affecting TableView
-                        var end = room
-                        if room > sizedItems.count { end = sizedItems.count }
-                        if end > currentOffset { end = currentOffset }
-                        for index in (0..<end) {
-                            clone.insert(sizedItems[index], at: 0)
-                            currentOffset = currentOffset - 1
-                            start = start + 1
-                        }
-                        tableView.beginUpdates()
-                        if (operation.identifier == self.frontOperation.identifier) && (!operation.cancelled) {
-                            self.array = clone
-                            self.offset = currentOffset
-                        }
-                        tableView.endUpdates()
-                    }
-                    // May or may not have offset; may or maynot have room
-                    // start variable contains the first index into sizedItems array
-                    if start < sizedItems.count {
-                        // See if near the front
-                        var firstVisibleRow = 0
-                        if let visiblePaths = tableView.indexPathsForVisibleRows {
-                            if visiblePaths.count > 0 {
-                                let firstVisiblePath = visiblePaths[0]
-                                firstVisibleRow = firstVisiblePath.row
+                DispatchQueue.main.async {
+                    var clone = self.cloneData()
+                    //var currentCount = clone.count
+                    let room = clone.count - self.maximumArrayLength
+                    var currentOffset = self.offset
+                    var start = 0
+                    if let tableView = self.scrollView as? UITableView {
+                        if (self.offset > 0) && (room > 0) {
+                            // Have room in array to reduce the offset without affecting TableView
+                            var end = room
+                            if room > sizedItems.count { end = sizedItems.count }
+                            if end > currentOffset { end = currentOffset }
+                            for index in (0..<end) {
+                                clone.insert(sizedItems[index], at: 0)
+                                currentOffset = currentOffset - 1
+                                start = start + 1
                             }
-                        }
-                        if firstVisibleRow < self.frontBuffer {
-                            // at front of TableView, new items to add at front number more than 0 and less than maxArrayLength
-                            clone = cloneData()
-                            currentOffset = self.offset
-                            // first deal with offset
-                            if currentOffset > 0 {
-                                let newItemsCount = sizedItems.count
-                                let numberOfNewItems = newItemsCount - start
-                                let end = currentOffset > numberOfNewItems ? newItemsCount : start + currentOffset
-                                let begin = start
-                                if begin > end { print("In \(self.instanceType).insertAtFront, begin \(begin) is greater than end \(end)") }
-                                for index in (begin..<end) {
-                                    clone.insert(sizedItems[index], at: 0)
-                                    currentOffset = currentOffset - 1
-                                    start = start + 1
-                                }
-                                tableView.beginUpdates()
-                                if (operation.identifier == self.frontOperation.identifier) && (!operation.cancelled) {
-                                    self.array = clone
-                                    self.offset = currentOffset
-                                }
-                                tableView.endUpdates()
+                            tableView.beginUpdates()
+                            if (operation.identifier == self.frontOperation.identifier) && (!operation.cancelled) {
+                                self.array = clone
+                                self.offset = currentOffset
                             }
-                            if start < sizedItems.count {
-                                clone = cloneData()
-                                var indexPaths = [IndexPath]()
+                            tableView.endUpdates()
+                        }
+                        // May or may not have offset; may or maynot have room
+                        // start variable contains the first index into sizedItems array
+                        if start < sizedItems.count {
+                            // See if near the front
+                            var firstVisibleRow = 0
+                            if let visiblePaths = tableView.indexPathsForVisibleRows {
+                                if visiblePaths.count > 0 {
+                                    let firstVisiblePath = visiblePaths[0]
+                                    firstVisibleRow = firstVisiblePath.row
+                                }
+                            }
+                            if firstVisibleRow < self.frontBuffer {
+                                // at front of TableView, new items to add at front number more than 0 and less than maxArrayLength
+                                clone = self.cloneData()
                                 currentOffset = self.offset
-                                let section = manager.section(datasource: self)
-                                if currentOffset == 0 {
-                                    for index in (start..<sizedItems.count) {
+                                // first deal with offset
+                                if currentOffset > 0 {
+                                    let newItemsCount = sizedItems.count
+                                    let numberOfNewItems = newItemsCount - start
+                                    let end = currentOffset > numberOfNewItems ? newItemsCount : start + currentOffset
+                                    let begin = start
+                                    if begin > end { print("In \(self.instanceType).insertAtFront, begin \(begin) is greater than end \(end)") }
+                                    for index in (begin..<end) {
                                         clone.insert(sizedItems[index], at: 0)
-                                        indexPaths.append(IndexPath(row: index-start, section: section))
+                                        currentOffset = currentOffset - 1
+                                        start = start + 1
                                     }
                                     tableView.beginUpdates()
                                     if (operation.identifier == self.frontOperation.identifier) && (!operation.cancelled) {
                                         self.array = clone
-                                        tableView.insertRows(at: indexPaths, with: animation)
-
+                                        self.offset = currentOffset
                                     }
                                     tableView.endUpdates()
-                                } else {
-                                    print("In \(self.instanceType).insertAtFront, offset is \(self.offset), when should be zero")
                                 }
+                                if start < sizedItems.count {
+                                    clone = self.cloneData()
+                                    var indexPaths = [IndexPath]()
+                                    currentOffset = self.offset
+                                    let section = manager.section(datasource: self)
+                                    if currentOffset == 0 {
+                                        for index in (start..<sizedItems.count) {
+                                            clone.insert(sizedItems[index], at: 0)
+                                            indexPaths.append(IndexPath(row: index-start, section: section))
+                                        }
+                                        tableView.beginUpdates()
+                                        if (operation.identifier == self.frontOperation.identifier) && (!operation.cancelled) {
+                                            self.array = clone
+                                            tableView.insertRows(at: indexPaths, with: self.animation)
+
+                                        }
+                                        tableView.endUpdates()
+                                    } else {
+                                        print("In \(self.instanceType).insertAtFront, offset is \(self.offset), when should be zero")
+                                    }
+                                }
+                                self.removeBack(operation: operation)
                             }
-                            removeBack(operation: operation)
+                        }
+                        if self.frontOperation.identifier == operation.identifier {
+                            self.frontOperation = RVDSOperation()
+                        }
+                    } else if let _ = self.scrollView as? UICollectionView {
+                        if self.frontOperation.identifier == operation.identifier {
+                            self.frontOperation = RVDSOperation()
+                        }
+                    } else {
+                        if self.frontOperation.identifier == operation.identifier {
+                            self.frontOperation = RVDSOperation()
                         }
                     }
-                } else if let _ = self.scrollView as? UICollectionView {
-                    
-                } else {
-                    
+                }
+            } else {
+                if self.frontOperation.identifier == operation.identifier {
+                    self.frontOperation = RVDSOperation()
                 }
             }
+        } else {
+            if self.frontOperation.identifier == operation.identifier {
+                self.frontOperation = RVDSOperation()
+            }
         }
-        if self.frontOperation.identifier == operation.identifier {
-            self.frontOperation = RVDSOperation()
-        }
+
     }
     func appendAtBack(items: [RVBaseModel]) {
         let operation = self.backOperation
         if let manager = self.manager {
             var sizedItems = maxItems(items: items) // Limits the number of new items to the maximum array size
             if sizedItems.count > 0 {
-             //   print("In \(self.instanceType).appendAtBack, have \(sizedItems.count) items")
-                /* have array with at least one item and less than or equal to maximumNumberOfItems */
-                var clone = cloneData()
-                var indexPaths = [IndexPath]()
-                let section = manager.section(datasource: self)
-                if let tableView = self.scrollView as? UITableView {
-                    var start = 0
-                    var currentOffset = self.offset
-                    let room = self.maximumArrayLength - self.array.count
-                    var atBack = true
-                    if room > 0 {
-                        var end = room
-                        // If number of new items less than room, set end to number of new Items, else use all the room
-                        if sizedItems.count < end { end = sizedItems.count }
-                      //  print("In \(self.instanceType).appendAtBack, adding \(end) items in first add to fill array")
-                        for index in (0..<end) {
-                            clone.append(sizedItems[index])
-                   //         print("In \(self.instanceType).appendAtBack, adding section: \(section), row: \(currentOffset + clone.count - 1)")
-                            indexPaths.append(IndexPath(row: (currentOffset + clone.count - 1), section: section))
-                            start = start + 1
-                        }
-                        var lastVisibleRow = 0
-                        if let visiblePaths = tableView.indexPathsForVisibleRows {
-                            if visiblePaths.count > 0 {
-                                let lastVisiblePath = visiblePaths[visiblePaths.count - 1]
-                                lastVisibleRow = lastVisiblePath.row
-                            }
-                        }
-                        if lastVisibleRow < (self.virtualCount - self.backBuffer) { atBack = false }
-                        tableView.beginUpdates()
-                        if (operation.identifier == self.backOperation.identifier) && (!operation.cancelled) {
-                           // print("In \(self.instanceType).appendAtBack, doing insertOperation with cloneCount = \(clone.count), indexPaths count = \(indexPaths.count)")
-                            self.array = clone
-                            tableView.insertRows(at: indexPaths, with: animation)
-                        }
-                      //  print("In \(self.instanceType).appendAtBack, after insertOperation just before endUpdates()")
-                        tableView.endUpdates()
-                      //  print("In \(self.instanceType).appendAtBack, after insertOperation")
-                    } else {
-                        var lastVisibleRow = 0
-                        if let visiblePaths = tableView.indexPathsForVisibleRows {
-                            if visiblePaths.count > 0 {
-                                let lastVisiblePath = visiblePaths[visiblePaths.count - 1]
-                                lastVisibleRow = lastVisiblePath.row
-                            }
-                        }
-                        if lastVisibleRow < (self.virtualCount - self.backBuffer) { atBack = false }
-                    }
-                    
-
-           //         print("In \(self.instanceType).appendAtBack, array Count is: \(self.array.count), start is: \(start)")
-                    clone = cloneData()
-                    indexPaths = [IndexPath]()
-          //          let lastVirtualRow = self.virtualCount
-                    if atBack {
-                        currentOffset = self.offset
-                        if start < sizedItems.count {
-                            for index in (start..<sizedItems.count) {
+                DispatchQueue.main.async {
+                 //   print("In \(self.instanceType).appendAtBack, have \(sizedItems.count) items")
+                    /* have array with at least one item and less than or equal to maximumNumberOfItems */
+                    var clone = self.cloneData()
+                    var indexPaths = [IndexPath]()
+                    let section = manager.section(datasource: self)
+                    if let tableView = self.scrollView as? UITableView {
+                        var start = 0
+                        var currentOffset = self.offset
+                        let room = self.maximumArrayLength - self.array.count
+                        var atBack = true
+                        if room > 0 {
+                            var end = room
+                            // If number of new items less than room, set end to number of new Items, else use all the room
+                            if sizedItems.count < end { end = sizedItems.count }
+                          //  print("In \(self.instanceType).appendAtBack, adding \(end) items in first add to fill array")
+                            for index in (0..<end) {
                                 clone.append(sizedItems[index])
-                              //  print("In \(self.instanceType).appendAtBack, adding section: \(section), row: \(currentOffset + clone.count - 1)")
-                                indexPaths.append(IndexPath(row: currentOffset + clone.count - 1, section: section))
+                       //         print("In \(self.instanceType).appendAtBack, adding section: \(section), row: \(currentOffset + clone.count - 1)")
+                                indexPaths.append(IndexPath(row: (currentOffset + clone.count - 1), section: section))
+                                start = start + 1
                             }
-                         //   print("In \(self.instanceType).appendAtBack, clone size is: \(clone.count)")
-                            var cloneOffset = 0
-                            var clone2: [RVBaseModel]
-                            (clone2, cloneOffset) = adjustArray(items: clone)
+                            var lastVisibleRow = 0
+                            if let visiblePaths = tableView.indexPathsForVisibleRows {
+                                if visiblePaths.count > 0 {
+                                    let lastVisiblePath = visiblePaths[visiblePaths.count - 1]
+                                    lastVisibleRow = lastVisiblePath.row
+                                }
+                            }
+                            if lastVisibleRow < (self.virtualCount - self.backBuffer) { atBack = false }
                             tableView.beginUpdates()
                             if (operation.identifier == self.backOperation.identifier) && (!operation.cancelled) {
-                                self.array = clone2
-                              //  print("In \(self.instanceType).appendAtBack array count is \(self.array.count), currentOffset = \(currentOffset), cloneOffset = \(cloneOffset)")
-                                self.offset = currentOffset + cloneOffset
-                                tableView.insertRows(at: indexPaths, with: animation)
+                               // print("In \(self.instanceType).appendAtBack, doing insertOperation with cloneCount = \(clone.count), indexPaths count = \(indexPaths.count)")
+                                self.array = clone
+                                tableView.insertRows(at: indexPaths, with: self.animation)
                             }
+                          //  print("In \(self.instanceType).appendAtBack, after insertOperation just before endUpdates()")
                             tableView.endUpdates()
-                          //  print("In \(self.instanceType).appendAtBack, after second insertOperation arrayCount = \(self.array.count), offset = \(self.offset)")
+                          //  print("In \(self.instanceType).appendAtBack, after insertOperation")
+                        } else {
+                            var lastVisibleRow = 0
+                            if let visiblePaths = tableView.indexPathsForVisibleRows {
+                                if visiblePaths.count > 0 {
+                                    let lastVisiblePath = visiblePaths[visiblePaths.count - 1]
+                                    lastVisibleRow = lastVisiblePath.row
+                                }
+                            }
+                            if lastVisibleRow < (self.virtualCount - self.backBuffer) { atBack = false }
+                        }
+                        
+
+               //         print("In \(self.instanceType).appendAtBack, array Count is: \(self.array.count), start is: \(start)")
+                        clone = self.cloneData()
+                        indexPaths = [IndexPath]()
+              //          let lastVirtualRow = self.virtualCount
+                        if atBack {
+                            currentOffset = self.offset
+                            if start < sizedItems.count {
+                                for index in (start..<sizedItems.count) {
+                                    clone.append(sizedItems[index])
+                                  //  print("In \(self.instanceType).appendAtBack, adding section: \(section), row: \(currentOffset + clone.count - 1)")
+                                    indexPaths.append(IndexPath(row: currentOffset + clone.count - 1, section: section))
+                                }
+                             //   print("In \(self.instanceType).appendAtBack, clone size is: \(clone.count)")
+                                var cloneOffset = 0
+                                var clone2: [RVBaseModel]
+                                (clone2, cloneOffset) = self.adjustArray(items: clone)
+                                tableView.beginUpdates()
+                                if (operation.identifier == self.backOperation.identifier) && (!operation.cancelled) {
+                                    self.array = clone2
+                                  //  print("In \(self.instanceType).appendAtBack array count is \(self.array.count), currentOffset = \(currentOffset), cloneOffset = \(cloneOffset)")
+                                    self.offset = currentOffset + cloneOffset
+                                    tableView.insertRows(at: indexPaths, with: self.animation)
+                                }
+                                tableView.endUpdates()
+                              //  print("In \(self.instanceType).appendAtBack, after second insertOperation arrayCount = \(self.array.count), offset = \(self.offset)")
+                            }
+                        }
+                      //  print("In \(self.instanceType).appendAtBack, array Count is: \(self.array.count)")
+                        if self.backOperation.identifier == operation.identifier {
+                            self.backOperation = RVDSOperation()
+                        }
+
+                    } else if let _ = self.scrollView as? UICollectionView {
+                        if self.backOperation.identifier == operation.identifier {
+                            self.backOperation = RVDSOperation()
+                        }
+                    } else {
+                        if self.backOperation.identifier == operation.identifier {
+                            self.backOperation = RVDSOperation()
                         }
                     }
-                  //  print("In \(self.instanceType).appendAtBack, array Count is: \(self.array.count)")
- 
-
-                } else if let _ = self.scrollView as? UICollectionView {
-                    
-                } else {
-                    
+                }
+                
+            } else {
+                if self.backOperation.identifier == operation.identifier {
+                    self.backOperation = RVDSOperation()
                 }
             }
-        }
-        if self.backOperation.identifier == operation.identifier {
-            self.backOperation = RVDSOperation()
+        } else {
+            if self.backOperation.identifier == operation.identifier {
+                self.backOperation = RVDSOperation()
+            }
         }
     }
     func adjustArray(items: [RVBaseModel]) -> ([RVBaseModel], Int) {
@@ -612,32 +643,33 @@ class RVBaseDataSource {
         }
         return clone
     }
-    func reset(callback: () -> Void) {
-        if let manager = self.manager {
-            if let tableView = self.scrollView as? UITableView {
-                tableView.beginUpdates()
-                self.frontOperation.cancelled = true
-                self.backOperation.cancelled = true
-                self.frontOperation = RVDSOperation()
-                self.backOperation = RVDSOperation()
-                self.array = [RVBaseModel]()
-                self.offset = 0
-                let indexSet = IndexSet(integer: manager.section(datasource: self))
-                tableView.reloadSections(indexSet, with: animation)
-                tableView.endUpdates()
-                callback()
-            } else if let _ = self.scrollView as? UICollectionView {
-                
-            } else {
-                self.frontOperation.cancelled = true
-                self.backOperation.cancelled = true
-                self.frontOperation = RVDSOperation()
-                self.backOperation = RVDSOperation()
-                self.array = [RVBaseModel]()
-                self.offset = 0
-                callback()
+    func reset(callback: @escaping () -> Void) {
+        DispatchQueue.main.async {
+            if let manager = self.manager {
+                if let tableView = self.scrollView as? UITableView {
+                    tableView.beginUpdates()
+                    self.frontOperation.cancelled = true
+                    self.backOperation.cancelled = true
+                    self.frontOperation = RVDSOperation()
+                    self.backOperation = RVDSOperation()
+                    self.array = [RVBaseModel]()
+                    self.offset = 0
+                    let indexSet = IndexSet(integer: manager.section(datasource: self))
+                    tableView.reloadSections(indexSet, with: self.animation)
+                    tableView.endUpdates()
+                    callback()
+                } else if let _ = self.scrollView as? UICollectionView {
+                    
+                } else {
+                    self.frontOperation.cancelled = true
+                    self.backOperation.cancelled = true
+                    self.frontOperation = RVDSOperation()
+                    self.backOperation = RVDSOperation()
+                    self.array = [RVBaseModel]()
+                    self.offset = 0
+                    callback()
+                }
             }
         }
-
     }
 }

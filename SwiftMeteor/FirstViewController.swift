@@ -186,20 +186,7 @@ class FirstViewController: UIViewController {
         NotificationCenter.default.addObserver(forName: Notification.Name(rawValue: listenerName), object: nil, queue: nil, using: documentListener)
         collection.addListener(name: listenerName)
      //   let _ = collection.subscribe()
-        RVTask.bulkQuery(query: query) { (models: [RVBaseModel]?, error: RVError?) in
-            if let error = error {
-                print("In \(self.instanceType).subscribeToTasks, got error")
-                error.printError()
-            } else if let models = models as? [RVTask] {
-                var index = 0
-                for _ in models {
-                //    print("\(index): \(model.text!)")
-                    index = index + 1
-                }
-            } else {
-                print("In \(self.instanceType).subscribeToTasks, no error but no results")
-            }
-        }
+
         if manager.sections.count > 0 {
             let ds = manager.sections[0]
             ds.baseQuery = query

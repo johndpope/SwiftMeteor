@@ -11,9 +11,9 @@ import Foundation
 // https://docs.mongodb.com/manual/reference/operator/query/
 // https://themeteorchef.com/tutorials/mongodb-queries-and-projections
 
-enum RVSortOrder: Int {
-    case ascending  = 1
-    case descending = -1
+enum RVSortOrder: String {
+    case ascending  = "ascending"
+    case descending = "descending"
 }
 enum RVComparison: String {
     case lt = "$lt"
@@ -78,6 +78,9 @@ class RVQuery {
         }
         for projection in projections {
             query.projections.append(projection.duplicate())
+        }
+        for sortTerm in sortTerms {
+            query.addSort(sortTerm: sortTerm.duplicate())
         }
         query.limit = self.limit
         return query
@@ -151,6 +154,9 @@ class RVQuery {
             self.projections.append(projectionItem)
         }
     }
+    func addSort(sortTerm: RVSortTerm) {
+        self.addSort(field: sortTerm.field, order: sortTerm.order)
+    }
     func addSort(field: RVKeys, order: RVSortOrder) {
         if let term = findSortTerm(field: field) {
             term.order = order
@@ -161,13 +167,14 @@ class RVQuery {
     func query() -> ([String : AnyObject], [String : AnyObject]) {
         var projections = [String: AnyObject]()
  //       projections[Projection.sort.rawValue] = [sortTerm.rawValue : sortOrder.rawValue] as AnyObject
-        var sorts = [[String: Int]]()
+        var sorts = [[String]]()
         for sortTerm in sortTerms {
             sorts.append(sortTerm.term())
         }
         if sorts.count > 0 {
             projections[Projection.sort.rawValue] = sorts as AnyObject?
         }
+       // projections[Projection.sort.rawValue] = [["createdAt", "descending"]] as AnyObject // Neil plug
         projections[Projection.limit.rawValue] = self.limit as AnyObject
         var fields = [String : Int]()
         for projection in self.projections {
@@ -272,8 +279,8 @@ class RVSortTerm {
         self.field = field
         self.order = order
     }
-    func term() -> [String : Int] {
-        return [self.field.rawValue: self.order.rawValue]
+    func term() -> [String] {
+        return [self.field.rawValue, self.order.rawValue]
     }
     func duplicate() -> RVSortTerm {
         return RVSortTerm(field: self.field, order: self.order)
