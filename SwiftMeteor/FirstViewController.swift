@@ -15,11 +15,13 @@ class FirstViewController: UIViewController {
     @IBOutlet weak var tableView: UITableView!
     var instanceType: String { get { return String(describing: type(of: self)) } }
     var manager = RVDSManager()
+    var refreshControl = UIRefreshControl()
     
     @IBAction func leftBarButton(button: UIBarButtonItem) {
         RVViewDeck.sharedInstance.toggleSide(side: RVViewDeck.Side.left)
     }
     override func viewDidLoad() {
+        installRefresh()
      //   tableView.delegate = self
       //  tableView.dataSource = self
         manager = RVDSManager()
@@ -170,8 +172,9 @@ class FirstViewController: UIViewController {
         let collection = RVTaskCollection()
         let query = RVQuery()
         query.limit = 70
-        query.sortOrder = .descending
-        query.sortTerm = .createdAt
+//        query.sortOrder = .descending
+//        query.sortTerm = .createdAt
+        query.addSort(field: .createdAt, order: .descending)
         query.addAnd(queryItem: RVQueryItem(term: .createdAt, value: EJSON.convertToEJSONDate(Date()) as AnyObject, comparison: .lte))
         query.addOr(queryItem: RVQueryItem(term: .owner, value: "Goober" as AnyObject, comparison: .eq))
         query.addOr(queryItem: RVQueryItem(term: .private, value: true as AnyObject, comparison: .ne))
@@ -197,9 +200,12 @@ class FirstViewController: UIViewController {
                 print("In \(self.instanceType).subscribeToTasks, no error but no results")
             }
         }
-        let ds = manager.sections[0]
-        ds.baseQuery = query
-        ds.testQuery()
+        if manager.sections.count > 0 {
+            let ds = manager.sections[0]
+            ds.baseQuery = query
+            ds.testQuery()
+        }
+
      //   insertATask()
        // insertOuter(count: 0)
         
@@ -208,7 +214,8 @@ class FirstViewController: UIViewController {
         let _ = TaskCollection2(name: "tasks")
         let query = RVQuery()
         query.limit = 50
-        query.sortOrder = .descending
+        query.addSort(field: .createdAt, order: .descending)
+  //      query.sortOrder = .descending
   //      query.addAnd(queryItem: RVQueryItem(term: .createdAt, value: EJSON.convertToEJSONDate(Date()) as AnyObject, comparison: .lte))
         query.addOr(queryItem: RVQueryItem(term: .owner, value: "Goober" as AnyObject, comparison: .eq))
         query.addOr(queryItem: RVQueryItem(term: .private, value: true as AnyObject, comparison: .ne))
@@ -549,8 +556,44 @@ extension FirstViewController: UITableViewDataSource {
         return manager.numberOfItems(section: section)
     }
     func numberOfSections(in tableView: UITableView) -> Int {
-       // print("In \(self.classForCoder).numberOfSections... \(manager.sections.count)")
-        return manager.sections.count
+        //print("In \(self.classForCoder).numberOfSections... \(manager.sections.count)")
+        let count = manager.sections.count
+        if count == 0 {
+
+            let messageLabel = UILabel(frame: CGRect(x: 0, y: 0, width: self.view.bounds.size.width, height: self.view.bounds.size.height))
+            messageLabel.text = "No data is currently available. Please pull down to refresh."
+            messageLabel.textColor = UIColor.black
+            messageLabel.textAlignment = NSTextAlignment.center
+            messageLabel.font = UIFont(name: "Palatino-Italic", size: 20)
+            messageLabel.sizeToFit()
+            self.tableView.backgroundView = messageLabel
+            self.tableView.separatorStyle = UITableViewCellSeparatorStyle.none
+        } else {
+            self.tableView.backgroundView = self.refreshControl
+            self.tableView.separatorStyle = UITableViewCellSeparatorStyle.singleLineEtched
+        }
+        return count
+    }
+    func installRefresh() {
+        self.refreshControl.backgroundColor = UIColor.purple
+        self.refreshControl.tintColor = UIColor.white
+        self.refreshControl.addTarget(self , action: #selector(refresh), for: UIControlEvents.valueChanged)
+        self.tableView.backgroundView = self.refreshControl
+        self.tableView.separatorStyle = UITableViewCellSeparatorStyle.singleLineEtched
+    }
+    func refresh() {
+        // self.tableView.reloadData
+        let formatter = DateFormatter()
+        formatter.dateFormat = "MMM d, h:mm a"
+        let title = "Last update: \(formatter.string(from: Date()))"
+        let attrsDictionary = [NSForegroundColorAttributeName : UIColor.white]
+        let attributedTitle = NSAttributedString(string: title, attributes: attrsDictionary)
+        self.refreshControl.attributedTitle = attributedTitle
+        if manager.sections.count > 0 {
+            let datasource = manager.sections[0]
+            datasource.loadFront()
+        }
+        self.refreshControl.endRefreshing()
     }
 }
 

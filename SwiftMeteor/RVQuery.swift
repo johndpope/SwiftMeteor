@@ -64,6 +64,7 @@ class RVQueryItem {
 }
 
 class RVQuery {
+    var instanceType: String { get { return String(describing: type(of: self)) } }
     func duplicate() -> RVQuery {
         let query = RVQuery()
         query.comment = self.comment
@@ -89,6 +90,7 @@ class RVQuery {
     static let commentField = "$comment"
     static let limitField = "$limit"
     var comment: String?    = nil
+    private var sortTerms = [RVSortTerm]()
     var sortOrder: RVSortOrder  = .descending
     var sortTerm: RVKeys        = .createdAt
     var ands    = [RVQueryItem]()
@@ -105,18 +107,67 @@ class RVQuery {
         }
         return nil
     }
+    func findOrTerm(term: RVKeys) -> RVQueryItem? {
+        for item in ors {
+            if item.term == term {
+                return item
+            }
+        }
+        return nil
+    }
+    func findProjectionTerm(field: RVKeys) -> RVProjectionItem? {
+        for item in projections {
+            if item.field == field {
+                return item
+            }
+        }
+        return nil
+    }
+    func findSortTerm(field: RVKeys) -> RVSortTerm? {
+        for term in sortTerms {
+            if term.field == field { return term }
+        }
+        return nil
+    }
     func addAnd(queryItem: RVQueryItem) {
-        self.ands.append(queryItem)
+        if let existing = findAndTerm(term: queryItem.term) {
+            existing.comparison = queryItem.comparison
+            existing.value = queryItem.value
+        } else {
+            self.ands.append(queryItem)
+        }
     }
     func addOr(queryItem: RVQueryItem) {
+        if let existing = findOrTerm(term: queryItem.term) {
+            existing.comparison = queryItem.comparison
+            existing.value = queryItem.value
+        }
         self.ors.append(queryItem)
     }
     func addProjection(projectionItem:RVProjectionItem) {
-        self.projections.append(projectionItem)
+        if let projection = findProjectionTerm(field: projectionItem.field) {
+            projection.include = projectionItem.include
+        } else {
+            self.projections.append(projectionItem)
+        }
+    }
+    func addSort(field: RVKeys, order: RVSortOrder) {
+        if let term = findSortTerm(field: field) {
+            term.order = order
+        } else {
+            sortTerms.append(RVSortTerm(field: field, order: order))
+        }
     }
     func query() -> ([String : AnyObject], [String : AnyObject]) {
         var projections = [String: AnyObject]()
-        projections[Projection.sort.rawValue] = [sortTerm.rawValue : sortOrder.rawValue] as AnyObject
+ //       projections[Projection.sort.rawValue] = [sortTerm.rawValue : sortOrder.rawValue] as AnyObject
+        var sorts = [[String: Int]]()
+        for sortTerm in sortTerms {
+            sorts.append(sortTerm.term())
+        }
+        if sorts.count > 0 {
+            projections[Projection.sort.rawValue] = sorts as AnyObject?
+        }
         projections[Projection.limit.rawValue] = self.limit as AnyObject
         var fields = [String : Int]()
         for projection in self.projections {
@@ -139,6 +190,59 @@ class RVQuery {
         if orQuery.count > 0 { filters[RVLogic.or.rawValue] = orQuery as AnyObject }
         return (filters, projections)
     }
+    func updateQuery(front: Bool) -> RVQuery {
+        for sortTerm in sortTerms {
+            if !updateSort(front: front, field: sortTerm.field){
+                print("In \(self.instanceType).updateQuery, no and term matching sort for field: \(sortTerm.field.rawValue)")
+            }
+            if front {
+                switch(sortTerm.order) {
+                case .ascending:
+                    sortTerm.order = .descending
+                case .descending:
+                    sortTerm.order = .ascending
+                }
+            }
+        }
+        if self.sortTerms.count == 0 {
+            print("In \(self.instanceType).updateQuery, no sort Terms :-(")
+        }
+        return self
+    }
+    func updateSort(front: Bool, field: RVKeys) -> Bool {
+        if let andTerm = findAndTerm(term: field) {
+            if !front {
+                switch(andTerm.comparison) {
+                case .lt:
+                    andTerm.comparison = .lte
+                case .lte:
+                    andTerm.comparison = .lt
+                case .gt:
+                    andTerm.comparison = .gte
+                case .gte:
+                    andTerm.comparison = .gt
+                default:
+                    print("In \(self.instanceType).updateSort, inappropriate comparison of [\(andTerm.comparison.rawValue)] for field: \(field.rawValue)")
+                }
+            } else {
+                switch(andTerm.comparison) {
+                case .lt:
+                    andTerm.comparison = .gte
+                case .lte:
+                    andTerm.comparison = .gt
+                case .gt:
+                    andTerm.comparison = .lte
+                case .gte:
+                    andTerm.comparison = .lt
+                default:
+                    print("In \(self.instanceType).updateSort, inappropriate comparison of [\(andTerm.comparison.rawValue)] for field: \(field.rawValue)")
+                }
+            }
+            return true
+        } else {
+            return false
+        }
+    }
 }
 
 
@@ -159,5 +263,19 @@ class RVProjectionItem {
     func duplicate() -> RVProjectionItem {
         let item = RVProjectionItem(field: self.field , include: self.include)
         return item
+    }
+}
+class RVSortTerm {
+    var field: RVKeys
+    var order: RVSortOrder
+    init(field: RVKeys = .createdAt, order: RVSortOrder = .descending) {
+        self.field = field
+        self.order = order
+    }
+    func term() -> [String : Int] {
+        return [self.field.rawValue: self.order.rawValue]
+    }
+    func duplicate() -> RVSortTerm {
+        return RVSortTerm(field: self.field, order: self.order)
     }
 }

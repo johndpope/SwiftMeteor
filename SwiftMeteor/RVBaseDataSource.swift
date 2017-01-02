@@ -105,7 +105,7 @@ class RVBaseDataSource {
             if self.array.count == 0 {
                 // Neil do nothing for now
             } else {
-                let query = query2.duplicate()
+                let query = query2.duplicate().updateQuery(front: true)
                 if let first = self.array.first {
                     
                     switch(query.sortTerm) {
@@ -113,14 +113,14 @@ class RVBaseDataSource {
                         if let firstCreatedAt = first.createdAt {
                             if let queryTerm = query.findAndTerm(term: .createdAt) {
                                 queryTerm.value = EJSON.convertToEJSONDate(firstCreatedAt) as AnyObject
-                                if queryTerm.comparison == .lte {queryTerm.comparison = .gt}
-                                else if queryTerm.comparison == .gte {queryTerm.comparison = .lt}
+                              //  if queryTerm.comparison == .lte {queryTerm.comparison = .gt}
+                              //  else if queryTerm.comparison == .gte {queryTerm.comparison = .lt}
                             } else {
                                  print("In \(self.instanceType).queryForFront no queryTerm for createdAt")
                             }
                         }
-                        if query.sortOrder == .ascending { query.sortOrder = .descending}
-                        else { query.sortOrder = .ascending }
+                     //   if query.sortOrder == .ascending { query.sortOrder = .descending}
+                     //   else { query.sortOrder = .ascending }
                     default:
                         print("In \(self.instanceType).queryForBack, have unserviced sortTerm: \(query.sortTerm.rawValue)")
                     }
@@ -154,7 +154,7 @@ class RVBaseDataSource {
                 if self.array.count == 0 {
                     queryForBackHelper(query: query, operation: operation, callback: callback)
                 } else {
-                    let query = query.duplicate()
+                    let query = query.duplicate().updateQuery(front: false)
                     if let last = self.array.last {
                      //   print("In \(self.instanceType).queryForBack have last... \(last.text!)")
                         switch(query.sortTerm) {
@@ -162,8 +162,8 @@ class RVBaseDataSource {
                             if let lastCreatedAt = last.createdAt {
                                 if let queryTerm = query.findAndTerm(term: .createdAt) {
                                     queryTerm.value = EJSON.convertToEJSONDate(lastCreatedAt) as AnyObject
-                                    if queryTerm.comparison == .lte { queryTerm.comparison = .lt}
-                                    else if queryTerm.comparison == .gte { queryTerm.comparison = .gt}
+                                   // if queryTerm.comparison == .lte { queryTerm.comparison = .lt}
+                                   // else if queryTerm.comparison == .gte { queryTerm.comparison = .gt}
                                 } else {
                                     
                                     print("In \(self.instanceType).queryForBack no queryTerm for createdAt")
@@ -239,7 +239,7 @@ class RVBaseDataSource {
         }
         let operation = self.frontOperation
         if !operation.active {
-            print("In \(self.instanceType).inFrontZone, passed active. location = \(location), offset = \(self.offset), array count = \(self.array.count)")
+           // print("In \(self.instanceType).inFrontZone, passed active. location = \(location), offset = \(self.offset), array count = \(self.array.count)")
             operation.active = true
             self.frontTime = Date().timeIntervalSince1970
             Timer.scheduledTimer(withTimeInterval: delay, repeats: false, block: { (timer: Timer) in
@@ -267,6 +267,39 @@ class RVBaseDataSource {
                             self.frontOperation = RVDSOperation() // NEIL REMOVE THIS IS A PLUG
                         }
                     }
+                }
+                self.frontTimer = false
+            })
+        } else {
+            frontTimer = false
+        }
+    }
+    func loadFront() {
+        if (Date().timeIntervalSince1970 - self.frontTime) < 2.0 { return }
+        if frontTimer { return }
+        frontTimer = true
+        if self.backOperation.active {
+            self.backOperation.cancelled = true
+            self.backOperation = RVDSOperation()
+        }
+        let operation = self.frontOperation
+        if !operation.active {
+            // print("In \(self.instanceType).inFrontZone, passed active. location = \(location), offset = \(self.offset), array count = \(self.array.count)")
+            operation.active = true
+            self.frontTime = Date().timeIntervalSince1970
+            Timer.scheduledTimer(withTimeInterval: delay, repeats: false, block: { (timer: Timer) in
+                if let tableView = self.scrollView as? UITableView {
+                        if operation.identifier == self.frontOperation.identifier {
+                            self.queryForFront(callback: { (error ) in
+                                if let error = error {
+                                    error.printError()
+                                } else {
+                                    //print("In \(self.instanceType).inFrontZone")
+                                }
+                            })
+                            //   print("In \(self.instanceType).inFrontZone. TRIGGER location = \(location), offset = \(self.offset), array count = \(self.array.count) --- Set Front Operation active")
+                        }
+
                 }
                 self.frontTimer = false
             })
