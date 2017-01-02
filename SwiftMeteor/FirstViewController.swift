@@ -527,9 +527,16 @@ extension FirstViewController: UITableViewDataSource {
                     if let label = cell.customTextLabel {
                         label.text = text
                     }
+                } else {
+                    if let label = cell.customTextLabel {
+                        label.text = "Nothing \(indexPath.row)"
+                    }
                 }
             } else {
-                print("In \(self.instanceType).cellForRow, no item at section: \(indexPath.section), rwo: \(indexPath.row)")
+                if let label = cell.customTextLabel {
+                    label.text = "Nothing \(indexPath.row)"
+                }
+                //print("In \(self.instanceType).cellForRow, no item at section: \(indexPath.section), rwo: \(indexPath.row)")
             }
             return cell
         } else {

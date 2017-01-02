@@ -54,6 +54,13 @@ class RVQueryItem {
     func query() -> [String: AnyObject] {
         return [term.rawValue : [comparison.rawValue : value ] as AnyObject ]
     }
+    func duplicate() -> RVQueryItem {
+        let item = RVQueryItem()
+        item.term = self.term
+        item.value = self.value
+        item.comparison = self.comparison
+        return item
+    }
 }
 
 class RVQuery {
@@ -63,13 +70,13 @@ class RVQuery {
         query.sortOrder = self.sortOrder
         query.sortTerm = self.sortTerm
         for andTerm in self.ands {
-            query.ands.append(andTerm)
+            query.ands.append(andTerm.duplicate())
         }
         for orTerm in self.ors {
-            query.ors.append(orTerm)
+            query.ors.append(orTerm.duplicate())
         }
         for projection in projections {
-            query.projections.append(projection)
+            query.projections.append(projection.duplicate())
         }
         query.limit = self.limit
         return query
@@ -148,5 +155,9 @@ class RVProjectionItem {
     }
     func project() -> (String, Int) {
         return (self.field.rawValue, self.include.rawValue)
+    }
+    func duplicate() -> RVProjectionItem {
+        let item = RVProjectionItem(field: self.field , include: self.include)
+        return item
     }
 }
