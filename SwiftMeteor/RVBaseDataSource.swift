@@ -39,10 +39,12 @@ class RVBaseDataSource {
             return virtualCount
         }
     }
+    /*
     init(scrollView: UIScrollView?, manager: RVDSManager) {
         self.scrollView = scrollView
         self.manager = manager
     }
+ */
     func testQuery() {
         let operation = self.backOperation
         if let query = self.baseQuery {
@@ -69,7 +71,7 @@ class RVBaseDataSource {
             }
         }
     }
-    func start() {
+    func reStart(query: RVQuery) {
         self.reset {
             if self.array.count == 0 {
                 let operation = self.backOperation
@@ -643,32 +645,36 @@ class RVBaseDataSource {
         }
         return clone
     }
+    func flushOperations() {
+        self.frontOperation.cancelled = true
+        self.backOperation.cancelled = true
+        self.frontOperation = RVDSOperation()
+        self.backOperation = RVDSOperation()
+    }
     func reset(callback: @escaping () -> Void) {
-        DispatchQueue.main.async {
-            if let manager = self.manager {
-                if let tableView = self.scrollView as? UITableView {
+        if let manager = self.manager {
+            if let tableView = self.scrollView as? UITableView {
+                self.flushOperations()
+                // Give a break to allow pending operations to terminate
+                DispatchQueue.main.async {
                     tableView.beginUpdates()
-                    self.frontOperation.cancelled = true
-                    self.backOperation.cancelled = true
-                    self.frontOperation = RVDSOperation()
-                    self.backOperation = RVDSOperation()
                     self.array = [RVBaseModel]()
                     self.offset = 0
                     let indexSet = IndexSet(integer: manager.section(datasource: self))
                     tableView.reloadSections(indexSet, with: self.animation)
                     tableView.endUpdates()
                     callback()
-                } else if let _ = self.scrollView as? UICollectionView {
-                    
-                } else {
-                    self.frontOperation.cancelled = true
-                    self.backOperation.cancelled = true
-                    self.frontOperation = RVDSOperation()
-                    self.backOperation = RVDSOperation()
+                }
+            } else if let _ = self.scrollView as? UICollectionView {
+                
+            } else {
+                self.flushOperations()
+                DispatchQueue.main.async {
                     self.array = [RVBaseModel]()
                     self.offset = 0
                     callback()
                 }
+
             }
         }
     }

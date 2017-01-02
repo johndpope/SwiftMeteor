@@ -14,20 +14,18 @@ class FirstViewController: UIViewController {
     
     @IBOutlet weak var tableView: UITableView!
     var instanceType: String { get { return String(describing: type(of: self)) } }
-    var manager = RVDSManager()
+    var manager: RVDSManager!
     var refreshControl = UIRefreshControl()
+    var taskDatasource = RVBaseDataSource()
     
     @IBAction func leftBarButton(button: UIBarButtonItem) {
         RVViewDeck.sharedInstance.toggleSide(side: RVViewDeck.Side.left)
     }
     override func viewDidLoad() {
-        installRefresh()
-     //   tableView.delegate = self
-      //  tableView.dataSource = self
-        manager = RVDSManager()
-        let datasource = RVBaseDataSource(scrollView: tableView, manager: manager)
-        manager.addSection(section: datasource)
         super.viewDidLoad()
+        installRefresh()
+        manager = RVDSManager(scrollView: self.tableView)
+        manager.addSection(section: taskDatasource)
         Meteor.client.allowSelfSignedSSL = true // Connect to a server that users a self signed ssl certificate
         Meteor.client.logLevel = .info // Options are: .Verbose, .Debug, .Info, .Warning, .Error, .Severe, .None
 
