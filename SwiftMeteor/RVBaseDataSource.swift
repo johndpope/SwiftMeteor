@@ -55,32 +55,7 @@ class RVBaseDataSource {
         self.manager = manager
     }
  */
-    func testQuery() {
-        let operation = self.backOperation
-        if let query = self.baseQuery {
-            if !operation.active {
-                operation.active = true
-               // print("In \(self.instanceType).testQuery() about to do bulkQuery")
-                RVTask.bulkQuery(query: query) { (models: [RVBaseModel]?, error: RVError?) in
-                    if let error = error {
-                        print("In \(self.instanceType).subscribeToTasks, got error")
-                        error.printError()
-                    } else if let models = models {
-                        var index = 0
-                        for _ in models {
-                         //   print("\(index): \(model.text!)")
-                            index = index + 1
-                        }
-                        if self.backOperation.identifier == operation.identifier {
-                            self.appendAtBack(operation: operation, items: models)
-                        }
-                    } else {
-                        print("In \(self.instanceType).subscribeToTasks, no error but no results")
-                    }
-                }
-            }
-        }
-    }
+/*
     func reStart(query: RVQuery) {
         self.reset {
             if self.array.count == 0 {
@@ -112,6 +87,7 @@ class RVBaseDataSource {
             }
         }
     }
+ */
     func replaceFrontOperation(operation: RVDSOperation) {
         if self.frontOperation.identifier == operation.identifier {
             self.frontOperation = RVDSOperation(name: frontOperationName)
@@ -726,6 +702,42 @@ class RVBaseDataSource {
                     callback()
                 }
 
+            }
+        }
+    }
+    func start(query: RVQuery, callback: @escaping (_ error: RVError?)-> Void) {
+        reset {
+            self.baseQuery = query
+            self.inBackZone(location: 0)
+        }
+    }
+    func stop(callback: @escaping(_ error: RVError?) -> Void) {
+        flushOperations()
+        callback(nil)
+    }
+    func testQuery() {
+        let operation = self.backOperation
+        if let query = self.baseQuery {
+            if !operation.active {
+                operation.active = true
+                // print("In \(self.instanceType).testQuery() about to do bulkQuery")
+                RVTask.bulkQuery(query: query) { (models: [RVBaseModel]?, error: RVError?) in
+                    if let error = error {
+                        print("In \(self.instanceType).subscribeToTasks, got error")
+                        error.printError()
+                    } else if let models = models {
+                        var index = 0
+                        for _ in models {
+                            //   print("\(index): \(model.text!)")
+                            index = index + 1
+                        }
+                        if self.backOperation.identifier == operation.identifier {
+                            self.appendAtBack(operation: operation, items: models)
+                        }
+                    } else {
+                        print("In \(self.instanceType).subscribeToTasks, no error but no results")
+                    }
+                }
             }
         }
     }

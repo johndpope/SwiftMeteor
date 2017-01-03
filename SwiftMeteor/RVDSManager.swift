@@ -22,7 +22,7 @@ class RVDSManager {
             if section.identifier == datasource.identifier { return index }
             index = index + 1
         }
-        return 0
+        return -1
     }
     func addSection(section: RVBaseDataSource) {
         section.scrollView = self.scrollView
@@ -58,6 +58,31 @@ class RVDSManager {
             return sections[section].scrollViewCount
         }
         return 0
+    }
+    func startDatasource(datasource: RVBaseDataSource, query: RVQuery, callback: @escaping(_ error: RVError?) -> Void) {
+        let sectionNumber = section(datasource: datasource)
+        if sectionNumber >= 0 {
+            let datasource = self.sections[sectionNumber]
+            datasource.start(query: query, callback: { (error) in
+                callback(error)
+            })
+        } else {
+            let rvError = RVError(message: "In \(self.instanceType).startDatasource datasource not found")
+            callback(rvError)
+        }
+    }
+    func stopDatasource(datasource: RVBaseDataSource, callback: @escaping(_ error: RVError?)-> Void ){
+        let sectionNumber = section(datasource: datasource)
+        let completionHandler = callback
+        if sectionNumber >= 0 {
+            let datasource = self.sections[sectionNumber]
+            datasource.stop(callback: { (error) in
+                completionHandler(error)
+            })
+        } else {
+            let rvError = RVError(message: "In \(self.instanceType).stopDatasource datasource not found")
+            callback(rvError)
+        }
     }
     
 }

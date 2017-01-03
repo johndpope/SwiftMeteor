@@ -184,12 +184,19 @@ class FirstViewController: UIViewController {
         NotificationCenter.default.addObserver(forName: Notification.Name(rawValue: listenerName), object: nil, queue: nil, using: documentListener)
         collection.addListener(name: listenerName)
      //   let _ = collection.subscribe()
-
+        manager.startDatasource(datasource: self.taskDatasource, query: query) { (error ) in
+            if let error = error {
+                print("In \(self.instanceType).subscribeToTasks(), got error starting task datasource")
+                error.printError()
+            }
+        }
+        /*
         if manager.sections.count > 0 {
             let ds = manager.sections[0]
             ds.baseQuery = query
             ds.testQuery()
         }
+ */
 
      //   insertATask()
        // insertOuter(count: 0)
