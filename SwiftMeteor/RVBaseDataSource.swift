@@ -11,24 +11,34 @@ import SwiftDDP
 
 class RVBaseDataSource {
     var instanceType: String { get { return String(describing: type(of: self)) } }
-    var maximumArrayLength: Int = 100
-    var backBuffer = 20
+    var maximumArrayLength: Int = 130
+    var backBuffer = 30
     var frontBuffer = 20
     var frontTimer: Bool = false
     var frontTime: TimeInterval = Date().timeIntervalSince1970
     var backTime: TimeInterval = Date().timeIntervalSince1970
-    let minimumInterval: TimeInterval = 1.0
+    let minimumInterval: TimeInterval = 0.5
     var backTimer: Bool = false
     var array = [RVBaseModel]()
     var baseQuery: RVQuery? = nil
     let identifier = NSDate().timeIntervalSince1970
     weak var scrollView: UIScrollView? = nil
-    var backOperation: RVDSOperation = RVDSOperation()
-    var frontOperation: RVDSOperation = RVDSOperation()
-    var delay: TimeInterval = 0.05
+    let backOperationName = "BackOperation"
+    let frontOperationName = "FrontOperation"
+    var backOperation: RVDSOperation
+    var frontOperation: RVDSOperation {
+        didSet {
+         //  print("Front Operation replaced \(frontOperation.identifier)")
+        }
+    }
+    var delay: TimeInterval = 0.001
     weak var manager: RVDSManager? = nil
     var animation: UITableViewRowAnimation = UITableViewRowAnimation.automatic
     private var offset: Int = 0
+    init() {
+        self.backOperation = RVDSOperation(name: backOperationName)
+        self.frontOperation = RVDSOperation(name: frontOperationName)
+    }
     var virtualCount: Int {
         get {
             return array.count + offset
@@ -62,7 +72,7 @@ class RVBaseDataSource {
                             index = index + 1
                         }
                         if self.backOperation.identifier == operation.identifier {
-                            self.appendAtBack(items: models)
+                            self.appendAtBack(operation: operation, items: models)
                         }
                     } else {
                         print("In \(self.instanceType).subscribeToTasks, no error but no results")
@@ -89,7 +99,7 @@ class RVBaseDataSource {
                                     index = index + 1
                                 }
                                 if self.backOperation.identifier == operation.identifier {
-                                    self.appendAtBack(items: models)
+                                    self.appendAtBack(operation: operation, items: models)
                                 }
                             } else {
                                 print("In \(self.instanceType).subscribeToTasks, no error but no results")
@@ -102,16 +112,24 @@ class RVBaseDataSource {
             }
         }
     }
-    func queryForFront(callback: @escaping(_ error: RVError?) -> Void) {
+    func replaceFrontOperation(operation: RVDSOperation) {
+        if self.frontOperation.identifier == operation.identifier {
+            self.frontOperation = RVDSOperation(name: frontOperationName)
+
+        }
+    }
+    func queryForFront(operation: RVDSOperation, callback: @escaping(_ error: RVError?) -> Void) {
        // return
         if let query2 = self.baseQuery {
-            let operation = self.frontOperation
+            //let operation = self.frontOperation
             if self.array.count == 0 {
                 // Neil do nothing for now
+                operation.cancelled = true
+                replaceFrontOperation(operation: operation)
+                callback(nil)
             } else {
                 let query = query2.duplicate().updateQuery(front: true)
                 if let first = self.array.first {
-                    
                     switch(query.sortTerm) {
                     case .createdAt:
                         if let firstCreatedAt = first.createdAt {
@@ -131,8 +149,12 @@ class RVBaseDataSource {
                                //   print("In \(self.instanceType).queryForFront() about to do bulkQuery")
                     RVTask.bulkQuery(query: query , callback: { (models, error) in
                         if let error = error {
-                            print("In \(self.instanceType).subscribeToTasks, got error")
+                            print("In \(self.instanceType).queryForFront, got error")
                             error.printError()
+                            operation.cancelled = true
+                            self.replaceFrontOperation(operation: operation)
+                            error.append(message: "In \(self.instanceType).queryForFront, got error")
+                            callback(error)
                         } else if let models = models {
                             var index = 0
                             for _ in models {
@@ -140,15 +162,31 @@ class RVBaseDataSource {
                                 index = index + 1
                             }
                             if self.frontOperation.identifier == operation.identifier {
-                                self.insertAtFront(items: models)
+                                self.insertAtFront(operation: operation, items: models)
                             }
+                            callback(nil)
                         } else {
-                            print("In \(self.instanceType).subscribeToTasks, no error but no results")
+                            print("In \(self.instanceType).queryForFront, no error but no results")
+                            operation.cancelled = true
+                            self.replaceFrontOperation(operation: operation)
+                            callback(nil)
                         }
                     })
  
+                } else {
+
+                    operation.cancelled = true
+                    replaceFrontOperation(operation: operation)
+                    let rvError = RVError(message: "In \(self.instanceType).queryForFront, no first entry in array")
+                    callback(rvError)
                 }
             }
+        } else {
+            print("In \(self.instanceType).queryForFront, no query. Invalid state")
+            operation.cancelled = true
+            replaceFrontOperation(operation: operation)
+            let rvError = RVError(message: "In \(self.instanceType).queryForFront, no query. Invalid state")
+            callback(rvError)
         }
     }
     func queryForBack(callback: @escaping(_ error: RVError?) -> Void) {
@@ -179,6 +217,8 @@ class RVBaseDataSource {
                         return
                     } else {
                         let rvError = RVError(message: "In \(self.instanceType).queryForBack, last item")
+                        operation.cancelled = true
+                        self.replaceBackOperation(operation: operation)
                         callback(rvError)
                         return
                     }
@@ -195,6 +235,10 @@ class RVBaseDataSource {
             if let error = error {
                 print("In \(self.instanceType).subscribeToTasks, got error")
                 error.printError()
+                error.append(message: "In \(self.instanceType).subscribeToTasks, got error")
+                operation.cancelled = true
+                self.replaceBackOperation(operation: operation)
+                callback(error)
             } else if let models = models {
                 var index = 0
                 for _ in models {
@@ -202,15 +246,18 @@ class RVBaseDataSource {
                     index = index + 1
                 }
                 if self.backOperation.identifier == operation.identifier {
-                    self.appendAtBack(items: models)
+                    self.appendAtBack(operation: operation, items: models)
                 }
+                callback(nil)
             } else {
                 print("In \(self.instanceType).subscribeToTasks, no error but no results")
+                operation.cancelled = true
+                self.replaceBackOperation(operation: operation)
             }
         }
     }
     func item(location: Int) -> RVBaseModel? {
-    //    print("In \(self.instanceType).item, with location: \(location)")
+      //  print("In \(self.instanceType).item, with location: \(location)")
         if location >= 0 {
             let mappedIndex = location - self.offset
             if mappedIndex >= 0 {
@@ -226,6 +273,7 @@ class RVBaseDataSource {
                 }
             } else {
                 print("In \(self.instanceType).item got negative mapped Index. location = \(location), offset = \(self.offset), array count: \(self.array.count)")
+                inFrontZone(location: location)
             }
         } else {
             print("In \(self.instanceType).item. Location is less than zero. location = \(location), offset = \(self.offset), array count: \(self.array.count)")
@@ -239,7 +287,7 @@ class RVBaseDataSource {
         frontTimer = true
         if self.backOperation.active {
             self.backOperation.cancelled = true
-            self.backOperation = RVDSOperation()
+            self.backOperation = RVDSOperation(name: backOperationName)
         }
         let operation = self.frontOperation
         if !operation.active {
@@ -247,30 +295,40 @@ class RVBaseDataSource {
             operation.active = true
             self.frontTime = Date().timeIntervalSince1970
             Timer.scheduledTimer(withTimeInterval: delay, repeats: false, block: { (timer: Timer) in
-                if let tableView = self.scrollView as? UITableView {
-                    var firstVisibleRow = 0
-                    if let visiblePaths = tableView.indexPathsForVisibleRows {
-                        if visiblePaths.count > 0 {
-                            let firstVisiblePath = visiblePaths[0]
-                            firstVisibleRow = firstVisiblePath.row
+                //print("In \(self.instanceType).inFrontZone, returned from timer ------------------- ")
+                if self.frontOperation.identifier == operation.identifier {
+                    if let tableView = self.scrollView as? UITableView {
+                        var firstVisibleRow = 0
+                        if let visiblePaths = tableView.indexPathsForVisibleRows {
+                            if visiblePaths.count > 0 {
+                                let firstVisiblePath = visiblePaths[0]
+                                firstVisibleRow = firstVisiblePath.row
+                            }
+                        }
+                        if firstVisibleRow < (self.offset + self.frontBuffer) {
+                            if operation.identifier == self.frontOperation.identifier {
+                              //  print("In \(self.instanceType).inFrontZone, doing query")
+                                self.queryForFront(operation: operation, callback: { (error ) in
+                                    if let error = error {
+                                        error.printError()
+                                    } else {
+                                        //print("In \(self.instanceType).inFrontZone")
+                                    }
+                                })
+                       //         print("In \(self.instanceType).inFrontZone. TRIGGER location = \(location), offset = \(self.offset), array count = \(self.array.count) --- Set Front Operation active")
+                            } else {
+                                operation.cancelled = true
+                                //self.replaceFrontOperation(operation: operation)
+                            }
+                        } else {
+                            operation.cancelled = true
+                            self.replaceFrontOperation(operation: operation)
                         }
                     }
-                    if firstVisibleRow < self.offset + self.frontBuffer {
-                        if operation.identifier == self.frontOperation.identifier {
-                            self.queryForFront(callback: { (error ) in
-                                if let error = error {
-                                    error.printError()
-                                } else {
-                                    //print("In \(self.instanceType).inFrontZone")
-                                }
-                            })
-                         //   print("In \(self.instanceType).inFrontZone. TRIGGER location = \(location), offset = \(self.offset), array count = \(self.array.count) --- Set Front Operation active")
-                        }
-                    } else {
-                        if operation.identifier == self.frontOperation.identifier {
-                            self.frontOperation = RVDSOperation() // NEIL REMOVE THIS IS A PLUG
-                        }
-                    }
+
+                } else {
+                    print("In \(self.instanceType).inFrontZone, returned from timer, different frontOperation")
+                    operation.cancelled = true
                 }
                 self.frontTimer = false
             })
@@ -284,7 +342,7 @@ class RVBaseDataSource {
         frontTimer = true
         if self.backOperation.active {
             self.backOperation.cancelled = true
-            self.backOperation = RVDSOperation()
+            self.backOperation = RVDSOperation(name: backOperationName)
         }
         let operation = self.frontOperation
         if !operation.active {
@@ -294,7 +352,8 @@ class RVBaseDataSource {
             Timer.scheduledTimer(withTimeInterval: delay, repeats: false, block: { (timer: Timer) in
                 if let tableView = self.scrollView as? UITableView {
                         if operation.identifier == self.frontOperation.identifier {
-                            self.queryForFront(callback: { (error ) in
+                        //    print("In \(self.instanceType).loadFront(), matched identifier")
+                            self.queryForFront(operation: operation, callback: { (error ) in
                                 if let error = error {
                                     error.printError()
                                 } else {
@@ -317,8 +376,9 @@ class RVBaseDataSource {
         if backTimer { return }
         backTimer = true
         if self.frontOperation.active {
+            print("In \(self.instanceType).inBackZone, cancelling Front Operation ----------------------------- ")
             self.frontOperation.cancelled = true
-            self.frontOperation = RVDSOperation()
+            self.frontOperation = RVDSOperation(name: frontOperationName)
         }
      //   print("So far")
         let operation = self.backOperation
@@ -350,7 +410,7 @@ class RVBaseDataSource {
             })
            // print("In \(self.instanceType).inBackZone. location = \(location), offset = \(self.offset), array count = \(self.array.count)\n --- Set Back Operation active")
         } else {
-            print("Back operation active")
+         //   print("Back operation active")
             backTimer = false
         }
     }
@@ -382,8 +442,9 @@ class RVBaseDataSource {
             }
         }
     }
-    func insertAtFront(items: [RVBaseModel]) {
-        let operation = self.frontOperation
+    func insertAtFront(operation: RVDSOperation, items: [RVBaseModel]) {
+       // let operation = self.frontOperation
+     //   print("In \(self.instanceType).insertAtFront with: \(items.count) items")
         if let manager = self.manager {
             var sizedItems = maxItems(items: items) // Limits the number of new items to the maximum array size
             if sizedItems.count > 0 {
@@ -422,7 +483,7 @@ class RVBaseDataSource {
                                     firstVisibleRow = firstVisiblePath.row
                                 }
                             }
-                            if firstVisibleRow < self.frontBuffer {
+                            if firstVisibleRow < (self.frontBuffer + self.offset) {
                                 // at front of TableView, new items to add at front number more than 0 and less than maxArrayLength
                                 clone = self.cloneData()
                                 currentOffset = self.offset
@@ -469,33 +530,29 @@ class RVBaseDataSource {
                                 self.removeBack(operation: operation)
                             }
                         }
-                        if self.frontOperation.identifier == operation.identifier {
-                            self.frontOperation = RVDSOperation()
-                        }
+                        operation.cancelled = true
+                        self.replaceFrontOperation(operation: operation)
                     } else if let _ = self.scrollView as? UICollectionView {
-                        if self.frontOperation.identifier == operation.identifier {
-                            self.frontOperation = RVDSOperation()
-                        }
+                        operation.cancelled = true
+                        self.replaceFrontOperation(operation: operation)
                     } else {
-                        if self.frontOperation.identifier == operation.identifier {
-                            self.frontOperation = RVDSOperation()
-                        }
+                        operation.cancelled = true
+                        self.replaceFrontOperation(operation: operation)
                     }
-                }
+                } // Dispatch
             } else {
-                if self.frontOperation.identifier == operation.identifier {
-                    self.frontOperation = RVDSOperation()
-                }
+                operation.cancelled = true
+                self.replaceFrontOperation(operation: operation)
             }
         } else {
-            if self.frontOperation.identifier == operation.identifier {
-                self.frontOperation = RVDSOperation()
-            }
+            print("In \(self.instanceType).insertAtFront, no manager")
+            operation.cancelled = true
+            self.replaceFrontOperation(operation: operation)
         }
 
     }
-    func appendAtBack(items: [RVBaseModel]) {
-        let operation = self.backOperation
+    func appendAtBack(operation: RVDSOperation, items: [RVBaseModel]) {
+      //  let operation = self.backOperation
         if let manager = self.manager {
             var sizedItems = maxItems(items: items) // Limits the number of new items to the maximum array size
             if sizedItems.count > 0 {
@@ -578,30 +635,24 @@ class RVBaseDataSource {
                             }
                         }
                       //  print("In \(self.instanceType).appendAtBack, array Count is: \(self.array.count)")
-                        if self.backOperation.identifier == operation.identifier {
-                            self.backOperation = RVDSOperation()
-                        }
-
+                        self.replaceBackOperation(operation: operation)
                     } else if let _ = self.scrollView as? UICollectionView {
-                        if self.backOperation.identifier == operation.identifier {
-                            self.backOperation = RVDSOperation()
-                        }
+                        self.replaceBackOperation(operation: operation)
                     } else {
-                        if self.backOperation.identifier == operation.identifier {
-                            self.backOperation = RVDSOperation()
-                        }
+                        self.replaceBackOperation(operation: operation)
                     }
                 }
                 
             } else {
-                if self.backOperation.identifier == operation.identifier {
-                    self.backOperation = RVDSOperation()
-                }
+                            replaceBackOperation(operation: operation)
             }
         } else {
-            if self.backOperation.identifier == operation.identifier {
-                self.backOperation = RVDSOperation()
-            }
+            replaceBackOperation(operation: operation)
+        }
+    }
+    func replaceBackOperation(operation: RVDSOperation) {
+        if self.backOperation.identifier == operation.identifier {
+            self.backOperation = RVDSOperation(name: backOperationName)
         }
     }
     func adjustArray(items: [RVBaseModel]) -> ([RVBaseModel], Int) {
@@ -648,8 +699,8 @@ class RVBaseDataSource {
     func flushOperations() {
         self.frontOperation.cancelled = true
         self.backOperation.cancelled = true
-        self.frontOperation = RVDSOperation()
-        self.backOperation = RVDSOperation()
+        self.frontOperation = RVDSOperation(name: frontOperationName)
+        self.backOperation = RVDSOperation(name: backOperationName)
     }
     func reset(callback: @escaping () -> Void) {
         if let manager = self.manager {
