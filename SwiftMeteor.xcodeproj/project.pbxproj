@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		2802252C1E1C5C6F00D5FB60 /* RVFirstHeaderContentView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 2802252B1E1C5C6F00D5FB60 /* RVFirstHeaderContentView.xib */; };
+		2802252E1E1C5C9500D5FB60 /* RVFirstHeaderContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2802252D1E1C5C9500D5FB60 /* RVFirstHeaderContentView.swift */; };
 		280DE6E81DEF43380031C352 /* RVS3Protocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 280DE6E71DEF43380031C352 /* RVS3Protocol.swift */; };
 		280E0F761DFFBEDF00E597B4 /* RVKeys.swift in Sources */ = {isa = PBXBuildFile; fileRef = 280E0F751DFFBEDF00E597B4 /* RVKeys.swift */; };
 		280E0F781DFFBF3100E597B4 /* RVBaseModel2.swift in Sources */ = {isa = PBXBuildFile; fileRef = 280E0F771DFFBF3100E597B4 /* RVBaseModel2.swift */; };
@@ -23,11 +25,13 @@
 		284FBAD21DEC13FE00446C86 /* RVRightMenuViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 284FBAD11DEC13FE00446C86 /* RVRightMenuViewController.swift */; };
 		284FBAD41DEC142B00446C86 /* RVMainTabViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 284FBAD31DEC142B00446C86 /* RVMainTabViewController.swift */; };
 		284FBAD71DEC161000446C86 /* UIColor+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 284FBAD61DEC161000446C86 /* UIColor+Extension.swift */; };
+		2850AFFF1E1B60130043FEB3 /* RVResultsTableController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2850AFFE1E1B60130043FEB3 /* RVResultsTableController.swift */; };
 		2870CCD11DECD81F005C6FB5 /* AWSUserFileManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2870CCD01DECD81F005C6FB5 /* AWSUserFileManager.swift */; };
 		2870CCD81DEDE72F005C6FB5 /* RVError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2870CCD71DEDE72F005C6FB5 /* RVError.swift */; };
 		2873C9111DECA4D400DCB2DF /* AWSMobileClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2873C9101DECA4D400DCB2DF /* AWSMobileClient.swift */; };
 		2873C9131DECAA2F00DCB2DF /* AWSIdentityManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2873C9121DECAA2F00DCB2DF /* AWSIdentityManager.swift */; };
 		2873C9151DECBFF000DCB2DF /* AWSSignInProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2873C9141DECBFF000DCB2DF /* AWSSignInProvider.swift */; };
+		287B74701E1C2EE900900864 /* RVFirstViewHeaderCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 287B746F1E1C2EE900900864 /* RVFirstViewHeaderCell.swift */; };
 		288961091DEDED2C00FC34DB /* RVAWSDirect.swift in Sources */ = {isa = PBXBuildFile; fileRef = 288961081DEDED2C00FC34DB /* RVAWSDirect.swift */; };
 		2889610C1DEDF22F00FC34DB /* ranch.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 2889610B1DEDF22F00FC34DB /* ranch.jpg */; };
 		28928CD11E18BE09003538B8 /* RVBaseDataSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 28928CD01E18BE09003538B8 /* RVBaseDataSource.swift */; };
@@ -71,6 +75,8 @@
 
 /* Begin PBXFileReference section */
 		07BD65EBD12BB5752CC9715C /* Pods-SwiftMeteor.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SwiftMeteor.debug.xcconfig"; path = "Pods/Target Support Files/Pods-SwiftMeteor/Pods-SwiftMeteor.debug.xcconfig"; sourceTree = "<group>"; };
+		2802252B1E1C5C6F00D5FB60 /* RVFirstHeaderContentView.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = RVFirstHeaderContentView.xib; sourceTree = "<group>"; };
+		2802252D1E1C5C9500D5FB60 /* RVFirstHeaderContentView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RVFirstHeaderContentView.swift; sourceTree = "<group>"; };
 		280DE6E71DEF43380031C352 /* RVS3Protocol.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RVS3Protocol.swift; sourceTree = "<group>"; };
 		280E0F751DFFBEDF00E597B4 /* RVKeys.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RVKeys.swift; sourceTree = "<group>"; };
 		280E0F771DFFBF3100E597B4 /* RVBaseModel2.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RVBaseModel2.swift; sourceTree = "<group>"; };
@@ -87,11 +93,13 @@
 		284FBAD11DEC13FE00446C86 /* RVRightMenuViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RVRightMenuViewController.swift; sourceTree = "<group>"; };
 		284FBAD31DEC142B00446C86 /* RVMainTabViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RVMainTabViewController.swift; sourceTree = "<group>"; };
 		284FBAD61DEC161000446C86 /* UIColor+Extension.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UIColor+Extension.swift"; sourceTree = "<group>"; };
+		2850AFFE1E1B60130043FEB3 /* RVResultsTableController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RVResultsTableController.swift; sourceTree = "<group>"; };
 		2870CCD01DECD81F005C6FB5 /* AWSUserFileManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AWSUserFileManager.swift; sourceTree = "<group>"; };
 		2870CCD71DEDE72F005C6FB5 /* RVError.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RVError.swift; sourceTree = "<group>"; };
 		2873C9101DECA4D400DCB2DF /* AWSMobileClient.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AWSMobileClient.swift; sourceTree = "<group>"; };
 		2873C9121DECAA2F00DCB2DF /* AWSIdentityManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AWSIdentityManager.swift; sourceTree = "<group>"; };
 		2873C9141DECBFF000DCB2DF /* AWSSignInProvider.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AWSSignInProvider.swift; sourceTree = "<group>"; };
+		287B746F1E1C2EE900900864 /* RVFirstViewHeaderCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RVFirstViewHeaderCell.swift; sourceTree = "<group>"; };
 		288961081DEDED2C00FC34DB /* RVAWSDirect.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RVAWSDirect.swift; sourceTree = "<group>"; };
 		2889610B1DEDF22F00FC34DB /* ranch.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; name = ranch.jpg; path = ../../../Assets/ranch.jpg; sourceTree = "<group>"; };
 		28928CD01E18BE09003538B8 /* RVBaseDataSource.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RVBaseDataSource.swift; sourceTree = "<group>"; };
@@ -226,6 +234,7 @@
 				28928CD01E18BE09003538B8 /* RVBaseDataSource.swift */,
 				28928CD21E18C6C7003538B8 /* RVDSManager.swift */,
 				28928CD41E18E226003538B8 /* RVDSOperation.swift */,
+				2850AFFE1E1B60130043FEB3 /* RVResultsTableController.swift */,
 			);
 			name = Datasource;
 			sourceTree = "<group>";
@@ -289,6 +298,9 @@
 				28F53E771DEB5F71009641F0 /* LaunchScreen.storyboard */,
 				28F53E7A1DEB5F71009641F0 /* Info.plist */,
 				28928CD61E199AEA003538B8 /* RVFirstViewTableCell.swift */,
+				287B746F1E1C2EE900900864 /* RVFirstViewHeaderCell.swift */,
+				2802252B1E1C5C6F00D5FB60 /* RVFirstHeaderContentView.xib */,
+				2802252D1E1C5C9500D5FB60 /* RVFirstHeaderContentView.swift */,
 			);
 			path = SwiftMeteor;
 			sourceTree = "<group>";
@@ -445,6 +457,7 @@
 			files = (
 				2889610C1DEDF22F00FC34DB /* ranch.jpg in Resources */,
 				28F53E791DEB5F71009641F0 /* LaunchScreen.storyboard in Resources */,
+				2802252C1E1C5C6F00D5FB60 /* RVFirstHeaderContentView.xib in Resources */,
 				28F53E761DEB5F71009641F0 /* Assets.xcassets in Resources */,
 				28F53E741DEB5F71009641F0 /* Main.storyboard in Resources */,
 			);
@@ -525,6 +538,9 @@
 				284FBACB1DEC136300446C86 /* File.swift in Sources */,
 				28F53E711DEB5F71009641F0 /* SecondViewController.swift in Sources */,
 				284FBAD01DEC13B600446C86 /* RVBaseViewController.swift in Sources */,
+				287B74701E1C2EE900900864 /* RVFirstViewHeaderCell.swift in Sources */,
+				2802252E1E1C5C9500D5FB60 /* RVFirstHeaderContentView.swift in Sources */,
+				2850AFFF1E1B60130043FEB3 /* RVResultsTableController.swift in Sources */,
 				2873C9131DECAA2F00DCB2DF /* AWSIdentityManager.swift in Sources */,
 				2873C9111DECA4D400DCB2DF /* AWSMobileClient.swift in Sources */,
 				28928CD31E18C6C7003538B8 /* RVDSManager.swift in Sources */,

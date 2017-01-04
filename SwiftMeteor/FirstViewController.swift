@@ -10,19 +10,91 @@ import UIKit
 import SwiftDDP
 import SDWebImage
 
-class FirstViewController: UIViewController {
+extension FirstViewController: UISearchBarDelegate {
     
+    func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
+        print("TextDidChange SearchText is: \(searchText)")
+    }
+    func searchBarCancelButtonClicked(_ searchBar: UISearchBar) {
+        searchBar.showsCancelButton = false
+        searchBar.text = ""
+        searchBar.resignFirstResponder()
+        print("SearchBarCancelBUttonClicked")
+    }
+    func searchBarTextDidEndEditing(_ searchBar: UISearchBar) {
+        print("Search Bar Did End Editing")
+    }
+    func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
+        print("Search Bar Search Button Clicked")
+    }
+    func searchBarTextDidBeginEditing(_ searchBar: UISearchBar) {
+        searchBar.showsCancelButton = true
+        print("Search Text Did Begin Editing")
+    }
+    func searchBarBookmarkButtonClicked(_ searchBar: UISearchBar) {
+        print("Search Bar Bookmark Button Clicked")
+    }
+    func searchBar(_ searchBar: UISearchBar, selectedScopeButtonIndexDidChange selectedScope: Int) {
+        print("Search Bar Selected Scope Button Index Did Change \(selectedScope)")
+    }
+    func searchBar(_ searchBar: UISearchBar, shouldChangeTextIn range: NSRange, replacementText text: String) -> Bool {
+        if text.characters.count == 0 {
+            if let char = text.cString(using: String.Encoding.utf8) {
+                let isBackSpace = strcmp(char, "\\b")
+                if (isBackSpace == -92 ) {
+                    print("In searchBar shouldChangeTextIn Range text is a backspace")
+                }
+            }
+        } else {
+            print("In searchBar shouldChangeTextIn Range text is: [\(text)], count is \(text.characters.count)")
+        }
+        return true
+    }
+    func searchBarShouldBeginEditing(_ searchBar: UISearchBar) -> Bool {
+        print("Search Bar Should Begin Editing")
+        return true
+    }
+    func searchBarShouldEndEditing(_ searchBar: UISearchBar) -> Bool {
+        print("Search Bar SHould end editing")
+        return true
+    }
+    func searchBarResultsListButtonClicked(_ searchBar: UISearchBar) {
+        print("Search Bar List Button Clicked")
+    }
+    func configureSearchBar() {
+
+        searchBar.searchBarStyle = UISearchBarStyle.prominent
+        searchBar.placeholder = " Search..."
+        searchBar.isTranslucent = false
+        searchBar.backgroundImage = UIImage()
+        searchBar.delegate = self
+        searchBar.sizeToFit()
+        searchBar.scopeButtonTitles = scopeTitles
+        searchBar.sizeToFit()
+        navigationItem.titleView = searchBar
+      //  self.tableView.tableHeaderView = searchBar
+    }
+}
+class FirstViewController: UIViewController {
+    @IBOutlet weak var searchBarHeightConstraint: NSLayoutConstraint!
+    let backspace = String(describing: UnicodeScalar(8))
+    let tab = "\t"
+    let sparklingHeart = "\u{1F496}"
+    let scopeTitles = ["scope1", "scope2"]
     @IBOutlet weak var tableView: UITableView!
     var instanceType: String { get { return String(describing: type(of: self)) } }
     var manager: RVDSManager!
     var refreshControl = UIRefreshControl()
     var taskDatasource = RVBaseDataSource()
+    var searchBar = UISearchBar()
     
     @IBAction func leftBarButton(button: UIBarButtonItem) {
         RVViewDeck.sharedInstance.toggleSide(side: RVViewDeck.Side.left)
     }
     override func viewDidLoad() {
         super.viewDidLoad()
+        tableView.register(RVFirstViewHeaderCell.self, forHeaderFooterViewReuseIdentifier: RVFirstViewHeaderCell.identifier)
+        searchBarHeightConstraint.constant = 0.0
         installRefresh()
         manager = RVDSManager(scrollView: self.tableView)
         manager.addSection(section: taskDatasource)
@@ -512,9 +584,57 @@ extension FirstViewController {
         }
     }
 }
-
+extension FirstViewController: RVFirstHeaderContentViewDelegate{
+    func expandCollapseButtonTouched(button: UIButton, view: RVFirstHeaderContentView) -> Void {
+        print("Expand / Collapse")
+    }
+}
 extension FirstViewController: UITableViewDelegate {
+    
+    func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
+        return 35.0
+    }
+ 
+    func loadHeaderFromNib() -> RVFirstHeaderContentView? {
+        let bundle = Bundle(for: RVFirstHeaderContentView.self)
+        let nib = UINib(nibName: "RVFirstHeaderContentView", bundle: bundle)
+        if let view = nib.instantiate(withOwner: self, options: nil)[0] as? RVFirstHeaderContentView {
+            return view
+        }
+        return nil
+    }
+    func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
+        if let headerCell = tableView.dequeueReusableHeaderFooterView(withIdentifier: RVFirstViewHeaderCell.identifier) as? RVFirstViewHeaderCell {
+            if let content = loadHeaderFromNib() {
+                content.frame = headerCell.contentView.bounds
+                content.autoresizingMask = [.flexibleWidth, .flexibleHeight]
+                headerCell.contentView.addSubview(content)
+                content.delegate = self
+                content.configure(section: section, expand: true)
+            }
+ 
+            return headerCell
+        } else {
+            let view = UIView()
+            view.backgroundColor = UIColor.blue
+            let label = UILabel()
+            label.text = "Seciton \(section)"
+            label.frame = CGRect(x: 45, y: 5, width: 100, height: 21)
+            label.textColor = UIColor.white
+            view.addSubview(label)
+            return view
+        }
 
+    }
+    func tableView(_ tableView: UITableView, willDisplayHeaderView view: UIView, forSection section: Int) {
+      //  print("IN will display header view")
+    }
+
+ /*
+    func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
+        return "Section \(section)"
+    }
+ */
 }
 extension FirstViewController: UITableViewDataSource {
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
