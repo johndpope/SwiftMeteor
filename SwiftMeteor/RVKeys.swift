@@ -21,7 +21,10 @@ enum RVKeys: String {
     case parentModelType = "parentModelType"
     case title          = "title"
     case text           = "text"
-    case `description`  = "description"
+    case regularDescription  = "regularDescription"
+    case lowerCaseRegularDescription = "lowerCaseRegularDescription"
+    case comment        = "comment"
+    case lowerCaseComment = "lowerCaseComment"
     case JSONdate       = "$date"
     case image          = "image"
     

@@ -19,6 +19,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -> Bool {
         RVViewDeck.sharedInstance.initialize(appDelegate: self)
         UIDevice.current.beginGeneratingDeviceOrientationNotifications()
+        
+        UISearchBar.appearance().barTintColor = UIColor.candyGreen()
+        UISearchBar.appearance().tintColor = UIColor.white
+        UITextField.appearance(whenContainedInInstancesOf: [UISearchBar.self]).tintColor = UIColor.candyGreen()
         return true
     }
 

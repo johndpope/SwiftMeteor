@@ -55,6 +55,11 @@ class RVBaseModel: MeteorDocument {
             else { dict[RVKeys.username.rawValue] = NSNull() }
             self._username.dirty = false
         }
+        if !onlyDirties || (onlyDirties && self._comment.dirty) {
+            if let comment = self.comment { dict[RVKeys.comment.rawValue] = comment as AnyObject }
+            else { dict[RVKeys.comment.rawValue] = NSNull() }
+            self._comment.dirty = false
+        }
         if !onlyDirties || (onlyDirties && self._title.dirty) {
             if let title = self.title { dict[RVKeys.title.rawValue] = title as AnyObject }
             else { dict[RVKeys.title.rawValue] = NSNull() }
@@ -66,8 +71,8 @@ class RVBaseModel: MeteorDocument {
             self._text.dirty = false
         }
         if !onlyDirties || (onlyDirties && self._regularDescription.dirty) {
-            if let regularDescription = self.regularDescription { dict[RVKeys.description.rawValue] = regularDescription as AnyObject }
-            else { dict[RVKeys.description.rawValue] = NSNull() }
+            if let regularDescription = self.regularDescription { dict[RVKeys.regularDescription.rawValue] = regularDescription as AnyObject }
+            else { dict[RVKeys.regularDescription.rawValue] = NSNull() }
             self._regularDescription.dirty = false
         }
         if !onlyDirties || (onlyDirties && self._parentId.dirty) {
@@ -137,6 +142,7 @@ class RVBaseModel: MeteorDocument {
     }
     func setupCallback() {
         self._username.model = self
+        self._comment.model = self
         self._ownerId.model = self
         self._owner.model = self
         self._parentId.model = self
@@ -189,9 +195,11 @@ class RVBaseModel: MeteorDocument {
             let _ = self._parentId.updateString(newValue: value)
         case .title:
             let _ = self._title.updateString(newValue: value)
+        case .comment:
+            let _ = self._comment.updateString(newValue: value)
         case .text:
             let _ = self._text.updateString(newValue: value)
-        case .description:
+        case .regularDescription:
             let _ = self._regularDescription.updateString(newValue: value)
         case .createdAt:
          //   print("Have Created at \(value)")
@@ -325,7 +333,7 @@ class RVBaseModel: MeteorDocument {
         }
         set { let _ = _text.changeString(newValue: newValue as AnyObject)}
     }
-    var _regularDescription = RVRecord(fieldName: RVKeys.description)
+    var _regularDescription = RVRecord(fieldName: RVKeys.regularDescription)
     var regularDescription: String? {
         get {
             if let string = _regularDescription.value as? String { return string}
@@ -340,6 +348,14 @@ class RVBaseModel: MeteorDocument {
             return nil
         }
         set { let _ = _username.changeString(newValue: newValue as AnyObject)}
+    }
+    var _comment = RVRecord(fieldName: RVKeys.comment)
+    var comment: String? {
+        get {
+            if let string = _comment.value as? String { return string }
+            return nil
+        }
+        set { let _ = _comment.changeString(newValue: newValue as AnyObject) }
     }
     var _image = RVRecord(fieldName: RVKeys.image)
     var image: RVImage? {

@@ -62,7 +62,6 @@ extension FirstViewController: UISearchBarDelegate {
         print("Search Bar List Button Clicked")
     }
     func configureSearchBar() {
-
         searchBar.searchBarStyle = UISearchBarStyle.prominent
         searchBar.placeholder = " Search..."
         searchBar.isTranslucent = false
@@ -71,6 +70,9 @@ extension FirstViewController: UISearchBarDelegate {
         searchBar.sizeToFit()
         searchBar.scopeButtonTitles = scopeTitles
         searchBar.sizeToFit()
+        UISearchBar.appearance().barTintColor = UIColor.candyGreen()
+        UISearchBar.appearance().tintColor = UIColor.white
+        UITextField.appearance(whenContainedInInstancesOf: [UISearchBar.self]).tintColor = UIColor.candyGreen()
         navigationItem.titleView = searchBar
       //  self.tableView.tableHeaderView = searchBar
     }
@@ -94,7 +96,9 @@ class FirstViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         tableView.register(RVFirstViewHeaderCell.self, forHeaderFooterViewReuseIdentifier: RVFirstViewHeaderCell.identifier)
-        searchBarHeightConstraint.constant = 0.0
+        if let constraint = searchBarHeightConstraint {
+            constraint.constant = 0.0
+        }
         installRefresh()
         manager = RVDSManager(scrollView: self.tableView)
         manager.addSection(section: taskDatasource)
@@ -251,6 +255,8 @@ class FirstViewController: UIViewController {
         query.addProjection(projectionItem: RVProjectionItem(field: .text, include: .include))
         query.addProjection(projectionItem: RVProjectionItem(field: .createdAt))
         query.addProjection(projectionItem: RVProjectionItem(field: .updatedAt))
+        query.addProjection(projectionItem: RVProjectionItem(field: .regularDescription))
+        query.addProjection(projectionItem: RVProjectionItem(field: .comment))
         collection.query = query
         let listenerName = "FirstView"
         NotificationCenter.default.addObserver(forName: Notification.Name(rawValue: listenerName), object: nil, queue: nil, using: documentListener)
@@ -586,6 +592,18 @@ extension FirstViewController {
 }
 extension FirstViewController: RVFirstHeaderContentViewDelegate{
     func expandCollapseButtonTouched(button: UIButton, view: RVFirstHeaderContentView) -> Void {
+        print("Header section \(view.section)")
+        if view.section >= 0 {
+            let datasource =  manager.sections[view.section]
+            if !datasource.collapsed { datasource.collapse {
+                print("return from collapse")
+                }
+            } else {
+                datasource.expand {
+                    print("return from expand")
+                }
+            }
+        }
         print("Expand / Collapse")
     }
 }
@@ -610,6 +628,7 @@ extension FirstViewController: UITableViewDelegate {
                 content.autoresizingMask = [.flexibleWidth, .flexibleHeight]
                 headerCell.contentView.addSubview(content)
                 content.delegate = self
+                content.section = section
                 content.configure(section: section, expand: true)
             }
  

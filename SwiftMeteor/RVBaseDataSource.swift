@@ -29,6 +29,7 @@ class RVBaseDataSource {
     weak var manager: RVDSManager? = nil
     let operations = RVDSOperations()
     var animation: UITableViewRowAnimation = UITableViewRowAnimation.automatic
+    var expandReturnRow: Int = 0
     private var offset: Int = 0
 
     var collapseOrExpandOperationActive: Bool {
@@ -365,7 +366,7 @@ class RVBaseDataSource {
                         indexPaths.append(IndexPath(row: currentOffset + index, section: section))
                     }
                     if let tableView = self.scrollView as? UITableView {
-                        if !collapseOrExpandOperationActive {
+                        if !collapseOrExpandOperationActive && !collapsed {
                             tableView.beginUpdates()
                             if (operation.identifier == self.operations.findOperation(operationName: .frontOperation).identifier) && (!operation.cancelled) {
                                 tableView.deleteRows(at: indexPaths, with: animation)
@@ -409,7 +410,7 @@ class RVBaseDataSource {
                                     currentOffset = currentOffset - 1
                                     start = start + 1
                                 }
-                                if !self.collapseOrExpandOperationActive {
+                                if !self.collapseOrExpandOperationActive && !self.collapsed {
                                     tableView.beginUpdates()
                                     if (operation.identifier == self.operations.findOperation(operationName: .frontOperation).identifier) && (!operation.cancelled) {
                                         self.array = clone
@@ -445,7 +446,7 @@ class RVBaseDataSource {
                                             currentOffset = currentOffset - 1
                                             start = start + 1
                                         }
-                                        if !self.collapseOrExpandOperationActive {
+                                        if !self.collapseOrExpandOperationActive && !self.collapsed {
                                             tableView.beginUpdates()
                                             if (operation.identifier == self.operations.findOperation(operationName: .frontOperation).identifier) && (!operation.cancelled) {
                                                 self.array = clone
@@ -464,7 +465,7 @@ class RVBaseDataSource {
                                                 clone.insert(sizedItems[index], at: 0)
                                                 indexPaths.append(IndexPath(row: index-start, section: section))
                                             }
-                                            if !self.collapseOrExpandOperationActive {
+                                            if !self.collapseOrExpandOperationActive && !self.collapsed {
                                                 tableView.beginUpdates()
                                                 if (operation.identifier == self.operations.findOperation(operationName: .frontOperation).identifier) && (!operation.cancelled) {
                                                     self.array = clone
@@ -539,7 +540,7 @@ class RVBaseDataSource {
                                     }
                                 }
                                 if lastVisibleRow < (self.virtualCount - self.backBuffer) { atBack = false }
-                                if !self.collapseOrExpandOperationActive {
+                                if !self.collapseOrExpandOperationActive  && !self.collapsed {
                                     tableView.beginUpdates()
                                     if (operation.identifier == self.operations.findOperation(operationName: .backOperation).identifier) && (!operation.cancelled) {
                                         // print("In \(self.instanceType).appendAtBack, doing insertOperation with cloneCount = \(clone.count), indexPaths count = \(indexPaths.count)")
@@ -578,7 +579,7 @@ class RVBaseDataSource {
                                     var cloneOffset = 0
                                     var clone2: [RVBaseModel]
                                     (clone2, cloneOffset) = self.adjustArray(items: clone)
-                                    if !self.collapseOrExpandOperationActive {
+                                    if !self.collapseOrExpandOperationActive && !self.collapsed {
                                         tableView.beginUpdates()
                                         if (operation.identifier == self.operations.findOperation(operationName: .backOperation).identifier) && (!operation.cancelled) {
                                             self.array = clone2
@@ -665,7 +666,7 @@ class RVBaseDataSource {
                 self.flushOperations()
                 // Give a break to allow pending operations to terminate
                 DispatchQueue.main.async {
-                    if !self.collapseOrExpandOperationActive {
+                    if !self.collapseOrExpandOperationActive && !self.collapsed {
                         tableView.beginUpdates()
                         self.array = [RVBaseModel]()
                         self.offset = 0
@@ -698,32 +699,83 @@ class RVBaseDataSource {
         flushOperations()
         callback(nil)
     }
-    /*
-    func testQuery() {
-        let operation = self.backOperation
-        if let query = self.baseQuery {
-            if !operation.active {
-                operation.active = true
-                // print("In \(self.instanceType).testQuery() about to do bulkQuery")
-                RVTask.bulkQuery(query: query) { (models: [RVBaseModel]?, error: RVError?) in
-                    if let error = error {
-                        print("In \(self.instanceType).subscribeToTasks, got error")
-                        error.printError()
-                    } else if let models = models {
-                        var index = 0
-                        for _ in models {
-                            //   print("\(index): \(model.text!)")
-                            index = index + 1
-                        }
-                        if self.backOperation.identifier == operation.identifier {
-                            self.appendAtBack(operation: operation, items: models)
-                        }
-                    } else {
-                        print("In \(self.instanceType).subscribeToTasks, no error but no results")
+    func resetFrontAndBackOperations() {
+        self.operations.frontOperation.cancelled = true
+        self.operations.backOperation.cancelled = true
+        self.operations.addOperation(operation: RVDSOperation(name: .frontOperation))
+        self.operations.addOperation(operation: RVDSOperation(name: .backOperation))
+    }
+    func expand(callback: @escaping ()-> Void) {
+        DispatchQueue.main.async {
+            if self.collapseOrExpandOperationActive {
+                if self.operations.expandOperation.active {
+                    callback()
+                    return
+                } else {
+                    self.operations.collapseOperation.cancelled = true
+                    self.operations.addOperation(operation: RVDSOperation(name: .expandOperation))
+                }
+            }
+            self.resetFrontAndBackOperations()
+            let expandOperation = self.operations.expandOperation
+            expandOperation.active = true
+            DispatchQueue.main.async {
+                self.expandHelper(operation: expandOperation, callback: callback )
+            }
+        }
+    }
+    func expandHelper(operation: RVDSOperation, callback: @escaping () -> Void) {
+        if let manager = self.manager {
+            if let tableView = self.scrollView as? UITableView {
+                if !operation.cancelled {
+                    self.collapsed = false
+                    tableView.reloadSections(IndexSet(integer: manager.section(datasource: self)), with: self.animation)
+                    if self.scrollViewCount > 0 {
+                        tableView.scrollToRow(at: IndexPath(row: expandReturnRow, section: manager.section(datasource: self)), at: UITableViewScrollPosition.top, animated: true)
                     }
                 }
             }
         }
+        self.operations.addOperation(operation: RVDSOperation(name: .expandOperation))
+        callback()
     }
- */
+    func collapse(callback: @escaping ()-> Void) {
+        DispatchQueue.main.async {
+            if self.collapseOrExpandOperationActive {
+                if self.operations.collapseOperation.active {
+                    callback()
+                    return
+                } else {
+                    self.operations.expandOperation.cancelled = true
+                    self.operations.addOperation(operation: RVDSOperation(name: .expandOperation))
+                }
+            }
+            self.resetFrontAndBackOperations()
+            let collapseOperation = self.operations.collapseOperation
+            collapseOperation.active = true
+            DispatchQueue.main.async {
+                self.collapseHelper(operation: collapseOperation, callback: callback)
+            }
+        }
+    }
+    func collapseHelper(operation: RVDSOperation, callback: @escaping () -> Void ) {
+        if let manager = self.manager {
+            if let tableView = self.scrollView as? UITableView {
+                if !operation.cancelled {
+                    var firstVisibleRow = 0
+                    if let visiblePaths = tableView.indexPathsForVisibleRows {
+                        if visiblePaths.count > 0 {
+                            let firstVisiblePath = visiblePaths[0]
+                            firstVisibleRow = firstVisiblePath.row
+                        }
+                    }
+                    expandReturnRow = firstVisibleRow
+                    self.collapsed = true
+                    tableView.reloadSections(IndexSet(integer: manager.section(datasource: self)), with: self.animation)
+                }
+            }
+        }
+        self.operations.addOperation(operation: RVDSOperation(name: .collapseOperation))
+        callback()
+    }
 }
