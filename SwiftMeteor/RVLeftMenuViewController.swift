@@ -10,4 +10,8 @@ import UIKit
 
 class RVLeftMenuViewController: RVBaseViewController {
     static let identifier: String = "LeftMenu"
+    
+    @IBAction func closeButton(_ sender: UIButton) {
+        RVViewDeck.sharedInstance.toggleSide(side: .center)
+    }
 }

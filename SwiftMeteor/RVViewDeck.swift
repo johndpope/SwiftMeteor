@@ -10,9 +10,11 @@ import UIKit
 import ViewDeck
 
 class RVViewDeck: NSObject {
+    
     enum Side {
         case left
         case right
+        case center
     }
     static let sharedInstance: RVViewDeck = {RVViewDeck() }()
     static let mainStorybardName: String = "Main"
@@ -43,6 +45,7 @@ class RVViewDeck: NSObject {
         UITabBar.appearance().tintColor = UIColor().tabBarTintColor()
         //let centerController = UINavigationController(rootViewController: tabBarController)
         let deckController = IIViewDeckController(center: tabBarController, leftViewController: leftViewController, rightViewController: rightViewController)
+        deckController.preferredContentSize = CGSize(width: 200, height: tabBarController.view.bounds.height)
         self.deckController = deckController
         deckController.delegate = self
         self.leftController = deckController.leftViewController
@@ -63,6 +66,8 @@ class RVViewDeck: NSObject {
                 self.openSide(side: IIViewDeckSide.left)
             case .right:
                 self.openSide(side: IIViewDeckSide.right)
+            case .center:
+                self.closeSide()
             }
         } else {
             self.closeSide()

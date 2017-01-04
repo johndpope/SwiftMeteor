@@ -141,8 +141,8 @@ class FirstViewController: UIViewController {
                 error.printError()
             } else {
                 let count = count + 1
-                if count < 200 {
-                    Timer.scheduledTimer(withTimeInterval: 0.5, repeats: false, block: { (timer: Timer) in
+                if count < 300 {
+                    Timer.scheduledTimer(withTimeInterval: 0.4, repeats: false, block: { (timer: Timer) in
                         print("Inserted \(count)")
                         self.insertOuter(count: count)
                     })
@@ -153,12 +153,30 @@ class FirstViewController: UIViewController {
             }
         }
     }
+    var letters = ["a", "A", "e", "F", "r", "w", "W"]
     func insertATask(count: Int, callback: @escaping(_ error: RVError?) -> Void) {
+        let max = 300
+        let formatter = DateFormatter()
+        formatter.dateFormat = "d, h:mm:ss.SSS a"
+        let time = "\(formatter.string(from: Date()))"
         let task = RVTask()
         insertAnImage(parent: task)
-        task.text = "Z ---------- \(200 - count) \(Date())"
-        task.regularDescription = "Time: \(Date())"
-        task.title = "Z Original Title \(count)"
+        task.text = "\( max - count - 1) \(time)"
+        let index = count % 7
+        var level: Int = count / 7 - 1
+        if level < 0 { level = 0}
+        var three = level
+        if three > 6 { three = three - 2}
+        var d = ""
+        for i in (0..<index) {
+            d = d + letters[i]
+        }
+        d = d + "\(three)"
+
+        
+        task.regularDescription = "\(d)"
+        task.title = "d \(three) \(count)"
+        task.comment = task.regularDescription
         task.image = RVImage()
         task.create { (error: RVError?) in
             if let error = error {
@@ -276,8 +294,8 @@ class FirstViewController: UIViewController {
         }
  */
 
-     //   insertATask()
-       // insertOuter(count: 0)
+       // insertATask()
+        //insertOuter(count: 0)
         
     }
     func subscribeToTasks2() {
@@ -659,23 +677,7 @@ extension FirstViewController: UITableViewDataSource {
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
     //    print("In \(self.instanceType).cellForRow...")
         if let cell = tableView.dequeueReusableCell(withIdentifier: "first", for: indexPath) as? RVFirstViewTableCell {
-            if let item = manager.item(indexPath: indexPath) {
-             //    print("In \(self.instanceType).cellForRow, have item at section: \(indexPath.section), rwo: \(indexPath.row)")
-                if let text = item.text {
-                    if let label = cell.customTextLabel {
-                        label.text = text
-                    }
-                } else {
-                    if let label = cell.customTextLabel {
-                        label.text = "Nothing \(indexPath.row)"
-                    }
-                }
-            } else {
-                if let label = cell.customTextLabel {
-                    label.text = "Nothing \(indexPath.row)"
-                }
-                //print("In \(self.instanceType).cellForRow, no item at section: \(indexPath.section), rwo: \(indexPath.row)")
-            }
+            cell.model = manager.item(indexPath: indexPath)
             return cell
         } else {
             print("In \(self.instanceType).cellForRowAt, did not dequeue first cell type")
