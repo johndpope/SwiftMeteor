@@ -122,7 +122,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="W5J-7L-Pyd" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="1688.8" y="-320.68965517241384"/>
+            <point key="canvasLocation" x="2628" y="-320.68965517241384"/>
         </scene>
         <!--Second View Controller-->
         <scene sceneID="wg7-f3-ORb">
@@ -162,10 +162,10 @@
             </objects>
             <point key="canvasLocation" x="1688.8" y="359.37031484257875"/>
         </scene>
-        <!--Left Menu View Controller-->
+        <!--Left Menu Controller-->
         <scene sceneID="X6y-Rq-Tz4">
             <objects>
-                <viewController storyboardIdentifier="LeftMenu" id="C05-L5-QA5" customClass="RVLeftMenuViewController" customModule="SwiftMeteor" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="RVLeftMenuController" id="C05-L5-QA5" customClass="RVLeftMenuController" customModule="SwiftMeteor" customModuleProvider="target" sceneMemberID="viewController">
                     <layoutGuides>
                         <viewControllerLayoutGuide type="top" id="Uda-Mk-Bgr"/>
                         <viewControllerLayoutGuide type="bottom" id="Lzn-bQ-SA9"/>
@@ -174,27 +174,72 @@
                         <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <button opaque="NO" contentMode="scaleToFill" misplaced="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="38O-Yr-Zsy">
-                                <rect key="frame" x="164" y="318" width="46" height="30"/>
-                                <state key="normal" title="Close">
-                                    <color key="titleColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
-                                    <color key="titleShadowColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
-                                </state>
-                                <connections>
-                                    <action selector="closeButton:" destination="C05-L5-QA5" eventType="touchUpInside" id="zaD-rI-Bpc"/>
-                                </connections>
-                            </button>
+                            <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" translatesAutoresizingMaskIntoConstraints="NO" id="sCR-Qu-Yhu">
+                                <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
+                                <subviews>
+                                    <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" rowHeight="44" sectionHeaderHeight="28" sectionFooterHeight="28" translatesAutoresizingMaskIntoConstraints="NO" id="K0m-km-FCG">
+                                        <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
+                                        <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                                        <prototypes>
+                                            <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" restorationIdentifier="RVLeftMenuTableViewCell" selectionStyle="blue" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" reuseIdentifier="RVLeftMenuTableViewCell" id="Ax9-Wb-d3o" customClass="RVLeftMenuTableViewCell" customModule="SwiftMeteor" customModuleProvider="target">
+                                                <rect key="frame" x="0.0" y="28" width="375" height="44"/>
+                                                <autoresizingMask key="autoresizingMask"/>
+                                                <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="Ax9-Wb-d3o" id="QB6-aj-SqH">
+                                                    <rect key="frame" x="0.0" y="0.0" width="375" height="44"/>
+                                                    <autoresizingMask key="autoresizingMask"/>
+                                                    <subviews>
+                                                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Menu Item" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="EyL-0R-WEN">
+                                                            <rect key="frame" x="15" y="11" width="81" height="21"/>
+                                                            <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                                            <nil key="textColor"/>
+                                                            <nil key="highlightedColor"/>
+                                                        </label>
+                                                    </subviews>
+                                                    <constraints>
+                                                        <constraint firstItem="EyL-0R-WEN" firstAttribute="centerY" secondItem="QB6-aj-SqH" secondAttribute="centerY" id="JtK-V7-Nfn"/>
+                                                        <constraint firstItem="EyL-0R-WEN" firstAttribute="leading" secondItem="QB6-aj-SqH" secondAttribute="leading" constant="15" id="fdQ-nn-Km6"/>
+                                                    </constraints>
+                                                </tableViewCellContentView>
+                                                <connections>
+                                                    <outlet property="titleLabel" destination="EyL-0R-WEN" id="8v3-1B-oUT"/>
+                                                </connections>
+                                            </tableViewCell>
+                                        </prototypes>
+                                        <connections>
+                                            <outlet property="dataSource" destination="C05-L5-QA5" id="uhf-ta-bBM"/>
+                                            <outlet property="delegate" destination="C05-L5-QA5" id="Rcv-FT-vTC"/>
+                                        </connections>
+                                    </tableView>
+                                </subviews>
+                                <constraints>
+                                    <constraint firstAttribute="bottom" secondItem="K0m-km-FCG" secondAttribute="bottom" id="5dx-C0-FS5"/>
+                                    <constraint firstItem="K0m-km-FCG" firstAttribute="top" secondItem="sCR-Qu-Yhu" secondAttribute="top" id="GoE-Jf-PNK"/>
+                                    <constraint firstAttribute="trailing" secondItem="K0m-km-FCG" secondAttribute="trailing" id="eSb-gD-WxC"/>
+                                    <constraint firstItem="K0m-km-FCG" firstAttribute="leading" secondItem="sCR-Qu-Yhu" secondAttribute="leading" id="eZp-cu-1SI"/>
+                                </constraints>
+                            </stackView>
                         </subviews>
-                        <color key="backgroundColor" red="0.15563566049999999" green="0.72336632010000002" blue="0.21114473559999999" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                         <constraints>
-                            <constraint firstItem="38O-Yr-Zsy" firstAttribute="centerX" secondItem="iyb-M7-ryV" secondAttribute="centerX" id="Qvk-5a-cA9"/>
-                            <constraint firstItem="38O-Yr-Zsy" firstAttribute="centerY" secondItem="iyb-M7-ryV" secondAttribute="centerY" id="eCT-uF-OlY"/>
+                            <constraint firstAttribute="trailing" secondItem="sCR-Qu-Yhu" secondAttribute="trailing" id="GJZ-mb-Og2"/>
+                            <constraint firstItem="Lzn-bQ-SA9" firstAttribute="top" secondItem="sCR-Qu-Yhu" secondAttribute="bottom" id="NgH-3u-X3g"/>
+                            <constraint firstItem="sCR-Qu-Yhu" firstAttribute="leading" secondItem="iyb-M7-ryV" secondAttribute="leading" id="dvL-dD-lLa"/>
+                            <constraint firstItem="sCR-Qu-Yhu" firstAttribute="top" secondItem="iyb-M7-ryV" secondAttribute="top" id="rWw-Kf-35C"/>
                         </constraints>
                     </view>
+                    <navigationItem key="navigationItem" id="JA2-AX-b7m">
+                        <barButtonItem key="leftBarButtonItem" image="first" id="1wd-EB-9nq">
+                            <connections>
+                                <action selector="menuButtonTouched:" destination="C05-L5-QA5" id="d5G-1G-ph7"/>
+                            </connections>
+                        </barButtonItem>
+                    </navigationItem>
+                    <connections>
+                        <outlet property="tableView" destination="K0m-km-FCG" id="kMW-ts-fYS"/>
+                    </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="Bbc-ix-moW" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="-839" y="-681"/>
+            <point key="canvasLocation" x="100" y="-681.40929535232385"/>
         </scene>
         <!--Right Menu View Controller-->
         <scene sceneID="ZA7-NV-2rD">
@@ -231,7 +276,7 @@
                 </tabBarController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="HuB-VB-40B" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="-98" y="-2"/>
+            <point key="canvasLocation" x="574" y="536"/>
         </scene>
         <!--First-->
         <scene sceneID="BqW-ND-V3B">
@@ -250,7 +295,7 @@
                 </navigationController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="eQF-7g-HT9" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="878" y="-327"/>
+            <point key="canvasLocation" x="1816.8" y="-327.88605697151428"/>
         </scene>
         <!--Second-->
         <scene sceneID="mQk-ME-ZGB">
@@ -270,6 +315,24 @@
                 <placeholder placeholderIdentifier="IBFirstResponder" id="CGK-BB-dlo" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="749.60000000000002" y="359.37031484257875"/>
+        </scene>
+        <!--Left Menu Nav Controller-->
+        <scene sceneID="xdN-g6-rtc">
+            <objects>
+                <navigationController storyboardIdentifier="RVLeftMenuNavController" automaticallyAdjustsScrollViewInsets="NO" id="80b-jo-56w" customClass="RVLeftMenuNavController" customModule="SwiftMeteor" customModuleProvider="target" sceneMemberID="viewController">
+                    <toolbarItems/>
+                    <navigationBar key="navigationBar" contentMode="scaleToFill" id="g2d-Yd-42s">
+                        <rect key="frame" x="0.0" y="0.0" width="375" height="44"/>
+                        <autoresizingMask key="autoresizingMask"/>
+                    </navigationBar>
+                    <nil name="viewControllers"/>
+                    <connections>
+                        <segue destination="C05-L5-QA5" kind="relationship" relationship="rootViewController" id="Jh4-5v-xsd"/>
+                    </connections>
+                </navigationController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="nlz-ea-cmm" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="-839.20000000000005" y="-681.40929535232385"/>
         </scene>
     </scenes>
     <resources>

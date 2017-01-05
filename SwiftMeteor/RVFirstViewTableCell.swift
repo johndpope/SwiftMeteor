@@ -7,19 +7,15 @@
 //
 
 import UIKit
-class RVFirstViewTableCell: UITableViewCell {
+class RVFirstViewTableCell: RVBaseTableViewCell {
     
     @IBOutlet weak var customTextLabel: UILabel!
     
     @IBOutlet weak var descriptionLabel: UILabel!
     @IBOutlet weak var commentLabel: UILabel!
-    var model: RVBaseModel? = nil {
-        didSet {
-            self.configure()
-        }
-    }
+
     
-    func configure() {
+    override func configure() {
         if let model = model {
             setLabelText(label: customTextLabel, text: model.text)
             setLabelText(label: descriptionLabel, text: model.regularDescription)
@@ -28,11 +24,12 @@ class RVFirstViewTableCell: UITableViewCell {
         
     }
     override func prepareForReuse() {
+        super.prepareForReuse()
         model = nil
     }
 }
 extension RVFirstViewTableCell {
-    func setLabelText(label: UILabel!, text: String?) {
+    override func setLabelText(label: UILabel!, text: String?) {
         if let label = label {
             if let text = text {
                 label.text = text
@@ -41,7 +38,7 @@ extension RVFirstViewTableCell {
             }
         }
     }
-    func setButtonText(button: UIButton!, text: String?) {
+    override func setButtonText(button: UIButton!, text: String?) {
         if let button = button {
             if let text = text {
                 button.setTitle(text, for: UIControlState.normal)
