@@ -79,9 +79,7 @@ extension FirstViewController: UISearchBarDelegate {
 }
 class FirstViewController: UIViewController {
     @IBOutlet weak var searchBarHeightConstraint: NSLayoutConstraint!
-    let backspace = String(describing: UnicodeScalar(8))
-    let tab = "\t"
-    let sparklingHeart = "\u{1F496}"
+
     let scopeTitles = ["scope1", "scope2"]
     @IBOutlet weak var tableView: UITableView!
     var instanceType: String { get { return String(describing: type(of: self)) } }
