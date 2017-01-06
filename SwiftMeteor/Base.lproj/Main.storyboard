@@ -261,7 +261,7 @@
                                         <rect key="frame" x="0.0" y="28" width="375" height="44"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="KVd-GM-RDQ" id="IVr-8T-U70">
-                                            <rect key="frame" x="0.0" y="0.0" width="375" height="43"/>
+                                            <rect key="frame" x="0.0" y="0.0" width="375" height="44"/>
                                             <autoresizingMask key="autoresizingMask"/>
                                         </tableViewCellContentView>
                                     </tableViewCell>
@@ -311,7 +311,7 @@
                         </constraints>
                     </view>
                     <navigationItem key="navigationItem" title="Main" id="TS9-g3-MCv">
-                        <barButtonItem key="leftBarButtonItem" systemItem="done" id="2Cn-Di-vMq">
+                        <barButtonItem key="leftBarButtonItem" title="Menu" id="2Cn-Di-vMq">
                             <connections>
                                 <action selector="doneButtonTouched:" destination="26z-cv-GPL" id="8xX-P0-t4I"/>
                             </connections>

@@ -29,7 +29,7 @@ class RVBaseViewController: UIViewController {
     var leftBarButtonItems: [UIBarButtonItem]? =  nil
     var rightBarButtonItems: [UIBarButtonItem]? = nil
     var navigationItemTitleView: UIView? = nil
-    let searchBar = UISearchBar()
+    var searchBar = UISearchBar()
     let backspace = String(describing: UnicodeScalar(8))
     let tab = "\t"
     let sparklingHeart = "\u{1F496}"
@@ -62,6 +62,7 @@ extension RVBaseViewController: UISearchBarDelegate {
         navigationItem.setRightBarButtonItems(nil, animated: true)
         self.navigationItemTitleView = navigationItem.titleView
         navigationItem.titleView = self.searchBar
+        navigationItem.titleView?.sizeToFit()
     }
     func removeSearchBar() {
         navigationItem.titleView = self.navigationItemTitleView
@@ -69,12 +70,16 @@ extension RVBaseViewController: UISearchBarDelegate {
         navigationItem.setRightBarButtonItems(self.rightBarButtonItems, animated: true)
     }
     func configureSearchBar() {
+        searchBar.prompt = "Prompt"
+        searchBar.isTranslucent = false
         searchBar.searchBarStyle = UISearchBarStyle.prominent
+    //    searchBar.showsSearchResultsButton = true
         searchBar.placeholder = " Search..."
         searchBar.isTranslucent = false
         searchBar.backgroundImage = UIImage()
         searchBar.delegate = self
         searchBar.showsCancelButton = true
+    
     //    searchBar.sizeToFit()
         UISearchBar.appearance().barTintColor = UIColor.candyGreen()
         UISearchBar.appearance().tintColor = UIColor.blue
