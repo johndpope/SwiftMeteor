@@ -21,6 +21,7 @@ PODS:
     - SwiftWebSocket (~> 2.6.5)
     - XCGLogger
   - SwiftWebSocket (2.6.5)
+  - TPKeyboardAvoiding (1.3)
   - ViewDeck (3.0.0)
   - XCGLogger (4.0.0):
     - XCGLogger/Core (= 4.0.0)
@@ -35,6 +36,7 @@ DEPENDENCIES:
   - AWSS3
   - SDWebImage (~> 3.8)
   - SwiftDDP (~> 0.4.0)
+  - TPKeyboardAvoiding
   - ViewDeck
 
 SPEC CHECKSUMS:
@@ -49,9 +51,10 @@ SPEC CHECKSUMS:
   SDWebImage: 098e97e6176540799c27e804c96653ee0833d13c
   SwiftDDP: b575009a2c83bde917b9f2f00decada31cefd7ef
   SwiftWebSocket: 1ef8a0efb023544643bdf480c1ec4a62b204f293
+  TPKeyboardAvoiding: a5138f318c06fb3e151f886e18ce4a72695d9cbe
   ViewDeck: 9ad8c4ca95ffe21245ee411515c424807e6c7cfa
   XCGLogger: 38063ea89b4c8b23232d18efd2e12eb0005f3ea4
 
-PODFILE CHECKSUM: 03b413d518a6301dacf07bfddce414c489dfb790
+PODFILE CHECKSUM: cec0940949c86307d125f67a19037279356904a0
 
 COCOAPODS: 1.1.1

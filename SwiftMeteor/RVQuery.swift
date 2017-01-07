@@ -68,8 +68,8 @@ class RVQuery {
     func duplicate() -> RVQuery {
         let query = RVQuery()
         query.comment = self.comment
-        query.sortOrder = self.sortOrder
-        query.sortTerm = self.sortTerm
+//        query.sortOrder = self.sortOrder
+ //       query.sortTerm = self.sortTerm
         for andTerm in self.ands {
             query.ands.append(andTerm.duplicate())
         }
@@ -93,9 +93,9 @@ class RVQuery {
     static let commentField = "$comment"
     static let limitField = "$limit"
     var comment: String?    = nil
-    private var sortTerms = [RVSortTerm]()
-    var sortOrder: RVSortOrder  = .descending
-    var sortTerm: RVKeys        = .createdAt
+    var sortTerms = [RVSortTerm]()
+   // var sortOrder: RVSortOrder  = .descending
+   // var sortTerm: RVKeys        = .createdAt
     var ands    = [RVQueryItem]()
     var ors     = [RVQueryItem]()
     var projections = [RVProjectionItem]()
@@ -132,6 +132,19 @@ class RVQuery {
         }
         return nil
     }
+    func removeSortTerm(field: RVKeys) -> RVSortTerm? {
+        for index in 0..<sortTerms.count {
+            let term = sortTerms[index]
+            if term.field == field {
+                sortTerms.remove(at: index)
+                return term
+            }
+        }
+        return nil
+    }
+    func removeAllSortTerms() {
+        self.sortTerms = [RVSortTerm]()
+    }
     func addAnd(queryItem: RVQueryItem) {
         if let existing = findAndTerm(term: queryItem.term) {
             existing.comparison = queryItem.comparison
@@ -154,15 +167,23 @@ class RVQuery {
             self.projections.append(projectionItem)
         }
     }
+    func addProjection(field: RVKeys) {
+        let projection = RVProjectionItem(field: field)
+        self.addProjection(projectionItem: projection)
+    }
     func addSort(sortTerm: RVSortTerm) {
         self.addSort(field: sortTerm.field, order: sortTerm.order)
     }
+
     func addSort(field: RVKeys, order: RVSortOrder) {
         if let term = findSortTerm(field: field) {
             term.order = order
         } else {
             sortTerms.append(RVSortTerm(field: field, order: order))
         }
+    }
+    func removeSort(field: RVKeys) {
+        
     }
     func query() -> ([String : AnyObject], [String : AnyObject]) {
         var projections = [String: AnyObject]()

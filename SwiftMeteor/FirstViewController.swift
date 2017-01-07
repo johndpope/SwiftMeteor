@@ -683,7 +683,7 @@ extension FirstViewController: UITableViewDataSource {
         return UITableViewCell()
     }
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-       // print("In \(self.classForCoder).numberOfRowsInSection \(section) \(manager.numberOfItems(section: section))")
+       print("In \(self.classForCoder).numberOfRowsInSection \(section) \(manager.numberOfItems(section: section))")
         return manager.numberOfItems(section: section)
     }
     func numberOfSections(in tableView: UITableView) -> Int {

@@ -16,8 +16,8 @@ class RVBaseDataSource {
     var backBuffer = 30
     var frontBuffer = 20
     var frontTimer: Bool = false
-    var frontTime: TimeInterval = Date().timeIntervalSince1970
-    var backTime: TimeInterval = Date().timeIntervalSince1970
+    var frontTime: TimeInterval = 1483767600
+    var backTime: TimeInterval = 1483767600
     let minimumInterval: TimeInterval = 0.5
     var backTimer: Bool = false
     var array = [RVBaseModel]()
@@ -46,11 +46,32 @@ class RVBaseDataSource {
             return virtualCount
         }
     }
-
+    func basicQuery() -> RVQuery {
+        print("In \(self.instanceType).basicQuery, in base class. Need to override")
+        let query = RVQuery()
+        query.limit = 70
+        //        query.sortOrder = .descending
+        //        query.sortTerm = .createdAt
+        query.addSort(field: .createdAt, order: .descending)
+        query.addAnd(queryItem: RVQueryItem(term: .createdAt, value: EJSON.convertToEJSONDate(Date()) as AnyObject, comparison: .lte))
+        query.addOr(queryItem: RVQueryItem(term: .owner, value: "Goober" as AnyObject, comparison: .eq))
+        query.addOr(queryItem: RVQueryItem(term: .private, value: true as AnyObject, comparison: .ne))
+        query.addProjection(projectionItem: RVProjectionItem(field: .text, include: .include))
+        query.addProjection(projectionItem: RVProjectionItem(field: .createdAt))
+        query.addProjection(projectionItem: RVProjectionItem(field: .updatedAt))
+        query.addProjection(projectionItem: RVProjectionItem(field: .regularDescription))
+        query.addProjection(projectionItem: RVProjectionItem(field: .comment))
+        query.addProjection(projectionItem: RVProjectionItem(field: .lowerCaseComment))
+        return query
+    }
     func replaceOperation(operation: RVDSOperation) {
         if operations.findOperation(operationName: operation.name).identifier == operation.identifier {
             operations.addOperation( operation: RVDSOperation(name: operation.name) )
         }
+    }
+    func bulkQuery(query: RVQuery, callback: @escaping (_ models: [RVBaseModel]?, _ error: RVError?) -> Void) {
+        print("In \(self.instanceType).bulkQuery base class. Need to override")
+        RVTask.bulkQuery(query: query, callback: callback)
     }
     func queryForFront(operation: RVDSOperation, callback: @escaping(_ error: RVError?) -> Void) {
        // return
@@ -63,7 +84,27 @@ class RVBaseDataSource {
                 callback(nil)
             } else {
                 let query = query2.duplicate().updateQuery(front: true)
-                if let first = self.array.first {
+                if let candidate = self.array.first {
+                    //print("In \(self.instanceType).queryForFront have first... \(candidate.text!)")
+                    for sort in query.sortTerms {
+                        switch (sort.field) {
+                        case .createdAt:
+                            if let candidateCreatedAt = candidate.createdAt {
+                                if let queryTerm = query.findAndTerm(term: sort.field) {
+                                    queryTerm.value = EJSON.convertToEJSONDate(candidateCreatedAt) as AnyObject
+                                }
+                            }
+                        case .lowerCaseComment:
+                            if let candidateComment = candidate.lowercaseComment {
+                                if let queryTerm = query.findAndTerm(term: sort.field) {
+                                    queryTerm.value = candidateComment as AnyObject
+                                }
+                            }
+                        default:
+                            print("in \(self.instanceType).queryForBack, term \(sort.field.rawValue) not implemented")
+                        }
+                    }
+                    /*
                     switch(query.sortTerm) {
                     case .createdAt:
                         if let firstCreatedAt = first.createdAt {
@@ -78,8 +119,37 @@ class RVBaseDataSource {
                      //   if query.sortOrder == .ascending { query.sortOrder = .descending}
                      //   else { query.sortOrder = .ascending }
                     default:
-                        print("In \(self.instanceType).queryForBack, have unserviced sortTerm: \(query.sortTerm.rawValue)")
+                        print("In \(self.instanceType).queryForFront, have unserviced sortTerm: \(query.sortTerm.rawValue)")
                     }
+ */
+                    
+                    self.bulkQuery(query: query, callback: { (models, error) in
+                        if let error = error {
+                            print("In \(self.instanceType).queryForFront, got error")
+                            error.printError()
+                            operation.cancelled = true
+                            self.replaceOperation(operation: operation)
+                            error.append(message: "In \(self.instanceType).queryForFront, got error")
+                            callback(error)
+                        } else if let models = models {
+                            var index = 0
+                            for _ in models {
+                                //  print("\(index): \(model.text!), \(model.createdAt)")
+                                index = index + 1
+                            }
+                            if self.operations.findOperation(operationName:.frontOperation).identifier == operation.identifier {
+                                self.insertAtFront(operation: operation, items: models)
+                            }
+                            callback(nil)
+                        } else {
+                            print("In \(self.instanceType).queryForFront, no error but no results")
+                            operation.cancelled = true
+                            self.replaceOperation(operation: operation)
+                            callback(nil)
+                        }
+                    })
+                    
+                    /*
                                //   print("In \(self.instanceType).queryForFront() about to do bulkQuery")
                     RVTask.bulkQuery(query: query , callback: { (models, error) in
                         if let error = error {
@@ -106,6 +176,7 @@ class RVBaseDataSource {
                             callback(nil)
                         }
                     })
+ */
  
                 } else {
 
@@ -124,15 +195,37 @@ class RVBaseDataSource {
         }
     }
     func queryForBack(callback: @escaping(_ error: RVError?) -> Void) {
+        // print("In \(self.instanceType).queryForBack")
         if let query = self.baseQuery {
             let operation = operations.findOperation(operationName: .backOperation)
 
                 if self.array.count == 0 {
+           //         print("IN \(self.instanceType).queryForBack, count is zero")
                     queryForBackHelper(query: query, operation: operation, callback: callback)
                 } else {
                     let query = query.duplicate().updateQuery(front: false)
-                    if let last = self.array.last {
-                     //   print("In \(self.instanceType).queryForBack have last... \(last.text!)")
+                    if let candidate = self.array.last {
+                        print("In \(self.instanceType).queryForBack have last... \(candidate.text!)")
+                        for sort in query.sortTerms {
+                            switch (sort.field) {
+                            case .createdAt:
+                                if let candidateCreatedAt = candidate.createdAt {
+                                    if let queryTerm = query.findAndTerm(term: sort.field) {
+                                        queryTerm.value = EJSON.convertToEJSONDate(candidateCreatedAt) as AnyObject as AnyObject
+                                    }
+                                }
+                            case .lowerCaseComment:
+                                print("In \(self.instanceType).queryForBack with lowercaseCommnet value = \(candidate.lowercaseComment)")
+                                if let candidateComment = candidate.comment {
+                                    if let queryTerm = query.findAndTerm(term: sort.field) {
+                                        queryTerm.value = candidateComment.lowercased() as AnyObject
+                                    }
+                                }
+                            default:
+                                print("in \(self.instanceType).queryForBack, term \(sort.field.rawValue) not implemented")
+                            }
+                        }
+                        /*
                         switch(query.sortTerm) {
                         case .createdAt:
                             if let lastCreatedAt = last.createdAt {
@@ -147,10 +240,12 @@ class RVBaseDataSource {
                         default:
                             print("In \(self.instanceType).queryForBack, have unserviced sortTerm: \(query.sortTerm.rawValue)")
                         }
+ */
                         queryForBackHelper(query: query, operation: operation, callback: callback)
                         return
                     } else {
-                        let rvError = RVError(message: "In \(self.instanceType).queryForBack, last item")
+                        print("In \(self.instanceType).queryForBack no last item")
+                        let rvError = RVError(message: "In \(self.instanceType).queryForBack, no last item")
                         operation.cancelled = true
                         self.replaceBackOperation(operation: operation)
                         callback(rvError)
@@ -160,11 +255,39 @@ class RVBaseDataSource {
 
         } else {
             let rvError = RVError(message: "In \(self.instanceType).queryForBack, no baseQuery")
+            print("In \(self.instanceType).queryForBack no baseQuery")
             callback(rvError)
         }
     }
     func queryForBackHelper(query: RVQuery, operation: RVDSOperation, callback: @escaping(_ error: RVError?)-> Void) {
        // print("In \(self.instanceType).queryForBackHelper() about to do bulkQuery")
+        
+        self.bulkQuery(query: query) { (models, error) in
+            if let error = error {
+                print("In \(self.instanceType).subscribeToTasks, got error")
+                error.printError()
+                error.append(message: "In \(self.instanceType).subscribeToTasks, got error")
+                operation.cancelled = true
+                self.replaceBackOperation(operation: operation)
+                callback(error)
+            } else if let models = models {
+                var index = 0
+                for _ in models {
+                    //  print("\(index): \(model.text!), \(model.createdAt)")
+                    index = index + 1
+                }
+                if self.operations.findOperation(operationName: .backOperation).identifier == operation.identifier {
+                    self.appendAtBack(operation: operation, items: models)
+                }
+                callback(nil)
+            } else {
+                print("In \(self.instanceType).subscribeToTasks, no error but no results")
+                operation.cancelled = true
+                self.replaceBackOperation(operation: operation)
+            }
+        }
+        /*
+    //    print("In \(self.instanceType).queryForBackHelper")
         RVTask.bulkQuery(query: query) { (models: [RVBaseModel]?, error: RVError?) in
             if let error = error {
                 print("In \(self.instanceType).subscribeToTasks, got error")
@@ -174,6 +297,7 @@ class RVBaseDataSource {
                 self.replaceBackOperation(operation: operation)
                 callback(error)
             } else if let models = models {
+                //print("In \(self.instanceType).queryForBackHelper, have models")
                 var index = 0
                 for _ in models {
                   //  print("\(index): \(model.text!), \(model.createdAt)")
@@ -189,6 +313,8 @@ class RVBaseDataSource {
                 self.replaceBackOperation(operation: operation)
             }
         }
+ */
+ 
     }
     func item(location: Int) -> RVBaseModel? {
       //  print("In \(self.instanceType).item, with location: \(location)")
@@ -307,7 +433,7 @@ class RVBaseDataSource {
         }
     }
     func inBackZone(location: Int) {
-       // print("In \(self.instanceType).inBackZone. location = \(location), offset = \(self.offset), array count = \(self.array.count)")
+    //    print("In \(self.instanceType).inBackZone. location = \(location), offset = \(self.offset), array count = \(self.array.count)")
         if Date().timeIntervalSince1970 - self.backTime < minimumInterval { return }
         if backTimer { return }
         backTimer = true
@@ -687,12 +813,18 @@ class RVBaseDataSource {
                 }
 
             }
+        } else {
+            print("In \(self.instanceType).reset, no manager")
+            callback()
         }
     }
     func start(query: RVQuery, callback: @escaping (_ error: RVError?)-> Void) {
+       // print("In \(self.instanceType).start")
         reset {
+
             self.baseQuery = query
             self.inBackZone(location: 0)
+            callback(nil)
         }
     }
     func stop(callback: @escaping(_ error: RVError?) -> Void) {

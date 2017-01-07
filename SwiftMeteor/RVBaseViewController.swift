@@ -11,12 +11,12 @@ import UIKit
 class RVBaseViewController: UIViewController {
     var instanceType: String { get { return String(describing: type(of: self)) } }
     let stack = [RVBaseModel]()
-    weak var scrollView: UIScrollView?
+    weak var dsScrollView: UIScrollView?
     var manager: RVDSManager!
     override func viewDidLoad() {
         super.viewDidLoad()
         configureSearchBar()
-        if let scrollView = self.scrollView {
+        if let scrollView = self.dsScrollView {
             self.manager = RVDSManager(scrollView: scrollView)
         } else {
             print("In \(instanceType).viewDidLoad, scrollView not set")

@@ -64,6 +64,11 @@
 			<key>isShown</key>
 			<false/>
 		</dict>
+		<key>TPKeyboardAvoiding.xcscheme</key>
+		<dict>
+			<key>isShown</key>
+			<false/>
+		</dict>
 		<key>ViewDeck.xcscheme</key>
 		<dict>
 			<key>isShown</key>
@@ -77,11 +82,6 @@
 	</dict>
 	<key>SuppressBuildableAutocreation</key>
 	<dict>
-		<key>0969A9ACC22ECCD4B66C628AB0114A43</key>
-		<dict>
-			<key>primary</key>
-			<true/>
-		</dict>
 		<key>11DFC6F885BFA9BCE8EB6EA0458ABFF8</key>
 		<dict>
 			<key>primary</key>
@@ -92,12 +92,12 @@
 			<key>primary</key>
 			<true/>
 		</dict>
-		<key>370BBA6E4556043A8D2903FDD5C4D000</key>
+		<key>269F5732249C833D64E401B51CA1D373</key>
 		<dict>
 			<key>primary</key>
 			<true/>
 		</dict>
-		<key>4C7A814ABA8E6CEC42C9880C4F48A8A3</key>
+		<key>4ED597D4914345EA0BDB3A86B7CCBFCC</key>
 		<dict>
 			<key>primary</key>
 			<true/>
@@ -112,12 +112,22 @@
 			<key>primary</key>
 			<true/>
 		</dict>
-		<key>5CAC79AEE4A0EDE1E023F5A584480499</key>
+		<key>6BB1C1403B2419F911818DA8413FDA07</key>
 		<dict>
 			<key>primary</key>
 			<true/>
 		</dict>
-		<key>6BB1C1403B2419F911818DA8413FDA07</key>
+		<key>8D5E30FA83AC5F591A8B0ADF3E2A23C7</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>914C3531D261543826A23FBE211B494A</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>91593B5A3C4619E91C8151453615863B</key>
 		<dict>
 			<key>primary</key>
 			<true/>
@@ -132,17 +142,17 @@
 			<key>primary</key>
 			<true/>
 		</dict>
-		<key>AC9E4B7AFDAE610C7A380AE090FD07B1</key>
-		<dict>
-			<key>primary</key>
-			<true/>
-		</dict>
 		<key>C14498E8A4F7BC06FEBC95C50C9B88BD</key>
 		<dict>
 			<key>primary</key>
 			<true/>
 		</dict>
-		<key>DDE4BD8DBEC17D650FCBCB8F41D3DB33</key>
+		<key>CA632F5B35B766E4E7C2116F66F005FE</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>E7289AA263A49D649047E7F75B4B580F</key>
 		<dict>
 			<key>primary</key>
 			<true/>

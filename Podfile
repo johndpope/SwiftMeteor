@@ -15,6 +15,7 @@ target 'SwiftMeteor' do
   pod 'AWSLambda'
   pod 'AWSS3'
   pod 'SDWebImage', '~>3.8'
+  pod 'TPKeyboardAvoiding'
 
 
 

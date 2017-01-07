@@ -60,6 +60,11 @@ class RVBaseModel: MeteorDocument {
             else { dict[RVKeys.comment.rawValue] = NSNull() }
             self._comment.dirty = false
         }
+        if !onlyDirties || (onlyDirties && self._lowercaseComment.dirty) {
+            if let comment = self.lowercaseComment {dict[RVKeys.lowerCaseComment.rawValue] = comment as AnyObject }
+            else { dict[RVKeys.lowerCaseComment.rawValue] = NSNull() }
+            self._lowercaseComment.dirty = false
+        }
         if !onlyDirties || (onlyDirties && self._title.dirty) {
             if let title = self.title { dict[RVKeys.title.rawValue] = title as AnyObject }
             else { dict[RVKeys.title.rawValue] = NSNull() }
@@ -143,6 +148,7 @@ class RVBaseModel: MeteorDocument {
     func setupCallback() {
         self._username.model = self
         self._comment.model = self
+        self._lowercaseComment.model = self
         self._ownerId.model = self
         self._owner.model = self
         self._parentId.model = self
@@ -197,6 +203,8 @@ class RVBaseModel: MeteorDocument {
             let _ = self._title.updateString(newValue: value)
         case .comment:
             let _ = self._comment.updateString(newValue: value)
+        case .lowerCaseComment:
+            let _ = self._lowercaseComment.updateString(newValue: value)
         case .text:
             let _ = self._text.updateString(newValue: value)
         case .regularDescription:
@@ -355,7 +363,25 @@ class RVBaseModel: MeteorDocument {
             if let string = _comment.value as? String { return string }
             return nil
         }
-        set { let _ = _comment.changeString(newValue: newValue as AnyObject) }
+        set {
+            let _ = _comment.changeString(newValue: newValue as AnyObject)
+            self.lowercaseComment = comment
+        }
+    }
+    var _lowercaseComment = RVRecord(fieldName: RVKeys.lowerCaseComment)
+    var lowercaseComment: String? {
+        get {
+            if let string = _lowercaseComment.value as? String { return string}
+            return nil
+        }
+        set {
+            if let comment = newValue {
+                let _ = _lowercaseComment.changeString(newValue: comment.lowercased() as AnyObject)
+            } else {
+                let _ = _lowercaseComment.changeString(newValue: newValue as AnyObject)
+            }
+            
+        }
     }
     var _image = RVRecord(fieldName: RVKeys.image)
     var image: RVImage? {
