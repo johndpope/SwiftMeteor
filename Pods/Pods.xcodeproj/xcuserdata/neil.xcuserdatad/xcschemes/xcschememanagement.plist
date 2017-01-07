@@ -44,12 +44,22 @@
 			<key>isShown</key>
 			<false/>
 		</dict>
+		<key>LoremIpsum.xcscheme</key>
+		<dict>
+			<key>isShown</key>
+			<false/>
+		</dict>
 		<key>Pods-SwiftMeteor.xcscheme</key>
 		<dict>
 			<key>isShown</key>
 			<false/>
 		</dict>
 		<key>SDWebImage.xcscheme</key>
+		<dict>
+			<key>isShown</key>
+			<false/>
+		</dict>
+		<key>SlackTextViewController.xcscheme</key>
 		<dict>
 			<key>isShown</key>
 			<false/>
@@ -77,7 +87,7 @@
 	</dict>
 	<key>SuppressBuildableAutocreation</key>
 	<dict>
-		<key>0969A9ACC22ECCD4B66C628AB0114A43</key>
+		<key>10FA7A048B041DFCDE3DCF23885D4602</key>
 		<dict>
 			<key>primary</key>
 			<true/>
@@ -92,12 +102,7 @@
 			<key>primary</key>
 			<true/>
 		</dict>
-		<key>370BBA6E4556043A8D2903FDD5C4D000</key>
-		<dict>
-			<key>primary</key>
-			<true/>
-		</dict>
-		<key>4C7A814ABA8E6CEC42C9880C4F48A8A3</key>
+		<key>28EDB83CD81A1F82B439D7B233AA8277</key>
 		<dict>
 			<key>primary</key>
 			<true/>
@@ -112,12 +117,27 @@
 			<key>primary</key>
 			<true/>
 		</dict>
-		<key>5CAC79AEE4A0EDE1E023F5A584480499</key>
+		<key>6BB1C1403B2419F911818DA8413FDA07</key>
 		<dict>
 			<key>primary</key>
 			<true/>
 		</dict>
-		<key>6BB1C1403B2419F911818DA8413FDA07</key>
+		<key>8493EA81BDC112F70503852E50979384</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>90918E9206AF58884B66CE98D6AB0A6B</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>90B971DF9FE2F10D0F50C368FB9CB090</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>91710B7DF90241FB3857CCDA4E28AFE6</key>
 		<dict>
 			<key>primary</key>
 			<true/>
@@ -132,17 +152,17 @@
 			<key>primary</key>
 			<true/>
 		</dict>
-		<key>AC9E4B7AFDAE610C7A380AE090FD07B1</key>
+		<key>A2D99900159DD1701C253993733981A3</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>BDE56829DF21F29D4F781F2E999D4F54</key>
 		<dict>
 			<key>primary</key>
 			<true/>
 		</dict>
 		<key>C14498E8A4F7BC06FEBC95C50C9B88BD</key>
-		<dict>
-			<key>primary</key>
-			<true/>
-		</dict>
-		<key>DDE4BD8DBEC17D650FCBCB8F41D3DB33</key>
 		<dict>
 			<key>primary</key>
 			<true/>

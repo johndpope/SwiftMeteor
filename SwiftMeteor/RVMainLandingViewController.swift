@@ -14,7 +14,7 @@ class RVMainLandingViewController: RVBaseViewController {
     @IBOutlet weak var segmentedView: UIView!
     @IBOutlet weak var segmentedViewTopConstraint: NSLayoutConstraint!
     @IBOutlet weak var tableViewTopConstraint: NSLayoutConstraint!
-    @IBOutlet weak var tableView: UITableView!
+//    @IBOutlet weak var tableView: UITableView!
     @IBOutlet weak var segmentedControl: UISegmentedControl!
     let topConstraintDelta: CGFloat = 30.0
     var segmentedViewTopConstraintConstant:CGFloat = 0.0
@@ -30,7 +30,7 @@ class RVMainLandingViewController: RVBaseViewController {
         segmentedView.isHidden = false
     }
     override func viewDidLoad() {
-        self.scrollView = tableView
+//        self.scrollView = tableView  // NEIL SLACK
         super.viewDidLoad()
     }
 }

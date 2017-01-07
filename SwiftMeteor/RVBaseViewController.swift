@@ -8,10 +8,10 @@
 
 import UIKit
 
-class RVBaseViewController: UIViewController {
+class RVBaseViewController: RVSlackMessageController {
     var instanceType: String { get { return String(describing: type(of: self)) } }
     let stack = [RVBaseModel]()
-    weak var scrollView: UIScrollView?
+ //   weak var scrollView: UIScrollView? // NEIL!
     var manager: RVDSManager!
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -34,13 +34,22 @@ class RVBaseViewController: UIViewController {
     let tab = "\t"
     let sparklingHeart = "\u{1F496}"
     var searchBarScopeTitles: [String] = ["Scope0", "Scope1"]
+    
+    // Slack
+//    var emojis: Array = ["-1", "m", "man", "machine", "block-a", "block-b", "bowtie", "boar", "boat", "book", "bookmark", "neckbeard", "metal", "fu", "feelsgood"]
+//    var commands: Array = ["msg", "call", "text", "skype", "kick", "invite"]
 }
-extension RVBaseViewController: UITableViewDelegate {
+extension RVBaseViewController {
+// extension RVBaseViewController: UITableViewDelegate {
+    /*
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         print("In \(instanceType).didSelectRowAt, not overridded")
     }
+ */
 }
-extension RVBaseViewController: UITableViewDataSource {
+extension RVBaseViewController {
+// extension RVBaseViewController: UITableViewDataSource {
+    /*
     func numberOfSections(in tableView: UITableView) -> Int {
         return manager.numberOfSections()
     }
@@ -51,6 +60,7 @@ extension RVBaseViewController: UITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return manager.numberOfItems(section: section)
     }
+ */
 }
 
 
@@ -137,4 +147,13 @@ extension RVBaseViewController: UISearchBarDelegate {
     func searchBarResultsListButtonClicked(_ searchBar: UISearchBar) {
         p("", "searchBarResultsListButtonClicked")
     }
+}
+// Slack
+extension RVBaseViewController {
+    /*
+    func commonSlackInit() {
+        NotificationCenter.default.addObserver(self.tableView, selector: #selector(UITableView.reloadData), name: NSNotification.Name.UIContentSizeCategoryDidChange, object: nil)
+        NotificationCenter.default.addObserver(self,  selector: #selector(MessageViewController.textInputbarDidMove(_:)), name: NSNotification.Name.SLKTextInputbarDidMove, object: nil)
+    }
+ */
 }

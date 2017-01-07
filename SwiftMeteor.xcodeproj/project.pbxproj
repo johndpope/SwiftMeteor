@@ -29,12 +29,17 @@
 		284FBAD41DEC142B00446C86 /* RVMainTabViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 284FBAD31DEC142B00446C86 /* RVMainTabViewController.swift */; };
 		284FBAD71DEC161000446C86 /* UIColor+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 284FBAD61DEC161000446C86 /* UIColor+Extension.swift */; };
 		2850AFFF1E1B60130043FEB3 /* RVResultsTableController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2850AFFE1E1B60130043FEB3 /* RVResultsTableController.swift */; };
+		285392CE1E20566700406BFE /* RVSlackMessageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 285392CD1E20566700406BFE /* RVSlackMessageView.swift */; };
 		2870CCD11DECD81F005C6FB5 /* AWSUserFileManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2870CCD01DECD81F005C6FB5 /* AWSUserFileManager.swift */; };
 		2870CCD81DEDE72F005C6FB5 /* RVError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2870CCD71DEDE72F005C6FB5 /* RVError.swift */; };
 		2873C9111DECA4D400DCB2DF /* AWSMobileClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2873C9101DECA4D400DCB2DF /* AWSMobileClient.swift */; };
 		2873C9131DECAA2F00DCB2DF /* AWSIdentityManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2873C9121DECAA2F00DCB2DF /* AWSIdentityManager.swift */; };
 		2873C9151DECBFF000DCB2DF /* AWSSignInProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2873C9141DECBFF000DCB2DF /* AWSSignInProvider.swift */; };
 		287B74701E1C2EE900900864 /* RVFirstViewHeaderCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 287B746F1E1C2EE900900864 /* RVFirstViewHeaderCell.swift */; };
+		2881D6311E205ABA00EF6F52 /* RVSlackTypingIndicatorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2881D6301E205ABA00EF6F52 /* RVSlackTypingIndicatorView.swift */; };
+		2881D6331E206CD100EF6F52 /* RVSlackMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2881D6321E206CD100EF6F52 /* RVSlackMessage.swift */; };
+		2881D6351E206D4700EF6F52 /* RVSlaceMessageViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2881D6341E206D4700EF6F52 /* RVSlaceMessageViewCell.swift */; };
+		2881D6371E20728500EF6F52 /* RVSlackMessageController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2881D6361E20728500EF6F52 /* RVSlackMessageController.swift */; };
 		288961091DEDED2C00FC34DB /* RVAWSDirect.swift in Sources */ = {isa = PBXBuildFile; fileRef = 288961081DEDED2C00FC34DB /* RVAWSDirect.swift */; };
 		2889610C1DEDF22F00FC34DB /* ranch.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 2889610B1DEDF22F00FC34DB /* ranch.jpg */; };
 		28928CD11E18BE09003538B8 /* RVBaseDataSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 28928CD01E18BE09003538B8 /* RVBaseDataSource.swift */; };
@@ -104,12 +109,17 @@
 		284FBAD31DEC142B00446C86 /* RVMainTabViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RVMainTabViewController.swift; sourceTree = "<group>"; };
 		284FBAD61DEC161000446C86 /* UIColor+Extension.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UIColor+Extension.swift"; sourceTree = "<group>"; };
 		2850AFFE1E1B60130043FEB3 /* RVResultsTableController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RVResultsTableController.swift; sourceTree = "<group>"; };
+		285392CD1E20566700406BFE /* RVSlackMessageView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RVSlackMessageView.swift; sourceTree = "<group>"; };
 		2870CCD01DECD81F005C6FB5 /* AWSUserFileManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AWSUserFileManager.swift; sourceTree = "<group>"; };
 		2870CCD71DEDE72F005C6FB5 /* RVError.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RVError.swift; sourceTree = "<group>"; };
 		2873C9101DECA4D400DCB2DF /* AWSMobileClient.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AWSMobileClient.swift; sourceTree = "<group>"; };
 		2873C9121DECAA2F00DCB2DF /* AWSIdentityManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AWSIdentityManager.swift; sourceTree = "<group>"; };
 		2873C9141DECBFF000DCB2DF /* AWSSignInProvider.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AWSSignInProvider.swift; sourceTree = "<group>"; };
 		287B746F1E1C2EE900900864 /* RVFirstViewHeaderCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RVFirstViewHeaderCell.swift; sourceTree = "<group>"; };
+		2881D6301E205ABA00EF6F52 /* RVSlackTypingIndicatorView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RVSlackTypingIndicatorView.swift; sourceTree = "<group>"; };
+		2881D6321E206CD100EF6F52 /* RVSlackMessage.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RVSlackMessage.swift; sourceTree = "<group>"; };
+		2881D6341E206D4700EF6F52 /* RVSlaceMessageViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RVSlaceMessageViewCell.swift; sourceTree = "<group>"; };
+		2881D6361E20728500EF6F52 /* RVSlackMessageController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RVSlackMessageController.swift; sourceTree = "<group>"; };
 		288961081DEDED2C00FC34DB /* RVAWSDirect.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RVAWSDirect.swift; sourceTree = "<group>"; };
 		2889610B1DEDF22F00FC34DB /* ranch.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; name = ranch.jpg; path = ../../../Assets/ranch.jpg; sourceTree = "<group>"; };
 		28928CD01E18BE09003538B8 /* RVBaseDataSource.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RVBaseDataSource.swift; sourceTree = "<group>"; };
@@ -221,6 +231,18 @@
 			name = Extensions;
 			sourceTree = "<group>";
 		};
+		285392CC1E20565500406BFE /* Slack */ = {
+			isa = PBXGroup;
+			children = (
+				285392CD1E20566700406BFE /* RVSlackMessageView.swift */,
+				2881D6301E205ABA00EF6F52 /* RVSlackTypingIndicatorView.swift */,
+				2881D6321E206CD100EF6F52 /* RVSlackMessage.swift */,
+				2881D6341E206D4700EF6F52 /* RVSlaceMessageViewCell.swift */,
+				2881D6361E20728500EF6F52 /* RVSlackMessageController.swift */,
+			);
+			name = Slack;
+			sourceTree = "<group>";
+		};
 		2870CCD41DEDE296005C6FB5 /* AWS */ = {
 			isa = PBXGroup;
 			children = (
@@ -323,6 +345,7 @@
 		28F53E6B1DEB5F71009641F0 /* SwiftMeteor */ = {
 			isa = PBXGroup;
 			children = (
+				285392CC1E20565500406BFE /* Slack */,
 				28201A401E1DE7F6008D8E59 /* MainLanding */,
 				28E65D9F1E1DB156004E82F5 /* LeftMenu */,
 				28E65D9C1E1DAEC6004E82F5 /* images */,
@@ -594,7 +617,9 @@
 				288961091DEDED2C00FC34DB /* RVAWSDirect.swift in Sources */,
 				28DE2D9F1DFE713300EFEECB /* RVMeteorMethods.swift in Sources */,
 				284FBAD41DEC142B00446C86 /* RVMainTabViewController.swift in Sources */,
+				285392CE1E20566700406BFE /* RVSlackMessageView.swift in Sources */,
 				28360E161E034C7A00E62384 /* RVTaskCollection.swift in Sources */,
+				2881D6351E206D4700EF6F52 /* RVSlaceMessageViewCell.swift in Sources */,
 				28201A441E1DE819008D8E59 /* RVMainLandingTableViewCell.swift in Sources */,
 				28E65DA51E1DB1D1004E82F5 /* RVBaseTableViewCell.swift in Sources */,
 				28928CD51E18E226003538B8 /* RVDSOperation.swift in Sources */,
@@ -615,12 +640,15 @@
 				281B913A1E024933003AC233 /* RVQuery.swift in Sources */,
 				28F53E6D1DEB5F71009641F0 /* AppDelegate.swift in Sources */,
 				28F53E6F1DEB5F71009641F0 /* FirstViewController.swift in Sources */,
+				2881D6371E20728500EF6F52 /* RVSlackMessageController.swift in Sources */,
 				28DE2D9D1DFE68C300EFEECB /* RVImage.swift in Sources */,
+				2881D6311E205ABA00EF6F52 /* RVSlackTypingIndicatorView.swift in Sources */,
 				28D534CF1DF3EAC20003DC11 /* RVDownloadTask.swift in Sources */,
 				28E65DA31E1DB1A0004E82F5 /* RVLeftMenuTableViewCell.swift in Sources */,
 				281B91381E01AEF5003AC233 /* RVRecord.swift in Sources */,
 				284FBAD71DEC161000446C86 /* UIColor+Extension.swift in Sources */,
 				28DE2D971DFE47E900EFEECB /* RVTask.swift in Sources */,
+				2881D6331E206CD100EF6F52 /* RVSlackMessage.swift in Sources */,
 				28E65DA71E1DB4E5004E82F5 /* RVLeftMenuNavController.swift in Sources */,
 				280DE6E81DEF43380031C352 /* RVS3Protocol.swift in Sources */,
 			);
@@ -776,7 +804,6 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 07BD65EBD12BB5752CC9715C /* Pods-SwiftMeteor.debug.xcconfig */;
 			buildSettings = {
-				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				DEVELOPMENT_TEAM = UN3VABR8Q8;
 				INFOPLIST_FILE = SwiftMeteor/Info.plist;
@@ -791,7 +818,6 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 6877A64A500AD32A39F63091 /* Pods-SwiftMeteor.release.xcconfig */;
 			buildSettings = {
-				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				DEVELOPMENT_TEAM = UN3VABR8Q8;
 				INFOPLIST_FILE = SwiftMeteor/Info.plist;

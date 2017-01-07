@@ -13,9 +13,11 @@ PODS:
   - AWSS3 (2.4.12):
     - AWSCore (= 2.4.12)
   - CryptoSwift (0.6.6)
+  - LoremIpsum (1.0.0)
   - SDWebImage (3.8.2):
     - SDWebImage/Core (= 3.8.2)
   - SDWebImage/Core (3.8.2)
+  - SlackTextViewController (1.9.5)
   - SwiftDDP (0.4.0):
     - CryptoSwift (~> 0.6.6)
     - SwiftWebSocket (~> 2.6.5)
@@ -33,7 +35,9 @@ DEPENDENCIES:
   - AWSCognitoIdentityProvider
   - AWSLambda
   - AWSS3
+  - LoremIpsum
   - SDWebImage (~> 3.8)
+  - SlackTextViewController
   - SwiftDDP (~> 0.4.0)
   - ViewDeck
 
@@ -46,12 +50,14 @@ SPEC CHECKSUMS:
   AWSLambda: 39c628a20f48bcdb8d9ab469fbfe866236668a62
   AWSS3: 7bb3e095a37ed8334a0b868bbca74ab574b37a4f
   CryptoSwift: 88592381b73f36e192124539390a7c9bacda76af
+  LoremIpsum: 9029c55d36501b2ee0b05cc9ecda11d3a0479160
   SDWebImage: 098e97e6176540799c27e804c96653ee0833d13c
+  SlackTextViewController: fbcdadbb8090673f604484ff5b6eb8d77baed42a
   SwiftDDP: b575009a2c83bde917b9f2f00decada31cefd7ef
   SwiftWebSocket: 1ef8a0efb023544643bdf480c1ec4a62b204f293
   ViewDeck: 9ad8c4ca95ffe21245ee411515c424807e6c7cfa
   XCGLogger: 38063ea89b4c8b23232d18efd2e12eb0005f3ea4
 
-PODFILE CHECKSUM: 03b413d518a6301dacf07bfddce414c489dfb790
+PODFILE CHECKSUM: af46dd48bed173d5c3bfdbca147d2080768eb0e5
 
 COCOAPODS: 1.1.1
