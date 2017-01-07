@@ -8,17 +8,12 @@
 
 import UIKit
 class RVLeftMenuController: RVBaseViewController {
-    
-    
     static let identifier = "RVLeftMenuController"
     enum MenuKeys: String {
         case name = "name"
         case displayText = "displayText"
     }
-     /*
     @IBOutlet weak var tableView: UITableView!
-     */
-    
     @IBAction func menuButtonTouched(_ sender: UIBarButtonItem) {
         RVViewDeck.sharedInstance.toggleSide(side: .center)
     }
@@ -31,16 +26,14 @@ class RVLeftMenuController: RVBaseViewController {
         [MenuKeys.name: "Logout", MenuKeys.displayText: "Logout"],
 
     ]
-    /*
     override func viewDidLoad() {
         self.scrollView = tableView
         super.viewDidLoad()
     }
-     */
     
 }
 extension RVLeftMenuController {
-/*
+
     func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
         if let cell = cell as? RVLeftMenuTableViewCell {
             cell.menuItem = menuItems[indexPath.row]
@@ -69,5 +62,4 @@ extension RVLeftMenuController {
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return menuItems.count
     }
- */
 }

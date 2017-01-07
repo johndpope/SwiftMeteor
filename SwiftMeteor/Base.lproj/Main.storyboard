@@ -185,7 +185,7 @@
                                                 <rect key="frame" x="0.0" y="28" width="375" height="44"/>
                                                 <autoresizingMask key="autoresizingMask"/>
                                                 <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="Ax9-Wb-d3o" id="QB6-aj-SqH">
-                                                    <rect key="frame" x="0.0" y="0.0" width="375" height="43.5"/>
+                                                    <rect key="frame" x="0.0" y="0.0" width="375" height="44"/>
                                                     <autoresizingMask key="autoresizingMask"/>
                                                     <subviews>
                                                         <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Menu Item" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="EyL-0R-WEN">
@@ -244,7 +244,7 @@
         <!--Main-->
         <scene sceneID="D7x-If-IWd">
             <objects>
-                <viewController id="26z-cv-GPL" customClass="RVSlackMessageController" customModule="SwiftMeteor" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController id="26z-cv-GPL" customClass="RVMainTabMenuViewController" customModule="SwiftMeteor" customModuleProvider="target" sceneMemberID="viewController">
                     <layoutGuides>
                         <viewControllerLayoutGuide type="top" id="Bc6-b0-469"/>
                         <viewControllerLayoutGuide type="bottom" id="H1j-Zv-1yq"/>
@@ -264,56 +264,6 @@
                                             <rect key="frame" x="0.0" y="0.0" width="375" height="44"/>
                                             <autoresizingMask key="autoresizingMask"/>
                                         </tableViewCellContentView>
-                                    </tableViewCell>
-                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="blue" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" reuseIdentifier="RVSlackMessageViewCell" rowHeight="102" id="Xze-th-CN1" customClass="RVSlackMessageViewCell" customModule="SwiftMeteor" customModuleProvider="target">
-                                        <rect key="frame" x="0.0" y="72" width="375" height="102"/>
-                                        <autoresizingMask key="autoresizingMask"/>
-                                        <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="Xze-th-CN1" id="P9z-dD-GEN">
-                                            <rect key="frame" x="0.0" y="0.0" width="375" height="102"/>
-                                            <autoresizingMask key="autoresizingMask"/>
-                                            <subviews>
-                                                <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="3WQ-Na-nJs">
-                                                    <rect key="frame" x="8" y="21" width="60" height="60"/>
-                                                    <constraints>
-                                                        <constraint firstAttribute="width" constant="60" id="aat-2f-ta8"/>
-                                                        <constraint firstAttribute="height" constant="60" id="cAh-5I-LHn"/>
-                                                    </constraints>
-                                                </imageView>
-                                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Title" textAlignment="natural" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="7l2-85-kIh">
-                                                    <rect key="frame" x="78" y="8" width="289" height="22"/>
-                                                    <constraints>
-                                                        <constraint firstAttribute="height" constant="22" id="j18-Ol-zdm"/>
-                                                    </constraints>
-                                                    <fontDescription key="fontDescription" type="system" pointSize="17"/>
-                                                    <nil key="textColor"/>
-                                                    <nil key="highlightedColor"/>
-                                                </label>
-                                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="body" textAlignment="natural" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Ye9-fN-lvu">
-                                                    <rect key="frame" x="78" y="46" width="289" height="48"/>
-                                                    <constraints>
-                                                        <constraint firstAttribute="height" constant="48" id="RMO-sc-Xm8"/>
-                                                    </constraints>
-                                                    <fontDescription key="fontDescription" type="system" pointSize="17"/>
-                                                    <nil key="textColor"/>
-                                                    <nil key="highlightedColor"/>
-                                                </label>
-                                            </subviews>
-                                            <constraints>
-                                                <constraint firstItem="7l2-85-kIh" firstAttribute="leading" secondItem="3WQ-Na-nJs" secondAttribute="trailing" constant="10" id="0cp-i4-zak"/>
-                                                <constraint firstItem="Ye9-fN-lvu" firstAttribute="top" secondItem="7l2-85-kIh" secondAttribute="bottom" constant="16" id="AQr-zQ-NrT"/>
-                                                <constraint firstItem="3WQ-Na-nJs" firstAttribute="centerY" secondItem="P9z-dD-GEN" secondAttribute="centerY" id="E1P-uW-PHE"/>
-                                                <constraint firstItem="3WQ-Na-nJs" firstAttribute="leading" secondItem="P9z-dD-GEN" secondAttribute="leading" constant="8" id="WoR-MH-Etd"/>
-                                                <constraint firstItem="Ye9-fN-lvu" firstAttribute="leading" secondItem="7l2-85-kIh" secondAttribute="leading" id="eG5-76-2S7"/>
-                                                <constraint firstItem="7l2-85-kIh" firstAttribute="top" secondItem="P9z-dD-GEN" secondAttribute="top" constant="8" id="piX-Tc-Ybd"/>
-                                                <constraint firstItem="Ye9-fN-lvu" firstAttribute="trailing" secondItem="7l2-85-kIh" secondAttribute="trailing" id="t22-Rs-66c"/>
-                                                <constraint firstAttribute="trailing" secondItem="7l2-85-kIh" secondAttribute="trailing" constant="8" id="wtO-sF-v71"/>
-                                            </constraints>
-                                        </tableViewCellContentView>
-                                        <connections>
-                                            <outlet property="bodyLabel" destination="Ye9-fN-lvu" id="G7j-FA-Wda"/>
-                                            <outlet property="thumbnailView" destination="3WQ-Na-nJs" id="Ein-c7-aNO"/>
-                                            <outlet property="titleLabel" destination="7l2-85-kIh" id="DIh-gf-AMa"/>
-                                        </connections>
                                     </tableViewCell>
                                 </prototypes>
                                 <connections>

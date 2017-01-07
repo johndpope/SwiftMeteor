@@ -74,6 +74,11 @@
 			<key>isShown</key>
 			<false/>
 		</dict>
+		<key>TPKeyboardAvoiding.xcscheme</key>
+		<dict>
+			<key>isShown</key>
+			<false/>
+		</dict>
 		<key>ViewDeck.xcscheme</key>
 		<dict>
 			<key>isShown</key>
@@ -87,7 +92,7 @@
 	</dict>
 	<key>SuppressBuildableAutocreation</key>
 	<dict>
-		<key>10FA7A048B041DFCDE3DCF23885D4602</key>
+		<key>1198E8027C60E82B76CB99AFB6128189</key>
 		<dict>
 			<key>primary</key>
 			<true/>
@@ -102,7 +107,7 @@
 			<key>primary</key>
 			<true/>
 		</dict>
-		<key>28EDB83CD81A1F82B439D7B233AA8277</key>
+		<key>4610EF4A8CF2FD19B433B8BFA90850AA</key>
 		<dict>
 			<key>primary</key>
 			<true/>
@@ -117,22 +122,17 @@
 			<key>primary</key>
 			<true/>
 		</dict>
+		<key>56EDE124D2474D2C2752B1EF54C75D9E</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
 		<key>6BB1C1403B2419F911818DA8413FDA07</key>
 		<dict>
 			<key>primary</key>
 			<true/>
 		</dict>
-		<key>8493EA81BDC112F70503852E50979384</key>
-		<dict>
-			<key>primary</key>
-			<true/>
-		</dict>
-		<key>90918E9206AF58884B66CE98D6AB0A6B</key>
-		<dict>
-			<key>primary</key>
-			<true/>
-		</dict>
-		<key>90B971DF9FE2F10D0F50C368FB9CB090</key>
+		<key>80D41459708762536CDA95A161F6F01C</key>
 		<dict>
 			<key>primary</key>
 			<true/>
@@ -152,17 +152,27 @@
 			<key>primary</key>
 			<true/>
 		</dict>
-		<key>A2D99900159DD1701C253993733981A3</key>
-		<dict>
-			<key>primary</key>
-			<true/>
-		</dict>
-		<key>BDE56829DF21F29D4F781F2E999D4F54</key>
-		<dict>
-			<key>primary</key>
-			<true/>
-		</dict>
 		<key>C14498E8A4F7BC06FEBC95C50C9B88BD</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>C8194640F58FBB4CEEBD6C9FC4FA72FB</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>D4EEA96421F703BB2EC42DEA0E97B1D6</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>E8E11C4D6652E576583DC7FAB87F1495</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>EE333AC95F890B1A45AE558587E63359</key>
 		<dict>
 			<key>primary</key>
 			<true/>

@@ -11,6 +11,8 @@ import SlackTextViewController
 import LoremIpsum
 let DEBUG_CUSTOM_TYPING_INDICATOR = false
 class RVSlackMessageController: SLKTextViewController {
+
+    
     var messages = [RVSlackMessage]()
     var users: Array = ["Allen", "Anna", "Alicia", "Arnold", "Armando", "Antonio", "Brad", "Catalaya", "Christoph", "Emerson", "Eric", "Everyone", "Steve"]
     var channels: Array = ["General", "Random", "iOS", "Bugs", "Sports", "Android", "UI", "SSB"]

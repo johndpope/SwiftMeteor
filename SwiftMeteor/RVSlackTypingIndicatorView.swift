@@ -10,6 +10,7 @@ import UIKit
 import SlackTextViewController
 
 class RVSlackTypingIndicatorView: UIView {
+    
     private var _thumbnailView: UIImageView? = nil
     var thumbnailView: UIImageView {
         get {

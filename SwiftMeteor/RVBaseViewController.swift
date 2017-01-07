@@ -8,10 +8,10 @@
 
 import UIKit
 
-class RVBaseViewController: RVSlackMessageController {
+class RVBaseViewController: UIViewController {
     var instanceType: String { get { return String(describing: type(of: self)) } }
     let stack = [RVBaseModel]()
- //   weak var scrollView: UIScrollView? // NEIL!
+    weak var scrollView: UIScrollView?
     var manager: RVDSManager!
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -36,20 +36,15 @@ class RVBaseViewController: RVSlackMessageController {
     var searchBarScopeTitles: [String] = ["Scope0", "Scope1"]
     
     // Slack
-//    var emojis: Array = ["-1", "m", "man", "machine", "block-a", "block-b", "bowtie", "boar", "boat", "book", "bookmark", "neckbeard", "metal", "fu", "feelsgood"]
-//    var commands: Array = ["msg", "call", "text", "skype", "kick", "invite"]
+    var emojis: Array = ["-1", "m", "man", "machine", "block-a", "block-b", "bowtie", "boar", "boat", "book", "bookmark", "neckbeard", "metal", "fu", "feelsgood"]
+    var commands: Array = ["msg", "call", "text", "skype", "kick", "invite"]
 }
-extension RVBaseViewController {
-// extension RVBaseViewController: UITableViewDelegate {
-    /*
+extension RVBaseViewController: UITableViewDelegate {
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         print("In \(instanceType).didSelectRowAt, not overridded")
     }
- */
 }
-extension RVBaseViewController {
-// extension RVBaseViewController: UITableViewDataSource {
-    /*
+extension RVBaseViewController: UITableViewDataSource {
     func numberOfSections(in tableView: UITableView) -> Int {
         return manager.numberOfSections()
     }
@@ -60,7 +55,6 @@ extension RVBaseViewController {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return manager.numberOfItems(section: section)
     }
- */
 }
 
 

@@ -17,6 +17,7 @@ target 'SwiftMeteor' do
   pod 'SDWebImage', '~>3.8'
   pod "SlackTextViewController"
   pod "LoremIpsum"
+  pod "TPKeyboardAvoiding"
 
 
 

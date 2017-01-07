@@ -22,6 +22,7 @@ class RVViewDeck: NSObject {
     static let rightControllerIdentifier: String = RVRightMenuViewController.identifier
     //static let centerControllerIdentifier: String = RVMainTabMenuViewController.identifier
     static let centerControllerIdentifier: String = RVMainLandingNavigationController.identifier
+   // static let centerControllerIdentifier: String = "SlackController"
     
     var leftController: UIViewController!
     var rightController: UIViewController!

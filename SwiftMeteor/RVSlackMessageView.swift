@@ -10,6 +10,7 @@ import Foundation
 import SlackTextViewController
 
 class RVSlackMessageView: SLKTextView {
+    
     required init?(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
     }
