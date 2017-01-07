@@ -14,6 +14,8 @@ enum RVKeys: String {
     case updatedAt      = "updatedAt"
     case `private`      = "private"
     case username       = "username"
+    case handle         = "handle"
+    case handleLowercase = "handleLowercase"
     case modelType      = "modelType"
     case ownerId        = "ownerId"
     case owner          = "owner"   // Need to fix
@@ -28,6 +30,10 @@ enum RVKeys: String {
     case JSONdate       = "$date"
     case image          = "image"
     
+    case numberOfLikes  = "numberOfLikes"
+    case numberOfObjections = "numberOfObjections"
+    case numberOfFollowers = "numberOfFollowers"
+    
     // task
     case checked        = "checked"
     
@@ -37,4 +43,7 @@ enum RVKeys: String {
     case bytes          = "bytes"
     case urlString      = "urlString"
     case filetype       = "filetype"
+    
+    
+    case metaQueryTerm  = "$meta"
 }

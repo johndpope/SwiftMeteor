@@ -60,6 +60,24 @@ class RVBaseModel: MeteorDocument {
             else { dict[RVKeys.comment.rawValue] = NSNull() }
             self._comment.dirty = false
         }
+        if !onlyDirties || (onlyDirties && self._handleLowercase.dirty) {
+            if let handle = self.handleLowercase { dict[RVKeys.handleLowercase.rawValue] = handle as AnyObject }
+            else {dict[RVKeys.handleLowercase.rawValue] = NSNull() }
+        }
+        if !onlyDirties || (onlyDirties && self._handle.dirty) {
+            if let handle = self.handle  { dict[RVKeys.handle.rawValue] = handle as AnyObject }
+            else {dict[RVKeys.handle.rawValue] = NSNull() }
+
+        }
+        if !onlyDirties || (onlyDirties && self._numberOfLikes.dirty) {
+            dict[RVKeys.numberOfLikes.rawValue] = self.numberOfLikes as AnyObject
+        }
+        if !onlyDirties || (onlyDirties && self._numberOfFollowers.dirty) {
+            dict[RVKeys.numberOfFollowers.rawValue] = self.numberOfFollowers as AnyObject
+        }
+        if !onlyDirties || (onlyDirties && self._numberOfObjections.dirty) {
+            dict[RVKeys.numberOfObjections.rawValue] = self.numberOfObjections as AnyObject
+        }
         if !onlyDirties || (onlyDirties && self._lowercaseComment.dirty) {
             if let comment = self.lowercaseComment {dict[RVKeys.lowerCaseComment.rawValue] = comment as AnyObject }
             else { dict[RVKeys.lowerCaseComment.rawValue] = NSNull() }
@@ -148,6 +166,11 @@ class RVBaseModel: MeteorDocument {
     func setupCallback() {
         self._username.model = self
         self._comment.model = self
+        self._handle.model = self
+        self._handleLowercase.model = self
+        self._numberOfLikes.model = self
+        self._numberOfFollowers.model = self
+        self._numberOfObjections.model = self
         self._lowercaseComment.model = self
         self._ownerId.model = self
         self._owner.model = self
@@ -203,6 +226,11 @@ class RVBaseModel: MeteorDocument {
             let _ = self._title.updateString(newValue: value)
         case .comment:
             let _ = self._comment.updateString(newValue: value)
+        case .handle:
+            let _ = self._handle.updateString(newValue: value)
+        case .handleLowercase:
+            let _ = self._handleLowercase.updateString(newValue: value)
+            
         case .lowerCaseComment:
             let _ = self._lowercaseComment.updateString(newValue: value)
         case .text:
@@ -366,6 +394,60 @@ class RVBaseModel: MeteorDocument {
         set {
             let _ = _comment.changeString(newValue: newValue as AnyObject)
             self.lowercaseComment = comment
+        }
+    }
+    var _numberOfLikes = RVRecord(fieldName: .numberOfLikes)
+    var numberOfLikes: Int {
+        get {
+            if let number = _numberOfLikes.value as? Int { return number }
+            return 0
+        }
+        set {
+            let _ = _numberOfLikes.changeNumber(newValue: newValue as AnyObject)
+        }
+    }
+    var _numberOfFollowers = RVRecord(fieldName: .numberOfFollowers)
+    var numberOfFollowers: Int {
+        get {
+            if let number = _numberOfFollowers.value as? Int { return number }
+            return 0
+        }
+        set {
+            let _ = _numberOfFollowers.changeNumber(newValue: newValue as AnyObject)
+        }
+    }
+    var _numberOfObjections = RVRecord(fieldName: .numberOfObjections)
+    var numberOfObjections: Int {
+        get {
+            if let number = _numberOfObjections.value as? Int { return number }
+            return 0
+        }
+        set {
+            let _ = _numberOfObjections.changeNumber(newValue: newValue as AnyObject)
+        }
+    }
+    var _handleLowercase = RVRecord(fieldName: .handleLowercase)
+    var handleLowercase: String? {
+        get {
+            if let string = _handleLowercase.value as? String { return string }
+            return nil
+        }
+        set {
+            if let value = newValue {
+                let _ = _handleLowercase.changeString(newValue: value.lowercased() as AnyObject)
+            } else {
+                let _ = _handleLowercase.changeString(newValue: newValue as AnyObject)
+            }
+        }
+    }
+    var _handle = RVRecord(fieldName: RVKeys.handle)
+    var handle: String? {
+        get {
+            if let string = _handle.value as? String { return string}
+            return nil
+        }
+        set {
+            let _ = _handle.changeString(newValue: newValue as AnyObject)
         }
     }
     var _lowercaseComment = RVRecord(fieldName: RVKeys.lowerCaseComment)

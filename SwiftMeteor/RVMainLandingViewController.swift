@@ -22,8 +22,8 @@ class RVMainLandingViewController: RVBaseViewController {
     let topConstraintDelta: CGFloat = 30.0
     var segmentedViewTopConstraintConstant:CGFloat = 0.0
     var tableViewTopConstraintConstant: CGFloat = 0.0
-    var taskDatasource = RVTaskDatasource()
-    var filterDatasource = RVTaskDatasource()
+  //  var taskDatasource = RVTaskDatasource()
+   // var filterDatasource = RVTaskDatasource()
     @IBAction func segmentedControlValueChanged(_ sender: UISegmentedControl) {
     }
     
@@ -36,9 +36,9 @@ class RVMainLandingViewController: RVBaseViewController {
     }
     override func viewDidLoad() {
         self.dsScrollView = tableView
+        mainDatasource = RVTaskDatasource()
+        filterDatasource = RVTaskDatasource()
         super.viewDidLoad()
-        manager.addSection(section: taskDatasource)
-        manager.addSection(section: filterDatasource)
         Meteor.connect("wss://rnmpassword-nweintraut.c9users.io/websocket") {
             // do something after the client connects
             print("Returned after connect")
@@ -51,7 +51,7 @@ class RVMainLandingViewController: RVBaseViewController {
              }
              })
              */
-            self.manager.startDatasource(datasource: self.taskDatasource, query: self.taskDatasource.basicQuery()) { (error ) in
+            self.manager.startDatasource(datasource: self.mainDatasource, query: self.mainDatasource.basicQuery()) { (error ) in
                 if let error = error {
                     print("In \(self.instanceType).subscribeToTasks(), got error starting task datasource")
                     error.printError()
@@ -65,31 +65,14 @@ class RVMainLandingViewController: RVBaseViewController {
     func userDidLogin() {
         print("The user just signed in!")
     }
-    override func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
-        if let text = searchBar.text {
-            if text.characters.count >= 2 {
-                if !taskDatasource.collapsed {
-                    taskDatasource.collapse {
-                        print("In \(self.instanceType).searchBarSearchButtonClicked")
-                    }
-                }
-                let query = filterDatasource.basicQuery().duplicate()
-                query.addAnd(queryItem: RVQueryItem(term: RVKeys.lowerCaseComment, value: text.lowercased() as AnyObject, comparison: .gte))
-                query.removeAllSortTerms()
-                query.addSort(field: .lowerCaseComment, order: .ascending)
-                //filterDatasource.baseQuery = query
-                manager.startDatasource(datasource: filterDatasource, query: query, callback: { (error) in
-                    if let error = error {
-                        error.printError()
-                    }
-                })
-
-
-            }
-        }
-        p("", "searchBarSearchButtonClicked")
-
+    override func filterQuery(text: String ) -> RVQuery {
+        let query = filterDatasource.basicQuery().duplicate()
+        query.addAnd(queryItem: RVQueryItem(term: RVKeys.lowerCaseComment, value: text.lowercased() as AnyObject, comparison: .gte))
+        query.removeAllSortTerms()
+        query.addSort(field: .lowerCaseComment, order: .ascending)
+        return query
     }
+
 }
 
 extension RVMainLandingViewController {
@@ -97,6 +80,27 @@ extension RVMainLandingViewController {
         super.searchBarCancelButtonClicked(searchBar)
         segmentedView.isHidden = true
     }
+    override func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
+        if let text = searchBar.text {
+            if text.characters.count >= 2 {
+                if !mainDatasource.collapsed {
+                    mainDatasource.collapse {
+                        print("In \(self.instanceType).searchBarSearchButtonClicked")
+                    }
+                }
+                let query = filterQuery(text: text)
+                manager.startDatasource(datasource: filterDatasource, query: query, callback: { (error) in
+                    if let error = error {
+                        error.printError()
+                    }
+                })
+                
+                
+            }
+        }
+        p("", "searchBarSearchButtonClicked")
+    }
+
 }
 
 extension RVMainLandingViewController {

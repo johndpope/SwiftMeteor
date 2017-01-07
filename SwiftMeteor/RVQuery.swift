@@ -82,6 +82,11 @@ class RVQuery {
         for sortTerm in sortTerms {
             query.addSort(sortTerm: sortTerm.duplicate())
         }
+        if let textSearch = self.textSearch {
+            query.textSearch = textSearch.duplicate()
+        } else {
+            query.textSearch = nil
+        }
         query.limit = self.limit
         return query
     }
@@ -89,9 +94,11 @@ class RVQuery {
         case sort = "sort"
         case fields = "fields"
         case limit = "limit"
+        case textSearch = "$text"
     }
     static let commentField = "$comment"
     static let limitField = "$limit"
+    static let textField = "$text"
     var comment: String?    = nil
     var sortTerms = [RVSortTerm]()
    // var sortOrder: RVSortOrder  = .descending
@@ -100,6 +107,7 @@ class RVQuery {
     var ors     = [RVQueryItem]()
     var projections = [RVProjectionItem]()
     var limit   = 100
+    var textSearch: RVTextTerm? = nil
     init() {
     }
     func findAndTerm(term: RVKeys) -> RVQueryItem? {
@@ -182,21 +190,23 @@ class RVQuery {
             sortTerms.append(RVSortTerm(field: field, order: order))
         }
     }
-    func removeSort(field: RVKeys) {
-        
-    }
+
     func query() -> ([String : AnyObject], [String : AnyObject]) {
         var projections = [String: AnyObject]()
  //       projections[Projection.sort.rawValue] = [sortTerm.rawValue : sortOrder.rawValue] as AnyObject
-        var sorts = [[String]]()
+        var sorts = [AnyObject]()
         for sortTerm in sortTerms {
-            sorts.append(sortTerm.term())
+            sorts.append(sortTerm.term() as AnyObject)
         }
         if sorts.count > 0 {
             projections[Projection.sort.rawValue] = sorts as AnyObject?
         }
        // projections[Projection.sort.rawValue] = [["createdAt", "descending"]] as AnyObject // Neil plug
         projections[Projection.limit.rawValue] = self.limit as AnyObject
+        if let textSearch = self.textSearch {
+            projections[Projection.textSearch.rawValue] = textSearch.term() as AnyObject
+            projections["score"] = ["$meta": "textScore"] as AnyObject
+        }
         var fields = [String : Int]()
         for projection in self.projections {
             let (field, include) = projection.project()
@@ -293,6 +303,27 @@ class RVProjectionItem {
         return item
     }
 }
+class RVTextTerm {
+    var value: String
+    var caseSensitive: Bool = false
+    var diacriticSensitive: Bool = false
+    init(value: String) {
+        self.value = value
+    }
+    func term() -> [String : AnyObject] {
+        var term = [String: AnyObject]()
+        term["$search"] = self.value as AnyObject
+        term["$caseSensitive"] = self.caseSensitive as AnyObject
+        term["$diacriticSensitive"] = self.diacriticSensitive as AnyObject
+        return term
+    }
+    func duplicate() -> RVTextTerm {
+        let term = RVTextTerm(value: self.value)
+        term.caseSensitive = self.caseSensitive
+        term.diacriticSensitive = self.diacriticSensitive
+        return term
+    }
+}
 class RVSortTerm {
     var field: RVKeys
     var order: RVSortOrder
@@ -300,8 +331,10 @@ class RVSortTerm {
         self.field = field
         self.order = order
     }
-    func term() -> [String] {
-        return [self.field.rawValue, self.order.rawValue]
+    func term() -> AnyObject {
+        let result = [self.field.rawValue, self.order.rawValue]
+
+        return result as AnyObject
     }
     func duplicate() -> RVSortTerm {
         return RVSortTerm(field: self.field, order: self.order)

@@ -13,14 +13,19 @@ class RVBaseViewController: UIViewController {
     let stack = [RVBaseModel]()
     weak var dsScrollView: UIScrollView?
     var manager: RVDSManager!
+    var mainDatasource: RVBaseDataSource = RVBaseDataSource()
+    var filterDatasource: RVBaseDataSource = RVBaseDataSource()
     override func viewDidLoad() {
         super.viewDidLoad()
+        
         configureSearchBar()
         if let scrollView = self.dsScrollView {
             self.manager = RVDSManager(scrollView: scrollView)
         } else {
             print("In \(instanceType).viewDidLoad, scrollView not set")
         }
+        manager.addSection(section: mainDatasource)
+        manager.addSection(section: filterDatasource)
     }
     func p(_ message: String, _ method: String = "") {
         print("In \(instanceType) \(method) \(message)")
@@ -34,6 +39,14 @@ class RVBaseViewController: UIViewController {
     let tab = "\t"
     let sparklingHeart = "\u{1F496}"
     var searchBarScopeTitles: [String] = ["Scope0", "Scope1"]
+    func filterQuery(text: String ) -> RVQuery {
+        let query = mainDatasource.basicQuery().duplicate()
+        print("In \(self.instanceType).filterQuery base class. Need to override")
+        query.addAnd(queryItem: RVQueryItem(term: RVKeys.lowerCaseComment, value: text.lowercased() as AnyObject, comparison: .gte))
+        query.removeAllSortTerms()
+        query.addSort(field: .lowerCaseComment, order: .ascending)
+        return query
+    }
 }
 extension RVBaseViewController: UITableViewDelegate {
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
@@ -115,10 +128,28 @@ extension RVBaseViewController: UISearchBarDelegate {
         p("", "searchBarTextDidEndEditing")
         
     }
+
     func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
+        if let text = searchBar.text {
+            if text.characters.count >= 2 {
+                if !mainDatasource.collapsed {
+                    mainDatasource.collapse {
+                        print("In \(self.instanceType).searchBarSearchButtonClicked")
+                    }
+                }
+                let query = filterQuery(text: text)
+                manager.startDatasource(datasource: filterDatasource, query: query, callback: { (error) in
+                    if let error = error {
+                        error.printError()
+                    }
+                })
+                
+                
+            }
+        }
         p("", "searchBarSearchButtonClicked")
-        
     }
+
     func searchBarTextDidBeginEditing(_ searchBar: UISearchBar) {
         //searchBar.showsCancelButton = true
         p("", "searchBarTextDidBeginEditing")
