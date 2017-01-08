@@ -53,9 +53,9 @@ class RVBaseDataSource {
         //        query.sortOrder = .descending
         //        query.sortTerm = .createdAt
         query.addSort(field: .createdAt, order: .descending)
-        query.addAnd(queryItem: RVQueryItem(term: .createdAt, value: EJSON.convertToEJSONDate(Date()) as AnyObject, comparison: .lte))
-        query.addOr(queryItem: RVQueryItem(term: .owner, value: "Goober" as AnyObject, comparison: .eq))
-        query.addOr(queryItem: RVQueryItem(term: .private, value: true as AnyObject, comparison: .ne))
+        query.addAnd(term: .createdAt, value: EJSON.convertToEJSONDate(Date()) as AnyObject, comparison: .lte)
+        query.addOr(term: .owner, value: "Goober" as AnyObject, comparison: .eq)
+        query.addOr(term: .private, value: true as AnyObject, comparison: .ne)
         query.addProjection(projectionItem: RVProjectionItem(field: .text, include: .include))
         query.addProjection(projectionItem: RVProjectionItem(field: .createdAt))
         query.addProjection(projectionItem: RVProjectionItem(field: .updatedAt))
@@ -205,7 +205,7 @@ class RVBaseDataSource {
                 } else {
                     let query = query.duplicate().updateQuery(front: false)
                     if let candidate = self.array.last {
-                        print("In \(self.instanceType).queryForBack have last... \(candidate.text!)")
+                        print("In \(self.instanceType).queryForBack have last... \(candidate.title!)")
                         for sort in query.sortTerms {
                             switch (sort.field) {
                             case .createdAt:

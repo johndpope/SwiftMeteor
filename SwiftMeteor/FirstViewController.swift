@@ -265,9 +265,9 @@ class FirstViewController: UIViewController {
 //        query.sortOrder = .descending
 //        query.sortTerm = .createdAt
         query.addSort(field: .createdAt, order: .descending)
-        query.addAnd(queryItem: RVQueryItem(term: .createdAt, value: EJSON.convertToEJSONDate(Date()) as AnyObject, comparison: .lte))
-        query.addOr(queryItem: RVQueryItem(term: .owner, value: "Goober" as AnyObject, comparison: .eq))
-        query.addOr(queryItem: RVQueryItem(term: .private, value: true as AnyObject, comparison: .ne))
+        query.addAnd(term: .createdAt, value: EJSON.convertToEJSONDate(Date()) as AnyObject, comparison: .lte)
+        query.addOr(term: .owner, value: "Goober" as AnyObject, comparison: .eq)
+        query.addOr(term: .private, value: true as AnyObject, comparison: .ne)
         query.addProjection(projectionItem: RVProjectionItem(field: .text, include: .include))
         query.addProjection(projectionItem: RVProjectionItem(field: .createdAt))
         query.addProjection(projectionItem: RVProjectionItem(field: .updatedAt))
@@ -303,8 +303,8 @@ class FirstViewController: UIViewController {
         query.addSort(field: .createdAt, order: .descending)
   //      query.sortOrder = .descending
   //      query.addAnd(queryItem: RVQueryItem(term: .createdAt, value: EJSON.convertToEJSONDate(Date()) as AnyObject, comparison: .lte))
-        query.addOr(queryItem: RVQueryItem(term: .owner, value: "Goober" as AnyObject, comparison: .eq))
-        query.addOr(queryItem: RVQueryItem(term: .private, value: true as AnyObject, comparison: .ne))
+        query.addOr(term: .owner, value: "Goober" as AnyObject, comparison: .eq)
+        query.addOr(term: .private, value: true as AnyObject, comparison: .ne)
         query.addProjection(projectionItem: RVProjectionItem(field: .text, include: .include))
         query.addProjection(projectionItem: RVProjectionItem(field: .createdAt))
         let (filters, projections) = query.query()

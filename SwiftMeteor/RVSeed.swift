@@ -86,7 +86,7 @@ class RVSeed {
     class func createTaskRoot(callback: @escaping(_ root: RVTask?, _ error: RVError?) -> Void) {
         let query = RVQuery()
         query.limit = 1
-        query.addAnd(queryItem: RVQueryItem(term: .title, value: "Root" as AnyObject, comparison: .eq ))
+        query.addAnd(term: .title, value: "Root" as AnyObject, comparison: .eq )
         RVTask.bulkQuery(query: query, callback: { (models, error) in
             if let error = error {
                 error.append(message: "Error in RVSeed.createRoot")

@@ -87,6 +87,9 @@ class RVQuery {
         } else {
             query.textSearch = nil
         }
+        if let fixed = self.fixedTerm {
+            query.fixedTerm = fixed.duplicate()
+        }
         query.limit = self.limit
         return query
     }
@@ -101,6 +104,7 @@ class RVQuery {
     static let textField = "$text"
     var comment: String?    = nil
     var sortTerms = [RVSortTerm]()
+    var fixedTerm: RVQueryItem? = nil
    // var sortOrder: RVSortOrder  = .descending
    // var sortTerm: RVKeys        = .createdAt
     var ands    = [RVQueryItem]()
@@ -153,7 +157,11 @@ class RVQuery {
     func removeAllSortTerms() {
         self.sortTerms = [RVSortTerm]()
     }
-    func addAnd(queryItem: RVQueryItem) {
+    func addAnd(term: RVKeys, value: AnyObject, comparison: RVComparison) {
+        let queryItem = RVQueryItem(term: term, value: value, comparison: comparison)
+        self.addAnd(queryItem: queryItem)
+    }
+    private func addAnd(queryItem: RVQueryItem) {
         if let existing = findAndTerm(term: queryItem.term) {
             existing.comparison = queryItem.comparison
             existing.value = queryItem.value
@@ -161,7 +169,11 @@ class RVQuery {
             self.ands.append(queryItem)
         }
     }
-    func addOr(queryItem: RVQueryItem) {
+    func addOr(term: RVKeys, value: AnyObject, comparison: RVComparison) {
+        let queryItem = RVQueryItem(term: term, value: value, comparison: comparison)
+        self.addOr(queryItem: queryItem)
+    }
+    private func addOr(queryItem: RVQueryItem) {
         if let existing = findOrTerm(term: queryItem.term) {
             existing.comparison = queryItem.comparison
             existing.value = queryItem.value
@@ -219,6 +231,9 @@ class RVQuery {
         var andQuery = [AnyObject]()
         for and in ands {
             andQuery.append(and.query() as AnyObject )
+        }
+        if let fixed = self.fixedTerm {
+            andQuery.append(fixed.query() as AnyObject )
         }
         if andQuery.count > 0 { filters[RVLogic.and.rawValue] = andQuery as AnyObject }
         var orQuery = [AnyObject]()

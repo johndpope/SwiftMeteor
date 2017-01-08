@@ -41,6 +41,7 @@ class RVMainLandingViewController: RVBaseViewController {
         mainDatasource = RVTaskDatasource()
         filterDatasource = RVTaskDatasource()
         super.viewDidLoad()
+        tableView.register(RVFirstViewHeaderCell.self, forHeaderFooterViewReuseIdentifier: RVFirstViewHeaderCell.identifier)
         Meteor.connect("wss://rnmpassword-nweintraut.c9users.io/websocket") {
             // do something after the client connects
             print("Returned after connect")
@@ -81,9 +82,10 @@ class RVMainLandingViewController: RVBaseViewController {
     }
     override func filterQuery(text: String ) -> RVQuery {
         let query = filterDatasource.basicQuery().duplicate()
-        query.addAnd(queryItem: RVQueryItem(term: RVKeys.lowerCaseComment, value: text.lowercased() as AnyObject, comparison: .gte))
+        query.addAnd(term: RVKeys.handleLowercase, value: text.lowercased() as AnyObject, comparison: .gte)
+        query.fixedTerm = RVQueryItem(term: RVKeys.handleLowercase, value: text.lowercased() as AnyObject, comparison: .gte)
         query.removeAllSortTerms()
-        query.addSort(field: .lowerCaseComment, order: .ascending)
+        query.addSort(field: .handleLowercase, order: .ascending)
         return query
     }
 
@@ -116,14 +118,70 @@ extension RVMainLandingViewController {
     }
 
 }
-
+extension RVMainLandingViewController: RVFirstHeaderContentViewDelegate{
+    func expandCollapseButtonTouched(button: UIButton, view: RVFirstHeaderContentView) -> Void {
+        print("Header section \(view.section)")
+        if view.section >= 0 {
+            let datasource =  manager.sections[view.section]
+            if !datasource.collapsed { datasource.collapse {
+                print("return from collapse")
+                }
+            } else {
+                datasource.expand {
+                    print("return from expand")
+                }
+            }
+        }
+        print("Expand / Collapse")
+    }
+}
 extension RVMainLandingViewController {
     func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
-        return 0.0
+        return 35.0
+    }
+    func loadHeaderFromNib() -> RVFirstHeaderContentView? {
+        let bundle = Bundle(for: RVFirstHeaderContentView.self)
+        let nib = UINib(nibName: "RVFirstHeaderContentView", bundle: bundle)
+        if let view = nib.instantiate(withOwner: self, options: nil)[0] as? RVFirstHeaderContentView {
+            return view
+        }
+        return nil
+    }
+    func tableView(_ tableView: UITableView, willDisplayHeaderView view: UIView, forSection section: Int) {
+        if let headerCell = view as? RVFirstViewHeaderCell {
+            let contentView = headerCell.contentView
+            for subview in contentView.subviews {
+                if let _ = subview as? RVFirstHeaderContentView {
+                    print("In \(self.instanceType).willDisplayHeaderInSection, found target")
+                    return
+                }
+            }
+            if let target = loadHeaderFromNib() {
+                target.frame = headerCell.contentView.bounds
+                target.autoresizingMask = [.flexibleWidth, .flexibleHeight]
+                contentView.addSubview(target)
+                target.delegate = self
+                target.section = section
+                target.configure(section: section, expand: true)
+            }
+
+        }
+    }
+    func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
+        if let headerCell = tableView.dequeueReusableHeaderFooterView(withIdentifier: RVFirstViewHeaderCell.identifier) as? RVFirstViewHeaderCell {
+            return headerCell
+        } else {
+            return UIView()
+        }
     }
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        return 80.0
+        return 90.0
     }
+    /*
+     func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
+     return "Section \(section)"
+     }
+     */
 }
 extension RVMainLandingViewController {
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
