@@ -87,7 +87,7 @@ class RVMainLandingViewController: RVBaseViewController {
         if let _ = RVSwiftDDP.sharedInstance.username {
             // do nothing for now
         } else {
-            print("In \(self.instanceType).viewWillAppear, already connected ")
+            //print("In \(self.instanceType).viewWillAppear, already connected ")
             loadup()
         }
     }
