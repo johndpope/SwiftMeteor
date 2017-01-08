@@ -29,6 +29,7 @@ enum RVKeys: String {
     case lowerCaseComment = "lowerCaseComment"
     case JSONdate       = "$date"
     case image          = "image"
+    case special        = "special"
     
     case numberOfLikes  = "numberOfLikes"
     case numberOfObjections = "numberOfObjections"

@@ -30,6 +30,12 @@ class RVSeed {
         } else {
             print("In RVSeed.createTask, failed to generate a name")
         }
+        if let root = RVCoreInfo.sharedInstance.rootTask {
+            task.parentId = root._id
+            task.parentModelType = root.modelType
+        } else {
+            print("In RVSeed.createTask, no rootTask found")
+        }
         if let tweet = LoremIpsum.tweet() {
             if let tIndex = tweet.index(tweet.startIndex, offsetBy: 30, limitedBy: tweet.endIndex) {
                 let tweet = tweet.substring(to: tIndex)
@@ -48,7 +54,7 @@ class RVSeed {
                 if let error = error {
                     error.printError()
                 } else {
-                    print("Created task with title: \(task.title!), handle: \(task.handle!), comment: \(task.comment), commentLC: \(task.lowercaseComment)")
+                    print("Created task with parent: \(task.parentId), title: \(task.title!), handle: \(task.handle!), comment: \(task.comment)")
                 }
             })
             Timer.scheduledTimer(withTimeInterval: 0.5, repeats: false, block: { (timer) in
@@ -83,6 +89,44 @@ class RVSeed {
             }
         }
     }
+    class func createRootTask(callback: @escaping(_ root: RVTask?, _ error: RVError?) -> Void) {
+        let query = RVQuery()
+        query.limit = 1
+        query.addAnd(term: RVKeys.special, value: RVSpecial.root.rawValue as AnyObject, comparison: .eq)
+        RVTask.bulkQuery(query: query) { (models, error) in
+            if let error = error {
+                error.append(message: "In RVSeed.createTaskRoot got error searching for Root special")
+                error.printError()
+                callback(nil , error)
+            } else if let tasks = models as? [RVTask] {
+                if let root = tasks.first {
+                    RVCoreInfo.sharedInstance.rootTask = root
+                    print("In RVSeed.createRootTask, found root with id: \(root._id) \(root.special.rawValue)")
+                    callback(root, nil)
+                    return
+                }
+            }
+            print("In RVSeed.createRootTask, no root task found; now creating one")
+            let task = RVTask()
+            task.special = RVSpecial.root
+            task.title = "Root"
+            task.text = "Root text"
+            task.comment = "Root Root"
+            task.owner = "Neil"
+            task.handle = "Neil"
+            task.handleLowercase = "neil"
+            task.regularDescription = "Description of Root"
+            task.create(callback: { (error) in
+                if let error = error {
+                    error.append(message: "In RVSeed.createTaskRoot got error creating root")
+                    callback(nil , error)
+                } else {
+                    RVCoreInfo.sharedInstance.rootTask = task
+                    callback(task, nil)
+                }
+            })
+        }
+    }
     class func createTaskRoot(callback: @escaping(_ root: RVTask?, _ error: RVError?) -> Void) {
         let query = RVQuery()
         query.limit = 1
@@ -95,10 +139,10 @@ class RVSeed {
             } else if let models = models  {
                 if let model = models.first as? RVTask {
                 RVCoreInfo.sharedInstance.rootTask = model
-                 //   print("Root Model Found")
+                    print("Root Model Found")
                     callback(model, nil)
                 } else {
-                //    print("No Root Model found")
+                    print("No Root Model found")
                     let task = RVTask()
                     task.title = "Root"
                     task.text = "Root text"
@@ -107,6 +151,7 @@ class RVSeed {
                     task.handle = "Neil"
                     task.handleLowercase = "neil"
                     task.regularDescription = "Description of Root"
+                    task.special = RVSpecial.root
                     task.create(callback: { (error) in
                         if let error = error {
                             error.append(message: "In RVSeed.createTaskRoot, got error creating")

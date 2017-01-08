@@ -64,6 +64,9 @@ class RVBaseModel: MeteorDocument {
             if let number = self.score { dict[RVKeys.score.rawValue] = number as AnyObject }
             else {dict[RVKeys.score.rawValue] = NSNull() }
         }
+        if !onlyDirties || (onlyDirties && self._special.dirty) {
+            dict[RVKeys.special.rawValue] = self.special.rawValue as AnyObject
+        }
         if !onlyDirties || (onlyDirties && self._handleLowercase.dirty) {
             if let handle = self.handleLowercase { dict[RVKeys.handleLowercase.rawValue] = handle as AnyObject }
             else {dict[RVKeys.handleLowercase.rawValue] = NSNull() }
@@ -171,6 +174,7 @@ class RVBaseModel: MeteorDocument {
         self._username.model = self
         self._comment.model = self
         self._score.model = self
+        self._special.model = self
         self._handle.model = self
         self._handleLowercase.model = self
         self._numberOfLikes.model = self
@@ -233,6 +237,8 @@ class RVBaseModel: MeteorDocument {
             let _ = self._comment.updateString(newValue: value)
         case .score:
             let _ = self._score.updateNumber(newValue: value)
+        case .special:
+            let _ = self._special.updateString(newValue: value)
         case .handle:
             let _ = self._handle.updateString(newValue: value)
         case .handleLowercase:
@@ -460,6 +466,20 @@ class RVBaseModel: MeteorDocument {
             }
         }
     }
+    var _special = RVRecord(fieldName: RVKeys.special)
+    var special: RVSpecial {
+        get {
+            if let rawValue = _special.value as? String {
+                if let special = RVSpecial(rawValue: rawValue) {
+                    return special
+                }
+            }
+            return RVSpecial.unknown
+        }
+        set {
+            let _ = _special.changeString(newValue: newValue.rawValue as AnyObject)
+        }
+    }
     var _handle = RVRecord(fieldName: RVKeys.handle)
     var handle: String? {
         get {
@@ -677,6 +697,8 @@ extension RVBaseModel {
         } else {
             output = "\(output)ownerId = <nil>, \n"
         }
+
+            output = "\(output)special = \(special.rawValue)"
         if let handle = handle {
             output = "\(output)handle = \(handle), "
         } else {

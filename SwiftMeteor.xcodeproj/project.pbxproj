@@ -41,6 +41,8 @@
 		287B74701E1C2EE900900864 /* RVFirstViewHeaderCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 287B746F1E1C2EE900900864 /* RVFirstViewHeaderCell.swift */; };
 		288961091DEDED2C00FC34DB /* RVAWSDirect.swift in Sources */ = {isa = PBXBuildFile; fileRef = 288961081DEDED2C00FC34DB /* RVAWSDirect.swift */; };
 		2889610C1DEDF22F00FC34DB /* ranch.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 2889610B1DEDF22F00FC34DB /* ranch.jpg */; };
+		288E97DA1E22B59400753067 /* RVSwiftDDP.swift in Sources */ = {isa = PBXBuildFile; fileRef = 288E97D91E22B59400753067 /* RVSwiftDDP.swift */; };
+		288E97DC1E22D07D00753067 /* RVSpecial.swift in Sources */ = {isa = PBXBuildFile; fileRef = 288E97DB1E22D07D00753067 /* RVSpecial.swift */; };
 		28928CD11E18BE09003538B8 /* RVBaseDataSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 28928CD01E18BE09003538B8 /* RVBaseDataSource.swift */; };
 		28928CD31E18C6C7003538B8 /* RVDSManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 28928CD21E18C6C7003538B8 /* RVDSManager.swift */; };
 		28928CD51E18E226003538B8 /* RVDSOperation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 28928CD41E18E226003538B8 /* RVDSOperation.swift */; };
@@ -120,6 +122,8 @@
 		287B746F1E1C2EE900900864 /* RVFirstViewHeaderCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RVFirstViewHeaderCell.swift; sourceTree = "<group>"; };
 		288961081DEDED2C00FC34DB /* RVAWSDirect.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RVAWSDirect.swift; sourceTree = "<group>"; };
 		2889610B1DEDF22F00FC34DB /* ranch.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; name = ranch.jpg; path = ../../../Assets/ranch.jpg; sourceTree = "<group>"; };
+		288E97D91E22B59400753067 /* RVSwiftDDP.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RVSwiftDDP.swift; sourceTree = "<group>"; };
+		288E97DB1E22D07D00753067 /* RVSpecial.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RVSpecial.swift; sourceTree = "<group>"; };
 		28928CD01E18BE09003538B8 /* RVBaseDataSource.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RVBaseDataSource.swift; sourceTree = "<group>"; };
 		28928CD21E18C6C7003538B8 /* RVDSManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RVDSManager.swift; sourceTree = "<group>"; };
 		28928CD41E18E226003538B8 /* RVDSOperation.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RVDSOperation.swift; sourceTree = "<group>"; };
@@ -250,6 +254,7 @@
 				2873C9121DECAA2F00DCB2DF /* AWSIdentityManager.swift */,
 				2873C9141DECBFF000DCB2DF /* AWSSignInProvider.swift */,
 				2870CCD01DECD81F005C6FB5 /* AWSUserFileManager.swift */,
+				288E97D91E22B59400753067 /* RVSwiftDDP.swift */,
 			);
 			name = Services;
 			sourceTree = "<group>";
@@ -289,6 +294,7 @@
 				28360E191E046C0700E62384 /* RVUser.swift */,
 				287776191E21D19C00902CF7 /* RVSeed.swift */,
 				280C675D1E21DE600075FB4E /* RVCoreInfo.swift */,
+				288E97DB1E22D07D00753067 /* RVSpecial.swift */,
 			);
 			name = Models;
 			sourceTree = "<group>";
@@ -621,6 +627,7 @@
 				2877761A1E21D19C00902CF7 /* RVSeed.swift in Sources */,
 				28201A461E1DE89C008D8E59 /* RVMainLandingNavigationController.swift in Sources */,
 				2870CCD81DEDE72F005C6FB5 /* RVError.swift in Sources */,
+				288E97DA1E22B59400753067 /* RVSwiftDDP.swift in Sources */,
 				28928CD11E18BE09003538B8 /* RVBaseDataSource.swift in Sources */,
 				284FBAD21DEC13FE00446C86 /* RVRightMenuViewController.swift in Sources */,
 				280E0F761DFFBEDF00E597B4 /* RVKeys.swift in Sources */,
@@ -639,6 +646,7 @@
 				28DE2D971DFE47E900EFEECB /* RVTask.swift in Sources */,
 				28E65DA71E1DB4E5004E82F5 /* RVLeftMenuNavController.swift in Sources */,
 				280DE6E81DEF43380031C352 /* RVS3Protocol.swift in Sources */,
+				288E97DC1E22D07D00753067 /* RVSpecial.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

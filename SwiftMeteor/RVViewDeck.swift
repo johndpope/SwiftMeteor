@@ -8,7 +8,6 @@
 
 import UIKit
 import ViewDeck
-import SwiftDDP
 
 class RVViewDeck: NSObject {
     
@@ -17,6 +16,7 @@ class RVViewDeck: NSObject {
         case right
         case center
     }
+    var instanceType: String { get { return String(describing: type(of: self)) } }
     static let sharedInstance: RVViewDeck = {RVViewDeck() }()
     static let mainStorybardName: String = "Main"
     static let leftControllerIdentifier: String =  RVLeftMenuNavController.identifier
@@ -30,23 +30,9 @@ class RVViewDeck: NSObject {
     var deckController: IIViewDeckController!
     
     func initialize(appDelegate: AppDelegate) {
-        Meteor.client.allowSelfSignedSSL = true // Connect to a server that users a self signed ssl certificate
-        Meteor.client.logLevel = .info // Options are: .Verbose, .Debug, .Info, .Warning, .Error, .Severe, .None
-        /*
-        Meteor.connect("wss://rnmpassword-nweintraut.c9users.io/websocket") {
-            // do something after the client connects
-            print("In RVViewDeck.initiaize, returned after connect")
-            /*
-             Meteor.loginWithUsername("neil.weintraut@gmail.com", password: "password", callback: { (result, error: DDPError?) in
-             if let error = error {
-             print(error)
-             } else {
-             print("After loginWIthUsernmae \(result)")
-             }
-             })
-             */
+        RVSwiftDDP.sharedInstance.connect {
+            //print("In \(self.instanceType).initialize, returned from connecting with Meteor")
         }
- */
         let window = UIWindow(frame: UIScreen.main.bounds)
         appDelegate.window = window
         window.tintColor = UIColor(red: 0.071, green: 0.42, blue: 0.694, alpha: 1.0)

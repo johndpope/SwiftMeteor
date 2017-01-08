@@ -42,7 +42,10 @@ class RVMainLandingViewController: RVBaseViewController {
         filterDatasource = RVTaskDatasource()
         super.viewDidLoad()
         tableView.register(RVFirstViewHeaderCell.self, forHeaderFooterViewReuseIdentifier: RVFirstViewHeaderCell.identifier)
-        Meteor.connect("wss://rnmpassword-nweintraut.c9users.io/websocket") {
+
+        /*
+        RVSwiftDDP.sharedInstance.connect {
+
             // do something after the client connects
             print("Returned after connect")
             /*
@@ -58,9 +61,9 @@ class RVMainLandingViewController: RVBaseViewController {
             RVSeed.createTaskRoot { (task, error) in
                 if let error = error {
                     error.printError()
-                } else if task != nil {
+                } else if let _ = task {
                     self.p("In \(self.instanceType).viewDidLoad, have Root Task")
-                  //  RVSeed.populateTasks(count: 20)
+
                 } else {
                     self.p("In \(self.instanceType).viewDidLoad no error but no root task")
                 }
@@ -76,7 +79,65 @@ class RVMainLandingViewController: RVBaseViewController {
                 }
             }
         }
+ */
 
+    }
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        if let _ = RVSwiftDDP.sharedInstance.username {
+            // do nothing for now
+        } else {
+            print("In \(self.instanceType).viewWillAppear, already connected ")
+            loadup()
+        }
+    }
+    func loadup() {
+        RVSeed.createRootTask { (root, error) in
+            if let error = error {
+                error.printError()
+                return
+            } else if let root = root {
+                print("Have root task: \(root._id), \(root.special.rawValue)")
+                self.stack = [root]
+                let query = self.mainDatasource.basicQuery()
+                if let top = self.stack.last {
+                    query.addAnd(term: RVKeys.parentId, value: top._id as AnyObject, comparison: .eq)
+                    query.addAnd(term: RVKeys.parentModelType, value: top.modelType.rawValue as AnyObject, comparison: .eq )
+                }
+                self.manager.startDatasource(datasource: self.mainDatasource, query: query, callback: { (error) in
+                    if let error = error {
+                        error.append(message: "In \(self.instanceType).loadUp, got error starting main database")
+                        error.printError()
+                    }
+                })
+            } else {
+                print("In \(self.instanceType).loadup no root")
+            }
+            //RVSeed.populateTasks(count: 200)
+        }
+        /*
+        RVSeed.createTaskRoot { (task, error) in
+            if let error = error {
+                error.printError()
+            } else if let root = task {
+                //self.p("In \(self.instanceType).viewDidLoad, have Root Task")
+                self.stack = [root]
+                let query = self.mainDatasource.basicQuery()
+                if let top = self.stack.last {
+                    query.addAnd(term: RVKeys.parentId, value: top._id as AnyObject, comparison: .eq)
+                    query.addAnd(term: RVKeys.parentModelType, value: top.modelType.rawValue as AnyObject, comparison: .eq )
+                }
+                self.manager.startDatasource(datasource: self.mainDatasource, query: query, callback: { (error) in
+                    if let error = error {
+                        error.append(message: "In \(self.instanceType).loadUp, got error starting main database")
+                        error.printError()
+                    }
+                })
+            } else {
+                self.p("In \(self.instanceType).viewDidLoad no error but no root task")
+            }
+        }
+ */
     }
     func userDidLogin() {
         print("The user just signed in!")
@@ -92,10 +153,19 @@ class RVMainLandingViewController: RVBaseViewController {
     override func filterQuery(text: String ) -> RVQuery {
         let query = filterDatasource.basicQuery().duplicate()
         query.setTextSearch(value: text.lowercased())
+        if let top = self.stack.last {
+            query.addAnd(term: RVKeys.parentId, value: top._id as AnyObject, comparison: .eq)
+            query.addAnd(term: RVKeys.parentModelType, value: top.modelType.rawValue as AnyObject, comparison: .eq )
+        }
         query.removeAllSortTerms()
         query.limit = 100
       //  query.addSort(field: .handleLowercase, order: .ascending)
         return query
+    }
+    override func userDidLogin(notification: NSNotification) {
+        print("In \(self.instanceType).userDidLogin notification target")
+        loadup()
+        
     }
 }
 
@@ -245,5 +315,37 @@ extension RVMainLandingViewController {
             datasource.loadFront()
         }
         self.refreshControl.endRefreshing()
+    }
+}
+extension RVMainLandingViewController {
+    func setUpTasks(root: RVTask) {
+        let query = RVQuery()
+        query.limit = 700
+        query.addAnd(term: RVKeys._id, value: root._id as AnyObject, comparison: .ne)
+        query.addSort(field: .createdAt, order: .descending)
+        query.addAnd(term: .createdAt, value: EJSON.convertToEJSONDate(Date()) as AnyObject, comparison: .lte)
+        RVTask.bulkQuery(query: query, callback: { (models, error) in
+            if let error = error {
+                error.printError()
+            } else if let models = models {
+                var index = 0
+                for model in models {
+                    if let task = model as? RVTask {
+                        print("\(index) In \(self.instanceType).viewDidLoad, parentID = \(task.parentId), model = \(task.parentModelType)")
+                        index = index + 1
+                        /*
+                         task.parentId = root._id
+                         task.parentModelType = root.modelType
+                         task.update(callback: { (error) in
+                         if let error = error {
+                         error.printError()
+                         }
+                         })
+                         */
+                    }
+                }
+            }
+        })
+        //  RVSeed.populateTasks(count: 20)
     }
 }

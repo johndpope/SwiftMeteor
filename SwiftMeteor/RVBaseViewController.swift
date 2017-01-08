@@ -10,14 +10,17 @@ import UIKit
 
 class RVBaseViewController: UIViewController {
     var instanceType: String { get { return String(describing: type(of: self)) } }
-    let stack = [RVBaseModel]()
+    var stack = [RVBaseModel]()
+    func p(_ message: String, _ method: String = "") {
+        print("In \(instanceType) \(method) \(message)")
+    }
     weak var dsScrollView: UIScrollView?
     var manager: RVDSManager!
     var mainDatasource: RVBaseDataSource = RVBaseDataSource()
     var filterDatasource: RVBaseDataSource = RVBaseDataSource()
     override func viewDidLoad() {
         super.viewDidLoad()
-        
+
         configureSearchBar()
         if let scrollView = self.dsScrollView {
             self.manager = RVDSManager(scrollView: scrollView)
@@ -27,9 +30,18 @@ class RVBaseViewController: UIViewController {
         manager.addSection(section: mainDatasource)
         manager.addSection(section: filterDatasource)
     }
-    func p(_ message: String, _ method: String = "") {
-        print("In \(instanceType) \(method) \(message)")
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        self.installObservers()
     }
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+        self.uninstallObservers()
+    }
+    deinit {
+        self.uninstallObservers()
+    }
+
     // searchBar
     var leftBarButtonItems: [UIBarButtonItem]? =  nil
     var rightBarButtonItems: [UIBarButtonItem]? = nil
@@ -46,6 +58,20 @@ class RVBaseViewController: UIViewController {
         query.removeAllSortTerms()
         query.addSort(field: .lowerCaseComment, order: .ascending)
         return query
+    }
+    var observers: [NSNotification.Name : Selector] =  [
+        NSNotification.Name(rawValue: RVNotification.userDidLogin.rawValue)  : #selector(RVBaseViewController.userDidLogin),
+        NSNotification.Name(rawValue: RVNotification.userDidLogout.rawValue) : #selector(RVBaseViewController.userDidLogout)
+    ]
+    func installObservers() {
+        for (name, selector) in observers {
+            NotificationCenter.default.addObserver(self, selector:  selector, name: name, object: nil)
+        }
+    }
+    func uninstallObservers() {
+        for (name, _) in observers {
+            NotificationCenter.default.removeObserver(self, name: name, object: nil)
+        }
     }
 }
 extension RVBaseViewController: UITableViewDelegate {
@@ -64,6 +90,18 @@ extension RVBaseViewController: UITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return manager.numberOfItems(section: section)
     }
+    func userDidLogin(notification: NSNotification) {
+        print("In \(self.instanceType).userDidLogin notification target")
+        if let userInfo = notification.userInfo {
+            if let username = userInfo["user"] as? String {
+                print("Username is \(username)")
+            }
+        }
+    }
+    func userDidLogout(notification: NSNotification) {
+        print("In \(self.instanceType).userDidLogout notification target")        
+    }
+
 }
 
 
