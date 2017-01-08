@@ -101,7 +101,7 @@ class RVSeed {
             } else if let tasks = models as? [RVTask] {
                 if let root = tasks.first {
                     RVCoreInfo.sharedInstance.rootTask = root
-                    print("In RVSeed.createRootTask, found root with id: \(root._id) \(root.special.rawValue)")
+                   // print("In RVSeed.createRootTask, found root with id: \(root._id) \(root.special.rawValue)")
                     callback(root, nil)
                     return
                 }

@@ -223,7 +223,7 @@ class RVBaseDataSource {
                 } else {
                     let query = query.duplicate().updateQuery(front: false)
                     if let candidate = self.array.last {
-                        print("In \(self.instanceType).queryForBack have last... \(candidate.title!)")
+                       // print("In \(self.instanceType).queryForBack have last... \(candidate.title!)")
                         for sort in query.sortTerms {
                             switch (sort.field) {
                             case .createdAt:

@@ -50,7 +50,7 @@ class RVSwiftDDP {
                     }
                 })
             } else {
-                print("In \(self.instanceType).temporary already logged in with username \(self.username)")
+               // print("In \(self.instanceType).temporary already logged in with username \(self.username)")
             }
         }
     }

@@ -97,7 +97,7 @@ class RVMainLandingViewController: RVBaseViewController {
                 error.printError()
                 return
             } else if let root = root {
-                print("Have root task: \(root._id), \(root.special.rawValue)")
+              //  print("In \(self.instanceType).loadup() Have root task: \(root._id), \(root.special.rawValue)")
                 self.stack = [root]
                 let query = self.mainDatasource.basicQuery()
                 if let top = self.stack.last {
@@ -163,7 +163,7 @@ class RVMainLandingViewController: RVBaseViewController {
         return query
     }
     override func userDidLogin(notification: NSNotification) {
-        print("In \(self.instanceType).userDidLogin notification target")
+        //print("In \(self.instanceType).userDidLogin notification target")
         loadup()
         
     }
@@ -198,7 +198,7 @@ extension RVMainLandingViewController {
 }
 extension RVMainLandingViewController: RVFirstHeaderContentViewDelegate{
     func expandCollapseButtonTouched(button: UIButton, view: RVFirstHeaderContentView) -> Void {
-        print("Header section \(view.section)")
+       // print("Header section \(view.section)")
         if view.section >= 0 {
             let datasource =  manager.sections[view.section]
             if !datasource.collapsed { datasource.collapse {
