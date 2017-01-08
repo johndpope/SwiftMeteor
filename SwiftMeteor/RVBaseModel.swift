@@ -60,6 +60,10 @@ class RVBaseModel: MeteorDocument {
             else { dict[RVKeys.comment.rawValue] = NSNull() }
             self._comment.dirty = false
         }
+        if !onlyDirties || (onlyDirties && self._score.dirty) {
+            if let number = self.score { dict[RVKeys.score.rawValue] = number as AnyObject }
+            else {dict[RVKeys.score.rawValue] = NSNull() }
+        }
         if !onlyDirties || (onlyDirties && self._handleLowercase.dirty) {
             if let handle = self.handleLowercase { dict[RVKeys.handleLowercase.rawValue] = handle as AnyObject }
             else {dict[RVKeys.handleLowercase.rawValue] = NSNull() }
@@ -166,6 +170,7 @@ class RVBaseModel: MeteorDocument {
     func setupCallback() {
         self._username.model = self
         self._comment.model = self
+        self._score.model = self
         self._handle.model = self
         self._handleLowercase.model = self
         self._numberOfLikes.model = self
@@ -226,6 +231,8 @@ class RVBaseModel: MeteorDocument {
             let _ = self._title.updateString(newValue: value)
         case .comment:
             let _ = self._comment.updateString(newValue: value)
+        case .score:
+            let _ = self._score.updateNumber(newValue: value)
         case .handle:
             let _ = self._handle.updateString(newValue: value)
         case .handleLowercase:
@@ -430,6 +437,13 @@ class RVBaseModel: MeteorDocument {
         }
         set {
             let _ = _numberOfObjections.changeNumber(newValue: newValue as AnyObject)
+        }
+    }
+    var _score = RVRecord(fieldName: .score)
+    var score: Double? {
+        get {
+            if let number = _score.value as? NSNumber { return number.doubleValue }
+            return nil
         }
     }
     var _handleLowercase = RVRecord(fieldName: .handleLowercase)

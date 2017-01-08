@@ -34,6 +34,8 @@ enum RVKeys: String {
     case numberOfObjections = "numberOfObjections"
     case numberOfFollowers = "numberOfFollowers"
     
+    
+    case score          = "score"
     // task
     case checked        = "checked"
     

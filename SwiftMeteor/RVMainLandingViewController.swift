@@ -86,12 +86,15 @@ class RVMainLandingViewController: RVBaseViewController {
         query.fixedTerm = RVQueryItem(term: RVKeys.handleLowercase, value: text.lowercased() as AnyObject, comparison: .gte)
         query.removeAllSortTerms()
         query.addSort(field: .handleLowercase, order: .ascending)
+        filterDatasource.inSearchTermMode = false
         return query
     }
     override func filterQuery(text: String ) -> RVQuery {
         let query = filterDatasource.basicQuery().duplicate()
         query.setTextSearch(value: text.lowercased())
         query.removeAllSortTerms()
+        filterDatasource.inSearchTermMode = true
+        query.limit = 100
       //  query.addSort(field: .handleLowercase, order: .ascending)
         return query
     }

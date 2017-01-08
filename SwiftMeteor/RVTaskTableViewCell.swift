@@ -13,6 +13,7 @@ class RVTaskTableViewCell: RVBaseTableViewCell {
     @IBOutlet weak var customTextLabel: UILabel!
     @IBOutlet weak var descriptionLabel: UILabel!
     @IBOutlet weak var commentLabel: UILabel!
+    @IBOutlet weak var scoreLabel: UILabel!
     
     override func configure() {
         self.layer.borderWidth = 2.0
@@ -22,6 +23,12 @@ class RVTaskTableViewCell: RVBaseTableViewCell {
             setLabelText(label: customTextLabel, text: model.title)
             setLabelText(label: descriptionLabel, text: model.handle)
             setLabelText(label: commentLabel, text: model.comment)
+            if let score = model.score {
+                setLabelText(label: scoreLabel, text: "\(score)")
+            } else {
+                setLabelText(label: scoreLabel, text: "")
+            }
+            
         }
         
     }
