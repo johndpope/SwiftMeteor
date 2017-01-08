@@ -22,7 +22,7 @@ class RVBaseDataSource {
     var backTimer: Bool = false
     var array = [RVBaseModel]()
     var baseQuery: RVQuery? = nil
-    var inSearchTermMode: Bool = false
+  //  var inSearchTermMode: Bool = false
     let identifier = NSDate().timeIntervalSince1970
     weak var scrollView: UIScrollView? = nil
     var collapsed: Bool = false
@@ -75,9 +75,12 @@ class RVBaseDataSource {
         RVTask.bulkQuery(query: query, callback: callback)
     }
     func queryForFront(operation: RVDSOperation, callback: @escaping(_ error: RVError?) -> Void) {
-        if inSearchTermMode {
-            callback(nil)
-            return
+        if let query = self.baseQuery {
+            if query.inSearchMode {
+                callback(nil)
+                return
+            }
+
         }
        // return
         if let query2 = self.baseQuery {
@@ -200,9 +203,13 @@ class RVBaseDataSource {
         }
     }
     func queryForBack(callback: @escaping(_ error: RVError?) -> Void) {
-        if (self.array.count > 0 && self.inSearchTermMode) {
-            callback(nil)
-            return
+        if let query = self.baseQuery {
+            if query.inSearchMode {
+                if (self.array.count > 0) {
+                    callback(nil)
+                    return
+                }
+            }
         }
         // print("In \(self.instanceType).queryForBack")
         if let query = self.baseQuery {

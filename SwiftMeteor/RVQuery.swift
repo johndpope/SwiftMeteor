@@ -68,8 +68,6 @@ class RVQuery {
     func duplicate() -> RVQuery {
         let query = RVQuery()
         query.comment = self.comment
-//        query.sortOrder = self.sortOrder
- //       query.sortTerm = self.sortTerm
         for andTerm in self.ands {
             query.ands.append(andTerm.duplicate())
         }
@@ -113,6 +111,10 @@ class RVQuery {
     var limit   = 100
     private var textSearch: RVTextTerm? = nil
     init() {
+    }
+    var inSearchMode: Bool {
+        if let _ = self.textSearch { return true }
+        return false
     }
     func findAndTerm(term: RVKeys) -> RVQueryItem? {
         for item in ands {
@@ -214,6 +216,13 @@ class RVQuery {
         if let _ = self.textSearch {
             let search = ["score" : ["$meta" : "textScore"]]
             projections[Projection.sort.rawValue] = search as AnyObject
+            //
+            var sorts = [String : AnyObject]()
+
+            let score = ["$meta": "textScore"]
+            sorts[RVKeys.score.rawValue] = score as AnyObject
+            sorts[RVKeys.createdAt.rawValue] = 1 as AnyObject
+            projections[Projection.sort.rawValue] = sorts as AnyObject
         } else {
             for sortTerm in sortTerms {
                 sorts.append(sortTerm.term() as AnyObject)
