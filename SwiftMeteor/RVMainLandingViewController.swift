@@ -80,7 +80,7 @@ class RVMainLandingViewController: RVBaseViewController {
     func userDidLogin() {
         print("The user just signed in!")
     }
-    override func filterQuery(text: String ) -> RVQuery {
+    func filterQuery0(text: String ) -> RVQuery {
         let query = filterDatasource.basicQuery().duplicate()
         query.addAnd(term: RVKeys.handleLowercase, value: text.lowercased() as AnyObject, comparison: .gte)
         query.fixedTerm = RVQueryItem(term: RVKeys.handleLowercase, value: text.lowercased() as AnyObject, comparison: .gte)
@@ -88,7 +88,13 @@ class RVMainLandingViewController: RVBaseViewController {
         query.addSort(field: .handleLowercase, order: .ascending)
         return query
     }
-
+    override func filterQuery(text: String ) -> RVQuery {
+        let query = filterDatasource.basicQuery().duplicate()
+        query.setTextSearch(value: text.lowercased())
+        query.removeAllSortTerms()
+      //  query.addSort(field: .handleLowercase, order: .ascending)
+        return query
+    }
 }
 
 extension RVMainLandingViewController {

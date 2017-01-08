@@ -111,7 +111,7 @@ class RVQuery {
     var ors     = [RVQueryItem]()
     var projections = [RVProjectionItem]()
     var limit   = 100
-    var textSearch: RVTextTerm? = nil
+    private var textSearch: RVTextTerm? = nil
     init() {
     }
     func findAndTerm(term: RVKeys) -> RVQueryItem? {
@@ -129,6 +129,10 @@ class RVQuery {
             }
         }
         return nil
+    }
+    func setTextSearch(value: String, caseSensitive: Bool = false, diacriticSensitive: Bool = false) {
+        let search = RVTextTerm(value: value, caseSensitive: caseSensitive, diacriticSensitive: diacriticSensitive)
+        self.textSearch = search
     }
     func findProjectionTerm(field: RVKeys) -> RVProjectionItem? {
         for item in projections {
@@ -207,22 +211,36 @@ class RVQuery {
         var projections = [String: AnyObject]()
  //       projections[Projection.sort.rawValue] = [sortTerm.rawValue : sortOrder.rawValue] as AnyObject
         var sorts = [AnyObject]()
-        for sortTerm in sortTerms {
-            sorts.append(sortTerm.term() as AnyObject)
+        if let _ = self.textSearch {
+            let search = ["score" : ["$meta" : "textScore"]]
+            projections[Projection.sort.rawValue] = search as AnyObject
+        } else {
+            for sortTerm in sortTerms {
+                sorts.append(sortTerm.term() as AnyObject)
+            }
+            if sorts.count > 0 {
+                projections[Projection.sort.rawValue] = sorts as AnyObject?
+            }
         }
-        if sorts.count > 0 {
-            projections[Projection.sort.rawValue] = sorts as AnyObject?
-        }
+
        // projections[Projection.sort.rawValue] = [["createdAt", "descending"]] as AnyObject // Neil plug
         projections[Projection.limit.rawValue] = self.limit as AnyObject
-        if let textSearch = self.textSearch {
-            projections[Projection.textSearch.rawValue] = textSearch.term() as AnyObject
-            projections["score"] = ["$meta": "textScore"] as AnyObject
+        
+        
+        if let _ = self.textSearch {
+           // projections[Projection.textSearch.rawValue] = textSearch.term() as AnyObject
+           // projections["score"] = ["$meta": "textScore"] as AnyObject
         }
-        var fields = [String : Int]()
+        
+        
+        var fields = [String : AnyObject]()
         for projection in self.projections {
             let (field, include) = projection.project()
-            fields[field] = include
+            fields[field] = include as AnyObject
+        }
+        if let _ = self.textSearch {
+            let search = ["$meta": "textScore"]
+            fields["score"] = search as AnyObject
         }
         if fields.count > 0 {
             projections[Projection.fields.rawValue] = fields as AnyObject
@@ -234,6 +252,11 @@ class RVQuery {
         }
         if let fixed = self.fixedTerm {
             andQuery.append(fixed.query() as AnyObject )
+        }
+        if let textSearch = self.textSearch {
+             var terms = [String: AnyObject]()
+            terms[Projection.textSearch.rawValue] = textSearch.term() as AnyObject
+            andQuery.append(terms as AnyObject)
         }
         if andQuery.count > 0 { filters[RVLogic.and.rawValue] = andQuery as AnyObject }
         var orQuery = [AnyObject]()
@@ -322,20 +345,20 @@ class RVTextTerm {
     var value: String
     var caseSensitive: Bool = false
     var diacriticSensitive: Bool = false
-    init(value: String) {
+    init(value: String, caseSensitive: Bool = false, diacriticSensitive: Bool = false) {
         self.value = value
+        self.caseSensitive = caseSensitive
+        self.diacriticSensitive = diacriticSensitive
     }
     func term() -> [String : AnyObject] {
         var term = [String: AnyObject]()
         term["$search"] = self.value as AnyObject
-        term["$caseSensitive"] = self.caseSensitive as AnyObject
-        term["$diacriticSensitive"] = self.diacriticSensitive as AnyObject
+  //      term["$caseSensitive"] = self.caseSensitive as AnyObject
+  //      term["$diacriticSensitive"] = self.diacriticSensitive as AnyObject
         return term
     }
     func duplicate() -> RVTextTerm {
-        let term = RVTextTerm(value: self.value)
-        term.caseSensitive = self.caseSensitive
-        term.diacriticSensitive = self.diacriticSensitive
+        let term = RVTextTerm(value: self.value, caseSensitive: self.caseSensitive, diacriticSensitive: self.diacriticSensitive)
         return term
     }
 }
