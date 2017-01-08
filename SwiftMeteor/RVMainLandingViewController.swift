@@ -65,8 +65,9 @@ class RVMainLandingViewController: RVBaseViewController {
                     self.p("In \(self.instanceType).viewDidLoad no error but no root task")
                 }
             }
- 
-            self.manager.startDatasource(datasource: self.mainDatasource, query: self.mainDatasource.basicQuery()) { (error ) in
+            let query = self.mainDatasource.basicQuery()
+            query.addAnd(term: RVKeys.title, value: "Dee" as AnyObject, comparison: .regex)
+            self.manager.startDatasource(datasource: self.mainDatasource, query: query) { (error ) in
                 if let error = error {
                     print("In \(self.instanceType).subscribeToTasks(), got error starting task datasource")
                     error.printError()

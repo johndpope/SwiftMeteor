@@ -24,6 +24,7 @@ enum RVComparison: String {
     case ne = "$ne"
     case includes = "$in"
     case notIn = "$nin"
+    case regex = "$regex"
 }
 enum RVExists: String {
     case exists = "$exists"
@@ -46,19 +47,26 @@ class RVQueryItem {
     var term: RVKeys = RVKeys._id
     var value: AnyObject = "" as AnyObject
     var comparison: RVComparison = .eq
-    init(term: RVKeys = RVKeys._id, value: AnyObject = "" as AnyObject,  comparison: RVComparison = .eq) {
+    var regexOptions: String = "i"
+    init(term: RVKeys = RVKeys._id, value: AnyObject = "" as AnyObject,  comparison: RVComparison = .eq, regexOptions: String = "i") {
         self.term = term
         self.value = value
         self.comparison = comparison
+        self.regexOptions = regexOptions
     }
     func query() -> [String: AnyObject] {
-        return [term.rawValue : [comparison.rawValue : value ] as AnyObject ]
+        if comparison == .regex {
+            return [term.rawValue : [comparison.rawValue : value, "$options" : self.regexOptions ] as AnyObject ]
+        } else {
+            return [term.rawValue : [comparison.rawValue : value ] as AnyObject ]
+        }
     }
     func duplicate() -> RVQueryItem {
         let item = RVQueryItem()
         item.term = self.term
         item.value = self.value
         item.comparison = self.comparison
+        item.regexOptions = self.regexOptions
         return item
     }
 }
@@ -273,6 +281,7 @@ class RVQuery {
             orQuery.append(or.query() as AnyObject )
         }
         if orQuery.count > 0 { filters[RVLogic.or.rawValue] = orQuery as AnyObject }
+
         return (filters, projections)
     }
     func updateQuery(front: Bool) -> RVQuery {
