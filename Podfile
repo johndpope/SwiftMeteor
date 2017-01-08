@@ -16,6 +16,7 @@ target 'SwiftMeteor' do
   pod 'AWSS3'
   pod 'SDWebImage', '~>3.8'
   pod 'TPKeyboardAvoiding'
+  pod 'LoremIpsum'
 
 
 

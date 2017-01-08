@@ -16,6 +16,20 @@ class RVTask: RVBaseModel {
     override class var findMethod: RVMeteorMethods { get { return RVMeteorMethods.FindTask}}
     override class var bulkQueryMethod: RVMeteorMethods { get { return RVMeteorMethods.BulkTask } }
     override class func createInstance(fields: [String : AnyObject])-> RVBaseModel { return RVTask(fields: fields) }
+    var _private = RVRecord(fieldName: RVKeys.`private`)
+    var `private`: Bool? {
+        get {
+            if let p = _private.value as? Bool { return p}
+            return nil
+        }
+        set {
+            if let newValue = newValue {
+                let _ = _private.changeBool(newValue: newValue as AnyObject)
+            } else {
+                let _ = _private.changeBool(newValue: NSNull() )
+            }
+        }
+    }
     var _checked = RVRecord(fieldName: RVKeys.checked)
     var checked: Bool? {
         get {
@@ -39,6 +53,9 @@ class RVTask: RVBaseModel {
             switch(key) {
             case .checked:
                 let _ = self._checked.updateBool(newValue: value)
+                return true
+            case .private:
+                let _ = self._private.updateBool(newValue: value)
                 return true
             default:
                 print("In \(instanceType).innerUpdate, did not find key \(key)")

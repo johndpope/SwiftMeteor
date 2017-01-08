@@ -30,6 +30,9 @@ class RVTaskDatasource: RVBaseDataSource {
         query.addProjection(projectionItem: RVProjectionItem(field: .updatedAt))
         query.addProjection(projectionItem: RVProjectionItem(field: .regularDescription))
         query.addProjection(projectionItem: RVProjectionItem(field: .comment))
+        query.addProjection(field: .handle)
+        query.addProjection(field: .title)
+    
         return query
     }
     

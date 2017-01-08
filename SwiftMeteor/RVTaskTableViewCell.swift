@@ -15,9 +15,12 @@ class RVTaskTableViewCell: RVBaseTableViewCell {
     @IBOutlet weak var commentLabel: UILabel!
     
     override func configure() {
+        self.layer.borderWidth = 2.0
+        self.layer.borderColor = UIColor.darkGray.cgColor
+        self.layer.cornerRadius = 5.0
         if let model = model {
-            setLabelText(label: customTextLabel, text: model.text)
-            setLabelText(label: descriptionLabel, text: model.regularDescription)
+            setLabelText(label: customTextLabel, text: model.title)
+            setLabelText(label: descriptionLabel, text: model.handle)
             setLabelText(label: commentLabel, text: model.comment)
         }
         

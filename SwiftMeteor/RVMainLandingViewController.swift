@@ -35,6 +35,8 @@ class RVMainLandingViewController: RVBaseViewController {
         segmentedView.isHidden = false
     }
     override func viewDidLoad() {
+        //RVSeed.tryIt()
+
         self.dsScrollView = tableView
         mainDatasource = RVTaskDatasource()
         filterDatasource = RVTaskDatasource()
@@ -51,6 +53,18 @@ class RVMainLandingViewController: RVBaseViewController {
              }
              })
              */
+            
+            RVSeed.createTaskRoot { (task, error) in
+                if let error = error {
+                    error.printError()
+                } else if task != nil {
+                    self.p("In \(self.instanceType).viewDidLoad, have Root Task")
+                  //  RVSeed.populateTasks(count: 20)
+                } else {
+                    self.p("In \(self.instanceType).viewDidLoad no error but no root task")
+                }
+            }
+ 
             self.manager.startDatasource(datasource: self.mainDatasource, query: self.mainDatasource.basicQuery()) { (error ) in
                 if let error = error {
                     print("In \(self.instanceType).subscribeToTasks(), got error starting task datasource")

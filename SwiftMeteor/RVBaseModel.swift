@@ -230,7 +230,13 @@ class RVBaseModel: MeteorDocument {
             let _ = self._handle.updateString(newValue: value)
         case .handleLowercase:
             let _ = self._handleLowercase.updateString(newValue: value)
-            
+        case .numberOfLikes:
+            let _ = self._numberOfLikes.updateNumber(newValue: value)
+        case .numberOfFollowers:
+            let _ = self._numberOfFollowers.updateNumber(newValue: value)
+        case .numberOfObjections:
+            let _ = self._numberOfObjections.updateNumber(newValue: value)
+    
         case .lowerCaseComment:
             let _ = self._lowercaseComment.updateString(newValue: value)
         case .text:
@@ -608,7 +614,7 @@ extension RVBaseModel {
         }
     }
     func delete(callback: @escaping(_ error: RVError?) -> Void) {
-        print("--------------------   In delete ---------------------------------")
+     //   print("--------------------   In delete ---------------------------------")
         Meteor.call(type(of: self).deleteMethod.rawValue, params: [ self._id as AnyObject]) { (result: Any?, error: DDPError?) in
             if let error = error {
                 let rvError = RVError(message: "In \(self.instanceType).delete \(#line) got DDPError for id: \(self._id)", sourceError: error)
@@ -655,7 +661,12 @@ extension RVBaseModel {
         if let ownerId = ownerId {
             output = "\(output)ownerId = \(ownerId), "
         } else {
-            output = "\(output)ownerId = <nil>, "
+            output = "\(output)ownerId = <nil>, \n"
+        }
+        if let handle = handle {
+            output = "\(output)handle = \(handle), "
+        } else {
+            output = "\(output)handle = <nil>, "
         }
         if let regularDescription = regularDescription {
             output = "\(output)\nDescription = \(regularDescription)\n"

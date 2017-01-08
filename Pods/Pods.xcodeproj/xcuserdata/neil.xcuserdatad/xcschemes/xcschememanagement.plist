@@ -44,6 +44,11 @@
 			<key>isShown</key>
 			<false/>
 		</dict>
+		<key>LoremIpsum.xcscheme</key>
+		<dict>
+			<key>isShown</key>
+			<false/>
+		</dict>
 		<key>Pods-SwiftMeteor.xcscheme</key>
 		<dict>
 			<key>isShown</key>
@@ -92,12 +97,12 @@
 			<key>primary</key>
 			<true/>
 		</dict>
-		<key>269F5732249C833D64E401B51CA1D373</key>
+		<key>49A33BE7192396516B986575D0F827C7</key>
 		<dict>
 			<key>primary</key>
 			<true/>
 		</dict>
-		<key>4ED597D4914345EA0BDB3A86B7CCBFCC</key>
+		<key>4F73ED1AD75F6A4A73B4C81A02EB8CD0</key>
 		<dict>
 			<key>primary</key>
 			<true/>
@@ -112,22 +117,22 @@
 			<key>primary</key>
 			<true/>
 		</dict>
+		<key>65997E34DF0D7AA11231F0C05084694F</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
 		<key>6BB1C1403B2419F911818DA8413FDA07</key>
 		<dict>
 			<key>primary</key>
 			<true/>
 		</dict>
-		<key>8D5E30FA83AC5F591A8B0ADF3E2A23C7</key>
+		<key>85DD5F95E89A4F2A8BD735B06B9A92ED</key>
 		<dict>
 			<key>primary</key>
 			<true/>
 		</dict>
-		<key>914C3531D261543826A23FBE211B494A</key>
-		<dict>
-			<key>primary</key>
-			<true/>
-		</dict>
-		<key>91593B5A3C4619E91C8151453615863B</key>
+		<key>91710B7DF90241FB3857CCDA4E28AFE6</key>
 		<dict>
 			<key>primary</key>
 			<true/>
@@ -142,17 +147,22 @@
 			<key>primary</key>
 			<true/>
 		</dict>
+		<key>A3677FA9FF8D8914EA4B11962BD5284F</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>AB0984CD7533A41A32427AA542F41689</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>C0F1BB6218091F68EF776127DD088C5C</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
 		<key>C14498E8A4F7BC06FEBC95C50C9B88BD</key>
-		<dict>
-			<key>primary</key>
-			<true/>
-		</dict>
-		<key>CA632F5B35B766E4E7C2116F66F005FE</key>
-		<dict>
-			<key>primary</key>
-			<true/>
-		</dict>
-		<key>E7289AA263A49D649047E7F75B4B580F</key>
 		<dict>
 			<key>primary</key>
 			<true/>
