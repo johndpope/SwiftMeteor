@@ -42,10 +42,10 @@ extension RVLeftMenuController {
         }
     }
 
-    func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
+    override func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
         return 0
     }
-    func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
+    override func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         return 40.0
     }
     override func numberOfSections(in tableView: UITableView) -> Int {

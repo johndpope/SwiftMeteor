@@ -16,6 +16,7 @@ class RVBaseViewController: UIViewController {
         print("In \(instanceType) \(method) \(message)")
     }
     weak var dsScrollView: UIScrollView?
+    var refreshControl = UIRefreshControl()
     var manager: RVDSManager!
     var mainDatasource: RVBaseDataSource = RVBaseDataSource()
     var filterDatasource: RVBaseDataSource = RVBaseDataSource()
@@ -79,13 +80,56 @@ extension RVBaseViewController: UITableViewDelegate {
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         print("In \(instanceType).didSelectRowAt, not overridded")
     }
+    func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
+        return 35.0
+    }
+    func tableView(_ tableView: UITableView, willDisplayHeaderView view: UIView, forSection section: Int) {
+        if let headerCell = view as? RVFirstViewHeaderCell {
+            if section >= 0 && section < manager.sections.count {
+                let datasource = manager.sections[section]
+                headerCell.delegate = self
+                headerCell.configure(model: nil, expand: true, datasource: datasource)
+            }
+        }
+    }
+    func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
+        if let headerCell = tableView.dequeueReusableHeaderFooterView(withIdentifier: RVFirstViewHeaderCell.identifier) as? RVFirstViewHeaderCell {
+            return headerCell
+        } else {
+            return UIView()
+        }
+    }
+    func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
+        return 90.0
+    }
 }
 extension RVBaseViewController: UITableViewDataSource {
     func numberOfSections(in tableView: UITableView) -> Int {
-        return manager.numberOfSections()
+        //  print("In \(self.classForCoder).numberOfSections... \(manager.sections.count)")
+        let count = manager.sections.count
+        if count == 0 {
+            let messageLabel = UILabel(frame: CGRect(x: 0, y: 0, width: self.view.bounds.size.width, height: self.view.bounds.size.height))
+            messageLabel.text = "No data is currently available. Please pull down to refresh."
+            messageLabel.textColor = UIColor.black
+            messageLabel.textAlignment = NSTextAlignment.center
+            messageLabel.font = UIFont(name: "Palatino-Italic", size: 20)
+            messageLabel.sizeToFit()
+            tableView.backgroundView = messageLabel
+            tableView.separatorStyle = UITableViewCellSeparatorStyle.none
+        } else {
+            tableView.backgroundView = self.refreshControl
+            tableView.separatorStyle = UITableViewCellSeparatorStyle.singleLineEtched
+        }
+        return count
     }
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        print("In \(instanceType).cellForRowAt, baseClass RVBaseViewController. Needs to be overridden")
+        //    print("In \(self.instanceType).cellForRow...")
+        if let cell = tableView.dequeueReusableCell(withIdentifier: RVTaskTableViewCell.identifier, for: indexPath) as? RVTaskTableViewCell {
+            cell.model = manager.item(indexPath: indexPath)
+            return cell
+        } else {
+            print("In \(self.instanceType).cellForRowAt, did not dequeue first cell type")
+        }
         return UITableViewCell()
     }
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
@@ -103,6 +147,34 @@ extension RVBaseViewController: UITableViewDataSource {
         print("In \(self.instanceType).userDidLogout notification target")        
     }
 
+    
+
+    func installRefresh(tableView: UITableView) {
+        self.refreshControl.backgroundColor = UIColor.purple
+        self.refreshControl.tintColor = UIColor.white
+        self.refreshControl.addTarget(self , action: #selector(refresh), for: UIControlEvents.valueChanged)
+        tableView.backgroundView = self.refreshControl
+        tableView.separatorStyle = UITableViewCellSeparatorStyle.singleLineEtched
+    }
+    func refresh() {
+        // self.tableView.reloadData
+        let formatter = DateFormatter()
+        formatter.dateFormat = "MMM d, h:mm a"
+        let title = "Last update: \(formatter.string(from: Date()))"
+        let attrsDictionary = [NSForegroundColorAttributeName : UIColor.white]
+        let attributedTitle = NSAttributedString(string: title, attributes: attrsDictionary)
+        self.refreshControl.attributedTitle = attributedTitle
+        if manager.sections.count > 0 {
+            let datasource = manager.sections[0]
+            datasource.loadFront()
+        }
+        self.refreshControl.endRefreshing()
+    }
+    
+    
+    
+    
+    
 }
 
 extension RVBaseViewController: RVFirstViewHeaderCellDelegate {

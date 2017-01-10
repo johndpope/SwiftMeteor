@@ -17,7 +17,7 @@ class RVMainLandingViewController: RVBaseViewController {
     @IBOutlet weak var segmentedViewTopConstraint: NSLayoutConstraint!
     @IBOutlet weak var tableViewTopConstraint: NSLayoutConstraint!
     @IBOutlet weak var segmentedControl: UISegmentedControl!
-    var refreshControl = UIRefreshControl()
+
     let topConstraintDelta: CGFloat = 30.0
     var segmentedViewTopConstraintConstant:CGFloat = 0.0
     var tableViewTopConstraintConstant: CGFloat = 0.0
@@ -109,115 +109,6 @@ extension RVMainLandingViewController {
 
 }
 
-extension RVMainLandingViewController {
-    func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
-        return 35.0
-    }
-    func loadHeaderFromNib() -> RVFirstHeaderContentView? {
-        let bundle = Bundle(for: RVFirstHeaderContentView.self)
-        let nib = UINib(nibName: "RVFirstHeaderContentView", bundle: bundle)
-        if let view = nib.instantiate(withOwner: self, options: nil)[0] as? RVFirstHeaderContentView {
-            return view
-        }
-        return nil
-    }
-    func tableView(_ tableView: UITableView, willDisplayHeaderView view: UIView, forSection section: Int) {
-        if let headerCell = view as? RVFirstViewHeaderCell {
-            if section >= 0 && section < manager.sections.count {
-                let datasource = manager.sections[section]
-                headerCell.delegate = self
-                headerCell.configure(model: nil, expand: true, datasource: datasource)
-            }
 
-/*
-            let contentView = headerCell.contentView
-            for subview in contentView.subviews {
-                if let _ = subview as? RVFirstHeaderContentView {
-                    print("In \(self.instanceType).willDisplayHeaderInSection, found target")
-                    return
-                }
-            }
-            if let target = loadHeaderFromNib() {
-                target.frame = headerCell.contentView.bounds
-                target.autoresizingMask = [.flexibleWidth, .flexibleHeight]
-                contentView.addSubview(target)
-                target.delegate = self
-                target.section = section
-                target.configure(section: section, expand: true)
-            }
-            */
-        }
-    }
-    func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
-        if let headerCell = tableView.dequeueReusableHeaderFooterView(withIdentifier: RVFirstViewHeaderCell.identifier) as? RVFirstViewHeaderCell {
-            return headerCell
-        } else {
-            return UIView()
-        }
-    }
-    func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        return 90.0
-    }
-    /*
-     func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
-     return "Section \(section)"
-     }
-     */
-}
-extension RVMainLandingViewController {
-    override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        //    print("In \(self.instanceType).cellForRow...")
-        if let cell = tableView.dequeueReusableCell(withIdentifier: RVTaskTableViewCell.identifier, for: indexPath) as? RVTaskTableViewCell {
-            cell.model = manager.item(indexPath: indexPath)
-            return cell
-        } else {
-            print("In \(self.instanceType).cellForRowAt, did not dequeue first cell type")
-        }
-        return UITableViewCell()
-    }
-    override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-    //    print("In \(self.classForCoder).numberOfRowsInSection \(section) \(manager.numberOfItems(section: section))")
-        return manager.numberOfItems(section: section)
-    }
-    override func numberOfSections(in tableView: UITableView) -> Int {
-      //  print("In \(self.classForCoder).numberOfSections... \(manager.sections.count)")
-        let count = manager.sections.count
-        if count == 0 {
-            
-            let messageLabel = UILabel(frame: CGRect(x: 0, y: 0, width: self.view.bounds.size.width, height: self.view.bounds.size.height))
-            messageLabel.text = "No data is currently available. Please pull down to refresh."
-            messageLabel.textColor = UIColor.black
-            messageLabel.textAlignment = NSTextAlignment.center
-            messageLabel.font = UIFont(name: "Palatino-Italic", size: 20)
-            messageLabel.sizeToFit()
-            self.tableView.backgroundView = messageLabel
-            self.tableView.separatorStyle = UITableViewCellSeparatorStyle.none
-        } else {
-            self.tableView.backgroundView = self.refreshControl
-            self.tableView.separatorStyle = UITableViewCellSeparatorStyle.singleLineEtched
-        }
-        return count
-    }
-    func installRefresh() {
-        self.refreshControl.backgroundColor = UIColor.purple
-        self.refreshControl.tintColor = UIColor.white
-        self.refreshControl.addTarget(self , action: #selector(refresh), for: UIControlEvents.valueChanged)
-        self.tableView.backgroundView = self.refreshControl
-        self.tableView.separatorStyle = UITableViewCellSeparatorStyle.singleLineEtched
-    }
-    func refresh() {
-        // self.tableView.reloadData
-        let formatter = DateFormatter()
-        formatter.dateFormat = "MMM d, h:mm a"
-        let title = "Last update: \(formatter.string(from: Date()))"
-        let attrsDictionary = [NSForegroundColorAttributeName : UIColor.white]
-        let attributedTitle = NSAttributedString(string: title, attributes: attrsDictionary)
-        self.refreshControl.attributedTitle = attributedTitle
-        if manager.sections.count > 0 {
-            let datasource = manager.sections[0]
-            datasource.loadFront()
-        }
-        self.refreshControl.endRefreshing()
-    }
-}
+
 
