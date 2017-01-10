@@ -75,15 +75,19 @@ class RVMainLandingViewController: RVBaseViewController {
     func userDidLogin() {
         print("The user just signed in!")
     }
-    func filterQuery0(text: String ) -> RVQuery {
+    override func filterQuery(text: String ) -> RVQuery {
         let query = filterDatasource.basicQuery().duplicate()
-        query.addAnd(term: RVKeys.handleLowercase, value: text.lowercased() as AnyObject, comparison: .gte)
-        query.fixedTerm = RVQueryItem(term: RVKeys.handleLowercase, value: text.lowercased() as AnyObject, comparison: .gte)
+        query.addAnd(term: RVKeys.handleLowercase, value: text.lowercased() as AnyObject, comparison: .regex)
+        // query.fixedTerm = RVQueryItem(term: RVKeys.handleLowercase, value: text.lowercased() as AnyObject, comparison: .gte) // necessary for keeping filter equal or gt filter term
+        if let top = self.stack.last {
+            query.addAnd(term: RVKeys.parentId, value: top._id as AnyObject, comparison: .eq)
+            query.addAnd(term: RVKeys.parentModelType, value: top.modelType.rawValue as AnyObject, comparison: .eq )
+        }
         query.removeAllSortTerms()
         query.addSort(field: .handleLowercase, order: .ascending)
         return query
     }
-    override func filterQuery(text: String ) -> RVQuery {
+    func filterQuery0(text: String ) -> RVQuery {
         let query = filterDatasource.basicQuery().duplicate()
         query.setTextSearch(value: text.lowercased())
         if let top = self.stack.last {
