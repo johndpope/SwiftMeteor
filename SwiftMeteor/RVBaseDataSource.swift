@@ -9,9 +9,14 @@
 import UIKit
 import SwiftDDP
 
-class RVBaseDataSource {
+protocol RVDatasourceDelegate: class {
+    func exceededMaxArrayLengthWhileInFilterMode() -> Void
+}
 
+class RVBaseDataSource {
+    var delegate: RVDatasourceDelegate? = nil
     var instanceType: String { get { return String(describing: type(of: self)) } }
+    var filterMode: Bool = false
     var maximumArrayLength: Int = 130
     var backBuffer = 30
     var frontBuffer = 20
@@ -32,7 +37,11 @@ class RVBaseDataSource {
     var animation: UITableViewRowAnimation = UITableViewRowAnimation.automatic
     var expandReturnRow: Int = 0
     private var offset: Int = 0
-
+    init(maxArraySize: Int = 130, filterMode: Bool = false) {
+        let max = maxArraySize < 500 ? maxArraySize : 500
+        self.maximumArrayLength = max
+        self.filterMode = filterMode
+    }
     var collapseOrExpandOperationActive: Bool {
         get {
             if self.operations.findOperation(operationName: .collapseOperation).active { return true }
@@ -77,6 +86,7 @@ class RVBaseDataSource {
         RVTask.bulkQuery(query: query, callback: callback)
     }
     func queryForFront(operation: RVDSOperation, callback: @escaping(_ error: RVError?) -> Void) {
+        if filterMode { return }
         if let query = self.baseQuery {
             if query.inSearchMode {
                 callback(nil)
@@ -96,23 +106,40 @@ class RVBaseDataSource {
                 let query = query2.duplicate().updateQuery(front: true)
                 if let candidate = self.array.first {
                     //print("In \(self.instanceType).queryForFront have first... \(candidate.text!)")
+                    var index = 0
                     for sort in query.sortTerms {
-                        switch (sort.field) {
-                        case .createdAt:
-                            if let candidateCreatedAt = candidate.createdAt {
-                                if let queryTerm = query.findAndTerm(term: sort.field) {
-                                    queryTerm.value = EJSON.convertToEJSONDate(candidateCreatedAt) as AnyObject
+                        if index == 0 {
+                            switch (sort.field) {
+                            case .createdAt:
+                                if let candidateCreatedAt = candidate.createdAt {
+                                    if let queryTerm = query.findAndTerm(term: sort.field) {
+                                        queryTerm.value = EJSON.convertToEJSONDate(candidateCreatedAt) as AnyObject
+                                    }
                                 }
-                            }
-                        case .lowerCaseComment:
-                            if let candidateComment = candidate.lowercaseComment {
-                                if let queryTerm = query.findAndTerm(term: sort.field) {
-                                    queryTerm.value = candidateComment as AnyObject
+                            case .lowerCaseComment:
+                                if let candidateComment = candidate.comment {
+                                    if let queryTerm = query.findAndTerm(term: sort.field) {
+                                        queryTerm.value = candidateComment.lowercased() as AnyObject
+                                    }
                                 }
+                            case .handleLowercase, .handle:
+                                if let handle = candidate.handle {
+                                    if let queryTerm = query.findAndTerm(term: sort.field) {
+                                        queryTerm.value = handle.lowercased() as AnyObject
+                                    }
+                                }
+                            case .title:
+                                if let title = candidate.title {
+                                    if let queryTerm = query.findAndTerm(term: sort.field) {
+                                        queryTerm.value = title.lowercased() as AnyObject
+                                    }
+                                }
+                                
+                            default:
+                                print("in \(self.instanceType).queryForFront, term \(sort.field.rawValue) not implemented")
                             }
-                        default:
-                            print("in \(self.instanceType).queryForBack, term \(sort.field.rawValue) not implemented")
                         }
+                        index = index +  1
                     }
                     /*
                     switch(query.sortTerm) {
@@ -205,6 +232,17 @@ class RVBaseDataSource {
         }
     }
     func queryForBack(callback: @escaping(_ error: RVError?) -> Void) {
+        if filterMode {
+            if self.array.count >= self.maximumArrayLength {
+                if let delegate = self.delegate {
+                    delegate.exceededMaxArrayLengthWhileInFilterMode()
+                } else {
+                    print("In \(self.instanceType).queryForBack, in filterMode at max capacity. No delegate")
+                }
+                callback(nil)
+                return
+            }
+        }
         if let query = self.baseQuery {
             if query.inSearchMode {
                 if (self.array.count > 0) {
@@ -224,24 +262,42 @@ class RVBaseDataSource {
                     let query = query.duplicate().updateQuery(front: false)
                     if let candidate = self.array.last {
                        // print("In \(self.instanceType).queryForBack have last... \(candidate.title!)")
+                        var index = 0
                         for sort in query.sortTerms {
-                            switch (sort.field) {
-                            case .createdAt:
-                                if let candidateCreatedAt = candidate.createdAt {
-                                    if let queryTerm = query.findAndTerm(term: sort.field) {
-                                        queryTerm.value = EJSON.convertToEJSONDate(candidateCreatedAt) as AnyObject as AnyObject
+                            if index == 0 {
+                                switch (sort.field) {
+                                case .createdAt:
+                                    if let candidateCreatedAt = candidate.createdAt {
+                                        if let queryTerm = query.findAndTerm(term: sort.field) {
+                                            queryTerm.value = EJSON.convertToEJSONDate(candidateCreatedAt) as AnyObject as AnyObject
+                                        }
                                     }
-                                }
-                            case .lowerCaseComment:
-                                print("In \(self.instanceType).queryForBack with lowercaseCommnet value = \(candidate.lowercaseComment)")
-                                if let candidateComment = candidate.comment {
-                                    if let queryTerm = query.findAndTerm(term: sort.field) {
-                                        queryTerm.value = candidateComment.lowercased() as AnyObject
+                                case .lowerCaseComment, .comment:
+                                    print("In \(self.instanceType).queryForBack with lowercaseCommnet value = \(candidate.lowercaseComment)")
+                                    if let candidateComment = candidate.comment {
+                                        if let queryTerm = query.findAndTerm(term: sort.field) {
+                                            queryTerm.value = candidateComment.lowercased() as AnyObject
+                                        }
                                     }
+                                case .handleLowercase, .handle:
+                                    if let handle = candidate.handle {
+                                        if let queryTerm = query.findAndTerm(term: sort.field) {
+                                            queryTerm.value = handle.lowercased() as AnyObject
+                                        }
+                                    }
+                                case .title:
+                                    if let title = candidate.title {
+                                        if let queryTerm = query.findAndTerm(term: sort.field) {
+                                            queryTerm.value = title.lowercased() as AnyObject
+                                        }
+                                    }
+                                    
+                                default:
+                                    print("in \(self.instanceType).queryForBack..., term \(sort.field.rawValue) not implemented")
                                 }
-                            default:
-                                print("in \(self.instanceType).queryForBack, term \(sort.field.rawValue) not implemented")
                             }
+                            index = index + 1
+
                         }
                         /*
                         switch(query.sortTerm) {
@@ -666,6 +722,15 @@ class RVBaseDataSource {
                             let room = self.maximumArrayLength - self.array.count
                             var atBack = true
                             if room > 0 {
+                                
+                                if self.filterMode {
+                                    if sizedItems.count > room {
+                                        var shrunk = [RVBaseModel]()
+                                        for index in (0..<room){ shrunk.append(sizedItems[index]) }
+                                        sizedItems = shrunk
+                                    }
+                                }
+                                
                                 var end = room
                                 // If number of new items less than room, set end to number of new Items, else use all the room
                                 if sizedItems.count < end { end = sizedItems.count }
@@ -696,6 +761,7 @@ class RVBaseDataSource {
                                     //  print("In \(self.instanceType).appendAtBack, after insertOperation")
                                 }
                             } else {
+                                if self.filterMode {sizedItems = [RVBaseModel]() }
                                 var lastVisibleRow = 0
                                 if let visiblePaths = tableView.indexPathsForVisibleRows {
                                     if visiblePaths.count > 0 {

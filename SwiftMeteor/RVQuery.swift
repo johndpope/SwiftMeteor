@@ -315,6 +315,8 @@ class RVQuery {
                     andTerm.comparison = .gte
                 case .gte:
                     andTerm.comparison = .gt
+                case .regex:
+                    andTerm.comparison = .regex
                 default:
                     print("In \(self.instanceType).updateSort, inappropriate comparison of [\(andTerm.comparison.rawValue)] for field: \(field.rawValue)")
                 }
@@ -328,12 +330,19 @@ class RVQuery {
                     andTerm.comparison = .lte
                 case .gte:
                     andTerm.comparison = .lt
+                case .regex:
+                    andTerm.comparison = .regex
                 default:
                     print("In \(self.instanceType).updateSort, inappropriate comparison of [\(andTerm.comparison.rawValue)] for field: \(field.rawValue)")
                 }
             }
             return true
         } else {
+            if let fixed = self.fixedTerm {
+                if fixed.term == field {
+                    return true
+                }
+            }
             return false
         }
     }

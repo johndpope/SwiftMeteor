@@ -58,6 +58,7 @@
 		28E65DA31E1DB1A0004E82F5 /* RVLeftMenuTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 28E65DA21E1DB1A0004E82F5 /* RVLeftMenuTableViewCell.swift */; };
 		28E65DA51E1DB1D1004E82F5 /* RVBaseTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 28E65DA41E1DB1D1004E82F5 /* RVBaseTableViewCell.swift */; };
 		28E65DA71E1DB4E5004E82F5 /* RVLeftMenuNavController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 28E65DA61E1DB4E5004E82F5 /* RVLeftMenuNavController.swift */; };
+		28EBBB831E255EEC0072B761 /* RVOperation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 28EBBB821E255EEC0072B761 /* RVOperation.swift */; };
 		28F53E6D1DEB5F71009641F0 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 28F53E6C1DEB5F71009641F0 /* AppDelegate.swift */; };
 		28F53E6F1DEB5F71009641F0 /* FirstViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 28F53E6E1DEB5F71009641F0 /* FirstViewController.swift */; };
 		28F53E711DEB5F71009641F0 /* SecondViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 28F53E701DEB5F71009641F0 /* SecondViewController.swift */; };
@@ -139,6 +140,7 @@
 		28E65DA21E1DB1A0004E82F5 /* RVLeftMenuTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RVLeftMenuTableViewCell.swift; sourceTree = "<group>"; };
 		28E65DA41E1DB1D1004E82F5 /* RVBaseTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RVBaseTableViewCell.swift; sourceTree = "<group>"; };
 		28E65DA61E1DB4E5004E82F5 /* RVLeftMenuNavController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RVLeftMenuNavController.swift; sourceTree = "<group>"; };
+		28EBBB821E255EEC0072B761 /* RVOperation.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RVOperation.swift; sourceTree = "<group>"; };
 		28F53E691DEB5F71009641F0 /* SwiftMeteor.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = SwiftMeteor.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		28F53E6C1DEB5F71009641F0 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		28F53E6E1DEB5F71009641F0 /* FirstViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FirstViewController.swift; sourceTree = "<group>"; };
@@ -275,6 +277,7 @@
 				28928CD41E18E226003538B8 /* RVDSOperation.swift */,
 				2850AFFE1E1B60130043FEB3 /* RVResultsTableController.swift */,
 				2813FAF31E20A385007E9428 /* RVTaskDatasource.swift */,
+				28EBBB821E255EEC0072B761 /* RVOperation.swift */,
 			);
 			name = Datasource;
 			sourceTree = "<group>";
@@ -605,6 +608,7 @@
 				287B74701E1C2EE900900864 /* RVFirstViewHeaderCell.swift in Sources */,
 				2802252E1E1C5C9500D5FB60 /* RVFirstHeaderContentView.swift in Sources */,
 				2850AFFF1E1B60130043FEB3 /* RVResultsTableController.swift in Sources */,
+				28EBBB831E255EEC0072B761 /* RVOperation.swift in Sources */,
 				2873C9131DECAA2F00DCB2DF /* AWSIdentityManager.swift in Sources */,
 				2873C9111DECA4D400DCB2DF /* AWSMobileClient.swift in Sources */,
 				28928CD31E18C6C7003538B8 /* RVDSManager.swift in Sources */,

@@ -11,7 +11,7 @@ import UIKit
 class RVBaseViewController: UIViewController {
     var instanceType: String { get { return String(describing: type(of: self)) } }
     var stack = [RVBaseModel]()
-    var searching: Bool = false
+    var operation: RVOperation = RVOperation(active: false)
     func p(_ message: String, _ method: String = "") {
         print("In \(instanceType) \(method) \(message)")
     }
@@ -33,10 +33,12 @@ class RVBaseViewController: UIViewController {
         manager.addSection(section: filterDatasource)
     }
     override func viewWillAppear(_ animated: Bool) {
+
         super.viewWillAppear(animated)
         self.installObservers()
     }
     override func viewWillDisappear(_ animated: Bool) {
+
         super.viewWillDisappear(animated)
         self.uninstallObservers()
     }
@@ -243,38 +245,58 @@ extension RVBaseViewController: UISearchBarDelegate {
         }
         return true
     }
-    func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
-        if searchText.characters.count >= 0 {
-            if searching { return }
-            searching = true
-            if !mainDatasource.collapsed {
-                mainDatasource.collapse {}
-            }
-            let query = filterQuery(text: searchText)
-            var querying = true
-           // print("In \(self.instanceType).textDidChange, about to search")
-            manager.startDatasource(datasource: filterDatasource, query: query, callback: { (error) in
-                querying = false
+    func runInner(operation: RVOperation, searchText: String) {
+        // p("runInner searchText = \(searchText)")
+        DispatchQueue.main.async {
+            self.manager.stopAndResetDatasource(datasource: self.filterDatasource, callback: { (error) in
                 if let error = error {
-                    error.append(message: "In \(self.instanceType).textDidChange, got error")
-                    error.printError()
-                }
-                self.searching = false
-            })
-            Timer.scheduledTimer(withTimeInterval: 2.0, repeats: false, block: { (timer) in
-                if querying {
-                    querying = false
-                    print("In \(self.instanceType).textDidChange, query not returned after 2 seconds")
-                    self.manager.stopDatasource(datasource: self.filterDatasource, callback: { (error) in
-                        if let error = error {
-                            error.append(message: "In \(self.instanceType).textDidChange callback got error")
-                            error.printError()
-                        }
-                        self.searching = false
-                    })
+                    error.append(message: "In \(self.instanceType).runSearch, got error stopping")
+                } else {
+                   // self.p("After stopAndReset \(operation.name)")
+                    let query = self.filterQuery(text: searchText)
+                    if operation.sameOperationAndNotCancelled(operation: self.operation) {
+                        if !self.mainDatasource.collapsed { self.mainDatasource.collapse {} }
+                        self.manager.startDatasource(datasource: self.filterDatasource, query: query, callback: { (error) in
+                            //self.p("After startDatasource \(operation.name)")
+                            if let error = error {
+                                error.append(message: "In \(self.instanceType).textDidChange, got error")
+                                error.printError()
+                            }
+                            if operation.sameOperation(operation: self.operation) {
+                                operation.cancelled = true
+                                self.operation = RVOperation(active: false)
+                                operation.active = false
+                            }
+                        })
+                    } else {
+                        self.p("Same operation and not cancelled \(operation.name) --------")
+                    }
                 }
             })
         }
+    }
+    func runSearch(searchText: String) {
+        if searchText.characters.count >= 0 {
+            var operation = self.operation
+            if operation.active {
+                operation.cancelled = true
+                self.operation = RVOperation(active: true, name: searchText)
+                operation = self.operation
+                self.runInner(operation: operation, searchText: searchText)
+            } else {
+                if operation.cancelled {
+                    operation = RVOperation(active: true, name: searchText)
+                    self.operation = operation
+                }
+                operation.name = searchText
+                operation.active = true
+                self.runInner(operation: operation, searchText: searchText)
+            }
+        }
+    }
+    func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
+
+        runSearch(searchText: searchText)
        // p("", "0 textDidChange")
     }
     
@@ -324,7 +346,7 @@ extension RVBaseViewController: UISearchBarDelegate {
     }
 
     func searchBarTextDidBeginEditing(_ searchBar: UISearchBar) {
-        //searchBar.showsCancelButton = true
+
     //   p("", "1 searchBarTextDidBeginEditing")
         
     }
@@ -333,6 +355,7 @@ extension RVBaseViewController: UISearchBarDelegate {
         
     }
     func searchBarShouldEndEditing(_ searchBar: UISearchBar) -> Bool {
+
         return true
     }
     func searchBarShouldBeginEditing(_ searchBar: UISearchBar) -> Bool {

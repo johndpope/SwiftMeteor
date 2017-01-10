@@ -43,9 +43,9 @@ class RVSwiftDDP {
         Timer.scheduledTimer(withTimeInterval: 2.0, repeats: false) { (timer) in
             if self.username == nil {
                 print("In \(self.instanceType).temporary, after two second wait, no user, so attempting to login")
-                self.loginWithPassword(email: self.pluggedUsername, password: self.pluggedPassword, completionHandler: { (result, error ) in
+                self.loginWithUsername(username: self.pluggedUsername, password: self.pluggedPassword, callback: { (result, error ) in
                     if let error = error {
-                        error.append(message: "In \(self.instanceType).temporary, go error logging in with: \(self.pluggedUsername) and \(self.pluggedPassword)")
+                        error.append(message: "In \(self.instanceType).temporary, got error logging in with: \(self.pluggedUsername) and \(self.pluggedPassword)")
                         error.printError()
                     }
                 })
@@ -54,8 +54,16 @@ class RVSwiftDDP {
             }
         }
     }
-    func loginWithUsername(email: String, password: String, callback: @escaping (_ result: Any?, _ error: RVError?)-> Void) -> Void {
-        self.loginWithPassword(email: email, password: password, completionHandler: callback)
+    func loginWithUsername(username: String, password: String, callback: @escaping (_ result: Any?, _ error: RVError?)-> Void) -> Void {
+        Meteor.loginWithUsername(username, password: password) { (result, error) in
+            if let error = error {
+                let rvError = RVError(message: "In \(self.instanceType).loginWithUsername, got Meteor error", sourceError: error)
+                callback(nil, rvError)
+                return
+            } else {
+                callback(result, nil)
+            }
+        }
     }
     func loginWithPassword(email: String, password: String, completionHandler: @escaping (_ result: Any?, _ error: RVError?)-> Void) -> Void {
         Meteor.loginWithPassword(email, password: password) { (result: Any?, error: DDPError?) in
