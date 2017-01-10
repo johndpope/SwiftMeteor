@@ -8,7 +8,16 @@
 
 import UIKit
 import SwiftDDP
-
+extension RVMainLandingViewController {
+    override func updateSearchResults(for searchController: UISearchController) {
+        if let segmentedView  = self.segmentedView {
+            if !segmentedView.isHidden {
+                self.hideSegementedView()
+            }
+        }
+        super.updateSearchResults(for: searchController)
+    }
+}
 class RVMainLandingViewController: RVBaseViewController {
     
     @IBOutlet weak var tableView: UITableView!
@@ -56,6 +65,25 @@ class RVMainLandingViewController: RVBaseViewController {
         }
         segmentedControl.selectedSegmentIndex = 0
     }
+    func showSegmentedView() {
+        if let segmentedView = self.segmentedView {
+            segmentedView.isHidden = false
+            if let constraint = tableViewTopConstraint {
+                constraint.constant = constraint.constant + topConstraintDelta
+            //    tableViewTopConstraintConstant = constraint.constant
+             //   constraint.constant = constraint.constant + topConstraintDelta
+            }
+        }
+    }
+    func hideSegementedView() {
+        if let segmentedView = self.segmentView {
+            segmentedView.isHidden = true
+            if let constraint = tableViewTopConstraint {
+                constraint.constant = constraint.constant - topConstraintDelta
+
+            }
+        }
+    }
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         if let _ = RVSwiftDDP.sharedInstance.username {
@@ -65,13 +93,7 @@ class RVMainLandingViewController: RVBaseViewController {
             print("In \(self.classForCoder).viewWillAppear, no username")
             //loadup()
         }
-        if let segmentedView = self.segmentedView {
-            segmentedView.isHidden = false
-            if let constraint = tableViewTopConstraint {
-                tableViewTopConstraintConstant = constraint.constant
-                constraint.constant = constraint.constant + topConstraintDelta
-            }
-        }
+        showSegmentedView()
     }
     func loadup() {
         RVSeed.createRootTask { (root, error) in

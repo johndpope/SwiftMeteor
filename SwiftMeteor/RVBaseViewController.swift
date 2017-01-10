@@ -8,7 +8,58 @@
 
 import UIKit
 
+extension RVBaseViewController: UISearchResultsUpdating {
+    // Called when the search bar's text or scope has changed or when the search bar becomes first responder.
+    public func updateSearchResults(for searchController: UISearchController) {
+        let searchText = searchController.searchBar.text != nil ?  searchController.searchBar.text! : ""
+        var operation = self.operation
+        if operation.active {
+            operation.cancelled = true
+            self.operation = RVOperation(active: true, name: searchText)
+            operation = self.operation
+            self.runInner2(operation: operation, searchText: searchText)
+        } else {
+            if operation.cancelled {
+                operation = RVOperation(active: true, name: searchText)
+                self.operation = operation
+            }
+            operation.name = searchText
+            operation.active = true
+            self.runInner2(operation: operation, searchText: searchText)
+        }
+    }
+    func runInner2(operation: RVOperation, searchText: String) {
+        DispatchQueue.main.async {
+            self.manager.stopAndResetDatasource(datasource: self.filterDatasource, callback: { (error) in
+                if let error = error {
+                    error.append(message: "In \(self.instanceType).runSearch, got error stopping")
+                } else {
+                    // self.p("After stopAndReset \(operation.name)")
+                    let query = self.filterQuery(text: searchText)
+                    if operation.sameOperationAndNotCancelled(operation: self.operation) {
+                        if !self.mainDatasource.collapsed { self.mainDatasource.collapse {} }
+                        self.manager.startDatasource(datasource: self.filterDatasource, query: query, callback: { (error) in
+                            //self.p("After startDatasource \(operation.name)")
+                            if let error = error {
+                                error.append(message: "In \(self.instanceType).textDidChange, got error")
+                                error.printError()
+                            }
+                            if operation.sameOperation(operation: self.operation) {
+                                operation.cancelled = true
+                                self.operation = RVOperation(active: false)
+                                operation.active = false
+                            }
+                        })
+                    } else {
+                        self.p("Same operation and not cancelled \(operation.name) --------")
+                    }
+                }
+            })
+        }
+    }
+}
 class RVBaseViewController: UIViewController {
+    let searchController = UISearchController(searchResultsController: nil)
     var instanceType: String { get { return String(describing: type(of: self)) } }
     var stack = [RVBaseModel]()
     var operation: RVOperation = RVOperation(active: false)
@@ -23,9 +74,15 @@ class RVBaseViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        configureSearchBar()
+  //      configureSearchBar()
         if let scrollView = self.dsScrollView {
             self.manager = RVDSManager(scrollView: scrollView)
+            if let tableView = scrollView as? UITableView {
+                searchController.searchResultsUpdater = self
+                searchController.dimsBackgroundDuringPresentation = false
+                definesPresentationContext = true
+                tableView.tableHeaderView = searchController.searchBar
+            }
         } else {
             print("In \(instanceType).viewDidLoad, scrollView not set")
         }
