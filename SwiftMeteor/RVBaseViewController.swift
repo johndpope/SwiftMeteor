@@ -105,18 +105,23 @@ extension RVBaseViewController: UITableViewDataSource {
 
 }
 
-extension RVBaseViewController: RVFirstHeaderContentViewDelegate{
-    func expandCollapseButtonTouched(button: UIButton, view: RVFirstHeaderContentView) -> Void {
-        if view.section >= 0 {
-            let datasource =  manager.sections[view.section]
-            if !datasource.collapsed { datasource.collapse {
-                //print("In \(self.instanceType).expandCollapseButtonTouched return from collapse")
+extension RVBaseViewController: RVFirstViewHeaderCellDelegate {
+    func expandCollapseButtonTouched(view: RVFirstViewHeaderCell) -> Void {
+       // print("In \(self.instanceType).expandCollapseButtonTOuched")
+        if let datasource = view.datasource {
+            //print("In \(self.instanceType).expandCollapseButtonTOuched have datasource")
+
+                if !datasource.collapsed { datasource.collapse {
+                    //print("In \(self.instanceType).expandCollapseButtonTouched return from collapse")
+                    }
+                } else {
+                    datasource.expand {
+                        //  print("In \(self.instanceType).expandCollapseButtonTouched return from expand")
+                    }
                 }
-            } else {
-                datasource.expand {
-                  //  print("In \(self.instanceType).expandCollapseButtonTouched return from expand")
-                }
-            }
+            
+        } else {
+            print("In \(self.instanceType).expandCollapseButtonTOuched no datasource")
         }
     }
 }
@@ -198,7 +203,7 @@ extension RVBaseViewController: UISearchBarDelegate {
                 }
             })
         }
-        p("", "0 textDidChange")
+       // p("", "0 textDidChange")
     }
     
     func searchBarCancelButtonClicked(_ searchBar: UISearchBar) {
@@ -219,7 +224,7 @@ extension RVBaseViewController: UISearchBarDelegate {
         //p("", "searchBarCancelButtonClicked")
     }
     func searchBarTextDidEndEditing(_ searchBar: UISearchBar) {
-        p("", "5 searchBarTextDidEndEditing")
+      //  p("", "5 searchBarTextDidEndEditing")
         
     }
 
@@ -243,16 +248,16 @@ extension RVBaseViewController: UISearchBarDelegate {
             }
         }
  */
-        p("", "4 searchBarSearchButtonClicked")
+  //      p("", "4 searchBarSearchButtonClicked")
     }
 
     func searchBarTextDidBeginEditing(_ searchBar: UISearchBar) {
         //searchBar.showsCancelButton = true
-       p("", "1 searchBarTextDidBeginEditing")
+    //   p("", "1 searchBarTextDidBeginEditing")
         
     }
     func searchBarBookmarkButtonClicked(_ searchBar: UISearchBar) {
-        p("", "2 searchBarBookmarkButtonClicked")
+      //  p("", "2 searchBarBookmarkButtonClicked")
         
     }
     func searchBarShouldEndEditing(_ searchBar: UISearchBar) -> Bool {
@@ -262,6 +267,6 @@ extension RVBaseViewController: UISearchBarDelegate {
         return true
     }
     func searchBarResultsListButtonClicked(_ searchBar: UISearchBar) {
-        p("", "3 searchBarResultsListButtonClicked")
+      //  p("", "3 searchBarResultsListButtonClicked")
     }
 }

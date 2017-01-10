@@ -123,6 +123,13 @@ extension RVMainLandingViewController {
     }
     func tableView(_ tableView: UITableView, willDisplayHeaderView view: UIView, forSection section: Int) {
         if let headerCell = view as? RVFirstViewHeaderCell {
+            if section >= 0 && section < manager.sections.count {
+                let datasource = manager.sections[section]
+                headerCell.delegate = self
+                headerCell.configure(model: nil, expand: true, datasource: datasource)
+            }
+
+/*
             let contentView = headerCell.contentView
             for subview in contentView.subviews {
                 if let _ = subview as? RVFirstHeaderContentView {
@@ -138,6 +145,7 @@ extension RVMainLandingViewController {
                 target.section = section
                 target.configure(section: section, expand: true)
             }
+            */
         }
     }
     func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {

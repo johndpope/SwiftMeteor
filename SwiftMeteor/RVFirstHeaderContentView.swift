@@ -9,18 +9,17 @@
 import UIKit
 
 class RVFirstHeaderContentView: UIView {
-    var section: Int = -1
+
     weak var delegate: RVFirstHeaderContentViewDelegate?
     @IBOutlet weak var headerLabel: UILabel!
     @IBOutlet weak var expandCollapseButton: UIButton!
     @IBAction func expandCollapseButtonTouched(_ sender: UIButton) {
         if let delegate = delegate {
-            delegate.expandCollapseButtonTouched(button: sender, view: self)
+            delegate.expandCollapseButtonTouched(button: sender)
         }
     }
-    func configure(section: Int, expand: Bool) {
-        self.section = section
-        setLabelText(label: headerLabel, text: "Section \(section)")
+    func configure(model: RVBaseModel?, expand: Bool, section: Int) {
+        setLabelText(label: headerLabel, text: "Section... \(section)")
         if expand {
             setButtonText(button: expandCollapseButton , text: "Expand")
         } else {
@@ -29,7 +28,7 @@ class RVFirstHeaderContentView: UIView {
     }
 }
 protocol RVFirstHeaderContentViewDelegate: class {
-    func expandCollapseButtonTouched(button: UIButton, view: RVFirstHeaderContentView) -> Void
+    func expandCollapseButtonTouched(button: UIButton) -> Void
 }
 
 extension RVFirstHeaderContentView {

@@ -607,7 +607,8 @@ extension FirstViewController {
     }
 }
 extension FirstViewController: RVFirstHeaderContentViewDelegate{
-    func expandCollapseButtonTouched(button: UIButton, view: RVFirstHeaderContentView) -> Void {
+    func expandCollapseButtonTouched(button: UIButton) -> Void {
+        /*
         print("Header section \(view.section)")
         if view.section >= 0 {
             let datasource =  manager.sections[view.section]
@@ -620,6 +621,7 @@ extension FirstViewController: RVFirstHeaderContentViewDelegate{
                 }
             }
         }
+ */
         print("Expand / Collapse")
     }
 }
@@ -639,6 +641,7 @@ extension FirstViewController: UITableViewDelegate {
     }
     func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
         if let headerCell = tableView.dequeueReusableHeaderFooterView(withIdentifier: RVFirstViewHeaderCell.identifier) as? RVFirstViewHeaderCell {
+            /*
             if let content = loadHeaderFromNib() {
                 content.frame = headerCell.contentView.bounds
                 content.autoresizingMask = [.flexibleWidth, .flexibleHeight]
@@ -647,7 +650,7 @@ extension FirstViewController: UITableViewDelegate {
                 content.section = section
                 content.configure(section: section, expand: true)
             }
- 
+ */
             return headerCell
         } else {
             let view = UIView()
