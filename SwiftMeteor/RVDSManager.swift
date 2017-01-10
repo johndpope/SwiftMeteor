@@ -59,10 +59,44 @@ class RVDSManager {
         }
         return 0
     }
+    func collapseDatasource(datasource: RVBaseDataSource, callback: @escaping() -> Void) {
+        let sectionNumber = section(datasource: datasource)
+        if sectionNumber >= 0 {
+            if !datasource.collapsed {
+                datasource.collapse {
+                    callback()
+                    return
+                }
+            } else {
+                callback()
+                return
+            }
+        } else {
+            callback()
+            return
+        }
+    }
+    func expandDatasource(datasource: RVBaseDataSource, callback: @escaping() -> Void) {
+        let sectionNumber = section(datasource: datasource)
+        if sectionNumber >= 0 {
+            if datasource.collapsed {
+                datasource.expand {
+                    callback()
+                    return
+                }
+            } else {
+                callback()
+                return
+            }
+
+        } else {
+            callback()
+            return
+        }
+    }
     func startDatasource(datasource: RVBaseDataSource, query: RVQuery, callback: @escaping(_ error: RVError?) -> Void) {
         let sectionNumber = section(datasource: datasource)
         if sectionNumber >= 0 {
-            let datasource = self.sections[sectionNumber]
             datasource.start(query: query, callback: { (error) in
                 callback(error)
             })
@@ -71,11 +105,29 @@ class RVDSManager {
             callback(rvError)
         }
     }
+    func stopAndResetDatasource(datasource: RVBaseDataSource, callback: @escaping(_ error: RVError?)-> Void ){
+        let sectionNumber = section(datasource: datasource)
+        let completionHandler = callback
+        if sectionNumber >= 0 {
+            datasource.stop(callback: { (error) in
+                if let error = error {
+                    error.append(message: "In \(self.instanceType).stopAndResetDatasource got error stopping")
+                    completionHandler(error)
+                } else {
+                    datasource.reset {
+                        callback(nil)
+                    }
+                }
+            })
+        } else {
+            let rvError = RVError(message: "In \(self.instanceType).stopDatasource datasource not found")
+            callback(rvError)
+        }
+    }
     func stopDatasource(datasource: RVBaseDataSource, callback: @escaping(_ error: RVError?)-> Void ){
         let sectionNumber = section(datasource: datasource)
         let completionHandler = callback
         if sectionNumber >= 0 {
-            let datasource = self.sections[sectionNumber]
             datasource.stop(callback: { (error) in
                 completionHandler(error)
             })

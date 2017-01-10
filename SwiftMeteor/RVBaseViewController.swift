@@ -11,6 +11,7 @@ import UIKit
 class RVBaseViewController: UIViewController {
     var instanceType: String { get { return String(describing: type(of: self)) } }
     var stack = [RVBaseModel]()
+    var searching: Bool = false
     func p(_ message: String, _ method: String = "") {
         print("In \(instanceType) \(method) \(message)")
     }
@@ -104,7 +105,21 @@ extension RVBaseViewController: UITableViewDataSource {
 
 }
 
-
+extension RVBaseViewController: RVFirstHeaderContentViewDelegate{
+    func expandCollapseButtonTouched(button: UIButton, view: RVFirstHeaderContentView) -> Void {
+        if view.section >= 0 {
+            let datasource =  manager.sections[view.section]
+            if !datasource.collapsed { datasource.collapse {
+                //print("In \(self.instanceType).expandCollapseButtonTouched return from collapse")
+                }
+            } else {
+                datasource.expand {
+                  //  print("In \(self.instanceType).expandCollapseButtonTouched return from expand")
+                }
+            }
+        }
+    }
+}
 extension RVBaseViewController: UISearchBarDelegate {
     func showSearchBar() {
         self.leftBarButtonItems = navigationItem.leftBarButtonItems
@@ -147,12 +162,43 @@ extension RVBaseViewController: UISearchBarDelegate {
                 }
             }
         } else {
-            print("In searchBar shouldChangeTextIn Range text is: [\(text)], count is \(text.characters.count)")
+          //  print("In searchBar shouldChangeTextIn Range text is: [\(text)], count is \(text.characters.count)")
         }
         return true
     }
     func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
-        p("", "textDidChange")
+        if searchText.characters.count >= 0 {
+            if searching { return }
+            searching = true
+            if !mainDatasource.collapsed {
+                mainDatasource.collapse {}
+            }
+            let query = filterQuery(text: searchText)
+            var querying = true
+           // print("In \(self.instanceType).textDidChange, about to search")
+            manager.startDatasource(datasource: filterDatasource, query: query, callback: { (error) in
+                querying = false
+                if let error = error {
+                    error.append(message: "In \(self.instanceType).textDidChange, got error")
+                    error.printError()
+                }
+                self.searching = false
+            })
+            Timer.scheduledTimer(withTimeInterval: 2.0, repeats: false, block: { (timer) in
+                if querying {
+                    querying = false
+                    print("In \(self.instanceType).textDidChange, query not returned after 2 seconds")
+                    self.manager.stopDatasource(datasource: self.filterDatasource, callback: { (error) in
+                        if let error = error {
+                            error.append(message: "In \(self.instanceType).textDidChange callback got error")
+                            error.printError()
+                        }
+                        self.searching = false
+                    })
+                }
+            })
+        }
+        p("", "0 textDidChange")
     }
     
     func searchBarCancelButtonClicked(_ searchBar: UISearchBar) {
@@ -160,14 +206,25 @@ extension RVBaseViewController: UISearchBarDelegate {
         searchBar.text = ""
         searchBar.resignFirstResponder()
         removeSearchBar()
-        p("", "searchBarCancelButtonClicked")
+        manager.stopAndResetDatasource(datasource: filterDatasource) { (error ) in
+            if let error = error {
+                error.append(message: "searchBarCancelButtonClicked. stop filterDatasource, got error")
+            }
+        }
+        if mainDatasource.collapsed {
+            mainDatasource.expand {
+                
+            }
+        }
+        //p("", "searchBarCancelButtonClicked")
     }
     func searchBarTextDidEndEditing(_ searchBar: UISearchBar) {
-        p("", "searchBarTextDidEndEditing")
+        p("", "5 searchBarTextDidEndEditing")
         
     }
 
     func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
+        /*
         if let text = searchBar.text {
             if text.characters.count >= 2 {
                 if !mainDatasource.collapsed {
@@ -185,16 +242,17 @@ extension RVBaseViewController: UISearchBarDelegate {
                 
             }
         }
-        p("", "searchBarSearchButtonClicked")
+ */
+        p("", "4 searchBarSearchButtonClicked")
     }
 
     func searchBarTextDidBeginEditing(_ searchBar: UISearchBar) {
         //searchBar.showsCancelButton = true
-        p("", "searchBarTextDidBeginEditing")
+       p("", "1 searchBarTextDidBeginEditing")
         
     }
     func searchBarBookmarkButtonClicked(_ searchBar: UISearchBar) {
-        p("", "searchBarBookmarkButtonClicked")
+        p("", "2 searchBarBookmarkButtonClicked")
         
     }
     func searchBarShouldEndEditing(_ searchBar: UISearchBar) -> Bool {
@@ -204,6 +262,6 @@ extension RVBaseViewController: UISearchBarDelegate {
         return true
     }
     func searchBarResultsListButtonClicked(_ searchBar: UISearchBar) {
-        p("", "searchBarResultsListButtonClicked")
+        p("", "3 searchBarResultsListButtonClicked")
     }
 }
