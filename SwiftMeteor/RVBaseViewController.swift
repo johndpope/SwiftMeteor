@@ -11,10 +11,10 @@ import UIKit
 extension RVBaseViewController: UISearchResultsUpdating {
     // Called when the search bar's text or scope has changed or when the search bar becomes first responder.
     public func updateSearchResults(for searchController: UISearchController) {
-        updateSearchResultsHelper(searchBar: searchController.searchBar)
-
+        updateSearchResultsHelper(searchController: searchController)
     }
-    func updateSearchResultsHelper(searchBar: UISearchBar) {
+    func updateSearchResultsHelper(searchController: UISearchController) {
+        let searchBar = searchController.searchBar
         let scopeIndex = getScopeIndex(searchBar: searchBar)
         if scopeIndex >= 0 && scopeIndex < scopes.count {
             if let (title, _) = scopes[scopeIndex].first {
@@ -32,7 +32,7 @@ extension RVBaseViewController: UISearchResultsUpdating {
             operation.cancelled = true
             self.operation = RVOperation(active: true, name: searchText)
             operation = self.operation
-            self.runInner2(operation: operation, searchText: searchText, scopeIndex: scopeIndex)
+            self.runInner2(searchController: searchController, operation: operation, searchText: searchText, scopeIndex: scopeIndex)
         } else {
             if operation.cancelled {
                 operation = RVOperation(active: true, name: searchText)
@@ -40,10 +40,10 @@ extension RVBaseViewController: UISearchResultsUpdating {
             }
             operation.name = searchText
             operation.active = true
-            self.runInner2(operation: operation, searchText: searchText, scopeIndex: scopeIndex)
+            self.runInner2(searchController: searchController, operation: operation, searchText: searchText, scopeIndex: scopeIndex)
         }
     }
-    func runInner2(operation: RVOperation, searchText: String, scopeIndex: Int) {
+    func runInner2(searchController: UISearchController, operation: RVOperation, searchText: String, scopeIndex: Int) {
         DispatchQueue.main.async {
             self.manager.stopAndResetDatasource(datasource: self.filterDatasource, callback: { (error) in
                 if let error = error {
@@ -53,18 +53,36 @@ extension RVBaseViewController: UISearchResultsUpdating {
                     let query = self.filterQuery(text: searchText, scopeIndex: scopeIndex)
                     if operation.sameOperationAndNotCancelled(operation: self.operation) {
                         if !self.mainDatasource.collapsed { self.mainDatasource.collapse {} }
-                        self.manager.startDatasource(datasource: self.filterDatasource, query: query, callback: { (error) in
-                            //self.p("After startDatasource \(operation.name)")
-                            if let error = error {
-                                error.append(message: "In \(self.instanceType).textDidChange, got error")
-                                error.printError()
+                        if searchController.isActive {
+                            self.manager.startDatasource(datasource: self.filterDatasource, query: query, callback: { (error) in
+                                //self.p("After startDatasource \(operation.name)")
+                                if let error = error {
+                                    error.append(message: "In \(self.instanceType).textDidChange, got error")
+                                    error.printError()
+                                }
+                                if operation.sameOperation(operation: self.operation) {
+                                    operation.cancelled = true
+                                    self.operation = RVOperation(active: false)
+                                    operation.active = false
+                                }
+                            })
+                        } else {
+
+                            if let tableView = self.dsScrollView as? UITableView {
+                                let indexPath = IndexPath(row: 0, section: 0)
+                                if self.mainDatasource.collapsed {
+                                    self.mainDatasource.expand {
+                                        tableView.scrollToRow(at: indexPath, at: UITableViewScrollPosition.top, animated: true)
+                                    }
+                                } else {
+
+                                    tableView.scrollToRow(at: indexPath, at: UITableViewScrollPosition.top, animated: true)
+                                }
+
+                              
                             }
-                            if operation.sameOperation(operation: self.operation) {
-                                operation.cancelled = true
-                                self.operation = RVOperation(active: false)
-                                operation.active = false
-                            }
-                        })
+                        }
+
                     } else {
                         self.p("Same operation and not cancelled \(operation.name) --------")
                     }
@@ -101,8 +119,6 @@ class RVBaseViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        
-  //      configureSearchBar()
         if let scrollView = self.dsScrollView {
             self.manager = RVDSManager(scrollView: scrollView)
             if let tableView = scrollView as? UITableView {
@@ -135,12 +151,13 @@ class RVBaseViewController: UIViewController {
                 
                 definesPresentationContext = true
                 tableView.tableHeaderView = searchController.searchBar
+                manager.addSection(section: mainDatasource)
+                manager.addSection(section: filterDatasource)
             }
         } else {
             print("In \(instanceType).viewDidLoad, scrollView not set")
         }
-        manager.addSection(section: mainDatasource)
-        manager.addSection(section: filterDatasource)
+
     }
     override func viewWillAppear(_ animated: Bool) {
 
@@ -160,7 +177,7 @@ class RVBaseViewController: UIViewController {
     var leftBarButtonItems: [UIBarButtonItem]? =  nil
     var rightBarButtonItems: [UIBarButtonItem]? = nil
     var navigationItemTitleView: UIView? = nil
-    var searchBar = UISearchBar()
+
     let backspace = String(describing: UnicodeScalar(8))
     let tab = "\t"
     let sparklingHeart = "\u{1F496}"
@@ -217,7 +234,7 @@ extension RVBaseViewController: UITableViewDelegate {
 }
 extension RVBaseViewController: UITableViewDataSource {
     func numberOfSections(in tableView: UITableView) -> Int {
-        //  print("In \(self.classForCoder).numberOfSections... \(manager.sections.count)")
+        //print("In \(self.classForCoder).numberOfSections... \(manager.sections.count)")
         let count = manager.sections.count
         if count == 0 {
             let messageLabel = UILabel(frame: CGRect(x: 0, y: 0, width: self.view.bounds.size.width, height: self.view.bounds.size.height))
@@ -310,13 +327,13 @@ extension RVBaseViewController: RVFirstViewHeaderCellDelegate {
     }
 }
 extension RVBaseViewController: UISearchBarDelegate {
-    func showSearchBar() {
+    func showSearchBar(searchBar: UISearchBar) {
         self.leftBarButtonItems = navigationItem.leftBarButtonItems
         self.rightBarButtonItems = navigationItem.rightBarButtonItems
         navigationItem.setLeftBarButtonItems(nil, animated: true)
         navigationItem.setRightBarButtonItems(nil, animated: true)
         self.navigationItemTitleView = navigationItem.titleView
-        navigationItem.titleView = self.searchBar
+        navigationItem.titleView = searchBar
         navigationItem.titleView?.sizeToFit()
     }
     func removeSearchBar() {
@@ -324,7 +341,7 @@ extension RVBaseViewController: UISearchBarDelegate {
         navigationItem.setLeftBarButtonItems(self.leftBarButtonItems, animated: true)
         navigationItem.setRightBarButtonItems(self.rightBarButtonItems, animated: true)
     }
-    func configureSearchBar() {
+    func configureSearchBar(searchBar: UISearchBar) {
         searchBar.isTranslucent = false
         searchBar.searchBarStyle = UISearchBarStyle.prominent
     //    searchBar.showsSearchResultsButton = true
@@ -343,6 +360,7 @@ extension RVBaseViewController: UISearchBarDelegate {
     
     }
     func searchBar(_ searchBar: UISearchBar, selectedScopeButtonIndexDidChange selectedScope: Int) {
+        p("Scope button did change index")
         searchBar.text = ""
     }
     /*
@@ -424,7 +442,9 @@ extension RVBaseViewController: UISearchBarDelegate {
         searchBar.resignFirstResponder()
         removeSearchBar()
  */
-        searchBar.selectedScopeButtonIndex = 0
+ //       searchBar.selectedScopeButtonIndex = 0
+        print("In RVBaseViewCONtroller).searchBarCancelButtonClicked  BASE 0 ")
+        /*
         manager.stopAndResetDatasource(datasource: filterDatasource) { (error ) in
             if let error = error {
                 error.append(message: "searchBarCancelButtonClicked. stop filterDatasource, got error")
@@ -432,10 +452,11 @@ extension RVBaseViewController: UISearchBarDelegate {
         }
         if mainDatasource.collapsed {
             mainDatasource.expand {
-                
+            self.p("Expanded Main Datasource")
             }
         }
-        p("", "searchBarCancelButtonClicked")
+ */
+        p("", "RVBaseViewController searchBarCancelButtonClicked BASE1")
     }
     
     func searchBarTextDidEndEditing(_ searchBar: UISearchBar) {

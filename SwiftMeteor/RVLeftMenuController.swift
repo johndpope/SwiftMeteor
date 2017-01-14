@@ -27,7 +27,7 @@ class RVLeftMenuController: RVBaseViewController {
 
     ]
     override func viewDidLoad() {
-        self.dsScrollView = tableView
+        //self.dsScrollView = tableView
         super.viewDidLoad()
     }
     

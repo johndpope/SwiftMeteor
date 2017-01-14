@@ -40,7 +40,6 @@
 		2877761A1E21D19C00902CF7 /* RVSeed.swift in Sources */ = {isa = PBXBuildFile; fileRef = 287776191E21D19C00902CF7 /* RVSeed.swift */; };
 		287B74701E1C2EE900900864 /* RVFirstViewHeaderCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 287B746F1E1C2EE900900864 /* RVFirstViewHeaderCell.swift */; };
 		288961091DEDED2C00FC34DB /* RVAWSDirect.swift in Sources */ = {isa = PBXBuildFile; fileRef = 288961081DEDED2C00FC34DB /* RVAWSDirect.swift */; };
-		2889610C1DEDF22F00FC34DB /* ranch.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 2889610B1DEDF22F00FC34DB /* ranch.jpg */; };
 		288E97DA1E22B59400753067 /* RVSwiftDDP.swift in Sources */ = {isa = PBXBuildFile; fileRef = 288E97D91E22B59400753067 /* RVSwiftDDP.swift */; };
 		288E97DC1E22D07D00753067 /* RVSpecial.swift in Sources */ = {isa = PBXBuildFile; fileRef = 288E97DB1E22D07D00753067 /* RVSpecial.swift */; };
 		28928CD11E18BE09003538B8 /* RVBaseDataSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 28928CD01E18BE09003538B8 /* RVBaseDataSource.swift */; };
@@ -122,7 +121,6 @@
 		287776191E21D19C00902CF7 /* RVSeed.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RVSeed.swift; sourceTree = "<group>"; };
 		287B746F1E1C2EE900900864 /* RVFirstViewHeaderCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RVFirstViewHeaderCell.swift; sourceTree = "<group>"; };
 		288961081DEDED2C00FC34DB /* RVAWSDirect.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RVAWSDirect.swift; sourceTree = "<group>"; };
-		2889610B1DEDF22F00FC34DB /* ranch.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; name = ranch.jpg; path = ../../../Assets/ranch.jpg; sourceTree = "<group>"; };
 		288E97D91E22B59400753067 /* RVSwiftDDP.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RVSwiftDDP.swift; sourceTree = "<group>"; };
 		288E97DB1E22D07D00753067 /* RVSpecial.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RVSpecial.swift; sourceTree = "<group>"; };
 		28928CD01E18BE09003538B8 /* RVBaseDataSource.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RVBaseDataSource.swift; sourceTree = "<group>"; };
@@ -264,7 +262,6 @@
 		2889610A1DEDF21700FC34DB /* Assets */ = {
 			isa = PBXGroup;
 			children = (
-				2889610B1DEDF22F00FC34DB /* ranch.jpg */,
 			);
 			name = Assets;
 			sourceTree = "<group>";
@@ -521,7 +518,6 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				2889610C1DEDF22F00FC34DB /* ranch.jpg in Resources */,
 				28F53E791DEB5F71009641F0 /* LaunchScreen.storyboard in Resources */,
 				2802252C1E1C5C6F00D5FB60 /* RVFirstHeaderContentView.xib in Resources */,
 				28F53E761DEB5F71009641F0 /* Assets.xcassets in Resources */,

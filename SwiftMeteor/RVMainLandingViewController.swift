@@ -10,23 +10,14 @@ import UIKit
 import SwiftDDP
 extension RVMainLandingViewController {
     override func updateSearchResults(for searchController: UISearchController) {
+        p("updateSearchResults")
         if let segmentedView  = self.segmentedView {
             if !segmentedView.isHidden {
-                self.hideSegementedView()
+               // self.hideSegementedView()
             }
         }
         super.updateSearchResults(for: searchController)
     }
-    /*
-    override func getScopeIndex(searchBar: UISearchBar) -> Int {
-        var scopeIndex = -1
-        let selectedIndex = self.segmentedControl.selectedSegmentIndex
-        if selectedIndex >= 0 && selectedIndex < scopes.count {
-            scopeIndex = selectedIndex
-        }
-        return scopeIndex
-    }
- */
 }
 class RVMainLandingViewController: RVBaseViewController {
     
@@ -59,8 +50,8 @@ class RVMainLandingViewController: RVBaseViewController {
         RVViewDeck.sharedInstance.toggleSide(side: RVViewDeck.Side.left)
     }
     @IBAction func searchButtonTouched(_ sender: UIBarButtonItem) {
-        showSearchBar()
-        segmentedView.isHidden = false
+        p("searchBarButtonTouche ---------------------------d")
+        //segmentedView.isHidden = false
     }
     override func viewDidLoad() {
         self.dsScrollView = tableView
@@ -79,11 +70,12 @@ class RVMainLandingViewController: RVBaseViewController {
     }
     func showSegmentedView() {
         if let segmentedView = self.segmentedView {
+            
             segmentedView.isHidden = false
             if let constraint = tableViewTopConstraint {
                 constraint.constant = constraint.constant + topConstraintDelta
-            //    tableViewTopConstraintConstant = constraint.constant
-             //   constraint.constant = constraint.constant + topConstraintDelta
+                //    tableViewTopConstraintConstant = constraint.constant
+            //    //   constraint.constant = constraint.constant + topConstraintDelta
             }
         }
     }
@@ -105,7 +97,7 @@ class RVMainLandingViewController: RVBaseViewController {
             print("In \(self.classForCoder).viewWillAppear, no username")
             //loadup()
         }
-        showSegmentedView()
+       // showSegmentedView()
     }
     func loadup() {
         RVSeed.createRootTask { (root, error) in
@@ -185,8 +177,11 @@ class RVMainLandingViewController: RVBaseViewController {
 
 extension RVMainLandingViewController {
     override func searchBarCancelButtonClicked(_ searchBar: UISearchBar) {
+        p("SearchBanCancelButtonClicked  MAIN 0")
         super.searchBarCancelButtonClicked(searchBar)
-        segmentedView.isHidden = true
+     //   showSegmentedView()
+      //  segmentedView.isHidden = true
+                p("SearchBanCancelButtonClicked  MAIN 1")
     }
 
 }
