@@ -17,6 +17,16 @@ extension RVMainLandingViewController {
         }
         super.updateSearchResults(for: searchController)
     }
+    /*
+    override func getScopeIndex(searchBar: UISearchBar) -> Int {
+        var scopeIndex = -1
+        let selectedIndex = self.segmentedControl.selectedSegmentIndex
+        if selectedIndex >= 0 && selectedIndex < scopes.count {
+            scopeIndex = selectedIndex
+        }
+        return scopeIndex
+    }
+ */
 }
 class RVMainLandingViewController: RVBaseViewController {
     
@@ -26,21 +36,23 @@ class RVMainLandingViewController: RVBaseViewController {
     @IBOutlet weak var segmentedViewTopConstraint: NSLayoutConstraint!
     @IBOutlet weak var tableViewTopConstraint: NSLayoutConstraint!
     @IBOutlet weak var segmentedControl: UISegmentedControl!
-    var scopes: [[String: RVKeys]] = [["Handle": RVKeys.handle], ["Title": RVKeys.title]  , ["Comment": RVKeys.comment]]
+
 
     let topConstraintDelta: CGFloat = 30.0
     var segmentedViewTopConstraintConstant:CGFloat = 0.0
     var tableViewTopConstraintConstant: CGFloat = 0.0
     @IBAction func segmentedControlValueChanged(_ sender: UISegmentedControl) {
+        /*
         self.searchBar.text = ""
         manager.stopAndResetDatasource(datasource: filterDatasource) { (error) in
             if let error = error {
                 error.printError()
             } else {
                 let searchText =  self.searchBar.text != nil ? self.searchBar.text! : ""
-                self.runSearch(searchText: searchText)
+                self.runSearch(searchText: searchText, searchBar: self.searchBar )
             }
         }
+ */
     }
     
     @IBAction func doneButtonTouched(_ sender: UIBarButtonItem) {
@@ -53,7 +65,7 @@ class RVMainLandingViewController: RVBaseViewController {
     override func viewDidLoad() {
         self.dsScrollView = tableView
         mainDatasource = RVTaskDatasource()
-        filterDatasource = RVTaskDatasource()
+        filterDatasource = RVTaskDatasource(maxArraySize: 500, filterMode: true)
         super.viewDidLoad()
         tableView.register(RVFirstViewHeaderCell.self, forHeaderFooterViewReuseIdentifier: RVFirstViewHeaderCell.identifier)
         segmentedControl.removeAllSegments()
@@ -122,14 +134,14 @@ class RVMainLandingViewController: RVBaseViewController {
     func userDidLogin() {
         print("The user just signed in!")
     }
-    override func filterQuery(text: String ) -> RVQuery {
+    override func filterQuery(text: String, scopeIndex: Int ) -> RVQuery {
         let query = filterDatasource.basicQuery().duplicate()
         query.removeAllSortTerms()
         if let top = self.stack.last {
             query.addAnd(term: RVKeys.parentId, value: top._id as AnyObject, comparison: .eq)
             query.addAnd(term: RVKeys.parentModelType, value: top.modelType.rawValue as AnyObject, comparison: .eq )
         }
-        let scopeIndex = segmentedControl.selectedSegmentIndex
+        //let scopeIndex = segmentedControl.selectedSegmentIndex
         if scopeIndex >= 0 && scopeIndex < scopes.count {
             if let (_, field) = scopes[scopeIndex].first {
                // print("In \(self.classForCoder).filterQuery, scope is \(field.rawValue)")
@@ -147,6 +159,9 @@ class RVMainLandingViewController: RVBaseViewController {
                     query.addSort(field: .comment, order: .ascending)
                 }
             }
+        } else {
+            query.fixedTerm = RVQueryItem(term: RVKeys.handle, value: text.lowercased() as AnyObject, comparison: .regex) // necessary for keeping filter equal or gt filter term
+            query.addSort(field: .handle, order: .ascending)
         }
         return query
     }
