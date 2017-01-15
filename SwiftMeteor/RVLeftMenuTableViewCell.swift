@@ -13,7 +13,7 @@ class RVLeftMenuTableViewCell: RVBaseTableViewCell {
     let _menuItem: [RVLeftMenuController.MenuKeys: String] = [RVLeftMenuController.MenuKeys.name: "Nothing", .displayText: "No display text"]
     var menuItem: [RVLeftMenuController.MenuKeys: String] = [RVLeftMenuController.MenuKeys.name: "Nothing"] {
         didSet {
-            
+            configure()
         }
     }
     

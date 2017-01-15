@@ -13,7 +13,7 @@ class RVLeftMenuController: RVBaseViewController {
         case name = "name"
         case displayText = "displayText"
     }
-    @IBOutlet weak var tableView: UITableView!
+  //  @IBOutlet weak var tableView: UITableView!
     @IBAction func menuButtonTouched(_ sender: UIBarButtonItem) {
         RVViewDeck.sharedInstance.toggleSide(side: .center)
     }
@@ -28,6 +28,7 @@ class RVLeftMenuController: RVBaseViewController {
     ]
     override func viewDidLoad() {
         //self.dsScrollView = tableView
+        self.dontUseManager = true
         super.viewDidLoad()
     }
     

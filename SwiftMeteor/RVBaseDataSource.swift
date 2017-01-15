@@ -926,6 +926,10 @@ class RVBaseDataSource {
         self.operations.addOperation(operation: RVDSOperation(name: .backOperation))
     }
     func expand(callback: @escaping ()-> Void) {
+        if !self.collapsed {
+            callback()
+            return 
+        }
         DispatchQueue.main.async {
             if self.collapseOrExpandOperationActive {
                 if self.operations.expandOperation.active {
@@ -959,7 +963,18 @@ class RVBaseDataSource {
         self.operations.addOperation(operation: RVDSOperation(name: .expandOperation))
         callback()
     }
+    func toggle(callback: @escaping() -> Void ) {
+        if self.collapsed {
+            self.expand(callback: callback)
+        } else {
+            self.collapse(callback: callback)
+        }
+    }
     func collapse(callback: @escaping ()-> Void) {
+        if self.collapsed {
+            callback()
+            return
+        }
         DispatchQueue.main.async {
             if self.collapseOrExpandOperationActive {
                 if self.operations.collapseOperation.active {
