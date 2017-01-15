@@ -20,7 +20,8 @@ class RVViewDeck: NSObject {
     static let sharedInstance: RVViewDeck = {RVViewDeck() }()
     static let mainStorybardName: String = "Main"
     static let leftControllerIdentifier: String =  RVLeftMenuNavController.identifier
-    static let rightControllerIdentifier: String = RVRightMenuViewController.identifier
+  //  static let rightControllerIdentifier: String = RVRightMenuViewController.identifier
+    static let rightControllerIdentifier: String = RVRightNavigationController.identiifer
     //static let centerControllerIdentifier: String = RVMainTabMenuViewController.identifier
     static let centerControllerIdentifier: String = RVMainLandingNavigationController.identifier
     
