@@ -16,6 +16,7 @@ class RVBaseViewController: UIViewController {
     var stack = [RVBaseModel]()
     var operation: RVOperation = RVOperation(active: false)
     var dontUseManager: Bool = false
+    var showTopView: Bool = true
     func p(_ message: String, _ method: String = "") { print("In \(instanceType) \(method) \(message)") }
     @IBOutlet weak var tableView: UITableView!
     @IBOutlet weak var collectionView: UICollectionView!

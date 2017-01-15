@@ -23,18 +23,16 @@ extension RVMainLandingViewController {
 class RVMainLandingViewController: RVBaseViewController {
     
     @IBOutlet weak var tabViewHeightConstraint: NSLayoutConstraint!
-   // @IBOutlet weak var tableView: UITableView!
     @IBOutlet weak var segmentView: UIView!
     @IBOutlet weak var segmentedView: UIView!
- //   @IBOutlet weak var segmentedViewTopConstraint: NSLayoutConstraint!
     @IBOutlet weak var tableViewTopConstraint: NSLayoutConstraint!
     @IBOutlet weak var segmentedControl: UISegmentedControl!
     override func provideMainDatasource() -> RVBaseDataSource{ return RVTaskDatasource() }
     override func provideFilteredDatasource() -> RVBaseDataSource { return RVTaskDatasource(maxArraySize: 500, filterMode: true) }
 
-    let topConstraintDelta: CGFloat = 30.0
+//    let topConstraintDelta: CGFloat = 30.0
     var segmentedViewTopConstraintConstant:CGFloat = 0.0
-    var tableViewTopConstraintConstant: CGFloat = 0.0
+//    var tableViewTopConstraintConstant: CGFloat = 0.0
     @IBAction func segmentedControlValueChanged(_ sender: UISegmentedControl) {
         p("segmentedControlValueChanged", "to index: \(sender.selectedSegmentIndex)")
     }
@@ -56,9 +54,10 @@ class RVMainLandingViewController: RVBaseViewController {
         }
         
         setupTabSegmentView()
-        showSegmentedView()
+       // showSegmentedView()
     }
     func setupTabSegmentView() {
+        if !showTopView { return }
         var index = 0
         segmentedControl.removeAllSegments()
         for segment in [["Elmer": RVKeys.handle], ["Goober": RVKeys.title]  , ["Something": RVKeys.comment]] {
@@ -69,6 +68,7 @@ class RVMainLandingViewController: RVBaseViewController {
         segmentedControl.selectedSegmentIndex = 0
     }
     func showSegmentedView() {
+        if !showTopView { return }
         if let segmentedView = self.segmentedView {
             segmentedView.isHidden = false
             if let constraint = tableViewTopConstraint {
@@ -79,6 +79,7 @@ class RVMainLandingViewController: RVBaseViewController {
         }
     }
     func hideSegmentedView() {
+        if !showTopView { return }
         if let segmentedView = self.segmentView {
             segmentedView.isHidden = true
             if let constraint = tableViewTopConstraint {
@@ -95,7 +96,7 @@ class RVMainLandingViewController: RVBaseViewController {
             print("In \(self.classForCoder).viewWillAppear, no username")
             //loadup()
         }
-       // showSegmentedView()
+       showSegmentedView()
     }
     func loadup() {
         RVSeed.createRootTask { (root, error) in
@@ -158,18 +159,7 @@ class RVMainLandingViewController: RVBaseViewController {
         }
         return query
     }
-    func filterQuery0(text: String ) -> RVQuery {
-        let query = filterDatasource.basicQuery().duplicate()
-        query.setTextSearch(value: text.lowercased())
-        if let top = self.stack.last {
-            query.addAnd(term: RVKeys.parentId, value: top._id as AnyObject, comparison: .eq)
-            query.addAnd(term: RVKeys.parentModelType, value: top.modelType.rawValue as AnyObject, comparison: .eq )
-        }
-        query.removeAllSortTerms()
-        query.limit = 100
-      //  query.addSort(field: .handleLowercase, order: .ascending)
-        return query
-    }
+
     override func userDidLogin(notification: NSNotification) {
         print("In \(self.instanceType).userDidLogin notification target")
         loadup()
