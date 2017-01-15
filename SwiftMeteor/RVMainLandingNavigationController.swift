@@ -8,6 +8,6 @@
 
 import UIKit
 
-class RVMainLandingNavigationController: UINavigationController {
+class RVMainLandingNavigationController: RVBaseNavigationController {
     static let identifier = "RVMainLandingNavigationController"
 }

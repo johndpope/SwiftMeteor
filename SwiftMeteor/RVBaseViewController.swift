@@ -93,9 +93,9 @@ class RVBaseViewController: UIViewController {
                // searchBar.isTranslucent = false
               //  searchBar.backgroundImage = UIImage()
                // searchBar.showsCancelButton = true
-                UISearchBar.appearance().barTintColor = UIColor.orange
-                UISearchBar.appearance().tintColor = UIColor.blue
-                UITextField.appearance(whenContainedInInstancesOf: [UISearchBar.self]).tintColor = UIColor.candyGreen()
+              //  UISearchBar.appearance().barTintColor = UIColor.orange
+              //  UISearchBar.appearance().tintColor = UIColor.blue
+              //  UITextField.appearance(whenContainedInInstancesOf: [UISearchBar.self]).tintColor = UIColor.candyGreen()
             
                 
                 

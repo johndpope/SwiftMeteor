@@ -241,7 +241,7 @@
             </objects>
             <point key="canvasLocation" x="100" y="-681.40929535232385"/>
         </scene>
-        <!--Main-->
+        <!--PVSafe-->
         <scene sceneID="D7x-If-IWd">
             <objects>
                 <viewController id="26z-cv-GPL" customClass="RVMainLandingViewController" customModule="SwiftMeteor" customModuleProvider="target" sceneMemberID="viewController">
@@ -366,13 +366,15 @@
                             <constraint firstItem="IwX-Tn-Dc7" firstAttribute="leading" secondItem="e22-yf-b5W" secondAttribute="leading" id="qLE-ua-QlM"/>
                         </constraints>
                     </view>
-                    <navigationItem key="navigationItem" title="Main" id="TS9-g3-MCv">
+                    <navigationItem key="navigationItem" title="PVSafe" id="TS9-g3-MCv">
                         <barButtonItem key="leftBarButtonItem" title="Menu" id="2Cn-Di-vMq">
+                            <color key="tintColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                             <connections>
                                 <action selector="doneButtonTouched:" destination="26z-cv-GPL" id="8xX-P0-t4I"/>
                             </connections>
                         </barButtonItem>
-                        <barButtonItem key="rightBarButtonItem" systemItem="search" id="EIk-LZ-iKD">
+                        <barButtonItem key="rightBarButtonItem" systemItem="add" id="EIk-LZ-iKD">
+                            <color key="tintColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                             <connections>
                                 <action selector="searchButtonTouched:" destination="26z-cv-GPL" id="ccR-3S-AdT"/>
                             </connections>
@@ -491,9 +493,10 @@
                     <toolbarItems/>
                     <simulatedStatusBarMetrics key="simulatedStatusBarMetrics" statusBarStyle="lightContent"/>
                     <simulatedNavigationBarMetrics key="simulatedTopBarMetrics" translucent="NO"/>
-                    <navigationBar key="navigationBar" contentMode="scaleToFill" translucent="NO" id="jfi-wf-cGW">
+                    <navigationBar key="navigationBar" contentMode="scaleToFill" misplaced="YES" barStyle="black" translucent="NO" id="jfi-wf-cGW">
                         <rect key="frame" x="0.0" y="0.0" width="375" height="44"/>
                         <autoresizingMask key="autoresizingMask"/>
+                        <color key="barTintColor" red="0.20392156859999999" green="0.7843137255" blue="0.44705882349999998" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                     </navigationBar>
                     <nil name="viewControllers"/>
                     <connections>
