@@ -11,10 +11,10 @@ import SwiftDDP
 extension RVMainLandingViewController {
     override func updateSearchResults(for searchController: UISearchController) {
         p("updateSearchResults")
-        if let segmentedView  = self.segmentedView {
-            if searchController.isActive && (!segmentedView.isHidden) {
+        if let topView  = self.topView {
+            if searchController.isActive && (!topView.isHidden) {
                 p("Hidding segmented view")
-                self.hideSegmentedView()
+                self.hideTopView()
             }
         }
         super.updateSearchResults(for: searchController)
@@ -22,14 +22,14 @@ extension RVMainLandingViewController {
 }
 class RVMainLandingViewController: RVBaseViewController {
     
-    @IBOutlet weak var tabViewHeightConstraint: NSLayoutConstraint!
-    @IBOutlet weak var segmentView: UIView!
-    @IBOutlet weak var segmentedView: UIView!
-    @IBOutlet weak var tableViewTopConstraint: NSLayoutConstraint!
+//    @IBOutlet weak var tabViewHeightConstraint: NSLayoutConstraint!
+
+//    @IBOutlet weak var topViewHeightConstraint: NSLayoutConstraint!
+//    @IBOutlet weak var segmentedView: UIView!
     @IBOutlet weak var segmentedControl: UISegmentedControl!
     override func provideMainDatasource() -> RVBaseDataSource{ return RVTaskDatasource() }
     override func provideFilteredDatasource() -> RVBaseDataSource { return RVTaskDatasource(maxArraySize: 500, filterMode: true) }
-    var segmentedViewTopConstraintConstant:CGFloat = 0.0
+
 
     @IBAction func segmentedControlValueChanged(_ sender: UISegmentedControl) {
         p("segmentedControlValueChanged", "to index: \(sender.selectedSegmentIndex)")
@@ -46,43 +46,21 @@ class RVMainLandingViewController: RVBaseViewController {
         if let tableView = self.tableView {
             tableView.register(RVFirstViewHeaderCell.self, forHeaderFooterViewReuseIdentifier: RVFirstViewHeaderCell.identifier)
         }
-        if let tabViewConstraint = self.tabViewHeightConstraint {
-            self.segmentedViewTopConstraintConstant = tabViewConstraint.constant
-        }
-        
-        setupTabSegmentView()
-       // showSegmentedView()
     }
-    func setupTabSegmentView() {
-        if !showTopView { return }
-        var index = 0
-        segmentedControl.removeAllSegments()
-        for segment in [["Elmer": RVKeys.handle], ["Goober": RVKeys.title]  , ["Something": RVKeys.comment]] {
-            print("\(segment.first!.key)")
-            segmentedControl.insertSegment(withTitle: segment.first!.key, at: index, animated: true)
-            index = index + 1
-        }
-        segmentedControl.selectedSegmentIndex = 0
-    }
-    func showSegmentedView() {
-        if !showTopView { return }
-        if let segmentedView = self.segmentedView {
-            segmentedView.isHidden = false
-            if let constraint = tableViewTopConstraint {
-                constraint.constant = constraint.constant + self.segmentedViewTopConstraintConstant
-            }
-        } else {
-            p("in showSegmentView, no segmentedView")
-        }
-    }
-    func hideSegmentedView() {
-        if !showTopView { return }
-        if let segmentedView = self.segmentView {
-            segmentedView.isHidden = true
-            if let constraint = tableViewTopConstraint {
-                constraint.constant = constraint.constant - self.segmentedViewTopConstraintConstant
+    override func setupTopView() {
+        if let _ = self.topView {
+            if let segmentedControl = self.segmentedControl {
+                var index = 0
+                segmentedControl.removeAllSegments()
+                for segment in [["Elmer": RVKeys.handle], ["Goober": RVKeys.title]  , ["Something": RVKeys.comment]] {
+                    print("\(segment.first!.key)")
+                    segmentedControl.insertSegment(withTitle: segment.first!.key, at: index, animated: true)
+                    index = index + 1
+                }
+                segmentedControl.selectedSegmentIndex = 0
             }
         }
+
     }
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
@@ -93,7 +71,6 @@ class RVMainLandingViewController: RVBaseViewController {
             print("In \(self.classForCoder).viewWillAppear, no username")
             //loadup()
         }
-       showSegmentedView()
     }
     func loadup() {
         RVSeed.createRootTask { (root, error) in
@@ -166,7 +143,7 @@ class RVMainLandingViewController: RVBaseViewController {
 extension RVMainLandingViewController {
     func searchBarCancelButtonClicked(_ searchBar: UISearchBar) {
         print("In \(self.classForCoder).searchBarCancelButtonClicked")
-        showSegmentedView()
+        showTopView()
     }
 }
 

@@ -16,8 +16,11 @@ class RVBaseViewController: UIViewController {
     var stack = [RVBaseModel]()
     var operation: RVOperation = RVOperation(active: false)
     var dontUseManager: Bool = false
-    var showTopView: Bool = true
     func p(_ message: String, _ method: String = "") { print("In \(instanceType) \(method) \(message)") }
+    @IBOutlet weak var topView: UIView!
+    @IBOutlet weak var topViewHeightConstraint: NSLayoutConstraint!
+    @IBOutlet weak var tableViewTopConstraint: NSLayoutConstraint!
+    var topViewHeightConstraintConstant:CGFloat = 0.0
     @IBOutlet weak var tableView: UITableView!
     @IBOutlet weak var collectionView: UICollectionView!
     var dsScrollView: UIScrollView? {
@@ -107,12 +110,15 @@ class RVBaseViewController: UIViewController {
         } else {
             print("In \(instanceType).viewDidLoad, , manager not set")
         }
-
+        if let topViewConstraint = self.topViewHeightConstraint {
+            self.topViewHeightConstraintConstant = topViewConstraint.constant
+        }
+        setupTopView()
     }
     override func viewWillAppear(_ animated: Bool) {
-
         super.viewWillAppear(animated)
         self.installObservers()
+        showTopView()
     }
     override func viewWillDisappear(_ animated: Bool) {
 
@@ -135,6 +141,29 @@ class RVBaseViewController: UIViewController {
         query.removeAllSortTerms()
         query.addSort(field: .lowerCaseComment, order: .ascending)
         return query
+    }
+    
+    func setupTopView() {
+        if let _ = self.topView {
+            print("In \(instanceType).setupTopView, need to override")
+        }
+    }
+    func showTopView() {
+        if let topView = self.topView {
+            topView.isHidden = false
+            if let constraint = tableViewTopConstraint {
+                constraint.constant = constraint.constant + self.topViewHeightConstraintConstant            }
+        } else {
+            p("in showSegmentView, no segmentedView")
+        }
+    }
+    func hideTopView() {
+        if let topView = self.topView {
+            topView.isHidden = true
+            if let constraint = tableViewTopConstraint {
+                constraint.constant = constraint.constant - self.topViewHeightConstraintConstant
+            }
+        }
     }
     var observers: [NSNotification.Name : Selector] =  [
         NSNotification.Name(rawValue: RVNotification.userDidLogin.rawValue)  : #selector(RVBaseViewController.userDidLogin),
