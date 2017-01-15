@@ -164,7 +164,7 @@ extension RVBaseViewController: UITableViewDelegate {
                 if section >= 0 && section < manager.sections.count {
                     let datasource = manager.sections[section]
                     headerCell.delegate = self
-                    headerCell.configure(model: nil, expand: true, datasource: datasource)
+                    headerCell.configure(model: nil, datasource: datasource)
                 }
             }
         }

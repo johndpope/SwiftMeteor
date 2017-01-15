@@ -17,7 +17,7 @@
             <subviews>
                 <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="TAu-K1-RcE">
                     <rect key="frame" x="269" y="4" width="60" height="30"/>
-                    <color key="backgroundColor" red="0.047834080219999998" green="0.13701518830000001" blue="0.72336632010000002" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                    <color key="backgroundColor" red="0.20392156859999999" green="0.7843137255" blue="0.44705882349999998" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                     <constraints>
                         <constraint firstAttribute="height" constant="30" id="S3N-IT-6yB"/>
                         <constraint firstAttribute="width" constant="60" id="aXz-b5-qVA"/>
@@ -39,7 +39,7 @@
                     <nil key="highlightedColor"/>
                 </label>
             </subviews>
-            <color key="backgroundColor" red="0.51344080199849418" green="0.51344080199849418" blue="0.51344080199849418" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+            <color key="backgroundColor" white="0.66666666666666663" alpha="1" colorSpace="calibratedWhite"/>
             <constraints>
                 <constraint firstItem="shd-8Q-dyQ" firstAttribute="centerY" secondItem="iN0-l3-epB" secondAttribute="centerY" id="h3G-id-f6c"/>
                 <constraint firstAttribute="trailing" secondItem="TAu-K1-RcE" secondAttribute="trailing" constant="16" id="iA3-4A-peL"/>

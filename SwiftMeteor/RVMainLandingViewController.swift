@@ -29,10 +29,8 @@ class RVMainLandingViewController: RVBaseViewController {
     @IBOutlet weak var segmentedControl: UISegmentedControl!
     override func provideMainDatasource() -> RVBaseDataSource{ return RVTaskDatasource() }
     override func provideFilteredDatasource() -> RVBaseDataSource { return RVTaskDatasource(maxArraySize: 500, filterMode: true) }
-
-//    let topConstraintDelta: CGFloat = 30.0
     var segmentedViewTopConstraintConstant:CGFloat = 0.0
-//    var tableViewTopConstraintConstant: CGFloat = 0.0
+
     @IBAction func segmentedControlValueChanged(_ sender: UISegmentedControl) {
         p("segmentedControlValueChanged", "to index: \(sender.selectedSegmentIndex)")
     }
@@ -42,7 +40,6 @@ class RVMainLandingViewController: RVBaseViewController {
     }
     @IBAction func searchButtonTouched(_ sender: UIBarButtonItem) {
         p("searchBarButtonTouche ---------------------------d")
-        //segmentedView.isHidden = false
     }
     override func viewDidLoad() {
         super.viewDidLoad()

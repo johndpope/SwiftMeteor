@@ -8,6 +8,6 @@
 
 import UIKit
 
-class RVLeftMenuNavController: UINavigationController {
+class RVLeftMenuNavController: RVBaseNavigationController {
     static let identifier = "RVLeftMenuNavController"
 }

@@ -12,19 +12,23 @@ protocol RVFirstViewHeaderCellDelegate: class {
 }
 class RVFirstViewHeaderCell: UITableViewHeaderFooterView {
     static let identifier = "RVFirstViewHeaderCell"
-    var expand: Bool = false
     weak var datasource: RVBaseDataSource? = nil
     var model: RVBaseModel? = nil {
         didSet {
-            if let view = actualContentView {
-                var section = -1
-                if let datasource = self.datasource {
-                    if let manager = datasource.manager {
-                        section = manager.section(datasource: datasource)
-                    }
+            configureContentView()
+        }
+    }
+    func configureContentView() {
+        if let view = actualContentView {
+            var section = -1
+            var collapsed = false
+            if let datasource = self.datasource {
+                if datasource.collapsed { collapsed = true }
+                if let manager = datasource.manager {
+                    section = manager.section(datasource: datasource)
                 }
-                view.configure(model: self.model, expand: self.expand, section: section)
             }
+            view.configure(model: self.model, collapsed: collapsed, section: section)
         }
     }
     var delegate: RVFirstViewHeaderCellDelegate? = nil
@@ -40,14 +44,17 @@ class RVFirstViewHeaderCell: UITableViewHeaderFooterView {
         loadHeaderFromNib()
     }
     
-    func configure(model: RVBaseModel?, expand: Bool, datasource: RVBaseDataSource) {
-        self.expand = expand
+    func configure(model: RVBaseModel?, datasource: RVBaseDataSource) {
         self.datasource = datasource
         self.model = model
+        if let datasource = self.datasource {
+            if datasource.collapsed {
+                
+            }
+        }
     }
     override func prepareForReuse() {
         super.prepareForReuse()
-        self.expand = true
         self.datasource = nil
         self.model = nil
     }
@@ -69,5 +76,6 @@ extension RVFirstViewHeaderCell: RVFirstHeaderContentViewDelegate {
         if let delegate = delegate {
             delegate.expandCollapseButtonTouched(view: self)
         }
+        configureContentView()
     }
 }

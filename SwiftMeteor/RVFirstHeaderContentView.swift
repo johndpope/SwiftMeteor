@@ -18,9 +18,9 @@ class RVFirstHeaderContentView: UIView {
             delegate.expandCollapseButtonTouched(button: sender)
         }
     }
-    func configure(model: RVBaseModel?, expand: Bool, section: Int) {
+    func configure(model: RVBaseModel?, collapsed: Bool, section: Int) {
         setLabelText(label: headerLabel, text: "Section... \(section)")
-        if expand {
+        if collapsed {
             setButtonText(button: expandCollapseButton , text: "Expand")
         } else {
             setButtonText(button: expandCollapseButton , text: "Collapse")

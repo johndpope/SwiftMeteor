@@ -162,7 +162,7 @@
             </objects>
             <point key="canvasLocation" x="2628" y="359.37031484257875"/>
         </scene>
-        <!--Left Menu Controller-->
+        <!--PVSafe-->
         <scene sceneID="X6y-Rq-Tz4">
             <objects>
                 <viewController storyboardIdentifier="RVLeftMenuController" id="C05-L5-QA5" customClass="RVLeftMenuController" customModule="SwiftMeteor" customModuleProvider="target" sceneMemberID="viewController">
@@ -226,8 +226,9 @@
                             <constraint firstItem="sCR-Qu-Yhu" firstAttribute="top" secondItem="iyb-M7-ryV" secondAttribute="top" id="rWw-Kf-35C"/>
                         </constraints>
                     </view>
-                    <navigationItem key="navigationItem" id="JA2-AX-b7m">
+                    <navigationItem key="navigationItem" title="PVSafe" id="JA2-AX-b7m">
                         <barButtonItem key="leftBarButtonItem" image="first" id="1wd-EB-9nq">
+                            <color key="tintColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                             <connections>
                                 <action selector="menuButtonTouched:" destination="C05-L5-QA5" id="d5G-1G-ph7"/>
                             </connections>
@@ -328,14 +329,11 @@
                                 </connections>
                             </tableView>
                             <view hidden="YES" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="IwX-Tn-Dc7" userLabel="SegmentVIew">
-                                <rect key="frame" x="0.0" y="2" width="375" height="28"/>
+                                <rect key="frame" x="0.0" y="0.0" width="375" height="32"/>
                                 <subviews>
                                     <segmentedControl opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="top" segmentControlStyle="plain" selectedSegmentIndex="0" translatesAutoresizingMaskIntoConstraints="NO" id="ghx-s2-IUT">
-                                        <rect key="frame" x="10" y="-2" width="355" height="29"/>
-                                        <color key="backgroundColor" red="0.047834080219999998" green="0.13701518830000001" blue="0.72336632010000002" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-                                        <constraints>
-                                            <constraint firstAttribute="height" constant="28" id="anV-id-CWL"/>
-                                        </constraints>
+                                        <rect key="frame" x="10" y="2" width="355" height="29"/>
+                                        <color key="backgroundColor" red="0.20392156859999999" green="0.7843137255" blue="0.44705882349999998" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                         <segments>
                                             <segment title="First"/>
                                             <segment title="Second"/>
@@ -346,18 +344,19 @@
                                         </connections>
                                     </segmentedControl>
                                 </subviews>
-                                <color key="backgroundColor" red="0.83115842423344588" green="1" blue="0.95601523471788741" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                <color key="backgroundColor" red="0.20392156859999999" green="0.7843137255" blue="0.44705882349999998" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                 <constraints>
                                     <constraint firstItem="ghx-s2-IUT" firstAttribute="leading" secondItem="IwX-Tn-Dc7" secondAttribute="leading" constant="10" id="4zE-Mq-s21"/>
                                     <constraint firstAttribute="bottom" secondItem="ghx-s2-IUT" secondAttribute="bottom" constant="2" id="7hd-Dq-sFk"/>
-                                    <constraint firstAttribute="height" constant="28" id="RVa-Il-8u9"/>
+                                    <constraint firstAttribute="height" constant="32" id="RVa-Il-8u9"/>
+                                    <constraint firstItem="ghx-s2-IUT" firstAttribute="top" secondItem="IwX-Tn-Dc7" secondAttribute="top" constant="2" id="Twd-UH-YE7"/>
                                     <constraint firstAttribute="trailing" secondItem="ghx-s2-IUT" secondAttribute="trailing" constant="10" id="h0w-xU-aYf"/>
                                 </constraints>
                             </view>
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                         <constraints>
-                            <constraint firstItem="IwX-Tn-Dc7" firstAttribute="top" secondItem="Bc6-b0-469" secondAttribute="bottom" constant="2" id="7bu-yH-aHv"/>
+                            <constraint firstItem="IwX-Tn-Dc7" firstAttribute="top" secondItem="Bc6-b0-469" secondAttribute="bottom" id="7bu-yH-aHv"/>
                             <constraint firstAttribute="trailing" secondItem="IwX-Tn-Dc7" secondAttribute="trailing" id="FvI-r0-s09"/>
                             <constraint firstItem="6Ys-Fs-PRI" firstAttribute="top" secondItem="e22-yf-b5W" secondAttribute="top" id="Qex-qh-39C"/>
                             <constraint firstItem="6Ys-Fs-PRI" firstAttribute="leading" secondItem="e22-yf-b5W" secondAttribute="leading" id="REj-KG-oCq"/>
@@ -473,9 +472,10 @@
             <objects>
                 <navigationController storyboardIdentifier="RVLeftMenuNavController" automaticallyAdjustsScrollViewInsets="NO" id="80b-jo-56w" customClass="RVLeftMenuNavController" customModule="SwiftMeteor" customModuleProvider="target" sceneMemberID="viewController">
                     <toolbarItems/>
-                    <navigationBar key="navigationBar" contentMode="scaleToFill" id="g2d-Yd-42s">
+                    <navigationBar key="navigationBar" contentMode="scaleToFill" misplaced="YES" barStyle="black" id="g2d-Yd-42s">
                         <rect key="frame" x="0.0" y="0.0" width="375" height="44"/>
                         <autoresizingMask key="autoresizingMask"/>
+                        <color key="barTintColor" red="0.20392156859999999" green="0.7843137255" blue="0.44705882349999998" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                     </navigationBar>
                     <nil name="viewControllers"/>
                     <connections>
