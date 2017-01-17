@@ -15,6 +15,7 @@ class RVLeftMenuController: RVBaseViewController {
     }
   //  @IBOutlet weak var tableView: UITableView!
     @IBAction func menuButtonTouched(_ sender: UIBarButtonItem) {
+        print("In \(self.classForCoder).menuButtonTOuched toggling to center")
         RVViewDeck.sharedInstance.toggleSide(side: .center)
     }
 
@@ -41,6 +42,9 @@ extension RVLeftMenuController {
         } else {
             print("Did not find RVLeftMenuTableViewCell")
         }
+    }
+    override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        print("\(instanceType).didSelectRow")
     }
 
     override func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {

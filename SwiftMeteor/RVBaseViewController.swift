@@ -16,6 +16,7 @@ class RVBaseViewController: UIViewController {
     var stack = [RVBaseModel]()
     var operation: RVOperation = RVOperation(active: false)
     var dontUseManager: Bool = false
+    var listeners = [RVListener]()
     func p(_ message: String, _ method: String = "") { print("In \(instanceType) \(method) \(message)") }
     @IBOutlet weak var topView: UIView!
     @IBOutlet weak var topViewHeightConstraint: NSLayoutConstraint!
@@ -119,11 +120,35 @@ class RVBaseViewController: UIViewController {
         super.viewWillAppear(animated)
         self.installObservers()
         showTopView()
+       // addLogInOutListeners()
+    }
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        addLogInOutListeners()
+    }
+    func addLogInOutListeners() {
+        print("In \(self.classForCoder).addLogInOutListeners in RVBaseViewController need to override this method")
+        var listener = RVSwiftDDP.sharedInstance.addListener(listener: self, eventType: .userDidLogin) { (_ info: [String: AnyObject]? ) -> Bool in
+            print("In \(self.classForCoder).addLogInOutListeners, \(RVSwiftEvent.userDidLogin.rawValue) returned")
+            return true
+        }
+        if let listener = listener { listeners.append(listener) }
+        listener = RVSwiftDDP.sharedInstance.addListener(listener: self, eventType: .userDidLogout, callback: { (_ info: [String: AnyObject]? ) -> Bool in
+            print("In \(self.classForCoder).addLogInOutListeners, \(RVSwiftEvent.userDidLogout.rawValue) returned")
+            return true
+        })
+        if let listener = listener { listeners.append(listener) }
     }
     override func viewWillDisappear(_ animated: Bool) {
-
         super.viewWillDisappear(animated)
         self.uninstallObservers()
+        self.removeLogInOutListeners()
+    }
+    func removeLogInOutListeners() {
+        for listener in listeners {
+            RVSwiftDDP.sharedInstance.removeListener(listener: listener)
+        }
+        self.listeners = [RVListener]()
     }
     deinit {
         self.uninstallObservers()
@@ -257,7 +282,11 @@ extension RVBaseViewController: UITableViewDataSource {
         if let userInfo = notification.userInfo {
             if let username = userInfo["user"] as? String {
                 print("Username is \(username)")
+            } else {
+                print("In \(self.classForCoder).userDidLogin, no username")
             }
+        } else {
+            print("In \(self.classForCoder).userDidLogin, no userInfo")
         }
     }
     func userDidLogout(notification: NSNotification) {
@@ -295,6 +324,7 @@ extension RVBaseViewController: UITableViewDataSource {
     
     
 }
+
 extension RVBaseViewController: UISearchBarDelegate {
     func searchBar(_ searchBar: UISearchBar, selectedScopeButtonIndexDidChange selectedScope: Int) {
         // p("Scope button did change index")

@@ -89,7 +89,7 @@ class FirstViewController: UIViewController {
     var searchBar = UISearchBar()
     
     @IBAction func leftBarButton(button: UIBarButtonItem) {
-        RVViewDeck.sharedInstance.toggleSide(side: RVViewDeck.Side.left)
+       // RVViewDeck.sharedInstance.toggleSide(side: RVViewDeck.Side.left)
     }
     override func viewDidLoad() {
         super.viewDidLoad()

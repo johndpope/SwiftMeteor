@@ -36,7 +36,9 @@ class RVMainLandingViewController: RVBaseViewController {
     }
     
     @IBAction func doneButtonTouched(_ sender: UIBarButtonItem) {
-        RVViewDeck.sharedInstance.toggleSide(side: RVViewDeck.Side.left)
+          //     print("In \(self.classForCoder).menuButtonTOuched toggling to right")
+       // RVViewDeck.sharedInstance.toggleSide(side: RVViewDeck.Side.left)
+        RVViewDeck.sharedInstance.toggleSide(side: RVViewDeck.Side.right)
     }
     @IBAction func searchButtonTouched(_ sender: UIBarButtonItem) {
         p("searchBarButtonTouche ---------------------------d")
@@ -46,6 +48,7 @@ class RVMainLandingViewController: RVBaseViewController {
         if let tableView = self.tableView {
             tableView.register(RVFirstViewHeaderCell.self, forHeaderFooterViewReuseIdentifier: RVFirstViewHeaderCell.identifier)
         }
+   
     }
     override func setupTopView() {
         if let _ = self.topView {
@@ -53,7 +56,7 @@ class RVMainLandingViewController: RVBaseViewController {
                 var index = 0
                 segmentedControl.removeAllSegments()
                 for segment in [["Elmer": RVKeys.handle], ["Goober": RVKeys.title]  , ["Something": RVKeys.comment]] {
-                    print("\(segment.first!.key)")
+                   // print("In \(self.classForCoder).setupTopView, \(segment.first!.key)")
                     segmentedControl.insertSegment(withTitle: segment.first!.key, at: index, animated: true)
                     index = index + 1
                 }
@@ -70,6 +73,14 @@ class RVMainLandingViewController: RVBaseViewController {
         } else {
             print("In \(self.classForCoder).viewWillAppear, no username")
             //loadup()
+        }
+    }
+    override func addLogInOutListeners() {
+        if let _ = RVCoreInfo.sharedInstance.username {
+            super.addLogInOutListeners()
+        } else {
+          //  print("In \(instanceType).addLogInOut, toggling to right side ------------")
+            RVViewDeck.sharedInstance.toggleSide(side: .right)
         }
     }
     func loadup() {

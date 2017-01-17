@@ -10,7 +10,7 @@ import UIKit
 import ViewDeck
 
 class RVViewDeck: NSObject {
-    
+    var listeners = RVListeners()
     enum Side {
         case left
         case right
@@ -41,6 +41,12 @@ class RVViewDeck: NSObject {
         window.makeKeyAndVisible()
         
     }
+    func addListener(listener: NSObject, eventType: RVSwiftEvent, callback: @escaping (_ info: [String: AnyObject]? )-> Bool)-> RVListener {
+        return listeners.addListener(listener: listener , eventType: eventType, callback: callback)
+    }
+    func removeListener(listener: RVListener) {
+        listeners.removeListener(listener: listener)
+    }
     func userDidLogin() {
         print("In RVViewDeck, The user just signed in!")
     }
@@ -61,22 +67,22 @@ class RVViewDeck: NSObject {
         self.rightController = deckController.rightViewController
         return deckController
     }
-    func openSide(side: IIViewDeckSide) {
-        RVViewDeck.sharedInstance.deckController.open(side, animated: true)
+    func openSide(side: IIViewDeckSide, animated: Bool = true) {
+        self.deckController.open(side, animated: animated)
     }
-    func closeSide() {
-        RVViewDeck.sharedInstance.deckController.closeSide(true)
+    func closeSide(animated: Bool = true) {
+        RVViewDeck.sharedInstance.deckController.closeSide(animated)
     }
-    func toggleSide(side: RVViewDeck.Side) {
-        let position: IIViewDeckSide = RVViewDeck.sharedInstance.deckController.openSide
+    func toggleSide(side: RVViewDeck.Side, animated: Bool = true) {
+        let position: IIViewDeckSide = self.deckController.openSide
         if (position == IIViewDeckSide.none) {
             switch(side) {
             case .left:
-                self.openSide(side: IIViewDeckSide.left)
+                self.openSide(side: IIViewDeckSide.left, animated: animated)
             case .right:
-                self.openSide(side: IIViewDeckSide.right)
+                self.openSide(side: IIViewDeckSide.right, animated: animated)
             case .center:
-                self.closeSide()
+                self.closeSide(animated: animated)
             }
         } else {
             self.closeSide()
@@ -84,17 +90,67 @@ class RVViewDeck: NSObject {
     }
 }
 extension RVViewDeck: IIViewDeckControllerDelegate {
-    func viewDeckController(_ viewDeckController: IIViewDeckController, didOpen side: IIViewDeckSide) {
-        
-    }
-    func viewDeckController(_ viewDeckController: IIViewDeckController, didClose side: IIViewDeckSide) {
-        
-    }
+    /// @name Open and Close Sides
+    
+    /**
+     Tells the delegate that the specified side will open.
+     
+     @param viewDeckController The view deck controller informing the delegate.
+     @param side               The side that will open. Either `IIViewDeckSideLeft` or `IIViewDeckSideRight`.
+     
+     @return `YES` if the View Deck Controller should open the side in question, `NO` otherwise.
+     */
     func viewDeckController(_ viewDeckController: IIViewDeckController, willOpen side: IIViewDeckSide) -> Bool {
-        return true
+        
+       return true
     }
+    
+    
+    /**
+     Tells the delegate that the specified side did open.
+     
+     @param viewDeckController The view deck controller informing the delegate.
+     @param side               The side that did open. Either `IIViewDeckSideLeft` or `IIViewDeckSideRight`.
+     */
+    func viewDeckController(_ viewDeckController: IIViewDeckController, didOpen side: IIViewDeckSide) {
+        print("In \(self.classForCoder).viewDeckController didOpen \(side.rawValue)--------------")
+        /*
+        for listener in listeners.listeners {
+            if listener.eventType == .viewDeckDidOpen {
+                print("In \(self.classForCoder).didOpen")
+                if !listener.handler([RVSwiftEvent.viewDeckDidOpen.rawValue : side as AnyObject  ]) {
+                    break
+                }
+            }
+        }
+ */
+    }
+    
+    
+    /**
+     Tells the delegate that the specified side will close.
+     
+     @param viewDeckController The view deck controller informing the delegate.
+     @param side               The side that will close. Either `IIViewDeckSideLeft` or `IIViewDeckSideRight`.
+     
+     @return `YES` if the View Deck Controller should close the side in question, `NO` otherwise.
+     */
     func viewDeckController(_ viewDeckController: IIViewDeckController, willClose side: IIViewDeckSide) -> Bool {
+        print("In \(self.classForCoder).viewDeckController WillClose \(side.rawValue)--------------")
         return true
     }
+    
+    
+    /**
+     Tells the delegate that the specified side did close.
+     
+     @param viewDeckController The view deck controller informing the delegate.
+     @param side               The side that did close. Either `IIViewDeckSideLeft` or `IIViewDeckSideRight`.
+     */
+    func viewDeckController(_ viewDeckController: IIViewDeckController, didClose side: IIViewDeckSide) {
+        print("In \(self.classForCoder).viewDeckController didClose \(side.rawValue)--------------")
+        
+    }
+
 
 }

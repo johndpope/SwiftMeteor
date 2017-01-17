@@ -12,5 +12,6 @@ class RVCoreInfo {
     static let sharedInstance: RVCoreInfo = {
         return RVCoreInfo()
     }()
+    var username: String? = nil
     var rootTask: RVTask? 
 }

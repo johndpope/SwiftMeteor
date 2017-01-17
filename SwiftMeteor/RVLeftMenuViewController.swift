@@ -12,6 +12,7 @@ class RVLeftMenuViewController: RVBaseViewController {
     static let identifier: String = "LeftMenu"
     
     @IBAction func closeButton(_ sender: UIButton) {
+               print("In \(self.classForCoder).menuButtonTOuched toggling to center")
         RVViewDeck.sharedInstance.toggleSide(side: .center)
     }
 }
