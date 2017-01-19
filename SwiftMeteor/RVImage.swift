@@ -15,142 +15,78 @@ enum RVFileType: String {
 }
 class RVImage: RVBaseModel {
     static var jpegQuality: CGFloat = 0.9
-    override class var insertMethod: RVMeteorMethods { get { return RVMeteorMethods.InsertImage}}
-    override class func collectionType() -> RVModelType {return RVModelType.image }
-    override class var updateMethod: RVMeteorMethods { get { return RVMeteorMethods.UpdateImage } }
-    override class var deleteMethod: RVMeteorMethods { get { return RVMeteorMethods.DeleteImage } }
-    override class var findMethod: RVMeteorMethods { get { return RVMeteorMethods.FindImage}}
-    override class func createInstance(fields: [String : AnyObject])-> RVBaseModel { return RVImage(fields: fields) }
+    override class var      insertMethod: RVMeteorMethods { get { return RVMeteorMethods.InsertImage}}
+    override class func     collectionType() -> RVModelType {return RVModelType.image }
+    override class var      updateMethod: RVMeteorMethods { get { return RVMeteorMethods.UpdateImage } }
+    override class var      deleteMethod: RVMeteorMethods { get { return RVMeteorMethods.DeleteImage } }
+    override class var      findMethod: RVMeteorMethods { get { return RVMeteorMethods.FindImage}}
+    override class func     createInstance(fields: [String : AnyObject])-> RVBaseModel { return RVImage(fields: fields) }
 
-    override func innerUpdate(key: RVKeys, value: AnyObject?) -> Bool {
-        if super.innerUpdate(key: key, value: value) == true {
-            return true
-        } else {
-            //  print("In RVTasks.innerUpdate \(key.rawValue), \(value)")
-            switch(key) {
-            case .height:
-                let _ = self._height.updateNumber(newValue: value)
-                return true
-            case .width:
-                let _ = self._width.updateNumber(newValue: value)
-                return true
-            case .bytes:
-                let _ = self._bytes.updateNumber(newValue: value)
-                return true
-            case .filetype:
-                let _ = self._filetype.updateString(newValue: value)
-                return true
-            case .urlString:
-                let _ = self._urlString.updateString(newValue: value)
-                return true
-            default:
-                print("In \(instanceType).innerUpdate, did not find key \(key)")
-                return false
-            }
-        }
+    override class func modelFromFields(fields: [String: AnyObject]) -> RVBaseModel {
+        return RVImage(fields: fields)
     }
-    
-    
-    
-    
-    
-    override func setupCallback() {
-        super.setupCallback()
-        self._height.model = self
-        self._width.model = self
-        self._bytes.model = self
-        self._urlString.model = self
-        self._filetype.model = self
-    }
-    override func getRVFields(onlyDirties: Bool) -> [String : AnyObject] {
-        var dict = super.getRVFields(onlyDirties: onlyDirties)
-        if !onlyDirties || (onlyDirties && self._height.dirty) {
-            dict[RVKeys.height.rawValue] = self.height as AnyObject
-            self._height.dirty = false
-        }
-        if !onlyDirties || (onlyDirties && self._width.dirty) {
-            dict[RVKeys.width.rawValue] = self.width as AnyObject
-            self._width.dirty = false
-        }
-        if !onlyDirties || (onlyDirties && self._bytes.dirty) {
-            dict[RVKeys.bytes.rawValue] = self.bytes as AnyObject
-            self._bytes.dirty = false
-        }
-        if !onlyDirties || (onlyDirties && self._filetype.dirty) {
-            dict[RVKeys.filetype.rawValue] = self.filetype.rawValue as AnyObject
-            self._filetype.dirty = false
-        }
-        if !onlyDirties || (onlyDirties && self._urlString.dirty) {
-            if let string = self.urlString { dict[RVKeys.urlString.rawValue] = string as AnyObject }
-            else { dict[RVKeys.urlString.rawValue] = NSNull() }
-            self._urlString.dirty = false
-        }
-        return dict
-    }
+
     override func initializeProperties() {
         super.initializeProperties()
-        self._height.value = 0.0 as CGFloat as AnyObject
-        self._width.value = 0.0 as CGFloat as AnyObject
-        self._width.value = 0 as Int as AnyObject
+        self.height = 0.0
+        self.width  = 0.0
+        self.bytes  = 0
     }
-    var _height = RVRecord(fieldName: RVKeys.height)
+    
     var height: CGFloat {
         get {
-            if let height = _height.value as? CGFloat { return height}
-            return 0
+            if let number = getNSNumber(key: .height) { return CGFloat(number.doubleValue) }
+            return 0.0
         }
         set {
-            let _ = _height.changeNumber(newValue: newValue as AnyObject)
+            updateNumber(key: .height, value: NSNumber(value:Double(newValue)), setDirties: true)
         }
     }
-    var _width = RVRecord(fieldName: RVKeys.width)
+
     var width: CGFloat {
         get {
-            if let width = _width.value as? CGFloat { return width}
-            return 0
+            if let number = getNSNumber(key: .width) { return CGFloat(number.doubleValue) }
+            return 0.0
         }
         set {
-            let _ = _width.changeNumber(newValue: newValue as AnyObject)
+            updateNumber(key: .width, value: NSNumber(value:Double(newValue)), setDirties: true)
         }
     }
-    var _bytes = RVRecord(fieldName: RVKeys.bytes)
     var bytes: Int {
         get {
-            if let bytes = _bytes.value as? Int { return bytes}
+            if let number = getNSNumber(key: .bytes) { return number.intValue }
             return 0
         }
         set {
-            let _ = _bytes.changeNumber(newValue: newValue as AnyObject)
+            updateNumber(key: .bytes, value: NSNumber(value:newValue), setDirties: true)
         }
     }
-    var _urlString = RVRecord(fieldName: RVKeys.urlString)
     var urlString: String? {
+        get { return getString(key: RVKeys.urlString) }
+        set { updateString(key: RVKeys.urlString, value: newValue, setDirties: true)}
+    }
+
+    var url: URL? {
         get {
-            if let string = _urlString.value as? String { return string}
+            if let urlString = self.urlString { return URL(string: urlString) }
             return nil
         }
         set {
-            if let value = newValue {
-                let _ = _urlString.changeString(newValue: value as AnyObject)
+            if let url = newValue {
+                self.urlString = url.absoluteString
             } else {
-                let _ = _urlString.changeString(newValue: NSNull())
+                self.urlString = nil
             }
-            
         }
     }
-    var _filetype = RVRecord(fieldName: RVKeys.filetype)
     var filetype: RVFileType {
         get {
-            if let rawValue = _filetype.value as? String {
-                if let type = RVFileType(rawValue: rawValue) {
-                    return type
-                }
+            if let rawValue = getString(key: .filetype) {
+                if let type = RVFileType(rawValue: rawValue) { return type }
             }
             return RVFileType.unkown
         }
-        set {
-            let _ = _filetype.changeString(newValue: newValue.rawValue as AnyObject)
-        }
+        set { updateString(key: RVKeys.filetype, value: newValue.rawValue, setDirties: true)}
     }
 }
 extension RVImage {

@@ -126,7 +126,7 @@ class RVMainLandingViewController: RVBaseViewController {
                  //   query.addAnd(term: RVKeys.title, value: text.lowercased() as AnyObject, comparison: .gte)
                     query.fixedTerm = RVQueryItem(term: RVKeys.title, value: text.lowercased() as AnyObject, comparison: .regex) // necessary for keeping filter equal or gt filter term
                     query.addSort(field: .title, order: .ascending)
-                } else if field == .comment || field == .lowerCaseComment {
+                } else if field == .comment || field == .commentLowercase {
                  //   query.addAnd(term: RVKeys.comment, value: text.lowercased() as AnyObject, comparison: .gte)
                     query.fixedTerm = RVQueryItem(term: RVKeys.comment, value: text.lowercased() as AnyObject, comparison: .regex) // necessary for keeping filter equal or gt filter term
                     query.addSort(field: .comment, order: .ascending)

@@ -16,6 +16,8 @@ enum RVKeys: String {
     case username       = "username"
     case handle         = "handle"
     case handleLowercase = "handleLowercase"
+    case fullName       = "fullName"
+    case fullNameLowercase = "fullNameLowercase"
     case modelType      = "modelType"
     case ownerId        = "ownerId"
     case owner          = "owner"   // Need to fix
@@ -26,7 +28,7 @@ enum RVKeys: String {
     case regularDescription  = "description"
    // case lowerCaseRegularDescription = "lowerCaseRegularDescription"
     case comment        = "comment"
-    case lowerCaseComment = "lowerCaseComment"
+    case commentLowercase = "lowerCaseComment"
     case JSONdate       = "$date"
     case image          = "image"
     case special        = "special"

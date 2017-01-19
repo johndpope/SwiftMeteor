@@ -71,9 +71,11 @@ class RVBaseDataSource {
         query.addProjection(projectionItem: RVProjectionItem(field: .text, include: .include))
         query.addProjection(projectionItem: RVProjectionItem(field: .createdAt))
         query.addProjection(projectionItem: RVProjectionItem(field: .updatedAt))
+        query.addProjection(field: .modelType)
+        query.addProjection(field: .collection)
         query.addProjection(projectionItem: RVProjectionItem(field: .regularDescription))
         query.addProjection(projectionItem: RVProjectionItem(field: .comment))
-        query.addProjection(projectionItem: RVProjectionItem(field: .lowerCaseComment))
+        query.addProjection(projectionItem: RVProjectionItem(field: .commentLowercase))
         return query
     }
     func replaceOperation(operation: RVDSOperation) {
@@ -116,7 +118,7 @@ class RVBaseDataSource {
                                         queryTerm.value = EJSON.convertToEJSONDate(candidateCreatedAt) as AnyObject
                                     }
                                 }
-                            case .lowerCaseComment:
+                            case .commentLowercase:
                                 if let candidateComment = candidate.comment {
                                     if let queryTerm = query.findAndTerm(term: sort.field) {
                                         queryTerm.value = candidateComment.lowercased() as AnyObject
@@ -272,8 +274,8 @@ class RVBaseDataSource {
                                             queryTerm.value = EJSON.convertToEJSONDate(candidateCreatedAt) as AnyObject as AnyObject
                                         }
                                     }
-                                case .lowerCaseComment, .comment:
-                                    print("In \(self.instanceType).queryForBack with lowercaseCommnet value = \(candidate.lowercaseComment)")
+                                case .commentLowercase, .comment:
+                                    print("In \(self.instanceType).queryForBack with lowercaseCommnet value = \(candidate.commentLowercase)")
                                     if let candidateComment = candidate.comment {
                                         if let queryTerm = query.findAndTerm(term: sort.field) {
                                             queryTerm.value = candidateComment.lowercased() as AnyObject

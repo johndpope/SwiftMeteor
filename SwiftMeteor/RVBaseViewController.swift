@@ -162,9 +162,9 @@ class RVBaseViewController: UIViewController {
     func filterQuery(text: String, scopeIndex: Int) -> RVQuery {
         let query = mainDatasource.basicQuery().duplicate()
         print("In \(self.instanceType).filterQuery base class. Need to override")
-        query.addAnd(term: RVKeys.lowerCaseComment, value: text.lowercased() as AnyObject, comparison: .gte)
+        query.addAnd(term: RVKeys.commentLowercase, value: text.lowercased() as AnyObject, comparison: .gte)
         query.removeAllSortTerms()
-        query.addSort(field: .lowerCaseComment, order: .ascending)
+        query.addSort(field: .commentLowercase, order: .ascending)
         return query
     }
     

@@ -26,7 +26,6 @@ class RVSeed {
 
         if let name = LoremIpsum.name() {
             task.handle = name
-            task.handleLowercase = name.lowercased()
         } else {
             print("In RVSeed.createTask, failed to generate a name")
         }
@@ -40,7 +39,6 @@ class RVSeed {
             if let tIndex = tweet.index(tweet.startIndex, offsetBy: 30, limitedBy: tweet.endIndex) {
                 let tweet = tweet.substring(to: tIndex)
                 task.comment = tweet
-                task.lowercaseComment = tweet.lowercased()
             }
         }
         task.title = animals[ count % animals.count ]
@@ -114,7 +112,6 @@ class RVSeed {
             task.comment = "Root Root"
             task.owner = "Neil"
             task.handle = "Neil"
-            task.handleLowercase = "neil"
             task.regularDescription = "Description of Root"
             task.create(callback: { (error) in
                 if let error = error {
@@ -149,7 +146,6 @@ class RVSeed {
                     task.comment = "Root Root"
                     task.owner = "Neil"
                     task.handle = "Neil"
-                    task.handleLowercase = "neil"
                     task.regularDescription = "Description of Root"
                     task.special = RVSpecial.root
                     task.create(callback: { (error) in

@@ -31,6 +31,10 @@ class RVTaskDatasource: RVBaseDataSource {
         query.addProjection(projectionItem: RVProjectionItem(field: .comment))
         query.addProjection(field: .handle)
         query.addProjection(field: .title)
+        query.addProjection(field: .modelType)
+        query.addProjection(field: .collection)
+        query.addProjection(field: .parentId)
+        query.addProjection(field: .parentModelType)
     
         return query
     }

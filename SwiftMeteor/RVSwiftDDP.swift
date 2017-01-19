@@ -40,6 +40,9 @@ class RVSwiftDDP: NSObject {
         Meteor.client.delegate = self
         NotificationCenter.default.addObserver(self, selector: #selector(RVSwiftDDP.collectionDidChange), name: NSNotification.Name(rawValue: METEOR_COLLECTION_SET_DID_CHANGE), object: nil)
     }
+    func getId() -> String {
+        return Meteor.client.getId()
+    }
     func connect(callback: @escaping () -> Void ) {
         Meteor.connect(self.meteorURL) {
             self.temporary()
