@@ -448,12 +448,7 @@ extension RVBaseModel {
                     let rvError = RVError(message: "In \(self.instanceType).update \(#line) got DDPError for id: \(self._id)", sourceError: error)
                     callback(rvError)
                 } else if let _ = result {
-                    print("In \(self.instanceType).update result is \(result)") // typically get "numberAffects = 1"
-                    if let result = result as? [String : AnyObject] {
-                        print("Result is a dictionary")
-                    } else {
-                        print("Result is not a dictionary")
-                    }
+                   // print("In \(self.instanceType).update result is \(result)") // typically get ["numberAffected": 1]
                     callback(nil)
                 } else {
                     print("In \(self.instanceType).update \(#line), no error but no result. id = \(self._id)")

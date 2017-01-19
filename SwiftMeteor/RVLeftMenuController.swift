@@ -45,6 +45,23 @@ extension RVLeftMenuController {
     }
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         print("\(instanceType).didSelectRow")
+        if indexPath.row >= 0 && indexPath.row < menuItems.count {
+            let selection = menuItems[indexPath.row]
+              //  print("In \(self.classForCoder).didSelectRowAt \(indexPath.row)")
+            if let (_, string) = selection.first {
+                if string == "Logout" {
+                  //  print("In \(self.classForCoder).didSelectRowAt \(indexPath.row), Found Logout")
+                    RVSwiftDDP.sharedInstance.logout(callback: { (error) in
+                        if let error = error {
+                            error.append(message: "In \(self.classForCoder).didSelectRowAt go error")
+                            error.printError()
+                        }
+                    })
+                } else {
+                    print("In \(self.classForCoder).didSelectRowAt \(indexPath.row), \(string) not handled")
+                }
+            }
+        }
     }
 
     override func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {

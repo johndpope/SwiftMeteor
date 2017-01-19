@@ -15,6 +15,17 @@ class RVViewDeck: NSObject {
         case left
         case right
         case center
+        
+        var description: String {
+            switch(self){
+            case .left:
+                return "Left"
+            case .right:
+                return "Right"
+            case .center:
+                return "Center"
+            }
+        }
     }
     var instanceType: String { get { return String(describing: type(of: self)) } }
     static let sharedInstance: RVViewDeck = {RVViewDeck() }()
@@ -73,12 +84,27 @@ class RVViewDeck: NSObject {
     func closeSide(animated: Bool = true) {
         RVViewDeck.sharedInstance.deckController.closeSide(animated)
     }
+    var sideBeingShown: RVViewDeck.Side {
+        get {
+            let position: IIViewDeckSide = self.deckController.openSide
+            switch(position) {
+            case .left:
+                return RVViewDeck.Side.left
+            case .right:
+                return RVViewDeck.Side.right
+            case .none:
+                return RVViewDeck.Side.center
+            }
+        }
+
+    }
     func toggleSide(side: RVViewDeck.Side, animated: Bool = true) {
         let position: IIViewDeckSide = self.deckController.openSide
         if (position == IIViewDeckSide.none) {
             switch(side) {
             case .left:
                 self.openSide(side: IIViewDeckSide.left, animated: animated)
+        
             case .right:
                 self.openSide(side: IIViewDeckSide.right, animated: animated)
             case .center:
@@ -149,6 +175,23 @@ extension RVViewDeck: IIViewDeckControllerDelegate {
      */
     func viewDeckController(_ viewDeckController: IIViewDeckController, didClose side: IIViewDeckSide) {
         print("In \(self.classForCoder).viewDeckController didClose \(side.rawValue)--------------")
+        if self.deckController.openSide == IIViewDeckSide.none {
+            print("In \(self.classForCoder).didClose, have side none")
+            Timer.scheduledTimer(withTimeInterval: 0.1, repeats: false, block: { (timer) in
+                if let navController = self.deckController.centerViewController as? RVMainLandingNavigationController {
+                    if let controller = navController.topViewController as? RVMainLandingViewController {
+                        controller.checkForLoggedOut()
+                    } else {
+                        print("In \(self.classForCoder).didClose, failed to get MainLandingViewController")
+                    }
+                } else {
+                    print("In \(self.classForCoder).didClose, failed to cast navController \(self.centerController)")
+                }
+            })
+
+        } else {
+                            print("In \(self.classForCoder).didClose, have side \(self.deckController.openSide)")
+        }
         
     }
 

@@ -24,7 +24,7 @@ class RVSwiftDDP: NSObject {
     var instanceType: String { get { return String(describing: type(of: self)) } }
     let meteorURL = "wss://rnmpassword-nweintraut.c9users.io/websocket"
     let userDidLogin = "userDid"
-    var username: String? = nil
+    //var username: String? = nil
     static let pluggedUsername = "neil.weintraut@gmail.com"
     static let pluggedPassword = "password"
     var loginListeners = RVListeners()
@@ -45,8 +45,22 @@ class RVSwiftDDP: NSObject {
     }
     func connect(callback: @escaping () -> Void ) {
         Meteor.connect(self.meteorURL) {
-            self.temporary()
+            //self.temporary()
             callback()
+        }
+    }
+    func logout(callback: @escaping(_ error: RVError?)-> Void) {
+        Meteor.logout { (result, error) in
+            if let error = error {
+                let rvError = RVError(message: "In \(self.classForCoder).logout, got DDPError", sourceError: error)
+                callback(rvError)
+            } else if let result = result {
+                print("In \(self.classForCoder).logout, success. Result is \(result)")
+                callback(nil)
+            } else {
+                print("In \(self.classForCoder).logout, no error but no result")
+                callback(nil)
+            }
         }
     }
     func addListener(listener: NSObject, eventType: RVSwiftEvent, callback: @escaping (_ info: [String: AnyObject]?) -> Bool) -> RVListener?  {
@@ -75,7 +89,7 @@ class RVSwiftDDP: NSObject {
     }
     func temporary() {
         Timer.scheduledTimer(withTimeInterval: 2.0, repeats: false) { (timer) in
-            if self.username == nil {
+            if RVCoreInfo.sharedInstance.username == nil {
                 print("In \(self.instanceType).temporary, after two second wait, no user, so attempting to login")
                 self.loginWithUsername(username: RVSwiftDDP.pluggedUsername, password: RVSwiftDDP.pluggedPassword, callback: { (result, error ) in
                     if let error = error {
@@ -95,8 +109,13 @@ class RVSwiftDDP: NSObject {
                 let rvError = RVError(message: "In \(self.instanceType).loginWithUsername, got Meteor error", sourceError: error)
                 callback(nil, rvError)
                 return
-            } else {
+            } else if let result = result as? [String : AnyObject] {
+                print("In \(self.classForCoder).loginWithUsername, no error got result")
+                RVCoreInfo.sharedInstance.loginCredentials = result
                 callback(result, nil)
+            } else {
+                print("In \(self.classForCoder).loginWithUsername, no error but no result")
+                callback(nil, nil)
             }
         }
     }
@@ -126,16 +145,24 @@ class RVSwiftDDP: NSObject {
 extension RVSwiftDDP: SwiftDDPDelegate {
     func ddpUserDidLogin(_ user:String) {
         //print("In \(self.instanceType).ddpUserDidLogin(), User did login as user \(user)")
-        self.username = user
+        //self.username = user
         RVCoreInfo.sharedInstance.username = user
         loginListeners.notifyListeners()
         NotificationCenter.default.post(name: NSNotification.Name(rawValue: RVNotification.userDidLogin.rawValue), object: nil, userInfo: ["user": user])
         
     }
     func ddpUserDidLogout(_ user:String) {
-        //print("In \(self.instanceType).ddpUserDidLogout(), User did logout")
-        self.username = nil
+        print("In \(self.instanceType).ddpUserDidLogout(), User \(user) did logout")
+        //self.username = nil
+        RVCoreInfo.sharedInstance.username = nil
+        RVCoreInfo.sharedInstance.loginCredentials = nil
+        if RVViewDeck.sharedInstance.sideBeingShown == RVViewDeck.Side.left {
+            RVViewDeck.sharedInstance.toggleSide(side: .center, animated: false)
+        } else {
+            print("In \(self.classForCoder).ddpUserDidLogout on viewDeck side \(RVViewDeck.sharedInstance.sideBeingShown.description)")
+        }
         logoutListeners.notifyListeners()
         NotificationCenter.default.post(name: NSNotification.Name(rawValue: RVNotification.userDidLogout.rawValue), object: nil, userInfo: ["user": user])
+        
     }
 }

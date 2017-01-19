@@ -13,5 +13,6 @@ class RVCoreInfo {
         return RVCoreInfo()
     }()
     var username: String? = nil
+    var loginCredentials: [String: AnyObject]? = nil
     var rootTask: RVTask? 
 }

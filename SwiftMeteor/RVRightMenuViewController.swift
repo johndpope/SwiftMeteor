@@ -33,7 +33,14 @@ class RVRightMenuViewController: RVBaseViewController {
     var listener: RVListener? = nil
     @IBAction func backButtonTouched(_ sender: UIBarButtonItem) {
         //       print("In \(self.classForCoder).backButtonTOuched toggling to center")
-        RVViewDeck.sharedInstance.toggleSide(side: .center)
+        //RVViewDeck.sharedInstance.toggleSide(side: .center)
+        RVSwiftDDP.sharedInstance.loginWithUsername(username: RVSwiftDDP.pluggedUsername, password: RVSwiftDDP.pluggedPassword, callback: { (result, error: RVError?) in
+            if let error = error {
+                error.printError()
+            } else {
+                print("After loginWIthUsernmae \(result)")
+            }
+        })
     }
     
     @IBAction func registerButtonTouched(_ sender: UIButton) {
@@ -49,7 +56,7 @@ class RVRightMenuViewController: RVBaseViewController {
      //   print("In \(self.classForCoder).addLoginOutListeners")
         Timer.scheduledTimer(withTimeInterval: 0.05, repeats: false) { (timer) in
             if let _ = RVCoreInfo.sharedInstance.username {
-                        //   print("In \(self.classForCoder).addLogInOutListeners toggling to center")
+                           print("In \(self.classForCoder).addLogInOutListeners toggling to center")
                     RVViewDeck.sharedInstance.toggleSide(side: .center, animated: true)
 
             } else {

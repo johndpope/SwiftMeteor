@@ -290,7 +290,7 @@ extension RVBaseViewController: UITableViewDataSource {
         }
     }
     func userDidLogout(notification: NSNotification) {
-        print("In \(self.instanceType).userDidLogout notification target")        
+        print("In \(self.instanceType).userDidLogout RVBaseViewController notification target")
     }
 
     
@@ -340,7 +340,7 @@ extension RVBaseViewController: UISearchBarDelegate {
 extension RVBaseViewController: UISearchResultsUpdating {
     // Called when the search bar's text or scope has changed or when the search bar becomes first responder.
     public func updateSearchResults(for searchController: UISearchController) {
-        // print("In \(self.classForCoder).updateSearchResults")
+        print("In \(self.classForCoder).updateSearchResults")
         updateSearchResultsHelper(searchController: searchController)
     }
     func updateSearchResultsHelper(searchController: UISearchController) {

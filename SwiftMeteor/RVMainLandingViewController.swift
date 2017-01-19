@@ -21,7 +21,11 @@ extension RVMainLandingViewController {
     }
 }
 class RVMainLandingViewController: RVBaseViewController {
-    
+    var mainPrimary: Bool = true {
+        didSet {
+            print("In \(self.classForCoder).mainPrimary")
+        }
+    }
     @IBOutlet weak var segmentedControl: UISegmentedControl!
     override func provideMainDatasource() -> RVBaseDataSource{ return RVTaskDatasource() }
     override func provideFilteredDatasource() -> RVBaseDataSource { return RVTaskDatasource(maxArraySize: 500, filterMode: true) }
@@ -36,6 +40,7 @@ class RVMainLandingViewController: RVBaseViewController {
     }
     @IBAction func searchButtonTouched(_ sender: UIBarButtonItem) {
         p("searchBarButtonTouche ---------------------------d")
+               RVViewDeck.sharedInstance.toggleSide(side: RVViewDeck.Side.right)
     }
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -59,14 +64,12 @@ class RVMainLandingViewController: RVBaseViewController {
         }
 
     }
-    override func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(animated)
-        if let _ = RVSwiftDDP.sharedInstance.username {
-            // do nothing for now
-             print("In \(self.classForCoder).viewWillAppear, username not found")
-        } else {
-            print("In \(self.classForCoder).viewWillAppear, no username")
-            //loadup()
+
+    override func viewDidAppear(_ animated: Bool) {
+        print("In \(self.classForCoder).viewDidAppear...................................... $")
+        super.viewDidAppear(true)
+        Timer.scheduledTimer(withTimeInterval: 0.5, repeats: false) { (timer) in
+         //   self.checkForLoggedOut()
         }
     }
     override func addLogInOutListeners() {
@@ -142,6 +145,40 @@ class RVMainLandingViewController: RVBaseViewController {
     override func userDidLogin(notification: NSNotification) {
         print("In \(self.instanceType).userDidLogin notification target")
         loadup()
+    }
+    override func userDidLogout(notification: NSNotification) {
+        print("In \(self.classForCoder).userDidLogout")
+        checkForLoggedOut()
+    }
+    func checkForLoggedOut() {
+        print("In \(self.classForCoder).checkForLoggedOut()")
+        if RVViewDeck.sharedInstance.sideBeingShown == RVViewDeck.Side.center {
+            if RVCoreInfo.sharedInstance.username == nil {
+                if let manager = self.manager {
+                    manager.stopAndResetDatasource(datasource: self.mainDatasource, callback: { (error ) in
+                        if let error = error {
+                            error.printError()
+                        } else {
+                            print("In \(self.classForCoder).checkForLoggedOut, got callback from stopD")
+                            manager.stopAndResetDatasource(datasource: self.filterDatasource, callback: { (error ) in
+                                if let error = error {
+                                    error.printError()
+                                } else {
+                                    print("In \(self.classForCoder).checkForLoggedOut, got callback from stopD 2 ")
+                                    RVViewDeck.sharedInstance.toggleSide(side: .right, animated: true)
+                                }
+                            })
+                        }
+                    })
+                } else {
+                    print("In \(self.classForCoder).checkForLoggedOut, no manager")
+                }
+            } else {
+                print("In \(self.classForCoder).checkForLoggedOut, credentials not nil")
+            }
+        } else {
+            print("In \(self.classForCoder).checkForLoggedOut, ViewDeck side is \(RVViewDeck.sharedInstance.sideBeingShown)")
+        }
     }
 }
 
