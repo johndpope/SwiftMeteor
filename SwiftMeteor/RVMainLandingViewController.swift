@@ -22,10 +22,6 @@ extension RVMainLandingViewController {
 }
 class RVMainLandingViewController: RVBaseViewController {
     
-//    @IBOutlet weak var tabViewHeightConstraint: NSLayoutConstraint!
-
-//    @IBOutlet weak var topViewHeightConstraint: NSLayoutConstraint!
-//    @IBOutlet weak var segmentedView: UIView!
     @IBOutlet weak var segmentedControl: UISegmentedControl!
     override func provideMainDatasource() -> RVBaseDataSource{ return RVTaskDatasource() }
     override func provideFilteredDatasource() -> RVBaseDataSource { return RVTaskDatasource(maxArraySize: 500, filterMode: true) }
@@ -36,9 +32,7 @@ class RVMainLandingViewController: RVBaseViewController {
     }
     
     @IBAction func doneButtonTouched(_ sender: UIBarButtonItem) {
-          //     print("In \(self.classForCoder).menuButtonTOuched toggling to right")
-       // RVViewDeck.sharedInstance.toggleSide(side: RVViewDeck.Side.left)
-        RVViewDeck.sharedInstance.toggleSide(side: RVViewDeck.Side.right)
+       RVViewDeck.sharedInstance.toggleSide(side: RVViewDeck.Side.left)
     }
     @IBAction func searchButtonTouched(_ sender: UIBarButtonItem) {
         p("searchBarButtonTouche ---------------------------d")
