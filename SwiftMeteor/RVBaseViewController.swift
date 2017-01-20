@@ -316,7 +316,16 @@ extension RVBaseViewController: UITableViewDataSource {
         self.refreshControl.endRefreshing()
     }
     
-    
+    func hideView(view: UIView?) {
+        if let view = view {
+            view.isHidden = true
+        }
+    }
+    func showView(view: UIView?) {
+        if let view = view {
+            view.isHidden = false
+        }
+    }
     
     
     
