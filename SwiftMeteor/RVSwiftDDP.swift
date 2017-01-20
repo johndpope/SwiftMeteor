@@ -109,7 +109,7 @@ class RVSwiftDDP: NSObject {
             callback(rvError)
             return
         } else if let result = result {
-            print("In \(self.classForCoder).signupViaEmail line \(#line), result is \(result)")
+           // print("In \(self.classForCoder).signupViaEmail line \(#line), result is \(result)")
             callback(nil)
             return
         } else {
