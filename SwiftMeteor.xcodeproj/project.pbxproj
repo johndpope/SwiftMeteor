@@ -30,7 +30,6 @@
 		28360E1A1E046C0700E62384 /* RVMeteorUser.swift in Sources */ = {isa = PBXBuildFile; fileRef = 28360E191E046C0700E62384 /* RVMeteorUser.swift */; };
 		284E84A21DFD30F600A9F33A /* RVAWS.swift in Sources */ = {isa = PBXBuildFile; fileRef = 284E84A11DFD30F600A9F33A /* RVAWS.swift */; };
 		284FBAC91DEC125D00446C86 /* RVViewDeck.swift in Sources */ = {isa = PBXBuildFile; fileRef = 284FBAC81DEC125D00446C86 /* RVViewDeck.swift */; };
-		284FBACB1DEC136300446C86 /* File.swift in Sources */ = {isa = PBXBuildFile; fileRef = 284FBACA1DEC136300446C86 /* File.swift */; };
 		284FBACD1DEC139100446C86 /* RVLeftMenuViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 284FBACC1DEC139100446C86 /* RVLeftMenuViewController.swift */; };
 		284FBAD01DEC13B600446C86 /* RVBaseViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 284FBACF1DEC13B600446C86 /* RVBaseViewController.swift */; };
 		284FBAD21DEC13FE00446C86 /* RVRightMenuViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 284FBAD11DEC13FE00446C86 /* RVRightMenuViewController.swift */; };
@@ -131,7 +130,6 @@
 		28360E191E046C0700E62384 /* RVMeteorUser.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RVMeteorUser.swift; sourceTree = "<group>"; };
 		284E84A11DFD30F600A9F33A /* RVAWS.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RVAWS.swift; sourceTree = "<group>"; };
 		284FBAC81DEC125D00446C86 /* RVViewDeck.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RVViewDeck.swift; sourceTree = "<group>"; };
-		284FBACA1DEC136300446C86 /* File.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = File.swift; sourceTree = "<group>"; };
 		284FBACC1DEC139100446C86 /* RVLeftMenuViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RVLeftMenuViewController.swift; sourceTree = "<group>"; };
 		284FBACF1DEC13B600446C86 /* RVBaseViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RVBaseViewController.swift; sourceTree = "<group>"; };
 		284FBAD11DEC13FE00446C86 /* RVRightMenuViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RVRightMenuViewController.swift; sourceTree = "<group>"; };
@@ -248,12 +246,11 @@
 		284FBAC71DEC123E00446C86 /* VIewDeck */ = {
 			isa = PBXGroup;
 			children = (
+				28F5C0AA1E328F9F0012E52A /* RightMenu */,
+				28F5C0A91E328F8C0012E52A /* NotUsed */,
+				28E65D9F1E1DB156004E82F5 /* LeftMenu */,
 				284FBAC81DEC125D00446C86 /* RVViewDeck.swift */,
-				284FBACA1DEC136300446C86 /* File.swift */,
-				284FBACC1DEC139100446C86 /* RVLeftMenuViewController.swift */,
-				284FBAD11DEC13FE00446C86 /* RVRightMenuViewController.swift */,
 				284FBAD31DEC142B00446C86 /* RVMainTabViewController.swift */,
-				2816A5561E2BE66000B6804D /* RVRightNavigationController.swift */,
 			);
 			name = VIewDeck;
 			sourceTree = "<group>";
@@ -410,7 +407,6 @@
 			children = (
 				286CA3191E327A2000B081B8 /* Location */,
 				28201A401E1DE7F6008D8E59 /* MainLanding */,
-				28E65D9F1E1DB156004E82F5 /* LeftMenu */,
 				28E65D9C1E1DAEC6004E82F5 /* images */,
 				28928CCF1E18BDF5003538B8 /* Datasource */,
 				28360E141E034C6500E62384 /* Collections */,
@@ -422,8 +418,6 @@
 				284FBACE1DEC13A500446C86 /* BaseClasses */,
 				284FBAC71DEC123E00446C86 /* VIewDeck */,
 				28F53E6C1DEB5F71009641F0 /* AppDelegate.swift */,
-				28F53E6E1DEB5F71009641F0 /* FirstViewController.swift */,
-				28F53E701DEB5F71009641F0 /* SecondViewController.swift */,
 				28F53E721DEB5F71009641F0 /* Main.storyboard */,
 				28F53E751DEB5F71009641F0 /* Assets.xcassets */,
 				28F53E771DEB5F71009641F0 /* LaunchScreen.storyboard */,
@@ -452,6 +446,25 @@
 				28F53E901DEB5F72009641F0 /* Info.plist */,
 			);
 			path = SwiftMeteorUITests;
+			sourceTree = "<group>";
+		};
+		28F5C0A91E328F8C0012E52A /* NotUsed */ = {
+			isa = PBXGroup;
+			children = (
+				28F53E701DEB5F71009641F0 /* SecondViewController.swift */,
+				28F53E6E1DEB5F71009641F0 /* FirstViewController.swift */,
+				284FBACC1DEC139100446C86 /* RVLeftMenuViewController.swift */,
+			);
+			name = NotUsed;
+			sourceTree = "<group>";
+		};
+		28F5C0AA1E328F9F0012E52A /* RightMenu */ = {
+			isa = PBXGroup;
+			children = (
+				284FBAD11DEC13FE00446C86 /* RVRightMenuViewController.swift */,
+				2816A5561E2BE66000B6804D /* RVRightNavigationController.swift */,
+			);
+			name = RightMenu;
 			sourceTree = "<group>";
 		};
 		520186C895D6DBF10188B438 /* Frameworks */ = {
@@ -667,7 +680,6 @@
 				28E65DA11E1DB166004E82F5 /* RVLeftMenuController.swift in Sources */,
 				284E84A21DFD30F600A9F33A /* RVAWS.swift in Sources */,
 				28DE2D991DFE481900EFEECB /* RVBaseModel.swift in Sources */,
-				284FBACB1DEC136300446C86 /* File.swift in Sources */,
 				28F53E711DEB5F71009641F0 /* SecondViewController.swift in Sources */,
 				286CA32B1E327F8200B081B8 /* RVUserNotificationSetting.swift in Sources */,
 				284FBAD01DEC13B600446C86 /* RVBaseViewController.swift in Sources */,
