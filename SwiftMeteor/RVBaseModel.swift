@@ -117,7 +117,10 @@ class RVBaseModel: MeteorDocument {
         if let bool = objects[key.rawValue] as? Bool { return bool }
         return nil
     }
-    
+    func getArray(key: RVKeys) -> [AnyObject]? {
+        if let array = objects[key.rawValue] as? [AnyObject] {return array }
+        return nil
+    }
     func updateDictionary(key: RVKeys, dictionary: [String: AnyObject]?, setDirties: Bool = false) {
         if let dictionary = dictionary {
             objects[key.rawValue] = dictionary as AnyObject?
@@ -345,7 +348,15 @@ class RVBaseModel: MeteorDocument {
             updateNumber(key: .score, value: NSNumber(value:newValue), setDirties: true)
         }
     }
-    
+    var tags: [String] {
+        get {
+            if let array = getArray(key: .tags) as? [String] { return array }
+            return [String]()
+        }
+        set {
+            updateArray(key: .tags, value: newValue as [AnyObject], setDirties: true)
+        }
+    }
     var special: RVSpecial {
         get {
             if let rawValue = getString(key: .special) {
@@ -367,12 +378,23 @@ class RVBaseModel: MeteorDocument {
         get { return getString(key: RVKeys.handleLowercase) }
         set { updateString(key: RVKeys.handleLowercase, value: newValue, setDirties: true)}
     }
+    var location: RVLocation? {
+        get {
+            if let fields = getDictionary(key: .location) { return RVLocation(fields: fields) }
+            return nil
+        }
+        set {
+            if let location = newValue {
+                updateDictionary(key: .location, value: location.objects , setDirties: true)
+            } else {
+                updateDictionary(key: .location, value: nil , setDirties: true)
+            }
+        }
+    }
     var createdAt: Date? {
         get {
             if let dateDictionary = getDictionary(key: .createdAt) as? [String : Double] {
-                if let interval = dateDictionary[RVKeys.JSONdate.rawValue] {
-                    return Date(timeIntervalSince1970: interval / 1000.0 )
-                }
+                return EJSON.convertToNSDate(dateDictionary as NSDictionary)
             }
             return nil
         }
@@ -389,9 +411,7 @@ class RVBaseModel: MeteorDocument {
     var updatedAt: Date? {
         get {
             if let dateDictionary = getDictionary(key: .updatedAt) as? [String : Double] {
-                if let interval = dateDictionary[RVKeys.JSONdate.rawValue] {
-                    return Date(timeIntervalSince1970: interval / 1000.0 )
-                }
+                return EJSON.convertToNSDate(dateDictionary as NSDictionary)
             }
             return nil
         }
@@ -404,6 +424,10 @@ class RVBaseModel: MeteorDocument {
             }
         }
         
+    }
+    var domainId: String? {
+        get { return getString(key: .domainId) }
+        set {updateString(key: .domainId, value: newValue, setDirties: true) }
     }
     func setParent(parent:RVBaseModel) {
         self.parentId = parent.localId

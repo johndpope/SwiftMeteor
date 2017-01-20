@@ -29,6 +29,9 @@ class RVLocation: RVBaseModel {
     private var rawPlaces = [String: AnyObject]()
     private var gmsAddress: GMSAddress? = nil
     var photo: UIImage? = nil
+    override init(fields: [String: AnyObject]){
+        super.init(fields: fields)
+    }
     init(rawPlaces: [String: AnyObject]) {
         super.init()
         absorbPlaces(rawPlaces: rawPlaces)

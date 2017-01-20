@@ -26,6 +26,13 @@ enum RVMeteorMethods: String {
     case FindTask   = "tasks.find"
     case GetUserId = "userId"
     
+    // User
+    case userProfileInsert      = "userProfile.insert"
+    case userProfileUpdate      = "userProfile.update"
+    case userProfileDelete      = "userProfile.delete"
+    case userProfileFind        = "userProfile.find"
+    case userProfileBulkQuery   = "userProfile.bulkQuery"
+    
     
     case BulkTask = "tasks.bulk"
 }

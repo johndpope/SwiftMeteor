@@ -25,7 +25,7 @@ class RVTask: RVBaseModel {
         }
     }
 
-    var checkes: Bool? {
+    var checks: Bool? {
         get { return getBool(key: .checked) }
         set { updateBool(key: .checked, value: newValue, setDirties: true)
         }

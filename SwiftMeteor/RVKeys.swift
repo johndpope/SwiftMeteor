@@ -33,25 +33,32 @@ enum RVKeys: String {
     case image          = "image"
     case special        = "special"
     case deleted        = "deleted"
+    case domainId       = "domainId"
+    case tags           = "tags"
+    case location       = "location"
     
     case numberOfLikes  = "numberOfLikes"
     case numberOfObjections = "numberOfObjections"
     case numberOfFollowers = "numberOfFollowers"
     
-    
+    // Domain
+    case domainName     = "domainName"
     case score          = "score" // Need to add to Meteor
     // task
     case checked        = "checked"
     
     // User
-    case first          = "first"
-    case last           = "last"
+    case firstName      = "first"
+    case middleName     = "middle"
+    case lastName       = "last"
     case yob            = "yob"
     case gender         = "gender"
-    case cell           = "cell"
+    case cellPhone      = "cell"
+    case homePhone      = "home"
     case settings       = "setting"
     case email          = "email"
     case watchGroupIds  = "watchGroupIds"
+    case lastLogin      = "lastLogin"
     
     // image
     case height         = "height"
