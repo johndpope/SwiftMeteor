@@ -236,6 +236,7 @@ extension RVViewDeck: IIViewDeckControllerDelegate {
      @param side               The side that did close. Either `IIViewDeckSideLeft` or `IIViewDeckSideRight`.
      */
     func viewDeckController(_ viewDeckController: IIViewDeckController, didClose side: IIViewDeckSide) {
+       // print("In \(self.classForCoder).viewDeckController.didClose side \(side), openSide is \(self.deckController.openSide) username is \(RVCoreInfo.sharedInstance.username)")
         switch(self.deckController.openSide) {
         case .none:
             if let navController = self.deckController.centerViewController as? RVMainLandingNavigationController {
@@ -246,7 +247,7 @@ extension RVViewDeck: IIViewDeckControllerDelegate {
                             self.toggleSide(side: .right, animated: true)
                         })
                     } else {
-                       // print("In \(self.classForCoder).viewDeckController.didClose side \(side), Logged in... need to initiate load")
+                   //    print("In \(self.classForCoder).viewDeckController.didClose side \(side), Logged in... need to initiate load")
                         controller.loadup()
                     }
                 }

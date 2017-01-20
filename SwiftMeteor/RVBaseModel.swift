@@ -28,14 +28,10 @@ class RVBaseModel: MeteorDocument {
         let id = RVSwiftDDP.sharedInstance.getId()
         super.init(id: id, fields: self.objects as NSDictionary? )
         self.localId = id
-        let me = type(of: self)
-        self.collection = me.collectionType()
-        self.modelType = self.collection
+        self.modelType = type(of: self).collectionType()
         initializeProperties()
     }
-    func initializeProperties() {
-        
-    }
+    func initializeProperties() { }
     func checkModelType() {
         if self.modelType == RVModelType.unknownModel || self.modelType != type(of: self).collectionType() {
             print("In \(instanceType).init invalid model type. Expected \(type(of: self).collectionType()), but received \(self.modelType.rawValue)")
@@ -49,12 +45,14 @@ class RVBaseModel: MeteorDocument {
         } else {
             print("Error.......... \(type(of: self)).init(objects no ID provided")
         }
-        super.init(id: _id, fields: self.objects as NSDictionary? )
+        //super.init(id: _id, fields: self.objects as NSDictionary? )
+        super.init(id: _id, fields: NSDictionary() ) // Just neutralizing the parent class.
         checkModelType()
 
     }
     required init(id: String, fields: NSDictionary?) {
-        super.init(id: RVSwiftDDP.sharedInstance.getId(), fields: self.objects as NSDictionary? )
+        //super.init(id: id, fields: fields )
+        super.init(id: id, fields: NSDictionary() ) // Just neutralizing the parent class.
         if let objects = fields as? [String : AnyObject] {
             self.objects = objects
         } else {
@@ -64,7 +62,10 @@ class RVBaseModel: MeteorDocument {
         checkModelType()
     }
 
+    override  func fields() -> NSDictionary  {
+        return objects as NSDictionary
 
+    }
     var image: RVImage? {
         get {
             if let fields = objects[RVKeys.image.rawValue] as? [String: AnyObject] {
@@ -92,7 +93,10 @@ class RVBaseModel: MeteorDocument {
             }
             return RVModelType.unknownModel
         }
-        set {updateString(key: .modelType, value: newValue.rawValue, setDirties: true)}
+        set {
+            updateString(key: .modelType, value: newValue.rawValue, setDirties: true)
+            self.collection = newValue
+        }
     }
     func getString(key: RVKeys) -> String? {
         if let string = objects[key.rawValue] as? String { return string }
@@ -435,6 +439,64 @@ extension RVBaseModel {
             }
         }
     }
+    override func update(_ fields: NSDictionary?, cleared: [String]? ) {
+        if let fields = fields as? [String : AnyObject] {
+            for (rawValue, value) in fields {
+                if let property = RVKeys(rawValue: rawValue) {
+                    setProperty(key: property, value: value)
+                }
+            }
+            
+        }
+        if let cleared = cleared {
+            for index in (0..<cleared.count) {
+                let rawValue = cleared[index]
+                if let property = RVKeys(rawValue: rawValue) {
+                    setProperty(key: property, value: nil)
+                }
+            }
+        }
+    }
+    func setProperty(key: RVKeys, value: AnyObject?) {
+        switch(key) {
+        case .collection, ._id, .private, .username, .handle, .handleLowercase, .fullName, .fullNameLowercase, .owner, .ownerId, .parentId:
+            print("In \(self.classForCoder).setProperty. Need to finish implementation")
+ 
+        case .modelType, .parentModelType:
+            if let rawValue = value as? String {
+                if let type = RVModelType(rawValue: rawValue) {
+                    if key == .modelType { self.modelType = type }
+                    else if key == .parentModelType { self.parentModelType = type }
+                    else {print("In \(self.instanceType).setProperty, key \(key.rawValue) no handled") }
+                    return
+                }
+            }
+            if value == nil {
+                if key == .modelType {
+                    print("In \(self.classForCoder).setProperty, erroneously attempted to set modelType to nil")
+                }
+                else if key == .parentModelType { self.parentModelType = RVModelType.unknownModel }
+                else {print("In \(self.instanceType).setProperty, key \(key.rawValue) no handled") }
+            }
+        case .createdAt:
+            if let dictionary = value as? [String : AnyObject] {
+                let date = EJSON.convertToNSDate(dictionary as NSDictionary)
+                self.createdAt = date
+            } else if value == nil {
+                self.createdAt = nil
+            }
+        case .updatedAt:
+            if let dictionary = value as? [String : AnyObject] {
+                let date = EJSON.convertToNSDate(dictionary as NSDictionary)
+                self.updatedAt = date
+            } else if value == nil {
+                self.updatedAt = nil
+            }
+        default:
+            print("")
+        }
+
+    }
     func update(callback: @escaping(_ error: RVError?) -> Void) {
         let dirties = self.dirties
         self.dirties = [String: AnyObject]()
@@ -464,7 +526,9 @@ extension RVBaseModel {
     }
     class func bulkQuery(query: RVQuery, callback: @escaping(_ items: [RVBaseModel]?, _ error: RVError?)-> Void) {
         let (filters, projection) = query.query()
+       // print("In RVBaseModel.bulkQuery")
         Meteor.call(bulkQueryMethod.rawValue, params: [filters as AnyObject, projection as AnyObject]) { (result: Any?, error : DDPError?) in
+         //           print("In RVBaseModel.bulkQuery has response \(error), \(result)")
             if let error = error {
                 let rvError = RVError(message: "In RVBaseModel.bulkQuery, got Meteor Error", sourceError: error)
                 callback(nil , rvError)

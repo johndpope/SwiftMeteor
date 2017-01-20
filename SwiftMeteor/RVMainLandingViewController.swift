@@ -78,6 +78,7 @@ class RVMainLandingViewController: RVBaseViewController {
 
 
     func loadup() {
+        //print("In \(self.classForCoder).loadup")
         RVSeed.createRootTask { (root, error) in
             if let error = error {
                 error.printError()

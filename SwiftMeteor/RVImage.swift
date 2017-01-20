@@ -120,51 +120,71 @@ extension RVImage {
                     rvImage.filetype = filetype
                     if let parent = parent { rvImage.setParent(parent: parent)}
                     if let title = params[RVKeys.title.rawValue] as? String { rvImage.title = title }
-                    
-                    fullPath = fullPath + userId + "/" + rvImage.localId + "/" + filename.lowercased() + "." + fileExtension.lowercased()
-                    RVAWS.sharedInstance.upload(data: data, path: fullPath, contentType: filetype.rawValue, callback: { (data, response, error) in
-                        if let error = error {
-                            let rvError = RVError(message: "In \(classForCoder()).saveImage, got AWS upload error", sourceError: error)
-                            callback(nil, rvError)
-                        } else if let response = response as? HTTPURLResponse {
-                            if response.statusCode == 200 {
-                                if let url = response.url {
-                                    let absoluteString = url.absoluteString
-                                    let urlString = absoluteString.components(separatedBy: "?")[0]
-                                    print("In \(classForCoder()).saveImage, uploaded Image to \(urlString)")
-                                    rvImage.urlString = urlString
-                                    rvImage.create(callback: { (error) in
-                                        if let error = error {
-                                            error.append(message: "In RVImage.saveImage, got error creating RVImage record, id: \(rvImage.localId)")
-                                            callback(nil, error)
-                                        } else {
-                                            if let id = rvImage.localId {
-                                                RVImage.retrieveInstance(id: rvImage.localId, callback: { (model , error) in
-                                                    if let error = error {
-                                                        error.append(message: "Error in RVImage.saveImage")
-                                                        callback(nil , error)
-                                                        return
-                                                    } else if let rvImage = model as? RVImage {
-                                                        callback(rvImage, nil)
-                                                        return
-                                                    } else {
-                                                        let rvError = RVError(message: "In RVImage.saveImage, saved image but failed to retrieve rvImage record with id \(rvImage._id)")
-                                                        callback(nil , rvError)
-                                                        return 
-                                                    }
-                                                })
+                    if let id = rvImage.localId {
+                        
+                        fullPath = fullPath + userId + "/" + id + "/" + filename.lowercased() + "." + fileExtension.lowercased()
+                        RVAWS.sharedInstance.upload(data: data, path: fullPath, contentType: filetype.rawValue, callback: { (data, response, error) in
+                            if let error = error {
+                                let rvError = RVError(message: "In \(classForCoder()).saveImage, got AWS upload error", sourceError: error)
+                                callback(nil, rvError)
+                            } else if let response = response as? HTTPURLResponse {
+                                if response.statusCode == 200 {
+                                    if let url = response.url {
+                                        let absoluteString = url.absoluteString
+                                        let urlString = absoluteString.components(separatedBy: "?")[0]
+                                        print("In \(classForCoder()).saveImage, uploaded Image to \(urlString)")
+                                        rvImage.urlString = urlString
+                                        rvImage.create(callback: { (error) in
+                                            if let error = error {
+                                                error.append(message: "In RVImage.saveImage, got error creating RVImage record, id: \(rvImage.localId)")
+                                                callback(nil, error)
                                             } else {
-                                                let rvError = RVError(message: "In \(self.instanceType).saveImage, no id")
-                                                callback(nil, rvError)
-                                                return
+                                                if let id = rvImage.localId {
+                                                    RVImage.retrieveInstance(id: id, callback: { (model , error) in
+                                                        if let error = error {
+                                                            error.append(message: "Error in RVImage.saveImage")
+                                                            callback(nil , error)
+                                                            return
+                                                        } else if let rvImage = model as? RVImage {
+                                                            callback(rvImage, nil)
+                                                            return
+                                                        } else {
+                                                            let rvError = RVError(message: "In RVImage.saveImage, saved image but failed to retrieve rvImage record with id \(rvImage.localId)")
+                                                            callback(nil , rvError)
+                                                            return
+                                                        }
+                                                    })
+                                                } else {
+                                                    let rvError = RVError(message: "In \(self.classForCoder).saveImage, no id")
+                                                    callback(nil, rvError)
+                                                    return
+                                                }
                                             }
-
-                                        }
-                                    })
+                                        })
+                                        return
+                                    } else {
+                                        let rvError = RVError(message: "In \(self.classForCoder()).saveImage, no URL")
+                                        callback(nil, rvError)
+                                        return
+                                    }
+                                } else {
+                                    let rvError = RVError(message: "In \(self.classForCoder()).saveImage, response status code is \(response.statusCode)")
+                                    callback(nil, rvError)
+                                    return
                                 }
+                            } else {
+                                let rvError = RVError(message: "In \(self.classForCoder()).saveImage, response did not cast as HTTPURLResponse")
+                                callback(nil, rvError)
+                                return
                             }
-                        }
-                    })
+                        })
+                        return
+                    } else {
+                        let rvError = RVError(message: "In \(self.classForCoder()).saveImage, no id for Image model")
+                        callback(nil, rvError)
+                        return
+                    }
+ 
                 }
             } else {
                 let error = RVError(message: "In RVImage.saveImage, no error but no userId")

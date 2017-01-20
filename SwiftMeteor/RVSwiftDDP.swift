@@ -58,11 +58,24 @@ class RVSwiftDDP: NSObject {
         Meteor.client.logLevel = .info // Options are: .Verbose, .Debug, .Info, .Warning, .Error, .Severe, .None
         Meteor.client.delegate = self
         NotificationCenter.default.addObserver(self, selector: #selector(RVSwiftDDP.collectionDidChange), name: NSNotification.Name(rawValue: METEOR_COLLECTION_SET_DID_CHANGE), object: nil)
-                NotificationCenter.default.addObserver(self, selector: #selector(RVSwiftDDP.connectionEvent), name: NSNotification.Name(rawValue: "DDP_DISCONNECTED"), object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(RVSwiftDDP.ddpDisconnected), name: NSNotification.Name(rawValue: DDP_DISCONNECTED), object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(RVSwiftDDP.ddpFailed), name: NSNotification.Name(rawValue: DDP_FAILED), object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(RVSwiftDDP.ddpWebsocketError), name: NSNotification.Name(rawValue: DDP_WEBSOCKET_ERROR), object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(RVSwiftDDP.ddpWebsocketClose), name: NSNotification.Name(rawValue: DDP_WEBSOCKET_CLOSE), object: nil)
+    
         
     }
-    @objc func connectionEvent(notification: NSNotification) {
-        print("IN \(self.classForCoder).connectionEvent")
+    @objc func ddpDisconnected(notification: NSNotification) {
+        print("IN \(self.classForCoder).ddpDisconnected \(notification.userInfo)")
+    }
+    @objc func ddpFailed(notification: NSNotification) {
+        print("IN \(self.classForCoder).ddpFailed \(notification.userInfo)")
+    }
+    @objc func ddpWebsocketError(notification: NSNotification) {
+        print("IN \(self.classForCoder).ddpWebsocketError \(notification.userInfo)")
+    }
+    @objc func ddpWebsocketClose(notification: NSNotification) {
+        print("IN \(self.classForCoder).ddpWebsocketClose \(notification.userInfo)")
     }
     func getId() -> String {
         return Meteor.client.getId()
@@ -181,10 +194,7 @@ class RVSwiftDDP: NSObject {
      self.userData.set(expiration, forKey: DDP_TOKEN_EXPIRES)
      }
  */
-    func userData() {
-        let id = Meteor.client.userId()
-        //
-    }
+
 
     func loginWithUsername(username: String, password: String, callback: @escaping (_ result: Any?, _ error: RVError?)-> Void) -> Void {
         Meteor.loginWithUsername(username, password: password) { (result, error) in
