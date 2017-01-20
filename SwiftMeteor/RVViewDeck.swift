@@ -79,7 +79,7 @@ class RVViewDeck: NSObject {
                         } else {
                             Timer.scheduledTimer(withTimeInterval: 0.5, repeats: false, block: { (timer) in
                                 self.toggleSide(side: .center, animated: false)
-                                self.getUserInfo() 
+
                             })
                         }
                     }
@@ -205,7 +205,6 @@ extension RVViewDeck: IIViewDeckControllerDelegate {
                     } else {
                         Timer.scheduledTimer(withTimeInterval: 0.5, repeats: false, block: { (timer) in
                             self.toggleSide(side: .center, animated: false)
-                            self.getUserInfo()
                         })
                     }
                 }
@@ -213,20 +212,6 @@ extension RVViewDeck: IIViewDeckControllerDelegate {
         }
     }
     
-    func getUserInfo() {
-        print("----------- In \(self.classForCoder).getUserInfo()")
-        RVMeteorUser.sharedInstance.userId { (userId, error: RVError?) in
-            if let error = error {
-                error.append(message: "In \(self.classForCoder).getUserInfo line \(#line), got error ")
-                error.printError()
-            } else if let userId = userId {
-                 print("In \(self.classForCoder).getUserInfo, got userID: \(userId)")
-            } else {
-                print("In \(self.classForCoder).getUserInfo, no user but no userId")
-
-            }
-        }
-    }
     
     /**
      Tells the delegate that the specified side will close.
@@ -285,7 +270,6 @@ extension RVViewDeck: IIViewDeckControllerDelegate {
                     } else {
                         Timer.scheduledTimer(withTimeInterval: 0.5, repeats: false, block: { (timer) in
                             self.toggleSide(side: .center, animated: false)
-                            self.getUserInfo()
                         })
                     }
                 }

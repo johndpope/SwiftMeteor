@@ -305,6 +305,7 @@
 		2873C90F1DECA4C600DCB2DF /* Services */ = {
 			isa = PBXGroup;
 			children = (
+				280C675D1E21DE600075FB4E /* RVCoreInfo.swift */,
 				2873C9101DECA4D400DCB2DF /* AWSMobileClient.swift */,
 				2873C9121DECAA2F00DCB2DF /* AWSIdentityManager.swift */,
 				2873C9141DECBFF000DCB2DF /* AWSSignInProvider.swift */,
@@ -349,7 +350,6 @@
 				281B91391E024933003AC233 /* RVQuery.swift */,
 				28360E191E046C0700E62384 /* RVMeteorUser.swift */,
 				287776191E21D19C00902CF7 /* RVSeed.swift */,
-				280C675D1E21DE600075FB4E /* RVCoreInfo.swift */,
 				288E97DB1E22D07D00753067 /* RVSpecial.swift */,
 				28D7733F1E30420200E8EDE0 /* RVBaseModel3.swift */,
 				282E07461E317A5A00FB5C1F /* RVMeteorUserConnection.swift */,
