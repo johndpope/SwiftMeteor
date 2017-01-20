@@ -28,6 +28,7 @@ class RVBaseCollection: AbstractCollection {
         self.meteorMethod = meteorMethod
         super.init(name: name.rawValue)
     }
+    /*
     func findRecord(id: String) -> RVBaseModel? {
         let elements = self.elements
         if let index = elements.index(where: {element in return element._id == id}) {
@@ -35,6 +36,7 @@ class RVBaseCollection: AbstractCollection {
         }
         return nil
     }
+ */
     func populate(id: String, fields: NSDictionary) -> RVBaseModel {
         return RVBaseModel(id: id, fields: fields)
     }
@@ -81,7 +83,7 @@ class RVBaseCollection: AbstractCollection {
         //print("In \(self.instanceType).documentWasChanged, id: \(id), fields: \(fields)")
         var instance: RVBaseModel? = nil
         let elements = self.elements
-        if let index = elements.index(where: {element in return element._id == id}) {
+        if let index = elements.index(where: {element in return (element.localId == id)}) {
             instance = elements[index]
             instance!.update(fields, cleared: cleared)
         } else {
@@ -91,7 +93,7 @@ class RVBaseCollection: AbstractCollection {
     }
     override public func documentWasRemoved(_ collection: String, id: String) {
         var copy = elements.map {$0}
-        if let index = copy.index(where: {element in return element._id == id}) {
+        if let index = copy.index(where: {element in return element.localId == id}) {
             copy.remove(at: index)
             self.elements = copy
             self.publish(eventType: .removed, model: nil, id: id)
@@ -149,9 +151,10 @@ extension RVBaseCollection {
      - parameter name:       The name of the subscription.
      
      */
-    func unsubscribe() -> [String] {
+    func unsubscribe(callback: @escaping () -> Void) -> [String] {
         self.subscriptionID = nil
-        return Meteor.unsubscribe(meteorMethod.rawValue)
+        print("In \(self.classForCoder).unsubscribe ")
+        return Meteor.unsubscribe(meteorMethod.rawValue, callback: callback)
     }
     
     /**
@@ -171,6 +174,7 @@ extension RVBaseCollection {
      - parameter id: An id string returned from a subscription request
      - parameter callback:   The closure to be executed when the method has been executed
      */
+    /*
     func unsubscribe(callback: DDPCallback?) {
         if let id = self.subscriptionID {
             self.subscriptionID = nil
@@ -182,4 +186,5 @@ extension RVBaseCollection {
         }
         
     }
+ */
 }

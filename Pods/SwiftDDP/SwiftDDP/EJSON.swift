@@ -51,7 +51,7 @@ open class EJSON: NSObject {
     
     open static func convertToEJSONDate(_ date:Date) -> [String:Double] {
         let timeInterval = Double(date.timeIntervalSince1970) * 1000
-        //print("Date -> \(date), \(timeInterval)")
+        print("Date -> \(date), \(timeInterval)")
         return ["$date": timeInterval]
     }
     

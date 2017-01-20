@@ -44,7 +44,7 @@ extension RVLeftMenuController {
         }
     }
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        print("\(instanceType).didSelectRow")
+        //print("\(instanceType).didSelectRow")
         if indexPath.row >= 0 && indexPath.row < menuItems.count {
             let selection = menuItems[indexPath.row]
               //  print("In \(self.classForCoder).didSelectRowAt \(indexPath.row)")

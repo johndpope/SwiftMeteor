@@ -28,10 +28,12 @@ class RVError: NSError {
     var time = NSDate()
     var lineNumber: Int = -1
     
-    init(message: String, sourceError: Error? = nil) {
+    init(message: String, sourceError: Error? = nil, lineNumber: Int = -1, fileName: String = "") {
         super.init(domain: RVError.domain, code: 0, userInfo: ["message": message])
         self.messages = [message]
         if let error = sourceError { self.sourceError = error }
+        self.lineNumber = lineNumber
+        self.fileName = fileName
     }
     
     required init?(coder aDecoder: NSCoder) {
@@ -45,8 +47,9 @@ class RVError: NSError {
         for message in self.messages.enumerated() {
             messages += "\(message)\n"
         }
-        var output = "Need to replace "
-//        var output = "--- at \(RVDateFormatter.ddHHmmsssss.stringFromDate(time)) Error in \(fileName)\(functionName).\(lineNumber)\n\(messages)"
+//        var output = "Need to replace "
+        var output = "--- Error in \(fileName)\(functionName). line: \(lineNumber)\n\(messages)"
+ //       var output = "--- at \(RVDateFormatter.ddHHmmsssss.stringFromDate(time)) Error in \(fileName)\(functionName).\(lineNumber)\n\(messages)"
         if let error = self.sourceError {
             output += "\(error)"
         }

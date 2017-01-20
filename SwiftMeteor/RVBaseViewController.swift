@@ -100,9 +100,6 @@ class RVBaseViewController: UIViewController {
               //  UISearchBar.appearance().barTintColor = UIColor.orange
               //  UISearchBar.appearance().tintColor = UIColor.blue
               //  UITextField.appearance(whenContainedInInstancesOf: [UISearchBar.self]).tintColor = UIColor.candyGreen()
-            
-                
-                
                 definesPresentationContext = true
                 tableView.tableHeaderView = searchController.searchBar
                 manager.addSection(section: mainDatasource)
@@ -118,13 +115,13 @@ class RVBaseViewController: UIViewController {
     }
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        self.installObservers()
+       // self.installObservers()
         showTopView()
        // addLogInOutListeners()
     }
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
-        addLogInOutListeners()
+        // addLogInOutListeners()
     }
     func addLogInOutListeners() {
         print("In \(self.classForCoder).addLogInOutListeners in RVBaseViewController need to override this method")

@@ -501,11 +501,11 @@ class TaskCollection2: AbstractCollection {
     override public func documentWasAdded(_ collection: String, id: String, fields: NSDictionary?) {
         let task = (RVTask(id: id, fields: fields))
         count = count + 1
-        print("\(count)  Appending task: \(task._id) \(task.text) \(task.createdAt) ")
+        print("\(count)  Appending task: \(task.localId) \(task.text) \(task.createdAt) ")
         tasks.append(task)
     }
     override public func documentWasChanged(_ collection: String, id: String, fields: NSDictionary?, cleared: [String]?) {
-        if let index = tasks.index(where: {task in return task._id == id}) {
+        if let index = tasks.index(where: {task in return task.localId == id}) {
             let task = tasks[index]
             print("========= Fields are: ")
             print(fields as Any)
@@ -513,22 +513,22 @@ class TaskCollection2: AbstractCollection {
             task.update(fields, cleared: cleared)
             print(task.toString())
             tasks[index] = task
-            print("In TaskCollection2 Task was changed: \(task._id) \(task.text)")
+            print("In TaskCollection2 Task was changed: \(task.localId) \(task.text)")
         } else {
             print("Task was changed but not in local array: \(id)")
         }
         
     }
     override public func documentWasRemoved(_ collection: String, id: String) {
-        if let index = tasks.index(where: {task in return task._id == id}) {
+        if let index = tasks.index(where: {task in return task.localId == id}) {
             tasks.remove(at: index)
         }
         print("Task was removed: \(id)")
     }
     public func insert(task: RVTask) {
         // save the document to the tasks array
-        let id = task._id
-            if let index = tasks.index(where: {candidate in return candidate._id == id}) {
+        let id = task.localId
+            if let index = tasks.index(where: {candidate in return candidate.localId == id}) {
                 tasks[index] = task
             } else {
                 tasks.append(task)

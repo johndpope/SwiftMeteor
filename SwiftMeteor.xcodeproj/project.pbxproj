@@ -23,6 +23,8 @@
 		28201A421E1DE80C008D8E59 /* RVMainLandingViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 28201A411E1DE80C008D8E59 /* RVMainLandingViewController.swift */; };
 		28201A441E1DE819008D8E59 /* RVMainLandingTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 28201A431E1DE819008D8E59 /* RVMainLandingTableViewCell.swift */; };
 		28201A461E1DE89C008D8E59 /* RVMainLandingNavigationController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 28201A451E1DE89C008D8E59 /* RVMainLandingNavigationController.swift */; };
+		282E07451E3170E100FB5C1F /* String+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 282E07441E3170E100FB5C1F /* String+Extension.swift */; };
+		282E07471E317A5A00FB5C1F /* RVMeteorUserConnection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 282E07461E317A5A00FB5C1F /* RVMeteorUserConnection.swift */; };
 		28360E161E034C7A00E62384 /* RVTaskCollection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 28360E151E034C7A00E62384 /* RVTaskCollection.swift */; };
 		28360E181E0352C400E62384 /* RVBaseCollection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 28360E171E0352C400E62384 /* RVBaseCollection.swift */; };
 		28360E1A1E046C0700E62384 /* RVUser.swift in Sources */ = {isa = PBXBuildFile; fileRef = 28360E191E046C0700E62384 /* RVUser.swift */; };
@@ -109,6 +111,8 @@
 		28201A411E1DE80C008D8E59 /* RVMainLandingViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RVMainLandingViewController.swift; sourceTree = "<group>"; };
 		28201A431E1DE819008D8E59 /* RVMainLandingTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RVMainLandingTableViewCell.swift; sourceTree = "<group>"; };
 		28201A451E1DE89C008D8E59 /* RVMainLandingNavigationController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RVMainLandingNavigationController.swift; sourceTree = "<group>"; };
+		282E07441E3170E100FB5C1F /* String+Extension.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "String+Extension.swift"; sourceTree = "<group>"; };
+		282E07461E317A5A00FB5C1F /* RVMeteorUserConnection.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RVMeteorUserConnection.swift; sourceTree = "<group>"; };
 		28360E151E034C7A00E62384 /* RVTaskCollection.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RVTaskCollection.swift; sourceTree = "<group>"; };
 		28360E171E0352C400E62384 /* RVBaseCollection.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RVBaseCollection.swift; sourceTree = "<group>"; };
 		28360E191E046C0700E62384 /* RVUser.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RVUser.swift; sourceTree = "<group>"; };
@@ -243,6 +247,7 @@
 			children = (
 				284FBAD61DEC161000446C86 /* UIColor+Extension.swift */,
 				2816A5541E2BD75E00B6804D /* UIView+Extension.swift */,
+				282E07441E3170E100FB5C1F /* String+Extension.swift */,
 			);
 			name = Extensions;
 			sourceTree = "<group>";
@@ -310,6 +315,7 @@
 				280C675D1E21DE600075FB4E /* RVCoreInfo.swift */,
 				288E97DB1E22D07D00753067 /* RVSpecial.swift */,
 				28D7733F1E30420200E8EDE0 /* RVBaseModel3.swift */,
+				282E07461E317A5A00FB5C1F /* RVMeteorUserConnection.swift */,
 			);
 			name = Models;
 			sourceTree = "<group>";
@@ -630,6 +636,7 @@
 				28DE2D9F1DFE713300EFEECB /* RVMeteorMethods.swift in Sources */,
 				284FBAD41DEC142B00446C86 /* RVMainTabViewController.swift in Sources */,
 				28360E161E034C7A00E62384 /* RVTaskCollection.swift in Sources */,
+				282E07451E3170E100FB5C1F /* String+Extension.swift in Sources */,
 				2813FAF61E20A9B8007E9428 /* RVTaskTableViewCell.swift in Sources */,
 				28201A441E1DE819008D8E59 /* RVMainLandingTableViewCell.swift in Sources */,
 				28E65DA51E1DB1D1004E82F5 /* RVBaseTableViewCell.swift in Sources */,
@@ -654,6 +661,7 @@
 				280C675E1E21DE600075FB4E /* RVCoreInfo.swift in Sources */,
 				2813FAF41E20A385007E9428 /* RVTaskDatasource.swift in Sources */,
 				284FBAC91DEC125D00446C86 /* RVViewDeck.swift in Sources */,
+				282E07471E317A5A00FB5C1F /* RVMeteorUserConnection.swift in Sources */,
 				281B913A1E024933003AC233 /* RVQuery.swift in Sources */,
 				2816A5531E2BD6C100B6804D /* RVBaseNavigationController.swift in Sources */,
 				28F53E6D1DEB5F71009641F0 /* AppDelegate.swift in Sources */,

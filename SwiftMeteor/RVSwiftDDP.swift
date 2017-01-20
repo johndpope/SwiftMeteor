@@ -21,12 +21,30 @@ enum RVSwiftEvent: String {
 }
 
 class RVSwiftDDP: NSObject {
+    enum SignupError: String {
+        case emailAlreadyExists = "Email already exist" // DDPError 403
+    }
+    enum DDP_Codes: String {
+        // self.userData.set(email, forKey: DDP_EMAIL)
+        // self.userData.synchronize()
+        // let email = self.userData.object(forKey: DDP_EMAIL) as? String
+        // self.userData.removeObject(forKey: DDP_ID)
+        case DDP_ID = "DDP_ID"                          // set by DDPExtension upon login                   String key="id"
+        case DDP_EMAIL = "DDP_EMAIL"                    // set by DDPExtension upon login, signup           String key="email"
+        case DDP_USERNAME = "DDP_USERNAME"              // set by DDPExtension upon login, signup           String key="username"
+        case DDP_TOKEN = "DDP_TOKEN"                    // set by DDPExtension upon login                   String key="token"
+        case DDP_TOKEN_EXPIRES = "DDP_TOKEN_EXPIRES"    // set by DDPExtension upon login                   NSDictionary key="tokenExpires"
+        case DDP_LOGGED_IN = "DDP_LOGGED_IN"            // set by DDPExtension upon login Bool
+        case DDP_USER_DID_LOGIN = "DDP_USER_DID_LOGIN"  // Notification Name
+        case DDP_USER_DID_LOGOUT = "DDP_USER_DID_LOGOUT"// Notification Name
+    }
     var instanceType: String { get { return String(describing: type(of: self)) } }
     let meteorURL = "wss://rnmpassword-nweintraut.c9users.io/websocket"
     let userDidLogin = "userDid"
     //var username: String? = nil
-    static let pluggedUsername = "neil.weintraut@gmail.com"
+    static let pluggedUsername = "elmer@fudd.com" //"neil.weintraut@gmail.com"
     static let pluggedPassword = "password"
+    let userDefaults = UserDefaults.standard
     var loginListeners = RVListeners()
     var logoutListeners = RVListeners()
     
@@ -35,17 +53,66 @@ class RVSwiftDDP: NSObject {
     }()
     override init() {
         super.init()
+
         Meteor.client.allowSelfSignedSSL = true // Connect to a server that users a self signed ssl certificate
         Meteor.client.logLevel = .info // Options are: .Verbose, .Debug, .Info, .Warning, .Error, .Severe, .None
         Meteor.client.delegate = self
         NotificationCenter.default.addObserver(self, selector: #selector(RVSwiftDDP.collectionDidChange), name: NSNotification.Name(rawValue: METEOR_COLLECTION_SET_DID_CHANGE), object: nil)
+                NotificationCenter.default.addObserver(self, selector: #selector(RVSwiftDDP.connectionEvent), name: NSNotification.Name(rawValue: "DDP_DISCONNECTED"), object: nil)
+        
+    }
+    @objc func connectionEvent(notification: NSNotification) {
+        print("IN \(self.classForCoder).connectionEvent")
     }
     func getId() -> String {
         return Meteor.client.getId()
     }
+    
+    func signupViaEmail(email: String, password: String, profile: [String: AnyObject]? = nil, callback:@escaping(_ error: RVError?) -> Void ) {
+        let email = email.lowercased()
+        if !email.validEmail() {
+            let rvError = RVError(message: "In \(self.instanceType).signupViaEmail, email is invalid \(email)", sourceError: nil, lineNumber: #line)
+            callback(rvError)
+            return
+        }
+        if !password.validPassword() {
+            let rvError = RVError(message: "In \(self.instanceType).signupViaEmail, email \(email) is valid, but password \(password) contains spaces")
+            callback(rvError)
+            return
+        }
+        if let profile = profile {
+            Meteor.client.signupWithEmail(email, password: password, profile: profile as NSDictionary, callback: { (result, error: DDPError?) in
+            self.handleSignup(result: result , error: error , callback: callback)
+            })
+        } else {
+            Meteor.client.signupWithEmail(email, password: password, callback: { (result, error: DDPError?) in
+                self.handleSignup(result: result , error: error , callback: callback)
+            })
+        }
+    }
+    func handleSignup(result: Any?, error: DDPError?, callback: @escaping(_ error: RVError?) -> Void ){
+        if let error = error {
+            let rvError = RVError(message: "In \(self.instanceType).signupViaEmail \(#line), got DDPError", sourceError: error, lineNumber: #line)
+            callback(rvError)
+            return
+        } else if let result = result {
+            print("In \(self.classForCoder).signupViaEmail line \(#line), result is \(result)")
+            callback(nil)
+            return
+        } else {
+            print("In \(self.classForCoder).signupViaEmail line \(#line), no error but no result")
+            callback(nil)
+            return
+        }
+    }
+    /**
+     Connect to a Meteor server and resume a prior session, if the user was logged in
+     
+     - parameter url:        The url of a Meteor server
+     - parameter callback:   An optional closure to be executed after the connection is established
+     */
     func connect(callback: @escaping () -> Void ) {
         Meteor.connect(self.meteorURL) {
-            //self.temporary()
             callback()
         }
     }
@@ -58,7 +125,7 @@ class RVSwiftDDP: NSObject {
                 print("In \(self.classForCoder).logout, success. Result is \(result)")
                 callback(nil)
             } else {
-                print("In \(self.classForCoder).logout, no error but no result")
+                //print("In \(self.classForCoder).logout, no error but no result")
                 callback(nil)
             }
         }
@@ -66,6 +133,7 @@ class RVSwiftDDP: NSObject {
     func addListener(listener: NSObject, eventType: RVSwiftEvent, callback: @escaping (_ info: [String: AnyObject]?) -> Bool) -> RVListener?  {
         switch(eventType) {
         case .userDidLogin:
+          //  print("In \(self.classForCoder) adding Listener for userDidLogin")
             return loginListeners.addListener(listener: listener, eventType: eventType , callback: callback)
         case .userDidLogout:
             return logoutListeners.addListener(listener: listener, eventType: eventType , callback: callback)
@@ -101,6 +169,21 @@ class RVSwiftDDP: NSObject {
                // print("In \(self.instanceType).temporary already logged in with username \(self.username)")
             }
         }
+    }
+    /*
+     if let data = result as? NSDictionary,
+     let id = data["id"] as? String,
+     let token = data["token"] as? String,
+     let tokenExpires = data["tokenExpires"] as? NSDictionary {
+     let expiration = dateFromTimestamp(tokenExpires)
+     self.userData.set(id, forKey: DDP_ID)
+     self.userData.set(token, forKey: DDP_TOKEN)
+     self.userData.set(expiration, forKey: DDP_TOKEN_EXPIRES)
+     }
+ */
+    func userData() {
+        let id = Meteor.client.userId()
+        //
     }
 
     func loginWithUsername(username: String, password: String, callback: @escaping (_ result: Any?, _ error: RVError?)-> Void) -> Void {
@@ -144,7 +227,7 @@ class RVSwiftDDP: NSObject {
 }
 extension RVSwiftDDP: SwiftDDPDelegate {
     func ddpUserDidLogin(_ user:String) {
-        //print("In \(self.instanceType).ddpUserDidLogin(), User did login as user \(user)")
+   //     print("In \(self.instanceType).ddpUserDidLogin(), User did login as user \(user)")
         //self.username = user
         RVCoreInfo.sharedInstance.username = user
         loginListeners.notifyListeners()
@@ -152,7 +235,7 @@ extension RVSwiftDDP: SwiftDDPDelegate {
         
     }
     func ddpUserDidLogout(_ user:String) {
-        print("In \(self.instanceType).ddpUserDidLogout(), User \(user) did logout")
+    //    print("In \(self.instanceType).ddpUserDidLogout(), User \(user) did logout")
         //self.username = nil
         RVCoreInfo.sharedInstance.username = nil
         RVCoreInfo.sharedInstance.loginCredentials = nil

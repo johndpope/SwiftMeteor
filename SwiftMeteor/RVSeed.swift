@@ -30,7 +30,7 @@ class RVSeed {
             print("In RVSeed.createTask, failed to generate a name")
         }
         if let root = RVCoreInfo.sharedInstance.rootTask {
-            task.parentId = root._id
+            task.parentId = root.localId
             task.parentModelType = root.modelType
         } else {
             print("In RVSeed.createTask, no rootTask found")

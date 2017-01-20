@@ -21,11 +21,7 @@ extension RVMainLandingViewController {
     }
 }
 class RVMainLandingViewController: RVBaseViewController {
-    var mainPrimary: Bool = true {
-        didSet {
-            print("In \(self.classForCoder).mainPrimary")
-        }
-    }
+
     @IBOutlet weak var segmentedControl: UISegmentedControl!
     override func provideMainDatasource() -> RVBaseDataSource{ return RVTaskDatasource() }
     override func provideFilteredDatasource() -> RVBaseDataSource { return RVTaskDatasource(maxArraySize: 500, filterMode: true) }
@@ -47,6 +43,21 @@ class RVMainLandingViewController: RVBaseViewController {
         if let tableView = self.tableView {
             tableView.register(RVFirstViewHeaderCell.self, forHeaderFooterViewReuseIdentifier: RVFirstViewHeaderCell.identifier)
         }
+        RVViewDeck.sharedInstance.toggleSide(side: .right, animated: true)
+        /*
+        let email = "elmer@fudd.com"
+        let password = "password"
+        let profile: [String: AnyObject] = ["Favorite Food": "Chocolate" as AnyObject, "Age" : 26 as AnyObject, "MoreStuff": ["MobilePhoneType" : "iPhone"] as AnyObject ]
+        print("In \(self.classForCoder).viewDidLoad, about to do signup")
+        Timer.scheduledTimer(withTimeInterval: 0.5, repeats: false) { (timer) in
+            RVSwiftDDP.sharedInstance.signupViaEmail(email: email, password: password , profile: profile) { (error) in
+                if let error = error {
+                    error.printError()
+                }
+            }
+        }
+ */
+
    
     }
     override func setupTopView() {
@@ -65,21 +76,7 @@ class RVMainLandingViewController: RVBaseViewController {
 
     }
 
-    override func viewDidAppear(_ animated: Bool) {
-        print("In \(self.classForCoder).viewDidAppear...................................... $")
-        super.viewDidAppear(true)
-        Timer.scheduledTimer(withTimeInterval: 0.5, repeats: false) { (timer) in
-         //   self.checkForLoggedOut()
-        }
-    }
-    override func addLogInOutListeners() {
-        if let _ = RVCoreInfo.sharedInstance.username {
-            super.addLogInOutListeners()
-        } else {
-          //  print("In \(instanceType).addLogInOut, toggling to right side ------------")
-            RVViewDeck.sharedInstance.toggleSide(side: .right)
-        }
-    }
+
     func loadup() {
         RVSeed.createRootTask { (root, error) in
             if let error = error {
@@ -90,16 +87,23 @@ class RVMainLandingViewController: RVBaseViewController {
                 self.stack = [root]
                 let query = self.mainDatasource.basicQuery()
                 if let top = self.stack.last {
-                    query.addAnd(term: RVKeys.parentId, value: top._id as AnyObject, comparison: .eq)
+                    query.addAnd(term: RVKeys.parentId, value: top.localId as AnyObject, comparison: .eq)
                     query.addAnd(term: RVKeys.parentModelType, value: top.modelType.rawValue as AnyObject, comparison: .eq )
                 }
                 if let manager = self.manager {
-                    manager.startDatasource(datasource: self.mainDatasource, query: query, callback: { (error) in
+                    manager.stopAndResetDatasource(datasource: self.mainDatasource, callback: { (error) in
                         if let error = error {
-                            error.append(message: "In \(self.instanceType).loadUp, got error starting main database")
                             error.printError()
+                        } else {
+                            manager.startDatasource(datasource: self.mainDatasource, query: query, callback: { (error) in
+                                if let error = error {
+                                    error.append(message: "In \(self.instanceType).loadUp, got error starting main database")
+                                    error.printError()
+                                }
+                            })
                         }
                     })
+
                 }
 
             } else {
@@ -107,14 +111,12 @@ class RVMainLandingViewController: RVBaseViewController {
             }
         }
     }
-    func userDidLogin() {
-        print("The user just signed in!")
-    }
+
     override func filterQuery(text: String, scopeIndex: Int ) -> RVQuery {
         let query = filterDatasource.basicQuery().duplicate()
         query.removeAllSortTerms()
         if let top = self.stack.last {
-            query.addAnd(term: RVKeys.parentId, value: top._id as AnyObject, comparison: .eq)
+            query.addAnd(term: RVKeys.parentId, value: top.localId as AnyObject, comparison: .eq)
             query.addAnd(term: RVKeys.parentModelType, value: top.modelType.rawValue as AnyObject, comparison: .eq )
         }
         //let scopeIndex = segmentedControl.selectedSegmentIndex

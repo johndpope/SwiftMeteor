@@ -50,7 +50,45 @@ class RVViewDeck: NSObject {
         window.tintColor = UIColor(red: 0.071, green: 0.42, blue: 0.694, alpha: 1.0)
         window.rootViewController = generateControllerStack()
         window.makeKeyAndVisible()
-        
+        addLoginListener()
+    }
+    func addLoginListener() {
+        let _ = RVSwiftDDP.sharedInstance.addListener(listener: self, eventType: .userDidLogin) { (result: [String: AnyObject]?) -> Bool in
+            //print("In \(self.classForCoder) login listener callback")
+            switch(self.deckController.openSide) {
+            case .none:
+                if let navController = self.deckController.centerViewController as? RVMainLandingNavigationController {
+                    if let _ = navController.topViewController as? RVMainLandingViewController {
+                        //
+                    }
+                }
+            case .left:
+                if let navController = self.deckController.leftViewController as? RVLeftMenuNavController {
+                    if let _ = navController.topViewController as? RVLeftMenuController {
+                        if RVCoreInfo.sharedInstance.username == nil {
+                            Timer.scheduledTimer(withTimeInterval: 0.5, repeats: false, block: { (timer) in
+                                self.toggleSide(side: .center, animated: false)
+                            })
+                        } else {
+                         //   print("In \(self.classForCoder).addLoginListener callback openSide is left. Logged in. Take no action")
+                        }
+                    }
+                }
+            case .right:
+                if let navController = self.deckController.rightViewController as? RVRightNavigationController {
+                    if let _ = navController.topViewController as? RVRightMenuViewController {
+                        if RVCoreInfo.sharedInstance.username == nil {
+                         //   print("In \(self.classForCoder).addLoginListener callback openSide is right. Not logged in. Take no action")
+                        } else {
+                            Timer.scheduledTimer(withTimeInterval: 0.5, repeats: false, block: { (timer) in
+                                self.toggleSide(side: .center, animated: false)
+                            })
+                        }
+                    }
+                }
+            }
+            return true
+        }
     }
     func addListener(listener: NSObject, eventType: RVSwiftEvent, callback: @escaping (_ info: [String: AnyObject]? )-> Bool)-> RVListener {
         return listeners.addListener(listener: listener , eventType: eventType, callback: callback)
@@ -58,9 +96,7 @@ class RVViewDeck: NSObject {
     func removeListener(listener: RVListener) {
         listeners.removeListener(listener: listener)
     }
-    func userDidLogin() {
-        print("In RVViewDeck, The user just signed in!")
-    }
+
     func generateControllerStack() -> IIViewDeckController {
         let storyboard = UIStoryboard(name: RVViewDeck.mainStorybardName, bundle: nil)
         let leftViewController = storyboard.instantiateViewController(withIdentifier: RVViewDeck.leftControllerIdentifier)
@@ -126,10 +162,7 @@ extension RVViewDeck: IIViewDeckControllerDelegate {
      
      @return `YES` if the View Deck Controller should open the side in question, `NO` otherwise.
      */
-    func viewDeckController(_ viewDeckController: IIViewDeckController, willOpen side: IIViewDeckSide) -> Bool {
-        
-       return true
-    }
+    func viewDeckController(_ viewDeckController: IIViewDeckController, willOpen side: IIViewDeckSide) -> Bool { return true }
     
     
     /**
@@ -139,17 +172,46 @@ extension RVViewDeck: IIViewDeckControllerDelegate {
      @param side               The side that did open. Either `IIViewDeckSideLeft` or `IIViewDeckSideRight`.
      */
     func viewDeckController(_ viewDeckController: IIViewDeckController, didOpen side: IIViewDeckSide) {
-        print("In \(self.classForCoder).viewDeckController didOpen \(side.rawValue)--------------")
-        /*
-        for listener in listeners.listeners {
-            if listener.eventType == .viewDeckDidOpen {
-                print("In \(self.classForCoder).didOpen")
-                if !listener.handler([RVSwiftEvent.viewDeckDidOpen.rawValue : side as AnyObject  ]) {
-                    break
+    // print("In \(self.classForCoder).didOpen, side: \(side.rawValue)")
+        switch(self.deckController.openSide) {
+        case .none:
+            if let navController = self.deckController.centerViewController as? RVMainLandingNavigationController {
+                if let _ = navController.topViewController as? RVMainLandingViewController {
+                    if RVCoreInfo.sharedInstance.username == nil {
+                        // not logged in
+                        Timer.scheduledTimer(withTimeInterval: 0.5, repeats: false, block: { (timer) in
+                            self.toggleSide(side: .right, animated: true)
+                        })
+                    } else {
+                  //      print("In \(self.classForCoder).viewDeckController.didOpen side \(side), Logged in... need to initiate load")
+                    }
+                }
+            }
+        case .left:
+            if let navController = self.deckController.leftViewController as? RVLeftMenuNavController {
+                if let _ = navController.topViewController as? RVLeftMenuController {
+                    if RVCoreInfo.sharedInstance.username == nil {
+                        Timer.scheduledTimer(withTimeInterval: 0.5, repeats: false, block: { (timer) in
+                            self.toggleSide(side: .center, animated: false)
+                        })
+                    } else {
+                      //  print("In \(self.classForCoder).viewDeckController.didClose side \(side). Logged in. Take no action")
+                    }
+                }
+            }
+        case .right:
+            if let navController = self.deckController.rightViewController as? RVRightNavigationController {
+                if let _ = navController.topViewController as? RVRightMenuViewController {
+                    if RVCoreInfo.sharedInstance.username == nil {
+                    //    print("In \(self.classForCoder).viewDeckController.didClose side \(side). Logged in. Take no action")
+                    } else {
+                        Timer.scheduledTimer(withTimeInterval: 0.5, repeats: false, block: { (timer) in
+                            self.toggleSide(side: .center, animated: false)
+                        })
+                    }
                 }
             }
         }
- */
     }
     
     
@@ -162,7 +224,7 @@ extension RVViewDeck: IIViewDeckControllerDelegate {
      @return `YES` if the View Deck Controller should close the side in question, `NO` otherwise.
      */
     func viewDeckController(_ viewDeckController: IIViewDeckController, willClose side: IIViewDeckSide) -> Bool {
-        print("In \(self.classForCoder).viewDeckController WillClose \(side.rawValue)--------------")
+     //   print("In \(self.classForCoder).viewDeckController WillClose \(side.rawValue)--------------")
         return true
     }
     
@@ -174,26 +236,46 @@ extension RVViewDeck: IIViewDeckControllerDelegate {
      @param side               The side that did close. Either `IIViewDeckSideLeft` or `IIViewDeckSideRight`.
      */
     func viewDeckController(_ viewDeckController: IIViewDeckController, didClose side: IIViewDeckSide) {
-        print("In \(self.classForCoder).viewDeckController didClose \(side.rawValue)--------------")
-        if self.deckController.openSide == IIViewDeckSide.none {
-            print("In \(self.classForCoder).didClose, have side none")
-            Timer.scheduledTimer(withTimeInterval: 0.1, repeats: false, block: { (timer) in
-                if let navController = self.deckController.centerViewController as? RVMainLandingNavigationController {
-                    if let controller = navController.topViewController as? RVMainLandingViewController {
-                        controller.checkForLoggedOut()
+        switch(self.deckController.openSide) {
+        case .none:
+            if let navController = self.deckController.centerViewController as? RVMainLandingNavigationController {
+                if let controller = navController.topViewController as? RVMainLandingViewController {
+                    if RVCoreInfo.sharedInstance.username == nil {
+                        // not logged in
+                        Timer.scheduledTimer(withTimeInterval: 0.5, repeats: false, block: { (timer) in
+                            self.toggleSide(side: .right, animated: true)
+                        })
                     } else {
-                        print("In \(self.classForCoder).didClose, failed to get MainLandingViewController")
+                       // print("In \(self.classForCoder).viewDeckController.didClose side \(side), Logged in... need to initiate load")
+                        controller.loadup()
                     }
-                } else {
-                    print("In \(self.classForCoder).didClose, failed to cast navController \(self.centerController)")
                 }
-            })
-
-        } else {
-                            print("In \(self.classForCoder).didClose, have side \(self.deckController.openSide)")
+            }
+        case .left:
+            if let navController = self.deckController.leftViewController as? RVLeftMenuNavController {
+                if let _ = navController.topViewController as? RVLeftMenuController {
+                    if RVCoreInfo.sharedInstance.username == nil {
+                        Timer.scheduledTimer(withTimeInterval: 0.5, repeats: false, block: { (timer) in
+                            self.toggleSide(side: .center, animated: false)
+                        })
+                    } else {
+                       // print("In \(self.classForCoder).viewDeckController.didClose side \(side). Logged in. Take no action")
+                    }
+                }
+            }
+        case .right:
+            if let navController = self.deckController.rightViewController as? RVRightNavigationController {
+                if let _ = navController.topViewController as? RVRightMenuViewController {
+                    if RVCoreInfo.sharedInstance.username == nil {
+                      //  print("In \(self.classForCoder).viewDeckController.didClose side \(side). Logged in. Take no action")
+                    } else {
+                        Timer.scheduledTimer(withTimeInterval: 0.5, repeats: false, block: { (timer) in
+                            self.toggleSide(side: .center, animated: false)
+                        })
+                    }
+                }
+            }
         }
         
     }
-
-
 }

@@ -120,7 +120,8 @@ extension RVImage {
                     rvImage.filetype = filetype
                     if let parent = parent { rvImage.setParent(parent: parent)}
                     if let title = params[RVKeys.title.rawValue] as? String { rvImage.title = title }
-                    fullPath = fullPath + userId + "/" + rvImage._id + "/" + filename.lowercased() + "." + fileExtension.lowercased()
+                    
+                    fullPath = fullPath + userId + "/" + rvImage.localId + "/" + filename.lowercased() + "." + fileExtension.lowercased()
                     RVAWS.sharedInstance.upload(data: data, path: fullPath, contentType: filetype.rawValue, callback: { (data, response, error) in
                         if let error = error {
                             let rvError = RVError(message: "In \(classForCoder()).saveImage, got AWS upload error", sourceError: error)
@@ -134,20 +135,30 @@ extension RVImage {
                                     rvImage.urlString = urlString
                                     rvImage.create(callback: { (error) in
                                         if let error = error {
-                                            error.append(message: "In RVImage.saveImage, got error creating RVImage record, id: \(rvImage._id)")
+                                            error.append(message: "In RVImage.saveImage, got error creating RVImage record, id: \(rvImage.localId)")
                                             callback(nil, error)
                                         } else {
-                                            RVImage.retrieveInstance(id: rvImage._id, callback: { (model , error) in
-                                                if let error = error {
-                                                    error.append(message: "Error in RVImage.saveImage")
-                                                    callback(nil , error)
-                                                } else if let rvImage = model as? RVImage {
-                                                    callback(rvImage, nil)
-                                                } else {
-                                                    let rvError = RVError(message: "In RVImage.saveImage, saved image but failed to retrieve rvImage record with id \(rvImage._id)")
-                                                    callback(nil , rvError)
-                                                }
-                                            })
+                                            if let id = rvImage.localId {
+                                                RVImage.retrieveInstance(id: rvImage.localId, callback: { (model , error) in
+                                                    if let error = error {
+                                                        error.append(message: "Error in RVImage.saveImage")
+                                                        callback(nil , error)
+                                                        return
+                                                    } else if let rvImage = model as? RVImage {
+                                                        callback(rvImage, nil)
+                                                        return
+                                                    } else {
+                                                        let rvError = RVError(message: "In RVImage.saveImage, saved image but failed to retrieve rvImage record with id \(rvImage._id)")
+                                                        callback(nil , rvError)
+                                                        return 
+                                                    }
+                                                })
+                                            } else {
+                                                let rvError = RVError(message: "In \(self.instanceType).saveImage, no id")
+                                                callback(nil, rvError)
+                                                return
+                                            }
+
                                         }
                                     })
                                 }

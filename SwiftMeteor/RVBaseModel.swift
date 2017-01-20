@@ -25,8 +25,9 @@ class RVBaseModel: MeteorDocument {
     var dirties = [String: AnyObject]()
 
     init() {
-        super.init(_id: RVSwiftDDP.sharedInstance.getId())
-        self.id = self._id
+        let id = RVSwiftDDP.sharedInstance.getId()
+        super.init(id: id, fields: self.objects as NSDictionary? )
+        self.localId = id
         let me = type(of: self)
         self.collection = me.collectionType()
         self.modelType = self.collection
@@ -48,18 +49,18 @@ class RVBaseModel: MeteorDocument {
         } else {
             print("Error.......... \(type(of: self)).init(objects no ID provided")
         }
-        super.init(_id: _id)
+        super.init(id: _id, fields: self.objects as NSDictionary? )
         checkModelType()
 
     }
     required init(id: String, fields: NSDictionary?) {
-        super.init(_id: id)
+        super.init(id: RVSwiftDDP.sharedInstance.getId(), fields: self.objects as NSDictionary? )
         if let objects = fields as? [String : AnyObject] {
             self.objects = objects
         } else {
             print("In \(instanceType).init fields did not cast as [String:AnyObject")
         }
-        self.id = id
+        self.localId = id
         checkModelType()
     }
 
@@ -224,7 +225,7 @@ class RVBaseModel: MeteorDocument {
             }
         }
     }
-    var id: String? {
+    var localId: String? {
         get { return getString(key: RVKeys._id) }
         set { updateString(key: RVKeys._id, value: newValue, setDirties: true)}
     }
@@ -398,7 +399,7 @@ class RVBaseModel: MeteorDocument {
         
     }
     func setParent(parent:RVBaseModel) {
-        self.parentId = parent._id
+        self.parentId = parent.localId
         self.parentModelType = parent.modelType
     }
 }
@@ -423,13 +424,13 @@ extension RVBaseModel {
         fields.removeValue(forKey: RVKeys.updatedAt.rawValue)
         Meteor.call(type(of: self).insertMethod.rawValue, params: [fields]) {(result, error: DDPError?) in
             if let error = error {
-                let rvError = RVError(message: "In \(self.instanceType).insert \(#line) got DDPError for id: \(self._id)", sourceError: error)
+                let rvError = RVError(message: "In \(self.instanceType).insert \(#line) got DDPError for id: \(self.localId)", sourceError: error)
                 callback(rvError)
             } else if let result = result {
-                print("In \(self.instanceType).created \(#line) successfully created \(self.id) and result returned is \(result)")
+                print("In \(self.instanceType).created \(#line) successfully created \(self.localId) and result returned is \(result)")
                 callback(nil)
             } else {
-                print("In \(self.instanceType).insert \(#line), no error but no result. id = \(self._id)")
+                print("In \(self.instanceType).insert \(#line), no error but no result. id = \(self.localId)")
                 callback(nil)
             }
         }
@@ -437,21 +438,21 @@ extension RVBaseModel {
     func update(callback: @escaping(_ error: RVError?) -> Void) {
         let dirties = self.dirties
         self.dirties = [String: AnyObject]()
-        print("------------- In \(self.instanceType).update, id: \(self._id) and dirties = \(dirties)")
+        print("------------- In \(self.instanceType).update, id: \(self.localId) and dirties = \(dirties)")
     //    let updateDictionary = ["text": "updated description 555"]
         //[ self._id as AnyObject, self.dirties as AnyObject]
         if dirties.count < 1 {
             callback(nil)
         } else {
-            Meteor.call(type(of: self).updateMethod.rawValue, params: [ self._id as AnyObject, dirties as AnyObject]) { (result: Any? , error: DDPError?) in
+            Meteor.call(type(of: self).updateMethod.rawValue, params: [ self.localId as AnyObject, dirties as AnyObject]) { (result: Any? , error: DDPError?) in
                 if let error = error {
-                    let rvError = RVError(message: "In \(self.instanceType).update \(#line) got DDPError for id: \(self._id)", sourceError: error)
+                    let rvError = RVError(message: "In \(self.instanceType).update \(#line) got DDPError for id: \(self.localId)", sourceError: error)
                     callback(rvError)
                 } else if let _ = result {
                    // print("In \(self.instanceType).update result is \(result)") // typically get ["numberAffected": 1]
                     callback(nil)
                 } else {
-                    print("In \(self.instanceType).update \(#line), no error but no result. id = \(self._id)")
+                    print("In \(self.instanceType).update \(#line), no error but no result. id = \(self.localId)")
                     callback(nil)
                 }
             }
@@ -486,21 +487,21 @@ extension RVBaseModel {
     }
     func delete(callback: @escaping(_ error: RVError?) -> Void) {
      //   print("--------------------   In \(self.instanceType) delete ---------------------------------")
-        Meteor.call(type(of: self).deleteMethod.rawValue, params: [ self._id as AnyObject]) { (result: Any?, error: DDPError?) in
+        Meteor.call(type(of: self).deleteMethod.rawValue, params: [ self.localId as AnyObject]) { (result: Any?, error: DDPError?) in
             if let error = error {
-                let rvError = RVError(message: "In \(self.instanceType).delete \(#line) got DDPError for id: \(self._id)", sourceError: error)
+                let rvError = RVError(message: "In \(self.instanceType).delete \(#line) got DDPError for id: \(self.localId)", sourceError: error)
                 callback(rvError)
             } else if let _ = result {
                 callback(nil)
             } else {
-                print("In \(self.instanceType).delete \(#line), no error but no result. id = \(self._id)")
+                print("In \(self.instanceType).delete \(#line), no error but no result. id = \(self.localId)")
                 callback(nil)
             }
         }
     }
     func toString() -> String {
         var output = "-------------------------------\(instanceType) instance --------------------------------\n"
-        let id = self._id
+        let id = self.localId
             output = output + "_id = \(id), "
 
         output = "\(output) modelType = \(modelType.rawValue), collection = \(collection.rawValue) \n"
@@ -558,7 +559,7 @@ extension RVBaseModel {
         }
         output = output + additionalToString()
         if let image = image {
-            output = "\(output)image = id: \(image._id), \(image.objects), "
+            output = "\(output)image = id: \(image.localId), \(image.objects), "
         } else {
             output = "\(output)\nimage = <no image>,"
         }
