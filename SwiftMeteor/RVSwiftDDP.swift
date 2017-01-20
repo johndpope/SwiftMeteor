@@ -108,7 +108,7 @@ class RVSwiftDDP: NSObject {
             let rvError = RVError(message: "In \(self.instanceType).signupViaEmail \(#line), got DDPError", sourceError: error, lineNumber: #line)
             callback(rvError)
             return
-        } else if let result = result {
+        } else if let _ = result {
            // print("In \(self.classForCoder).signupViaEmail line \(#line), result is \(result)")
             callback(nil)
             return
