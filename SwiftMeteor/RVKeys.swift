@@ -16,7 +16,7 @@ enum RVKeys: String {
     case username       = "username"
     case handle         = "handle"
     case handleLowercase = "handleLowercase"
-    case fullName       = "fullName"
+    case fullName       = "fullName"  // Need to add to Meteor
     case fullNameLowercase = "fullNameLowercase"
     case modelType      = "modelType"
     case ownerId        = "ownerId"
@@ -32,23 +32,69 @@ enum RVKeys: String {
     case JSONdate       = "$date"
     case image          = "image"
     case special        = "special"
+    case deleted        = "deleted"
     
     case numberOfLikes  = "numberOfLikes"
     case numberOfObjections = "numberOfObjections"
     case numberOfFollowers = "numberOfFollowers"
     
     
-    case score          = "score"
+    case score          = "score" // Need to add to Meteor
     // task
     case checked        = "checked"
     
-    // imagme
+    // User
+    case first          = "first"
+    case last           = "last"
+    case yob            = "yob"
+    case gender         = "gender"
+    case cell           = "cell"
+    case settings       = "setting"
+    case email          = "email"
+    case watchGroupIds  = "watchGroupIds"
+    
+    // image
     case height         = "height"
     case width          = "width"
     case bytes          = "bytes"
-    case urlString      = "urlString"
+    case urlString      = "urlString" // is url in Meteor
     case filetype       = "filetype"
     
+    case photo_reference = "photo_reference" // New
+    case url = "url"  // New
+
+
+    
+    // location
+    case geometry = "geometry"
+    case latitude = "lat"
+    case longitude = "lng"
+    case fullAddress   = "fullAddress"
+    case reference = "reference"
+    case iconURL = "iconURL"
+    case record_id = "record_id"
+    case place_id = "placeId"
+    case types = "types"
+    case thoroughfare = "thoroughfare"
+    case locality = "locality"
+    case subLocality = "subLocality"
+    case administrativeArea = "administrativeArea"
+    case city = "city"
+    case state = "state"
+    case postalCode = "zip"
+    case country = "country"
+    case lines = "lines"
+    case website = "website"
+    case phoneNumber = "phoneNumber"
+    case neighborhood = "neighborhood"
+    case street_number = "street_number"
+    case route = "route"
+    case geocoded = "geocoded"
+    case geoIndex = "geoIndex"
+    
+    case street = "street"  // in Meteor
+    case maps_url = "maps_url" // in Meteor
+
     
     case metaQueryTerm  = "$meta"
 }

@@ -65,7 +65,11 @@ class RVImage: RVBaseModel {
         get { return getString(key: RVKeys.urlString) }
         set { updateString(key: RVKeys.urlString, value: newValue, setDirties: true)}
     }
-
+    
+    var photo_reference: String? {
+        get { return getString(key: RVKeys.photo_reference) }
+        set { updateString(key: RVKeys.photo_reference, value: newValue, setDirties: true)}
+    }
     var url: URL? {
         get {
             if let urlString = self.urlString { return URL(string: urlString) }
@@ -92,7 +96,7 @@ class RVImage: RVBaseModel {
 extension RVImage {
     // path = "goofy/something/
     class func saveImage(image: UIImage, path: String?, filename: String, filetype: RVFileType, parent: RVBaseModel?, params: [String:AnyObject],callback: @escaping(_ rvImage: RVImage?, _ error: RVError?) -> Void ) {
-        RVUser.sharedInstance.userId(callback: {(userId, error) -> Void in
+        RVMeteorUser.sharedInstance.userId(callback: {(userId, error) -> Void in
             if let error = error {
                 error.append(message: "In RVImage.saveImage error getting userId")
                 callback(nil , error)

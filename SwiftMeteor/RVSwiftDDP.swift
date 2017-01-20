@@ -53,7 +53,6 @@ class RVSwiftDDP: NSObject {
     }()
     override init() {
         super.init()
-
         Meteor.client.allowSelfSignedSSL = true // Connect to a server that users a self signed ssl certificate
         Meteor.client.logLevel = .info // Options are: .Verbose, .Debug, .Info, .Warning, .Error, .Severe, .None
         Meteor.client.delegate = self
@@ -62,8 +61,6 @@ class RVSwiftDDP: NSObject {
         NotificationCenter.default.addObserver(self, selector: #selector(RVSwiftDDP.ddpFailed), name: NSNotification.Name(rawValue: DDP_FAILED), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(RVSwiftDDP.ddpWebsocketError), name: NSNotification.Name(rawValue: DDP_WEBSOCKET_ERROR), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(RVSwiftDDP.ddpWebsocketClose), name: NSNotification.Name(rawValue: DDP_WEBSOCKET_CLOSE), object: nil)
-    
-        
     }
     @objc func ddpDisconnected(notification: NSNotification) {
         print("IN \(self.classForCoder).ddpDisconnected \(notification.userInfo)")

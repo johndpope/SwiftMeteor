@@ -81,7 +81,10 @@ class RVBaseModel: MeteorDocument {
             }
         }
     }
-    
+    var deleted: Bool? {
+        get { return getBool(key: .deleted) }
+        set { updateBool(key: .deleted)}
+    }
     var title: String? {
         get { return getString(key: RVKeys.title) }
         set { updateString(key: RVKeys.title, value: newValue, setDirties: true)}

@@ -1,29 +1,36 @@
 PODS:
-  - AWSAutoScaling (2.4.12):
-    - AWSCore (= 2.4.12)
-  - AWSCloudWatch (2.4.12):
-    - AWSCore (= 2.4.12)
-  - AWSCognito (2.4.12):
-    - AWSCore (= 2.4.12)
-  - AWSCognitoIdentityProvider (2.4.12):
-    - AWSCore (= 2.4.12)
-  - AWSCore (2.4.12)
-  - AWSLambda (2.4.12):
-    - AWSCore (= 2.4.12)
-  - AWSS3 (2.4.12):
-    - AWSCore (= 2.4.12)
-  - CryptoSwift (0.6.6)
+  - AWSAutoScaling (2.4.16):
+    - AWSCore (= 2.4.16)
+  - AWSCloudWatch (2.4.16):
+    - AWSCore (= 2.4.16)
+  - AWSCognito (2.4.16):
+    - AWSCore (= 2.4.16)
+  - AWSCognitoIdentityProvider (2.4.16):
+    - AWSCore (= 2.4.16)
+  - AWSCore (2.4.16)
+  - AWSLambda (2.4.16):
+    - AWSCore (= 2.4.16)
+  - AWSS3 (2.4.16):
+    - AWSCore (= 2.4.16)
+  - CryptoSwift (0.6.7)
+  - GoogleMaps (2.1.1):
+    - GoogleMaps/Maps (= 2.1.1)
+  - GoogleMaps/Base (2.1.1)
+  - GoogleMaps/Maps (2.1.1):
+    - GoogleMaps/Base
+  - GooglePlaces (2.1.1):
+    - GoogleMaps/Base (= 2.1.1)
   - LoremIpsum (1.0.0)
   - SDWebImage (3.8.2):
     - SDWebImage/Core (= 3.8.2)
   - SDWebImage/Core (3.8.2)
-  - SwiftDDP (0.4.0):
+  - SwiftDDP (0.4.1):
     - CryptoSwift (~> 0.6.6)
     - SwiftWebSocket (~> 2.6.5)
     - XCGLogger
   - SwiftWebSocket (2.6.5)
-  - TPKeyboardAvoiding (1.3)
-  - ViewDeck (3.0.0)
+  - TPKeyboardAvoiding (1.3.1)
+  - ViewDeck (3.1.0)
   - XCGLogger (4.0.0):
     - XCGLogger/Core (= 4.0.0)
   - XCGLogger/Core (4.0.0)
@@ -35,6 +42,8 @@ DEPENDENCIES:
   - AWSCognitoIdentityProvider
   - AWSLambda
   - AWSS3
+  - GoogleMaps
+  - GooglePlaces
   - LoremIpsum
   - SDWebImage (~> 3.8)
   - SwiftDDP (~> 0.4.0)
@@ -42,22 +51,24 @@ DEPENDENCIES:
   - ViewDeck
 
 SPEC CHECKSUMS:
-  AWSAutoScaling: 9414a14d57e027794582e04769d222a26a630067
-  AWSCloudWatch: b2c61666bfd0bec33bd013ac36b4b825aee7aee2
-  AWSCognito: 3c897210f6bfbb04585332388dff2036a3f39540
-  AWSCognitoIdentityProvider: 219628dfb0110d9763e18a2f4d6895e9ad963382
-  AWSCore: 8ee5b1dc06a0fd562429fe7120113ca93cbfbca6
-  AWSLambda: 39c628a20f48bcdb8d9ab469fbfe866236668a62
-  AWSS3: 7bb3e095a37ed8334a0b868bbca74ab574b37a4f
-  CryptoSwift: 88592381b73f36e192124539390a7c9bacda76af
+  AWSAutoScaling: b659a202a145e89c212f11b889122545a663f5e8
+  AWSCloudWatch: 3653a840e267235722b350202e06185a976c3ba9
+  AWSCognito: 666dba6eb65ac27faad79e83febf25630913aefc
+  AWSCognitoIdentityProvider: 1c74bb819fc5f74a708a4a8e0be8b235a959ab86
+  AWSCore: 7c3c129991e6387bcbad7132bc3661e7135754db
+  AWSLambda: 87ec46e9fc53409dcbe28b70a6ac86a27b87275b
+  AWSS3: fef6aa8f8f625df8f67f1b6574fe761f3a4ddc99
+  CryptoSwift: 685ae257941e5447474348a2b545583e1a16b573
+  GoogleMaps: a5b5bbe47734e2443bde781a6aa64e69fdb6d785
+  GooglePlaces: 35636d86e5020cba3856eb988c09a5491de0a65a
   LoremIpsum: 9029c55d36501b2ee0b05cc9ecda11d3a0479160
   SDWebImage: 098e97e6176540799c27e804c96653ee0833d13c
-  SwiftDDP: b575009a2c83bde917b9f2f00decada31cefd7ef
+  SwiftDDP: 63bcefd72c4793bf8d86004862a1adca88eb3bc9
   SwiftWebSocket: 1ef8a0efb023544643bdf480c1ec4a62b204f293
-  TPKeyboardAvoiding: a5138f318c06fb3e151f886e18ce4a72695d9cbe
-  ViewDeck: 9ad8c4ca95ffe21245ee411515c424807e6c7cfa
+  TPKeyboardAvoiding: 0d6af20e95e2850f4c621841225b59ec7d8dd852
+  ViewDeck: 942d90dd23c9f97cc8038be352255378167edcca
   XCGLogger: 38063ea89b4c8b23232d18efd2e12eb0005f3ea4
 
-PODFILE CHECKSUM: ce6b198a2ae8024e6979b041c96a71a28cea38f4
+PODFILE CHECKSUM: 90df869a4d572bd4639a446f1367e5fe36410e03
 
 COCOAPODS: 1.1.1

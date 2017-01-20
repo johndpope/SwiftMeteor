@@ -9,10 +9,10 @@
 import Foundation
 import SwiftDDP
 
-class RVUser {
+class RVMeteorUser {
     private var _userId: String? = nil
-    static let sharedInstance: RVUser = {
-        RVUser()
+    static let sharedInstance: RVMeteorUser = {
+        RVMeteorUser()
     }()
     
     func userId(callback: @escaping (_ id: String?, _ error: RVError?)-> Void) -> Void {

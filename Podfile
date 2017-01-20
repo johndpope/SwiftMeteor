@@ -17,7 +17,8 @@ target 'SwiftMeteor' do
   pod 'SDWebImage', '~>3.8'
   pod 'TPKeyboardAvoiding'
   pod 'LoremIpsum'
-
+  pod 'GoogleMaps'
+  pod 'GooglePlaces'
 
 
   #target 'SwiftMeteorTests' do
