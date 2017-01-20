@@ -106,7 +106,7 @@ class RVBaseViewController: UIViewController {
                 manager.addSection(section: filterDatasource)
             }
         } else {
-            print("In \(instanceType).viewDidLoad, , manager not set")
+           // print("In \(instanceType).viewDidLoad, , manager not set")
         }
         if let topViewConstraint = self.topViewHeightConstraint {
             self.topViewHeightConstraintConstant = topViewConstraint.constant
@@ -176,7 +176,7 @@ class RVBaseViewController: UIViewController {
             if let constraint = tableViewTopConstraint {
                 constraint.constant = constraint.constant + self.topViewHeightConstraintConstant            }
         } else {
-            p("in showSegmentView, no segmentedView")
+            //p("in showSegmentView, no segmentedView")
         }
     }
     func hideTopView() {
@@ -336,8 +336,16 @@ extension RVBaseViewController: UISearchBarDelegate {
 }
 extension RVBaseViewController: UISearchResultsUpdating {
     // Called when the search bar's text or scope has changed or when the search bar becomes first responder.
-    public func updateSearchResults(for searchController: UISearchController) {
-        print("In \(self.classForCoder).updateSearchResults")
+
+    
+    func updateSearchResults(for searchController: UISearchController) {
+        if let topView  = self.topView {
+            if searchController.isActive && (!topView.isHidden) {
+                self.hideTopView()
+            } else if !searchController.isActive && topView.isHidden {
+                showTopView()
+            }
+        }
         updateSearchResultsHelper(searchController: searchController)
     }
     func updateSearchResultsHelper(searchController: UISearchController) {
@@ -353,7 +361,7 @@ extension RVBaseViewController: UISearchResultsUpdating {
             searchBar.prompt = nil
         }
         let searchText = searchBar.text != nil ?  searchBar.text! : ""
-        p("in updateSearchResults, scopeIndex = \(scopeIndex) and text is \(searchText)")
+        //p("in updateSearchResults, scopeIndex = \(scopeIndex) and text is \(searchText)")
         var operation = self.operation
         if operation.active {
             operation = replaceOperation(operation: operation, operationName: searchText)

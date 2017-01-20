@@ -32,24 +32,19 @@ class RVRightMenuViewController: RVBaseViewController {
     
     var listener: RVListener? = nil
     @IBAction func backButtonTouched(_ sender: UIBarButtonItem) {
-        //       print("In \(self.classForCoder).backButtonTOuched toggling to center")
-        //RVViewDeck.sharedInstance.toggleSide(side: .center)
-        RVSwiftDDP.sharedInstance.loginWithUsername(username: RVSwiftDDP.pluggedUsername, password: RVSwiftDDP.pluggedPassword, callback: { (result, error: RVError?) in
+        RVSwiftDDP.sharedInstance.loginWithPassword(email: RVSwiftDDP.pluggedUsername, password: RVSwiftDDP.pluggedPassword) { (result, error) in
             if let error = error {
                 error.printError()
             } else {
-                print("After loginWIthUsernmae \(result)")
+                print("After loginWIthPassword \(result)")
             }
-        })
+        }
     }
     
-    @IBAction func registerButtonTouched(_ sender: UIButton) {
-    }
-    
-    @IBAction func loginButtonTouched(_ sender: UIButton) {
-    }
-
-    @IBAction func resetButtonTouiched(_ sender: UIButton) {
+    override func viewDidLoad() {
+        RVSwiftDDP.sharedInstance.connect {
+            //print("In \(self.instanceType).initialize, returned from connecting with Meteor")
+        }
     }
 
     override func addLogInOutListeners() {

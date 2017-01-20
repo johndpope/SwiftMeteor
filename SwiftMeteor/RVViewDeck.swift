@@ -42,9 +42,6 @@ class RVViewDeck: NSObject {
     var deckController: IIViewDeckController!
     
     func initialize(appDelegate: AppDelegate) {
-        RVSwiftDDP.sharedInstance.connect {
-            //print("In \(self.instanceType).initialize, returned from connecting with Meteor")
-        }
         let window = UIWindow(frame: UIScreen.main.bounds)
         appDelegate.window = window
         window.tintColor = UIColor(red: 0.071, green: 0.42, blue: 0.694, alpha: 1.0)

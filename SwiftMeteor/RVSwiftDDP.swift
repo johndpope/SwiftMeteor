@@ -199,7 +199,7 @@ class RVSwiftDDP: NSObject {
     func loginWithUsername(username: String, password: String, callback: @escaping (_ result: Any?, _ error: RVError?)-> Void) -> Void {
         Meteor.loginWithUsername(username, password: password) { (result, error) in
             if let error = error {
-                let rvError = RVError(message: "In \(self.instanceType).loginWithUsername, got Meteor error", sourceError: error)
+                let rvError = RVError(message: "In \(self.instanceType).loginWithUsername \(username) \(password), got Meteor error", sourceError: error)
                 callback(nil, rvError)
                 return
             } else if let result = result as? [String : AnyObject] {
@@ -215,7 +215,7 @@ class RVSwiftDDP: NSObject {
     func loginWithPassword(email: String, password: String, completionHandler: @escaping (_ result: Any?, _ error: RVError?)-> Void) -> Void {
         Meteor.loginWithPassword(email, password: password) { (result: Any?, error: DDPError?) in
             if let error = error {
-                let rvError = RVError(message: "In \(self.instanceType).loginWithPassword, got Meteor Error", sourceError: error)
+                let rvError = RVError(message: "In \(self.instanceType).loginWithPassword, got Meteor Error for email \(email) password \(password)", sourceError: error)
                 completionHandler(result, rvError)
                 return
             } else {
