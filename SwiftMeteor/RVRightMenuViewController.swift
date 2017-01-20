@@ -151,6 +151,7 @@ class RVRightMenuViewController: RVBaseViewController {
     
     override func addLogInOutListeners() {
         print("In \(self.classForCoder).addLoginOutListeners")
+        /*
         Timer.scheduledTimer(withTimeInterval: 0.05, repeats: false) { (timer) in
             if let _ = RVCoreInfo.sharedInstance.username {
                            print("In \(self.classForCoder).addLogInOutListeners toggling to center")
@@ -175,6 +176,7 @@ class RVRightMenuViewController: RVBaseViewController {
                 
             }
         }
+ */
 
     }
     override func viewWillDisappear(_ animated: Bool) {
