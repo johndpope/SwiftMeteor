@@ -39,6 +39,7 @@ enum RVKeys: String {
     case value          = "value"
     case schemaVersion  = "schemaVersion"
     case clientRole     = "clientRole"
+    case visibility     = "visibility"
     
     case numberOfLikes  = "numberOfLikes"
     case numberOfObjections = "numberOfObjections"

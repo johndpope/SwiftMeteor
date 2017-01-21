@@ -30,9 +30,13 @@ class RVBaseModel: MeteorDocument {
         super.init(id: id, fields: self.objects as NSDictionary? )
         self.localId = id
         self.modelType = type(of: self).collectionType()
+        self.visibility = .publicVisibility
         initializeProperties()
     }
-    func initializeProperties() { }
+    func initializeProperties() {
+        self.modelType = type(of: self).collectionType()
+        self.visibility = .publicVisibility
+    }
     func checkModelType() {
         if self.modelType == RVModelType.unknown || self.modelType != type(of: self).collectionType() {
             print("In \(instanceType).init invalid model type. Expected \(type(of: self).collectionType()), but received \(self.modelType.rawValue)")
@@ -436,7 +440,15 @@ class RVBaseModel: MeteorDocument {
                 updateDictionary(key: .updatedAt, dictionary: nil, setDirties: true)
             }
         }
-        
+    }
+    var visibility: RVVisibility {
+        get {
+            if let rawValue = getString(key: .visibility) {
+                if let visibility = RVVisibility(rawValue: rawValue) { return visibility }
+            }
+            return RVVisibility.publicVisibility
+        }
+        set { updateString(key: .visibility, value: newValue.rawValue, setDirties: true)}
     }
     var domainId: String? {
         get { return getString(key: .domainId) }
