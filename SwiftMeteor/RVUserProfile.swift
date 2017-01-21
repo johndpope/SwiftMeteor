@@ -205,4 +205,49 @@ class RVUserProfile: RVBaseModel {
         profile.location = location
         return profile
     }
+    class func getOrCreateUsersUserProfile(callback: @escaping (_ profile: RVUserProfile?, _ error: RVError?) -> Void ) {
+        let profile = RVUserProfile()
+        profile.username = RVCoreInfo.sharedInstance.username
+        var fields = profile.dirties
+        fields.removeValue(forKey: RVKeys.createdAt.rawValue)
+        fields.removeValue(forKey: RVKeys.updatedAt.rawValue)
+        profile.dirties = [String : AnyObject]()
+        Meteor.call(RVMeteorMethods.getOrCreateUserUserProfile.rawValue, params: [fields]) {(result, error: DDPError?) in
+            if let error = error {
+                let rvError = RVError(message: "In RVUserProfile.getOrCreateUsersUserProfile \(#line) got DDPError for id: \(profile.localId)", sourceError: error)
+                callback(nil, rvError)
+            } else if let fields = result as? [String: AnyObject] {
+                if let _ = fields["newProfile"] as? Bool {
+                    print("In \(type(of: self)).getOrCreate, have a new Profile")
+                    if let id = fields["_id"] as? String {
+                        RVUserProfile.retrieveInstance(id: id, callback: { (model, error ) in
+                            if let error = error {
+                                let rvError = RVError(message: "In RVUserProfile.got error retrieving \(id)", sourceError: error, lineNumber: #line, fileName: "")
+                                callback(nil, rvError)
+                            } else if let profile = model as? RVUserProfile {
+                                callback(profile, nil)
+                                return
+                            } else {
+                                let error = RVError(message: "In RVUserProfile.getOrCreate... failed to retrieve profile with id \(id)")
+                                callback(nil, error)
+                                return
+                            }
+                        })
+                        return
+                    } else {
+                        let rvError = RVError(message: "In RVUserProfile.getOrCreate.... got indication of new Profile, but no id provided")
+                        callback(nil, rvError)
+                        return
+                    }
+                } else {
+                   // print("Existing profile")
+                    callback(RVUserProfile(fields: fields), nil)
+                    return
+                }
+            } else {
+                print("In RVUserProfile.getOrCreateUsersUserProfile \(#line), no error but no result. id = \(profile.localId)")
+                callback(nil, nil)
+            }
+        }
+    }
 }

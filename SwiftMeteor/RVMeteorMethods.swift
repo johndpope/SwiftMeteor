@@ -35,7 +35,13 @@ enum RVMeteorMethods: String {
     case userProfileDelete      = "userProfile.delete"
     case userProfileFind        = "userProfile.find"
     case userProfileBulkQuery   = "userProfile.bulkQuery"
+    case getOrCreateUserUserProfile = "userProfile.getOrCreateUserUserProfile"
     
     
     case BulkTask = "tasks.bulk"
+    
+    // Domain
+    case domainCreate = "domain.create"
+    case domainFindById = "domain.findById"
+    case domainFindOne = "domain.findOne"
 }

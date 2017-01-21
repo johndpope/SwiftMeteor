@@ -111,6 +111,7 @@ class RVImage: RVBaseModel {
         image.handle = "Image handle"
         image.comment = "Image comment"
         image.schemaVersion = 32
+        image.location = nil
         return image
     }
     override func additionalToString()-> String {
