@@ -91,8 +91,8 @@ class RVLocation: RVBaseModel {
             self.fullAddress = string
             self.lines  = [string]
         }
-        self.place_id = place.placeID
-        if let url = place.website { self.website = url }
+        self.placeId = place.placeID
+        if let url = place.website { self.websiteString = url.absoluteString }
         if let phone = place.phoneNumber { self.phoneNumber = phone }
         let _ = self.generateGeoIndex()
     }
@@ -184,7 +184,7 @@ class RVLocation: RVBaseModel {
         } else {
             print("RVLocation.absorbGeocode Didnt get address components")
         }
-        if let string = geocode[RVGooglePlace.Keys.place_id.rawValue] as? String { self.place_id = string }
+        if let string = geocode[RVGooglePlace.Keys.place_id.rawValue] as? String { self.placeId = string }
         if title != "" { self.title = title }
     }
     private func absorbGMSAddress(gmsAddress: GMSAddress) {
@@ -216,11 +216,11 @@ class RVLocation: RVBaseModel {
         }
         if let string = rawPlaces[RVGooglePlace.Keys.reference.rawValue] as? String { self.reference = string }
         if let string = rawPlaces[RVGooglePlace.Keys.icon.rawValue] as? String {
-            if let url = URL(string: string) { self.iconURL = url }
+            if let _ = URL(string: string) { self.iconURLString = string }
         }
         if let string = rawPlaces[RVGooglePlace.Keys.vicinity.rawValue] as? String { self.fullAddress = string }
         if let string = rawPlaces[RVGooglePlace.Keys.name.rawValue] as? String { self.title = string }
-        if let string = rawPlaces[RVGooglePlace.Keys.place_id.rawValue] as? String { self.place_id = string }
+        if let string = rawPlaces[RVGooglePlace.Keys.place_id.rawValue] as? String { self.placeId = string }
         if let string = rawPlaces[RVGooglePlace.Keys.id.rawValue] as? String { self.record_id = string }
         if let types = rawPlaces[RVGooglePlace.Keys.types.rawValue] as? [String] { self.types = types }
         if let photos = rawPlaces[RVGooglePlace.Keys.photos.rawValue] as? [[String : AnyObject]] {
@@ -311,9 +311,9 @@ class RVLocation: RVBaseModel {
         get { return getString(key: .fullAddress) }
         set { updateString(key: .fullAddress, value: newValue, setDirties: true)}
     }
-    var place_id: String? {
-        get { return getString(key: .place_id) }
-        set { updateString(key: .place_id, value: newValue, setDirties: true)}
+    var placeId: String? {
+        get { return getString(key: .placeId) }
+        set { updateString(key: .placeId, value: newValue, setDirties: true)}
     }
     
     var record_id: String? {
@@ -328,6 +328,11 @@ class RVLocation: RVBaseModel {
     var thoroughfare: String? {
         get { return getString(key: .thoroughfare) }
         set { updateString(key: .thoroughfare, value: newValue, setDirties: true)}
+    }
+    /** Street NEIL IS THIS USED. */
+    var street: String? {
+        get { return getString(key: .street) }
+        set { updateString(key: .street, value: newValue, setDirties: true)}
     }
     /** Locality or city. */
     var locality: String? {
@@ -392,27 +397,34 @@ class RVLocation: RVBaseModel {
             return nil
         }
     }
+    var iconURLString: String? {
+        get {return getString(key: .iconURLString) }
+        set { updateString(key: .iconURLString, value: newValue, setDirties: true)}
+    }
     var iconURL: URL? {
         get {
-            if let raw = getString(key: .iconURL) {
+            if let raw = self.iconURLString {
                 return URL(string: raw)
             } else {
                 return nil
             }
-            
         }
         set {
             if let url = newValue {
-                updateString(key: .iconURL, value: url.absoluteString, setDirties: true)
+                self.iconURLString = url.absoluteString
             } else {
-                updateString(key: .iconURL, value: nil, setDirties: true)
+                self.iconURLString = nil
             }
             
         }
     }
+    var websiteString: String? {
+        get {return getString(key: .websiteString) }
+        set { updateString(key: .websiteString, value: newValue, setDirties: true)}
+    }
     var website: URL? {
         get {
-            if let raw = getString(key: .website) {
+            if let raw = self.websiteString {
                 return URL(string: raw)
             } else {
                 return nil
@@ -421,9 +433,9 @@ class RVLocation: RVBaseModel {
         }
         set {
             if let url = newValue {
-                updateString(key: .website, value: url.absoluteString, setDirties: true)
+                self.websiteString = url.absoluteString
             } else {
-                updateString(key: .website, value: nil, setDirties: true)
+                self.websiteString = nil
             }
             
         }
@@ -475,10 +487,10 @@ class RVLocation: RVBaseModel {
             output = "\(output) <no zip>, "
         }
         
-        if let value = self.iconURL {
-            output = "\(output) IconURL = \(value.absoluteString), "
+        if let value = self.iconURLString {
+            output = "\(output) IconURLString = \(value), "
         } else {
-            output = "\(output) <no iconURL>\n"
+            output = "\(output) <no iconURLStrin>\n"
         }
         if let image = self.image {
             output = "\(output) -- ImageObject: \(image.toString())"

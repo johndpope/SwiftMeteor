@@ -10,5 +10,6 @@ import Foundation
 
 enum RVSpecial: String {
     case root = "Root"
+    case regular = "Regular"
     case unknown = "Unknown"
 }

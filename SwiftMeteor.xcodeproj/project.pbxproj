@@ -46,7 +46,7 @@
 		286CA3271E327C9700B081B8 /* RVAPIKeys.swift in Sources */ = {isa = PBXBuildFile; fileRef = 286CA3261E327C9700B081B8 /* RVAPIKeys.swift */; };
 		286CA3291E327F2E00B081B8 /* RVGender.swift in Sources */ = {isa = PBXBuildFile; fileRef = 286CA3281E327F2E00B081B8 /* RVGender.swift */; };
 		286CA32B1E327F8200B081B8 /* RVUserNotificationSetting.swift in Sources */ = {isa = PBXBuildFile; fileRef = 286CA32A1E327F8200B081B8 /* RVUserNotificationSetting.swift */; };
-		286CA32D1E32811100B081B8 /* RVUser.swift in Sources */ = {isa = PBXBuildFile; fileRef = 286CA32C1E32811100B081B8 /* RVUser.swift */; };
+		286CA32D1E32811100B081B8 /* RVUserProfile.swift in Sources */ = {isa = PBXBuildFile; fileRef = 286CA32C1E32811100B081B8 /* RVUserProfile.swift */; };
 		286CA32F1E3285B300B081B8 /* RVSetting.swift in Sources */ = {isa = PBXBuildFile; fileRef = 286CA32E1E3285B300B081B8 /* RVSetting.swift */; };
 		286CA3311E3289F000B081B8 /* RVDomain.swift in Sources */ = {isa = PBXBuildFile; fileRef = 286CA3301E3289F000B081B8 /* RVDomain.swift */; };
 		2870CCD11DECD81F005C6FB5 /* AWSUserFileManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2870CCD01DECD81F005C6FB5 /* AWSUserFileManager.swift */; };
@@ -85,6 +85,11 @@
 		28F53E791DEB5F71009641F0 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 28F53E771DEB5F71009641F0 /* LaunchScreen.storyboard */; };
 		28F53E841DEB5F72009641F0 /* SwiftMeteorTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 28F53E831DEB5F72009641F0 /* SwiftMeteorTests.swift */; };
 		28F53E8F1DEB5F72009641F0 /* SwiftMeteorUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 28F53E8E1DEB5F72009641F0 /* SwiftMeteorUITests.swift */; };
+		28F5C0AC1E32B4C10012E52A /* RVMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 28F5C0AB1E32B4C10012E52A /* RVMessage.swift */; };
+		28F5C0AE1E32B5830012E52A /* RVFollow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 28F5C0AD1E32B5830012E52A /* RVFollow.swift */; };
+		28F5C0B01E32B5D00012E52A /* RVHousehold.swift in Sources */ = {isa = PBXBuildFile; fileRef = 28F5C0AF1E32B5D00012E52A /* RVHousehold.swift */; };
+		28F5C0B21E32BA610012E52A /* RVWatchGroup.swift in Sources */ = {isa = PBXBuildFile; fileRef = 28F5C0B11E32BA610012E52A /* RVWatchGroup.swift */; };
+		28F5C0B41E32BBD00012E52A /* RVClientRole.swift in Sources */ = {isa = PBXBuildFile; fileRef = 28F5C0B31E32BBD00012E52A /* RVClientRole.swift */; };
 		362E89CA5B849A39F0EE578F /* Pods_SwiftMeteor.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6B286D927E0BD7C69A075554 /* Pods_SwiftMeteor.framework */; };
 /* End PBXBuildFile section */
 
@@ -146,7 +151,7 @@
 		286CA3261E327C9700B081B8 /* RVAPIKeys.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RVAPIKeys.swift; sourceTree = "<group>"; };
 		286CA3281E327F2E00B081B8 /* RVGender.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RVGender.swift; sourceTree = "<group>"; };
 		286CA32A1E327F8200B081B8 /* RVUserNotificationSetting.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RVUserNotificationSetting.swift; sourceTree = "<group>"; };
-		286CA32C1E32811100B081B8 /* RVUser.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RVUser.swift; sourceTree = "<group>"; };
+		286CA32C1E32811100B081B8 /* RVUserProfile.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RVUserProfile.swift; sourceTree = "<group>"; };
 		286CA32E1E3285B300B081B8 /* RVSetting.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RVSetting.swift; sourceTree = "<group>"; };
 		286CA3301E3289F000B081B8 /* RVDomain.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RVDomain.swift; sourceTree = "<group>"; };
 		2870CCD01DECD81F005C6FB5 /* AWSUserFileManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AWSUserFileManager.swift; sourceTree = "<group>"; };
@@ -191,6 +196,11 @@
 		28F53E8A1DEB5F72009641F0 /* SwiftMeteorUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = SwiftMeteorUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		28F53E8E1DEB5F72009641F0 /* SwiftMeteorUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwiftMeteorUITests.swift; sourceTree = "<group>"; };
 		28F53E901DEB5F72009641F0 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		28F5C0AB1E32B4C10012E52A /* RVMessage.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RVMessage.swift; sourceTree = "<group>"; };
+		28F5C0AD1E32B5830012E52A /* RVFollow.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RVFollow.swift; sourceTree = "<group>"; };
+		28F5C0AF1E32B5D00012E52A /* RVHousehold.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RVHousehold.swift; sourceTree = "<group>"; };
+		28F5C0B11E32BA610012E52A /* RVWatchGroup.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RVWatchGroup.swift; sourceTree = "<group>"; };
+		28F5C0B31E32BBD00012E52A /* RVClientRole.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RVClientRole.swift; sourceTree = "<group>"; };
 		3F442EC15311267BF21BD64D /* Pods_SwiftMeteorTests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_SwiftMeteorTests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		6877A64A500AD32A39F63091 /* Pods-SwiftMeteor.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SwiftMeteor.release.xcconfig"; path = "Pods/Target Support Files/Pods-SwiftMeteor/Pods-SwiftMeteor.release.xcconfig"; sourceTree = "<group>"; };
 		6B286D927E0BD7C69A075554 /* Pods_SwiftMeteor.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_SwiftMeteor.framework; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -356,9 +366,14 @@
 				28F059DF1E32770100B41F6A /* RVLocation.swift */,
 				286CA3281E327F2E00B081B8 /* RVGender.swift */,
 				286CA32A1E327F8200B081B8 /* RVUserNotificationSetting.swift */,
-				286CA32C1E32811100B081B8 /* RVUser.swift */,
+				286CA32C1E32811100B081B8 /* RVUserProfile.swift */,
 				286CA32E1E3285B300B081B8 /* RVSetting.swift */,
 				286CA3301E3289F000B081B8 /* RVDomain.swift */,
+				28F5C0AB1E32B4C10012E52A /* RVMessage.swift */,
+				28F5C0AD1E32B5830012E52A /* RVFollow.swift */,
+				28F5C0AF1E32B5D00012E52A /* RVHousehold.swift */,
+				28F5C0B11E32BA610012E52A /* RVWatchGroup.swift */,
+				28F5C0B31E32BBD00012E52A /* RVClientRole.swift */,
 			);
 			name = Models;
 			sourceTree = "<group>";
@@ -678,7 +693,9 @@
 				286CA32F1E3285B300B081B8 /* RVSetting.swift in Sources */,
 				2870CCD11DECD81F005C6FB5 /* AWSUserFileManager.swift in Sources */,
 				28E65DA11E1DB166004E82F5 /* RVLeftMenuController.swift in Sources */,
+				28F5C0B01E32B5D00012E52A /* RVHousehold.swift in Sources */,
 				284E84A21DFD30F600A9F33A /* RVAWS.swift in Sources */,
+				28F5C0B21E32BA610012E52A /* RVWatchGroup.swift in Sources */,
 				28DE2D991DFE481900EFEECB /* RVBaseModel.swift in Sources */,
 				28F53E711DEB5F71009641F0 /* SecondViewController.swift in Sources */,
 				286CA32B1E327F8200B081B8 /* RVUserNotificationSetting.swift in Sources */,
@@ -698,6 +715,8 @@
 				288961091DEDED2C00FC34DB /* RVAWSDirect.swift in Sources */,
 				28DE2D9F1DFE713300EFEECB /* RVMeteorMethods.swift in Sources */,
 				284FBAD41DEC142B00446C86 /* RVMainTabViewController.swift in Sources */,
+				28F5C0B41E32BBD00012E52A /* RVClientRole.swift in Sources */,
+				28F5C0AE1E32B5830012E52A /* RVFollow.swift in Sources */,
 				28360E161E034C7A00E62384 /* RVTaskCollection.swift in Sources */,
 				282E07451E3170E100FB5C1F /* String+Extension.swift in Sources */,
 				2813FAF61E20A9B8007E9428 /* RVTaskTableViewCell.swift in Sources */,
@@ -716,7 +735,7 @@
 				28D773401E30420200E8EDE0 /* RVBaseModel3.swift in Sources */,
 				2877761A1E21D19C00902CF7 /* RVSeed.swift in Sources */,
 				28201A461E1DE89C008D8E59 /* RVMainLandingNavigationController.swift in Sources */,
-				286CA32D1E32811100B081B8 /* RVUser.swift in Sources */,
+				286CA32D1E32811100B081B8 /* RVUserProfile.swift in Sources */,
 				2870CCD81DEDE72F005C6FB5 /* RVError.swift in Sources */,
 				2816A5551E2BD75E00B6804D /* UIView+Extension.swift in Sources */,
 				286CA31F1E327B8000B081B8 /* RVGeoJSON.swift in Sources */,
@@ -731,6 +750,7 @@
 				284FBAC91DEC125D00446C86 /* RVViewDeck.swift in Sources */,
 				282E07471E317A5A00FB5C1F /* RVMeteorUserConnection.swift in Sources */,
 				286CA3211E327B9C00B081B8 /* RVGeocoder.swift in Sources */,
+				28F5C0AC1E32B4C10012E52A /* RVMessage.swift in Sources */,
 				281B913A1E024933003AC233 /* RVQuery.swift in Sources */,
 				2816A5531E2BD6C100B6804D /* RVBaseNavigationController.swift in Sources */,
 				28F53E6D1DEB5F71009641F0 /* AppDelegate.swift in Sources */,

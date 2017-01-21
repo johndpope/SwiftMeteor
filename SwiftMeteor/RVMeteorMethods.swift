@@ -24,10 +24,13 @@ enum RVMeteorMethods: String {
     case UpdateTask = "tasks.update"
     case DeleteTask = "tasks.remove"
     case FindTask   = "tasks.find"
-    case GetUserId = "userId"
+    case GetMeteorUserId = "userId"
     
-    // User
-    case userProfileInsert      = "userProfile.insert"
+    
+    // MeteorUser 
+    case meteoruserFindUserProfileId = "meteorUser.findUserProfileId"
+    // UserProfile
+    case userProfileCreate      = "userProfile.create"
     case userProfileUpdate      = "userProfile.update"
     case userProfileDelete      = "userProfile.delete"
     case userProfileFind        = "userProfile.find"

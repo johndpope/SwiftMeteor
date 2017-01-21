@@ -25,7 +25,7 @@ enum RVKeys: String {
     case parentModelType = "parentModelType"
     case title          = "title"
     case text           = "text"
-    case regularDescription  = "description"
+    case regularDescription  = "regularDescription"
    // case lowerCaseRegularDescription = "lowerCaseRegularDescription"
     case comment        = "comment"
     case commentLowercase = "lowerCaseComment"
@@ -36,6 +36,9 @@ enum RVKeys: String {
     case domainId       = "domainId"
     case tags           = "tags"
     case location       = "location"
+    case value          = "value"
+    case schemaVersion  = "schemaVersion"
+    case clientRole     = "clientRole"
     
     case numberOfLikes  = "numberOfLikes"
     case numberOfObjections = "numberOfObjections"
@@ -44,6 +47,10 @@ enum RVKeys: String {
     // Domain
     case domainName     = "domainName"
     case score          = "score" // Need to add to Meteor
+    
+    // Follow
+    case followedId     = "followedId"
+    case followedModelType = "followedModelType"
     // task
     case checked        = "checked"
     
@@ -53,8 +60,8 @@ enum RVKeys: String {
     case lastName       = "last"
     case yob            = "yob"
     case gender         = "gender"
-    case cellPhone      = "cell"
-    case homePhone      = "home"
+    case cellPhone      = "cellPhone"
+    case homePhone      = "homePhone"
     case settings       = "setting"
     case email          = "email"
     case watchGroupIds  = "watchGroupIds"
@@ -70,7 +77,13 @@ enum RVKeys: String {
     case photo_reference = "photo_reference" // New
     case url = "url"  // New
 
-
+    // settings
+    case emailVisibility = "emailVisibilty"
+    case emailVerified = "emailVerified"
+    case cellVisibility = "cellVisibility"
+    case cellVerified = "cellVerified"
+    case homeVisibility = "homeVisibility"
+    case homeVerified = "homeVerified"
     
     // location
     case geometry = "geometry"
@@ -79,8 +92,9 @@ enum RVKeys: String {
     case fullAddress   = "fullAddress"
     case reference = "reference"
     case iconURL = "iconURL"
+    case iconURLString = "iconURLString"
     case record_id = "record_id"
-    case place_id = "placeId"
+    case placeId = "placeId"
     case types = "types"
     case thoroughfare = "thoroughfare"
     case locality = "locality"
@@ -92,6 +106,7 @@ enum RVKeys: String {
     case country = "country"
     case lines = "lines"
     case website = "website"
+    case websiteString = "websiteString"
     case phoneNumber = "phoneNumber"
     case neighborhood = "neighborhood"
     case street_number = "street_number"

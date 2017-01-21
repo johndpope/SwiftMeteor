@@ -8,7 +8,7 @@
 
 import Foundation
 class RVBaseModel3: NSObject {
-    class var absoluteModelType: RVModelType { return RVModelType.unknownModel }
+    class var absoluteModelType: RVModelType { return RVModelType.unknown }
     var objects = [String: AnyObject]()
     var dirties = [String: AnyObject]()
     var id: String? = nil
@@ -33,7 +33,7 @@ class RVBaseModel3: NSObject {
         } else {
             print("In \(self.classForCoder).init created ID creator")
         }
-        if (self.modelType == RVModelType.unknownModel) || (self.modelType != type(of: self).absoluteModelType) {
+        if (self.modelType == RVModelType.unknown) || (self.modelType != type(of: self).absoluteModelType) {
             print("In \(self.classForCoder).init, have invalid model. Expected \(type(of: self).absoluteModelType.rawValue), got \(self.modelType.rawValue)")
         }
     }
@@ -63,7 +63,7 @@ class RVBaseModel3: NSObject {
             if let rawValue = getString(key: .modelType) {
                 if let type = RVModelType(rawValue: rawValue) { return type}
             }
-            return RVModelType.unknownModel
+            return RVModelType.unknown
         }
         set {updateString(key: .modelType, value: newValue.rawValue, setDirties: true)}
     }

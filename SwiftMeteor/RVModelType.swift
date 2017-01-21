@@ -9,9 +9,14 @@
 import Foundation
 
 enum RVModelType: String  {
-    case unknownModel = "unknownModel"
+    case unknown = "unknown"
     case baseModel = "baseModel"
     case userProfile = "userProfile"
-    case image = "images"
+    case image = "image"
     case task = "tasks"
+    case message = "messages"
+    case setting = "settings"
+    case follow = "follow"
+    case household = "households"
+    case watchgroup = "watchgroup"
 }

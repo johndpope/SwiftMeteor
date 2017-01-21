@@ -33,7 +33,7 @@ class RVBaseModel: MeteorDocument {
     }
     func initializeProperties() { }
     func checkModelType() {
-        if self.modelType == RVModelType.unknownModel || self.modelType != type(of: self).collectionType() {
+        if self.modelType == RVModelType.unknown || self.modelType != type(of: self).collectionType() {
             print("In \(instanceType).init invalid model type. Expected \(type(of: self).collectionType()), but received \(self.modelType.rawValue)")
         }
     }
@@ -94,7 +94,7 @@ class RVBaseModel: MeteorDocument {
             if let rawValue = getString(key: .modelType) {
                 if let type = RVModelType(rawValue: rawValue) { return type}
             }
-            return RVModelType.unknownModel
+            return RVModelType.unknown
         }
         set {
             updateString(key: .modelType, value: newValue.rawValue, setDirties: true)
@@ -239,7 +239,10 @@ class RVBaseModel: MeteorDocument {
         get { return getString(key: RVKeys._id) }
         set { updateString(key: RVKeys._id, value: newValue, setDirties: true)}
     }
-    
+    var value: String? {
+        get { return getString(key: RVKeys.value) }
+        set { updateString(key: RVKeys.value, value: newValue, setDirties: true)}
+    }
     var ownerId: String? {
         get { return getString(key: RVKeys.ownerId) }
         set { updateString(key: RVKeys.ownerId, value: newValue, setDirties: true)}
@@ -258,7 +261,7 @@ class RVBaseModel: MeteorDocument {
             if let rawValue = getString(key: .parentModelType) {
                 if let type = RVModelType(rawValue: rawValue) { return type }
             }
-            return RVModelType.unknownModel
+            return RVModelType.unknown
         }
         set { updateString(key: RVKeys.parentModelType, value: newValue.rawValue, setDirties: true)}
     }
@@ -268,7 +271,7 @@ class RVBaseModel: MeteorDocument {
             if let rawValue = getString(key: .collection) {
                 if let type = RVModelType(rawValue: rawValue) { return type}
             }
-            return RVModelType.unknownModel
+            return RVModelType.unknown
         }
         set {updateString(key: .collection, value: newValue.rawValue, setDirties: true)}
     }
@@ -337,6 +340,15 @@ class RVBaseModel: MeteorDocument {
         }
         set {
             updateNumber(key: .numberOfObjections, value: NSNumber(value:newValue), setDirties: true)
+        }
+    }
+    var schemaVersion: Double {
+        get {
+            if let number = getNSNumber(key: .schemaVersion) { return number.doubleValue }
+            return 0.0
+        }
+        set {
+            updateNumber(key: .schemaVersion, value: NSNumber(value:newValue), setDirties: true)
         }
     }
     var score: Double {
@@ -433,6 +445,7 @@ class RVBaseModel: MeteorDocument {
         self.parentId = parent.localId
         self.parentModelType = parent.modelType
     }
+
 }
 extension RVBaseModel {
     class func retrieveInstance(id: String, callback: @escaping (_ item: RVBaseModel? , _ error: RVError?) -> Void) {
@@ -441,9 +454,12 @@ extension RVBaseModel {
                 let rvError = RVError(message: "In \(classForCoder()).findInstance \(#line) got DDPError for id: \(id)", sourceError: error)
                 callback(nil, rvError)
             } else if let fields = result as? [String : AnyObject] {
+ 
+                 //   print("In RVBaseModel.retrieve.... Image is \(fields ["image"])")
+                
                 callback(createInstance(fields: fields), nil)
             } else {
-                print("In \(classForCoder()).findInstance \(#line), no error but no result for id = \(id)")
+                print("In RVBaseModel.findInstance \(#line), no error but no result for id = \(id)")
                 callback(nil, nil)
             }
         }
@@ -502,7 +518,7 @@ extension RVBaseModel {
                 if key == .modelType {
                     print("In \(self.classForCoder).setProperty, erroneously attempted to set modelType to nil")
                 }
-                else if key == .parentModelType { self.parentModelType = RVModelType.unknownModel }
+                else if key == .parentModelType { self.parentModelType = RVModelType.unknown }
                 else {print("In \(self.instanceType).setProperty, key \(key.rawValue) no handled") }
             }
         case .createdAt:
@@ -590,6 +606,13 @@ extension RVBaseModel {
             }
         }
     }
+    func addTerm(term: String, input: String, value: String?) -> String {
+        if let value = value {
+            return "\(input) \(term)= \(value), "
+        } else {
+            return "\(input) <no \(term)>, "
+        }
+    }
     func toString() -> String {
         var output = "-------------------------------\(instanceType) instance --------------------------------\n"
         let id = self.localId
@@ -621,6 +644,7 @@ extension RVBaseModel {
         } else {
             output = "\(output)username = <nil>"
         }
+        output = addTerm(term: "fullName", input: output, value: self.fullName)
         if let ownerId = ownerId {
             output = "\(output)ownerId = \(ownerId), "
         } else {
@@ -648,9 +672,15 @@ extension RVBaseModel {
         } else {
             output = "\(output)comment <no comment>\n"
         }
-        output = output + additionalToString()
+        output = addTerm(term: "schemaVersion", input: output, value: "\(self.schemaVersion)")
+        if let deleted = self.deleted {
+            output = "\(output), deleted: \(deleted), "
+        } else {
+            output = "\(output), <no deleted>, "
+        }
+        output = output + additionalToString() + "\n"
         if let image = image {
-            output = "\(output)image = id: \(image.localId), \(image.objects), "
+            output = "\(output)image = \(image.toString()), "
         } else {
             output = "\(output)\nimage = <no image>,"
         }

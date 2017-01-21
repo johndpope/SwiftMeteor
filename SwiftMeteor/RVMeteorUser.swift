@@ -19,7 +19,7 @@ class RVMeteorUser {
         if let id = self._userId {
             callback(id, nil)
         } else {
-            Meteor.call(RVMeteorMethods.GetUserId.rawValue, params: nil, callback: { (result, error: DDPError?) in
+            Meteor.call(RVMeteorMethods.GetMeteorUserId.rawValue, params: nil, callback: { (result, error: DDPError?) in
                 if let error = error {
                     let rvError = RVError(message: "In RVUser.userId got Meteor Error", sourceError: error)
                     callback(nil, rvError)

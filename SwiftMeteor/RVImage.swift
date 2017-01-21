@@ -92,6 +92,37 @@ class RVImage: RVBaseModel {
         }
         set { updateString(key: RVKeys.filetype, value: newValue.rawValue, setDirties: true)}
     }
+    class func fakeIt() -> RVImage {
+        let image = RVImage()
+        image.height = 123.0
+        image.width = 987.0
+        image.bytes = 32
+        image.urlString = "URL STRING"
+        image.photo_reference = "Some Photo_Reference"
+        image.filetype = .jpeg
+    //    image.parentModelType = .unknown
+        image.special = .regular
+        image.regularDescription = "Image Description"
+        image.title = "Image Title"
+        image.ownerId = "ImageOwnerId"
+        image.text = "Image Text"
+        image.username = "Image UserName"
+        image.fullName = "Image Fullname"
+        image.handle = "Image handle"
+        image.comment = "Image comment"
+        image.schemaVersion = 32
+        return image
+    }
+    override func additionalToString()-> String {
+        var output = ""
+        output = addTerm(term: "height", input: output, value: "\(self.height)")
+        output = addTerm(term: "width", input: output , value: "\(self.width)")
+        output = addTerm(term: "bytes", input: output , value: self.bytes.description)
+        output = addTerm(term: "photo_reference", input: output, value: self.photo_reference)
+        output = addTerm(term: "filetype", input: output , value: self.filetype.rawValue) + "\n"
+        output = addTerm(term: "urlString", input: output, value: self.urlString)
+        return output
+    }
 }
 extension RVImage {
     // path = "goofy/something/
@@ -197,10 +228,11 @@ extension RVImage {
         })
 
     }
-    
+    /*
     override func additionalToString() -> String {
         var output = "height: \(self.height), width: \(self.width), bytes: \(self.bytes), filetype: \(self.filetype.rawValue)\n"
         output = output + "urlString: \(self.urlString)"
         return output
     }
+ */
 }
