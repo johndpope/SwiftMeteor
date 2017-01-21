@@ -25,7 +25,13 @@ class RVLocation: RVBaseModel {
         case address_components = "address_components"
         
     }
-    override class func collectionType() -> RVModelType { return RVModelType.image }
+    override class func collectionType() -> RVModelType { return RVModelType.location }
+//    override class var insertMethod: RVMeteorMethods { get { return RVMeteorMethods.InsertTask } }
+//    override class var updateMethod: RVMeteorMethods { get { return RVMeteorMethods.UpdateTask } }
+//    override class var deleteMethod: RVMeteorMethods { get { return RVMeteorMethods.DeleteTask } }
+//    override class var findMethod: RVMeteorMethods { get { return RVMeteorMethods.FindTask}}
+//    override class var bulkQueryMethod: RVMeteorMethods { get { return RVMeteorMethods.BulkTask } }
+    override class func createInstance(fields: [String : AnyObject])-> RVBaseModel { return RVLocation(fields: fields) }
     private var rawPlaces = [String: AnyObject]()
     private var gmsAddress: GMSAddress? = nil
     var photo: UIImage? = nil
@@ -449,7 +455,35 @@ class RVLocation: RVBaseModel {
             updateAnyObject(key: .types, value: newValue as AnyObject , setDirties: true)
         }
     }
-    override func toString() -> String {
+    class func fakeIt() -> RVLocation {
+        let location = RVLocation(fields: [String:AnyObject]())
+        location.modelType = .location
+        location.geometry = [ "elmer": "fudd" as AnyObject]
+        location.geoIndex = ["index" : 555.6666 as AnyObject]
+        location.latitude = 37.92
+        location.longitude = -122.123
+        location.geocoded = false
+        location.fullAddress = "15 Cordova Court, Portola Valley, CA 94028"
+        location.placeId = "SomePlaceId"
+        location.record_id = "SomeRecordId"
+        location.reference = "SomeReference"
+        location.thoroughfare = "Some thoroughfare"
+        location.street = "15 Cordova Court"
+        location.administrativeArea = "Administrative Area"
+        location.locality = "Some Locality"
+        location.subLocality = "Some SubLocality"
+        location.postalCode = "94028"
+        location.city = "San Francisco"
+        location.state = "CA"
+        location.country = "US"
+        location.neighborhood  = "Some Neighborhood"
+        location.phoneNumber = "6665551212"
+        location.lines = ["First Line", "Second Line"]
+        location.iconURLString = "https://www.google.com"
+        location.websiteString = "https://www.somewebsite.com"
+        return location
+    }
+    override func additionalToString() -> String {
         var output = ""
         if let value = self.title {
             output = "\(output) Title = \(value), "
@@ -487,11 +521,18 @@ class RVLocation: RVBaseModel {
             output = "\(output) <no zip>, "
         }
         
-        if let value = self.iconURLString {
-            output = "\(output) IconURLString = \(value), "
-        } else {
-            output = "\(output) <no iconURLStrin>\n"
-        }
+        output = addTerm(term: "thoroughfare", input: output, value: self.thoroughfare)
+        output = addTerm(term: "Locality", input: output , value: self.locality)
+        output = addTerm(term: "subLocality", input: output, value: self.subLocality)
+        output = addTerm(term: "neighborhood", input: output, value: self.neighborhood)
+        output = addTerm(term: "administrativeArea", input: output, value: self.administrativeArea)
+        output = addTerm(term: "fullAddress", input: output, value: self.fullAddress)
+        output = addTerm(term: "iconURLString", input: output, value: self.iconURLString)
+        output = addTerm(term: "websiteString", input: output, value: self.websiteString)
+        output = addTerm(term: "Phone Number", input: output, value: self.phoneNumber)
+        output = addTerm(term: "reference", input: output, value: self.reference)
+        output = addTerm(term: "record_id", input: output, value: self.record_id)
+        output = addTerm(term: "placeId", input: output, value: self.placeId)
         if let image = self.image {
             output = "\(output) -- ImageObject: \(image.toString())"
         } else {

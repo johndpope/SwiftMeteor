@@ -199,8 +199,10 @@ class RVUserProfile: RVBaseModel {
         profile.homePhone = "6508515212"
         profile.email = "neil.weintraut@gmail.com"
         let image = RVImage.fakeIt()
-        print(image.toString())
+        //print(image.toString())
         profile.image = image
+        let location = RVLocation.fakeIt()
+        profile.location = location
         return profile
     }
 }

@@ -19,4 +19,5 @@ enum RVModelType: String  {
     case follow = "follow"
     case household = "households"
     case watchgroup = "watchgroup"
+    case location = "location"
 }

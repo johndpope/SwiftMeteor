@@ -684,6 +684,11 @@ extension RVBaseModel {
         } else {
             output = "\(output)\nimage = <no image>,"
         }
+        if let location = self.location {
+            output = "\(output) \nLocation: \(location.toString())"
+        } else {
+            output = "\(output) <no location>"
+        }
         output = output + "\n---------------------------------------------------------------------------------\n"
         return output
     }
