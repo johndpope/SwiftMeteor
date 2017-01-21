@@ -15,10 +15,11 @@ enum RVDomainName: String {
 class RVDomain: RVBaseModel {
     override class func collectionType() -> RVModelType { return RVModelType.domain }
     override class var insertMethod: RVMeteorMethods { get { return RVMeteorMethods.domainCreate} }
-    override class var updateMethod: RVMeteorMethods { get { return RVMeteorMethods.UpdateTask } }
-    override class var deleteMethod: RVMeteorMethods { get { return RVMeteorMethods.DeleteTask } }
-    override class var findMethod: RVMeteorMethods { get { return RVMeteorMethods.FindTask}}
-    override class var bulkQueryMethod: RVMeteorMethods { get { return RVMeteorMethods.BulkTask } }
+    override class var updateMethod: RVMeteorMethods { get { return RVMeteorMethods.domainUpdate } }
+    override class var deleteMethod: RVMeteorMethods { get { return RVMeteorMethods.domainDelete } }
+    override class var findMethod: RVMeteorMethods { get { return RVMeteorMethods.domainFindById}}
+    override class var findOneMethod: RVMeteorMethods { get { return RVMeteorMethods.domainFindOne}}
+    override class var bulkQueryMethod: RVMeteorMethods { get { return RVMeteorMethods.domainBulkQuery } }
     override class func createInstance(fields: [String : AnyObject])-> RVBaseModel { return RVDomain(fields: fields) }
     var domainName: RVDomainName {
         get {
@@ -47,6 +48,7 @@ class RVDomain: RVBaseModel {
             }
         }
     }
+    /*
     class func findOne(query: RVQuery, callback: @escaping(_ domain: RVDomain?, _ error: RVError?) -> Void) {
         let (filters, projection) = query.query()
         Meteor.call(RVMeteorMethods.domainFindOne.rawValue, params: [filters as AnyObject, projection as AnyObject]) { (result: Any?, error : DDPError?) in
@@ -63,12 +65,13 @@ class RVDomain: RVBaseModel {
             }
         }
     }
+ */
     override func additionalToString() -> String {
         return "DomainName = \(self.domainName.rawValue)"
     }
-    static let baseQuery: RVQuery = {
+    override class func baseQuery() -> RVQuery{
         let query = RVQuery()
         query.addAnd(term: .modelType, value: RVModelType.domain.rawValue as AnyObject , comparison: .eq)
         return query
-    }()
+    }
 }

@@ -44,4 +44,7 @@ enum RVMeteorMethods: String {
     case domainCreate = "domain.create"
     case domainFindById = "domain.findById"
     case domainFindOne = "domain.findOne"
+    case domainUpdate = "domain.update"
+    case domainDelete = "domain.delete"
+    case domainBulkQuery = "domain.bulkQuery"
 }

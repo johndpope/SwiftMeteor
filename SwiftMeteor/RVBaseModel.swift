@@ -14,6 +14,7 @@ class RVBaseModel: MeteorDocument {
     class var insertMethod: RVMeteorMethods { get { return RVMeteorMethods.InsertBase } }
     class var updateMethod: RVMeteorMethods { get { return RVMeteorMethods.UpdateBase } }
     class var deleteMethod: RVMeteorMethods { get { return RVMeteorMethods.DeleteBase } }
+    class var findOneMethod: RVMeteorMethods { get { return RVMeteorMethods.domainFindOne}}
     class var bulkQueryMethod: RVMeteorMethods { get { return RVMeteorMethods.BulkTask } }
     class var findMethod: RVMeteorMethods { get { return RVMeteorMethods.FindBase}}
     class func createInstance(fields: [String : AnyObject])-> RVBaseModel { return RVBaseModel(fields: fields) }
@@ -445,7 +446,10 @@ class RVBaseModel: MeteorDocument {
         self.parentId = parent.localId
         self.parentModelType = parent.modelType
     }
-
+    class func baseQuery() -> RVQuery{
+        let query = RVQuery()
+        return query
+    }
 }
 extension RVBaseModel {
     class func retrieveInstance(id: String, callback: @escaping (_ item: RVBaseModel? , _ error: RVError?) -> Void) {
@@ -464,6 +468,24 @@ extension RVBaseModel {
             }
         }
     }
+    
+    class func findOne(query: RVQuery, callback: @escaping(_ domain: RVBaseModel?, _ error: RVError?) -> Void) {
+        let (filters, projection) = query.query()
+        Meteor.call(findOneMethod.rawValue, params: [filters as AnyObject, projection as AnyObject]) { (result: Any?, error : DDPError?) in
+            if let error = error {
+                let rvError = RVError(message: "In \(classForCoder()).findOne, got error", sourceError: error, lineNumber: #line, fileName: "")
+                callback(nil, rvError)
+                return
+            } else if let fields = result as? [String: AnyObject] {
+                callback(createInstance(fields: fields), nil)
+                return
+            } else {
+                print("In \(classForCoder()).findOne, no error but no result")
+                callback(nil, nil)
+            }
+        }
+    }
+    
     func create(callback: @escaping (_ error: RVError?) -> Void ) {
         var fields = self.dirties
         self.dirties = [String : AnyObject]()
@@ -540,6 +562,8 @@ extension RVBaseModel {
         }
 
     }
+
+
     func update(callback: @escaping(_ error: RVError?) -> Void) {
         let dirties = self.dirties
         self.dirties = [String: AnyObject]()
