@@ -64,6 +64,8 @@
 		28928CD51E18E226003538B8 /* RVDSOperation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 28928CD41E18E226003538B8 /* RVDSOperation.swift */; };
 		28928CD71E199AEA003538B8 /* RVFirstViewTableCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 28928CD61E199AEA003538B8 /* RVFirstViewTableCell.swift */; };
 		28A232971E333E4C00489EB3 /* RVVisibility.swift in Sources */ = {isa = PBXBuildFile; fileRef = 28A232961E333E4C00489EB3 /* RVVisibility.swift */; };
+		28CB24CC1E34090F0093A067 /* RVAppState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 28CB24CB1E34090F0093A067 /* RVAppState.swift */; };
+		28CE2F601E3402970046EB16 /* RVProfileViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 28CE2F5F1E3402970046EB16 /* RVProfileViewController.swift */; };
 		28D534CD1DF3E9A50003DC11 /* RVActivityIndicator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 28D534CC1DF3E9A50003DC11 /* RVActivityIndicator.swift */; };
 		28D534CF1DF3EAC20003DC11 /* RVDownloadTask.swift in Sources */ = {isa = PBXBuildFile; fileRef = 28D534CE1DF3EAC20003DC11 /* RVDownloadTask.swift */; };
 		28D773401E30420200E8EDE0 /* RVBaseModel3.swift in Sources */ = {isa = PBXBuildFile; fileRef = 28D7733F1E30420200E8EDE0 /* RVBaseModel3.swift */; };
@@ -170,6 +172,8 @@
 		28928CD41E18E226003538B8 /* RVDSOperation.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RVDSOperation.swift; sourceTree = "<group>"; };
 		28928CD61E199AEA003538B8 /* RVFirstViewTableCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RVFirstViewTableCell.swift; sourceTree = "<group>"; };
 		28A232961E333E4C00489EB3 /* RVVisibility.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RVVisibility.swift; sourceTree = "<group>"; };
+		28CB24CB1E34090F0093A067 /* RVAppState.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RVAppState.swift; sourceTree = "<group>"; };
+		28CE2F5F1E3402970046EB16 /* RVProfileViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RVProfileViewController.swift; sourceTree = "<group>"; };
 		28D534CC1DF3E9A50003DC11 /* RVActivityIndicator.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RVActivityIndicator.swift; sourceTree = "<group>"; };
 		28D534CE1DF3EAC20003DC11 /* RVDownloadTask.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RVDownloadTask.swift; sourceTree = "<group>"; };
 		28D7733F1E30420200E8EDE0 /* RVBaseModel3.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RVBaseModel3.swift; sourceTree = "<group>"; };
@@ -324,6 +328,7 @@
 				2870CCD01DECD81F005C6FB5 /* AWSUserFileManager.swift */,
 				288E97D91E22B59400753067 /* RVSwiftDDP.swift */,
 				28569A331E2D701B00E43B32 /* RVListener.swift */,
+				28CB24CB1E34090F0093A067 /* RVAppState.swift */,
 			);
 			name = Services;
 			sourceTree = "<group>";
@@ -346,6 +351,14 @@
 				28EBBB821E255EEC0072B761 /* RVOperation.swift */,
 			);
 			name = Datasource;
+			sourceTree = "<group>";
+		};
+		28CE2F5E1E3402830046EB16 /* ProfileScene */ = {
+			isa = PBXGroup;
+			children = (
+				28CE2F5F1E3402970046EB16 /* RVProfileViewController.swift */,
+			);
+			name = ProfileScene;
 			sourceTree = "<group>";
 		};
 		28DE2D951DFE47C900EFEECB /* Models */ = {
@@ -423,6 +436,7 @@
 		28F53E6B1DEB5F71009641F0 /* SwiftMeteor */ = {
 			isa = PBXGroup;
 			children = (
+				28CE2F5E1E3402830046EB16 /* ProfileScene */,
 				286CA3191E327A2000B081B8 /* Location */,
 				28201A401E1DE7F6008D8E59 /* MainLanding */,
 				28E65D9C1E1DAEC6004E82F5 /* images */,
@@ -712,6 +726,7 @@
 				2873C9111DECA4D400DCB2DF /* AWSMobileClient.swift in Sources */,
 				28F059E01E32770100B41F6A /* RVLocation.swift in Sources */,
 				28569A341E2D701B00E43B32 /* RVListener.swift in Sources */,
+				28CE2F601E3402970046EB16 /* RVProfileViewController.swift in Sources */,
 				28928CD31E18C6C7003538B8 /* RVDSManager.swift in Sources */,
 				286CA3291E327F2E00B081B8 /* RVGender.swift in Sources */,
 				28D534CD1DF3E9A50003DC11 /* RVActivityIndicator.swift in Sources */,
@@ -745,6 +760,7 @@
 				288E97DA1E22B59400753067 /* RVSwiftDDP.swift in Sources */,
 				28928CD11E18BE09003538B8 /* RVBaseDataSource.swift in Sources */,
 				286CA3311E3289F000B081B8 /* RVDomain.swift in Sources */,
+				28CB24CC1E34090F0093A067 /* RVAppState.swift in Sources */,
 				284FBAD21DEC13FE00446C86 /* RVRightMenuViewController.swift in Sources */,
 				280E0F761DFFBEDF00E597B4 /* RVKeys.swift in Sources */,
 				28201A421E1DE80C008D8E59 /* RVMainLandingViewController.swift in Sources */,

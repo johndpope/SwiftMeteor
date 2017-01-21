@@ -51,37 +51,49 @@ class RVMainLandingViewController: RVBaseViewController {
 
 
     func loadup() {
-        RVSeed.createRootTask { (root, error) in
-            if let error = error {
-                error.printError()
-                return
-            } else if let root = root {
-              //  print("In \(self.instanceType).loadup() Have root task: \(root._id), \(root.special.rawValue)")
-                self.stack = [root]
-                let query = self.mainDatasource.basicQuery()
-                if let top = self.stack.last {
-                    query.addAnd(term: RVKeys.parentId, value: top.localId as AnyObject, comparison: .eq)
-                    query.addAnd(term: RVKeys.parentModelType, value: top.modelType.rawValue as AnyObject, comparison: .eq )
-                }
-                if let manager = self.manager {
-                    manager.stopAndResetDatasource(datasource: self.mainDatasource, callback: { (error) in
-                        if let error = error {
-                            error.printError()
-                        } else {
-                            manager.startDatasource(datasource: self.mainDatasource, query: query, callback: { (error) in
-                                if let error = error {
-                                    error.append(message: "In \(self.instanceType).loadUp, got error starting main database")
-                                    error.printError()
-                                }
-                            })
-                        }
+        if RVAppState.shared.state == RVAppState.State.ShowProfile {
+            print("In \(self.classForCoder).loadup, have ShowProfile state")
+            let storyboard = UIStoryboard(name: RVCoreInfo.sharedInstance.mainStoryboard, bundle: nil)
+                if let viewController = storyboard.instantiateViewController(withIdentifier: "ProfileNavController") as? UINavigationController {
+                    self.present(viewController, animated: true, completion: {
+                        print("In \(self.instanceType).loadUp returned from presenting ProfileNavController")
                     })
-
                 }
-            } else {
-                print("In \(self.instanceType).loadup no root")
+            
+        } else {
+            RVSeed.createRootTask { (root, error) in
+                if let error = error {
+                    error.printError()
+                    return
+                } else if let root = root {
+                    //  print("In \(self.instanceType).loadup() Have root task: \(root._id), \(root.special.rawValue)")
+                    self.stack = [root]
+                    let query = self.mainDatasource.basicQuery()
+                    if let top = self.stack.last {
+                        query.addAnd(term: RVKeys.parentId, value: top.localId as AnyObject, comparison: .eq)
+                        query.addAnd(term: RVKeys.parentModelType, value: top.modelType.rawValue as AnyObject, comparison: .eq )
+                    }
+                    if let manager = self.manager {
+                        manager.stopAndResetDatasource(datasource: self.mainDatasource, callback: { (error) in
+                            if let error = error {
+                                error.printError()
+                            } else {
+                                manager.startDatasource(datasource: self.mainDatasource, query: query, callback: { (error) in
+                                    if let error = error {
+                                        error.append(message: "In \(self.instanceType).loadUp, got error starting main database")
+                                        error.printError()
+                                    }
+                                })
+                            }
+                        })
+                        
+                    }
+                } else {
+                    print("In \(self.instanceType).loadup no root")
+                }
             }
         }
+
     }
 
     override func filterQuery(text: String, scopeIndex: Int ) -> RVQuery {

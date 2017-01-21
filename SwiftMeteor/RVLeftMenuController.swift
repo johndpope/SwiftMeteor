@@ -58,6 +58,8 @@ extension RVLeftMenuController {
                         }
                     })
                 } else {
+                    RVAppState.shared.state = .ShowProfile
+                    RVViewDeck.sharedInstance.toggleSide(side: .center)
                     print("In \(self.classForCoder).didSelectRowAt \(indexPath.row), \(string) not handled")
                 }
             }

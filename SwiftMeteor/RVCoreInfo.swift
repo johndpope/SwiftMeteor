@@ -18,6 +18,7 @@ class RVCoreInfo: NSObject {
             getUserProfile()
         }
     }
+    var mainStoryboard = "Main"
     var loginCredentials: [String: AnyObject]? = nil
     var rootTask: RVTask?
     var userId: String? = nil
