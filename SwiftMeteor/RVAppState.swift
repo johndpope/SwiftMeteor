@@ -13,7 +13,12 @@ class RVAppState {
         case ShowProfile = "ShowProfile"
         case Regular = "Regular"
     }
-    var state: State = .Regular
+    var state: State = .Regular {
+        didSet {
+            self.lastState = oldValue
+        }
+    }
+    var lastState: State = .Regular 
     static let shared: RVAppState = {
         RVAppState()
     }()

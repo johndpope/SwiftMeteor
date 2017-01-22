@@ -31,7 +31,7 @@ enum RVMeteorMethods: String {
     case meteoruserFindUserProfileId = "meteorUser.findUserProfileId"
     // UserProfile
     case userProfileCreate      = "userProfile.create"
-    case userProfileUpdate      = "userProfile.update"
+    case userProfileUpdateById  = "userProfile.updateById"
     case userProfileDelete      = "userProfile.delete"
     case userProfileFind        = "userProfile.find"
     case userProfileBulkQuery   = "userProfile.bulkQuery"

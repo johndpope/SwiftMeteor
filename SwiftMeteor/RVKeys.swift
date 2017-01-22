@@ -10,6 +10,7 @@ import Foundation
 enum RVKeys: String {
     case collection     = "collection"
     case _id            = "_id"
+    case shadowId       = "shadowId"
     case createdAt      = "createdAt"
     case updatedAt      = "updatedAt"
     case `private`      = "private"
@@ -40,6 +41,7 @@ enum RVKeys: String {
     case schemaVersion  = "schemaVersion"
     case clientRole     = "clientRole"
     case visibility     = "visibility"
+    case validRecord    = "validRecord"
     
     case numberOfLikes  = "numberOfLikes"
     case numberOfObjections = "numberOfObjections"

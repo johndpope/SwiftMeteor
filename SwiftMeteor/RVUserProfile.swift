@@ -11,7 +11,7 @@ import SwiftDDP
 class RVUserProfile: RVBaseModel {
     override class func collectionType() -> RVModelType { return RVModelType.userProfile }
     override class var insertMethod: RVMeteorMethods { get { return RVMeteorMethods.userProfileCreate } }
-    override class var updateMethod: RVMeteorMethods { get { return RVMeteorMethods.userProfileUpdate } }
+    override class var updateMethod: RVMeteorMethods { get { return RVMeteorMethods.userProfileUpdateById } }
     override class var deleteMethod: RVMeteorMethods { get { return RVMeteorMethods.userProfileDelete } }
     override class var findMethod: RVMeteorMethods { get { return RVMeteorMethods.userProfileFind}}
     override class var bulkQueryMethod: RVMeteorMethods { get { return RVMeteorMethods.userProfileBulkQuery } }

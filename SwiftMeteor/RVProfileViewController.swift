@@ -18,22 +18,51 @@ class RVProfileViewController: UITableViewController {
     
     
     @IBAction func saveButtonTouched(_ sender: UIBarButtonItem) {
+        updateProfile {
+            self.setProfileInfo()
+        }
+    }
+    func updateProfile(callback: @escaping() -> Void) {
         if let profile = RVCoreInfo.sharedInstance.userProfile {
-            print(profile.toString())
             if let text = firstNameTextField.text {profile.firstName = text }
             if let text = middleNameTextField.text {profile.middleName = text }
             if let text = lastNameTextField.text { profile.lastName = text }
-            profile.update(callback: { (error) in
+            let image = RVImage()
+            image.urlString = "Goober"
+            profile.image = image
+            profile.updateById(callback: { (updatedModel, error) in
                 if let error = error {
                     error.printError()
+                    callback()
+                } else if let newProfile = updatedModel as? RVUserProfile {
+                    print("In \(self.classForCoder).updateProfile successful saved")
+                    RVCoreInfo.sharedInstance.userProfile = newProfile
+                    callback()
                 } else {
-                    print("In \(self.classForCoder).saveButtonTouched successful saved")
+                    print("In \(self.classForCoder).updateProfile no error but no newModel")
+                    callback()
                 }
             })
         }
     }
+    func setProfileInfo() {
+        if let profile = RVCoreInfo.sharedInstance.userProfile {
+            print("------------------\nIn \(self.classForCoder).setProfileInfo, have profile \(profile.toString())")
+            setTextFieldText(text: profile.firstName, textField: firstNameTextField)
+            setTextFieldText(text: profile.middleName, textField: middleNameTextField)
+            setTextFieldText(text: profile.lastName, textField: lastNameTextField)
+        } else {
+            print("In \(self.classForCoder).viewDidLoad, do NOT have profile")
+        }
+    }
     
     @IBAction func doneButtonTouched(_ sender: UIBarButtonItem) {
+        updateProfile{
+            print("In \(self.classForCoder).doneButtonTouched callback")
+            RVAppState.shared.state = .Regular
+            self.dismiss(animated: true) {
+            }
+        }
     }
     
     override func viewDidLoad() {
@@ -47,14 +76,7 @@ class RVProfileViewController: UITableViewController {
         if let image = UIImage(named: "Placeholder") {
             profileImageView.image = image
         }
-        if let profile = RVCoreInfo.sharedInstance.userProfile {
-            print("In \(self.classForCoder).viewDidLoad, have profile \(profile.toString())")
-            setTextFieldText(text: profile.firstName, textField: firstNameTextField)
-            setTextFieldText(text: profile.middleName, textField: middleNameTextField)
-            setTextFieldText(text: profile.lastName, textField: lastNameTextField)
-        } else {
-             print("In \(self.classForCoder).viewDidLoad, do NOT have profile")
-        }
+        setProfileInfo()
     }
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         print("In \(self.classForCoder).didSelectRow \(indexPath.row)")
@@ -84,7 +106,7 @@ extension RVProfileViewController: UITextFieldDelegate {
     
     
     func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
-        print("\(string)")
+      //  print("\(string)")
         if (firstNameTextField != nil) && (firstNameTextField == textField ){
             
         } else if (middleNameTextField != nil) && (middleNameTextField == textField) {

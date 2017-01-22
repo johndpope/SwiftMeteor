@@ -36,6 +36,8 @@ class RVBaseModel: MeteorDocument {
     func initializeProperties() {
         self.modelType = type(of: self).collectionType()
         self.visibility = .publicVisibility
+        self.validRecord = true
+        self.deleted = false
     }
     func checkModelType() {
         if self.modelType == RVModelType.unknown || self.modelType != type(of: self).collectionType() {
@@ -74,7 +76,11 @@ class RVBaseModel: MeteorDocument {
     var image: RVImage? {
         get {
             if let fields = objects[RVKeys.image.rawValue] as? [String: AnyObject] {
-                return RVImage(fields: fields)
+                let image = RVImage(fields: fields)
+                if image.validRecord && !image.deleted {
+                    return image
+                }
+                return nil
             }
             return nil
         }
@@ -86,8 +92,11 @@ class RVBaseModel: MeteorDocument {
             }
         }
     }
-    var deleted: Bool? {
-        get { return getBool(key: .deleted) }
+    var deleted: Bool {
+        get {
+            if let deleted = getBool(key: .deleted) { return deleted}
+            return false
+        }
         set { updateBool(key: .deleted)}
     }
     var title: String? {
@@ -182,15 +191,16 @@ class RVBaseModel: MeteorDocument {
         if let value = value {
             if let current = getBool(key: key) {
                 if current != value {
-                    self.updateBool(key: key, value: value , setDirties: setDirties)
+                    self.updateAnyObject(key: key, value: value as AnyObject, setDirties: setDirties)
+                    
                 }
             } else {
-                self.updateBool(key: key, value: value , setDirties: setDirties)
+                self.updateAnyObject(key: key, value: value as AnyObject , setDirties: setDirties)
             }
         } else {
             if let _ = getBool(key: key) {
                 // current a non-null value
-                self.updateBool(key: key, value: nil, setDirties: setDirties)
+                self.updateAnyObject(key: key, value: NSNull(), setDirties: setDirties)
             } else {
                 // both new and existing are nil or non-existent; don't do anything
             }
@@ -242,7 +252,10 @@ class RVBaseModel: MeteorDocument {
     }
     var localId: String? {
         get { return getString(key: RVKeys._id) }
-        set { updateString(key: RVKeys._id, value: newValue, setDirties: true)}
+        set {
+            updateString(key: RVKeys._id, value: newValue, setDirties: true)
+            self.shadowId = newValue
+        }
     }
     var value: String? {
         get { return getString(key: RVKeys.value) }
@@ -317,9 +330,19 @@ class RVBaseModel: MeteorDocument {
     }
     var commentLowercase: String? {
         get { return getString(key: RVKeys.commentLowercase) }
-        set { updateString(key: RVKeys.commentLowercase, value: newValue, setDirties: true)}
+        set {
+            if let string = newValue {
+                updateString(key: RVKeys.commentLowercase, value: string.lowercased(), setDirties: true)
+            } else {
+                updateString(key: RVKeys.commentLowercase, value: nil, setDirties: true)
+            }
+            
+        }
     }
-
+    var shadowId: String? {
+        get { return getString(key: RVKeys.shadowId) }
+        set { updateString(key: RVKeys.shadowId, value: newValue, setDirties: true)}
+    }
     var numberOfLikes: Int {
         get {
             if let number = getNSNumber(key: .numberOfLikes) { return number.intValue }
@@ -397,7 +420,13 @@ class RVBaseModel: MeteorDocument {
     }
     var location: RVLocation? {
         get {
-            if let fields = getDictionary(key: .location) { return RVLocation(fields: fields) }
+            if let fields = getDictionary(key: .location) {
+                let location = RVLocation(fields: fields)
+                if location.validRecord && !location.deleted {
+                    return location
+                }
+                return nil
+            }
             return nil
         }
         set {
@@ -449,6 +478,15 @@ class RVBaseModel: MeteorDocument {
             return RVVisibility.publicVisibility
         }
         set { updateString(key: .visibility, value: newValue.rawValue, setDirties: true)}
+    }
+    var validRecord: Bool {
+        get {
+            if let valid = getBool(key: .validRecord) { return valid }
+            return false
+        }
+        set {
+            updateBool(key: .validRecord, value: newValue, setDirties: true)
+        }
     }
     var domainId: String? {
         get { return getString(key: .domainId) }
@@ -576,25 +614,25 @@ extension RVBaseModel {
     }
 
 
-    func update(callback: @escaping(_ error: RVError?) -> Void) {
+    func updateById(callback: @escaping(_ updatedModel: RVBaseModel?, _ error: RVError?) -> Void) {
         let dirties = self.dirties
+        print("Dirties are: \(dirties)")
         self.dirties = [String: AnyObject]()
-        print("------------- In \(self.instanceType).update, id: \(self.localId) and dirties = \(dirties)")
-    //    let updateDictionary = ["text": "updated description 555"]
-        //[ self._id as AnyObject, self.dirties as AnyObject]
         if dirties.count < 1 {
-            callback(nil)
+            callback(self, nil)
         } else {
             Meteor.call(type(of: self).updateMethod.rawValue, params: [ self.localId as AnyObject, dirties as AnyObject]) { (result: Any? , error: DDPError?) in
                 if let error = error {
-                    let rvError = RVError(message: "In \(self.instanceType).update \(#line) got DDPError for id: \(self.localId)", sourceError: error)
-                    callback(rvError)
-                } else if let _ = result {
-                   // print("In \(self.instanceType).update result is \(result)") // typically get ["numberAffected": 1]
-                    callback(nil)
+                    let rvError = RVError(message: "In \(self.instanceType).updateById \(#line) got DDPError for id: \(self.localId)", sourceError: error)
+                    callback(nil, rvError)
+                    return
+                } else if let fields = result as? [String : AnyObject] {
+                    // print("In \(self.instanceType).updateById result is \(result)\n------------------")
+                    callback(type(of: self).createInstance(fields: fields), nil)
+                    return
                 } else {
-                    print("In \(self.instanceType).update \(#line), no error but no result. id = \(self.localId)")
-                    callback(nil)
+                    print("In \(self.instanceType).updateById \(#line), no error but no result. id = \(self.localId) \(result)")
+                    callback(nil, nil)
                 }
             }
         }
@@ -655,6 +693,7 @@ extension RVBaseModel {
             output = output + "_id = \(id), "
 
         output = "\(output) modelType = \(modelType.rawValue), collection = \(collection.rawValue) \n"
+        output = addTerm(term: "Shadow ID", input: output, value: self.shadowId)
         if let createdAt = self.createdAt {
             output = "\(output)createdAt = \(formatDate(date: createdAt as Date)), "
         } else {
@@ -709,11 +748,9 @@ extension RVBaseModel {
             output = "\(output)comment <no comment>\n"
         }
         output = addTerm(term: "schemaVersion", input: output, value: "\(self.schemaVersion)")
-        if let deleted = self.deleted {
-            output = "\(output), deleted: \(deleted), "
-        } else {
-            output = "\(output), <no deleted>, "
-        }
+        output = "\(output), deleted: \(deleted), "
+        output = "\(output), validRecord: \(validRecord), "
+
         output = output + additionalToString() + "\n"
         if let image = image {
             output = "\(output)image = \(image.toString()), "
@@ -734,7 +771,7 @@ extension RVBaseModel {
     func valueChanged(field: RVKeys, value: AnyObject?) {
        // print("IN value changed ------------------------")
         if initializing { return }
-        self.update { (error) in
+        self.updateById { (result, error) in
             if let error = error {
                 print("In \(self.instanceType).valueChanged error changingn \(field.rawValue) \(value). \n\(error)")
             }
