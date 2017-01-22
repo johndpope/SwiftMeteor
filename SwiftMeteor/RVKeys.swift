@@ -21,6 +21,7 @@ enum RVKeys: String {
     case fullNameLowercase = "fullNameLowercase"
     case modelType      = "modelType"
     case ownerId        = "ownerId"
+    case ownerModelType = "ownerModelType"
     case owner          = "owner"   // Need to fix
     case parentId       = "parentId"
     case parentModelType = "parentModelType"

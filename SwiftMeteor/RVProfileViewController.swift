@@ -29,7 +29,35 @@ class RVProfileViewController: UITableViewController {
             if let text = lastNameTextField.text { profile.lastName = text }
             let image = RVImage()
             image.urlString = "Goober"
-            profile.image = image
+            image.title = "Image Title"
+            image.urlString = "URL STRING"
+            image.regularDescription = "An Image Description"
+            image.updatedAt = Date()
+         //   profile.image = image
+          //  profile.location = RVLocation(fields: [String: AnyObject]())
+        //    profile.image = nil
+            profile.ownerId = "ownerIDGoesHere"
+            profile.ownerModelType = .household
+            profile.parentId = "parentIDGoesHere"
+            profile.parentModelType = .domain
+            profile.handle = "A Handle"
+            profile.comment = "A comment from the client"
+            profile.regularDescription = "A regular description"
+            profile.yob = 1958
+            profile.clientRole = .admin
+            profile.gender = .male
+            profile.validRecord = true
+           // profile.domainId = "DomainID"
+            profile.email = "f@f.com"
+            profile.cellPhone = "CEll phone"
+            profile.homePhone = "Home phone"
+            profile.watchGroupIds = ["ID1", "ID2"]
+            profile.schemaVersion = 1.2
+            profile.title = "A title"
+            profile.text = "Some text"
+            if let domain = RVCoreInfo.sharedInstance.domain {
+                profile.domainId = domain.localId
+            }
             profile.updateById(callback: { (updatedModel, error) in
                 if let error = error {
                     error.printError()

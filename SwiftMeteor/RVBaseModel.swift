@@ -32,12 +32,19 @@ class RVBaseModel: MeteorDocument {
         self.modelType = type(of: self).collectionType()
         self.visibility = .publicVisibility
         initializeProperties()
+
     }
     func initializeProperties() {
         self.modelType = type(of: self).collectionType()
         self.visibility = .publicVisibility
         self.validRecord = true
         self.deleted = false
+        self.special = .regular
+        if let domain = RVCoreInfo.sharedInstance.domain {
+            self.domainId = domain.localId
+        } else {
+            print("In \(instanceType).init, don't have domain")
+        }
     }
     func checkModelType() {
         if self.modelType == RVModelType.unknown || self.modelType != type(of: self).collectionType() {
@@ -86,6 +93,12 @@ class RVBaseModel: MeteorDocument {
         }
         set {
             if let rvImage = newValue {
+                rvImage.setParent(parent: self)
+                rvImage.setOwner(owner: self)
+                if let domain = RVCoreInfo.sharedInstance.domain {
+                    rvImage.domainId = domain.localId
+                }
+                rvImage.fullName = self.fullName
                 updateDictionary(key: .image , value: rvImage.objects, setDirties: true)
             } else {
                 updateDictionary(key: .image, value: nil, setDirties: true)
@@ -113,6 +126,17 @@ class RVBaseModel: MeteorDocument {
         set {
             updateString(key: .modelType, value: newValue.rawValue, setDirties: true)
             self.collection = newValue
+        }
+    }
+    var ownerModelType: RVModelType {
+        get {
+            if let rawValue = getString(key: .ownerModelType) {
+                if let type = RVModelType(rawValue: rawValue) { return type}
+            }
+            return RVModelType.unknown
+        }
+        set {
+            updateString(key: .ownerModelType, value: newValue.rawValue, setDirties: true)
         }
     }
     func getString(key: RVKeys) -> String? {
@@ -314,6 +338,12 @@ class RVBaseModel: MeteorDocument {
             updateString(key: RVKeys.fullName, value: newValue, setDirties: true)
             if let value = newValue { self.fullNameLowercase = value.lowercased() }
             else { self.fullNameLowercase = nil }
+            if let image = self.image {
+                image.fullName = newValue
+            }
+            if let location = self.location {
+                location.fullName = newValue
+            }
         }
     }
     var fullNameLowercase: String? {
@@ -431,6 +461,11 @@ class RVBaseModel: MeteorDocument {
         }
         set {
             if let location = newValue {
+                location.setParent(parent: self)
+                if let domain = RVCoreInfo.sharedInstance.domain {
+                    location.domainId = domain.localId
+                }
+                location.fullName = self.fullName 
                 updateDictionary(key: .location, value: location.objects , setDirties: true)
             } else {
                 updateDictionary(key: .location, value: nil , setDirties: true)
@@ -495,6 +530,10 @@ class RVBaseModel: MeteorDocument {
     func setParent(parent:RVBaseModel) {
         self.parentId = parent.localId
         self.parentModelType = parent.modelType
+    }
+    func setOwner(owner: RVBaseModel){
+        self.ownerId = owner.localId
+        self.ownerModelType = owner.modelType
     }
     class func baseQuery() -> RVQuery{
         let query = RVQuery()
@@ -723,8 +762,9 @@ extension RVBaseModel {
         if let ownerId = ownerId {
             output = "\(output)ownerId = \(ownerId), "
         } else {
-            output = "\(output)ownerId = <nil>, \n"
+            output = "\(output)ownerId = <nil>, "
         }
+        output = "\(output) ownerModelType = \(self.ownerModelType)\n"
         if let parentId = self.parentId {
             output = "\(output)parentId = \(parentId), "
             output = "\(output)parentModelType = \(self.parentModelType.rawValue)\n"
@@ -750,7 +790,7 @@ extension RVBaseModel {
         output = addTerm(term: "schemaVersion", input: output, value: "\(self.schemaVersion)")
         output = "\(output), deleted: \(deleted), "
         output = "\(output), validRecord: \(validRecord), "
-
+        output = addTerm(term: "domainId", input: output, value: self.domainId)
         output = output + additionalToString() + "\n"
         if let image = image {
             output = "\(output)image = \(image.toString()), "
