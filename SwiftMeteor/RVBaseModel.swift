@@ -633,32 +633,44 @@ extension RVBaseModel {
         if let image = self.image { fields[RVKeys.image.rawValue] = image.getFields() as AnyObject }
         return fields
     }
-    func getDirtiesAndUnsets() -> ([String: AnyObject], [String: AnyObject]) {
+    func dotNotation(topField: String, dictionary: inout [String: AnyObject], sourceDictionary: inout [String: AnyObject]) -> Void {
+        sourceDictionary.removeValue(forKey: RVKeys.createdAt.rawValue)
+        sourceDictionary.removeValue(forKey: RVKeys.updatedAt.rawValue)
+        if topField == "" {
+            for (key, value) in sourceDictionary {
+                dictionary[key] = value
+            }
+        } else {
+            for (key, value) in sourceDictionary {
+                let dotKey = "\(topField).\(key)"
+                dictionary[dotKey] = value
+            }
+        }
+        //return dictionary
+    }
+    func getDirtiesAndUnsets(topField: String, dirties: inout [String: AnyObject], unsets: inout [String: AnyObject]) -> Void {
         if (self.dirties.count > 0) || (self.unsets.count > 0) {self.updateCount = self.updateCount + 1}
-        var dirties = self.dirties
-        dirties.removeValue(forKey: RVKeys.createdAt.rawValue)
-        dirties.removeValue(forKey: RVKeys.updatedAt.rawValue)
+        var sourceDirties = self.dirties
         self.dirties = [String: AnyObject]()
-        var unsets = self.unsets
+        var sourceUnsets = self.unsets
         self.unsets = [String: AnyObject]()
-        unsets.removeValue(forKey: RVKeys.createdAt.rawValue)
-        unsets.removeValue(forKey: RVKeys.updatedAt.rawValue)
+        dotNotation(topField: topField, dictionary: &dirties, sourceDictionary: &sourceDirties)
+        dotNotation(topField: topField, dictionary: &unsets, sourceDictionary: &sourceUnsets)
         if let location = self.location {
-            let (locationDirties, locationUnsets) = location.getDirtiesAndUnsets()
-            if locationDirties.count > 0 { dirties[RVKeys.location.rawValue] = locationDirties as AnyObject}
-            if locationUnsets.count > 0 { unsets[RVKeys.location.rawValue] = locationUnsets as AnyObject }
+            let nextField = topField == "" ? RVKeys.location.rawValue : "\(topField).$.\(RVKeys.location.rawValue)"
+            location.getDirtiesAndUnsets(topField: nextField, dirties: &dirties, unsets: &unsets)
         }
         if let image = self.image {
-            let (imageDirties, imageUnsets) = image.getDirtiesAndUnsets()
-            if imageDirties.count > 0 { dirties[RVKeys.image.rawValue] = imageDirties as AnyObject }
-            if imageUnsets.count > 0 { unsets[RVKeys.image.rawValue] = imageUnsets as AnyObject }
+            let nextField = topField == "" ? RVKeys.image.rawValue : "\(topField).$.\(RVKeys.image.rawValue)"
+            image.getDirtiesAndUnsets(topField: nextField, dirties: &dirties, unsets: &unsets)
         }
-        return (dirties, unsets)
     }
     func create(callback: @escaping (_ model: RVBaseModel?, _ error: RVError?) -> Void ) {
-        let (fields, _) = getDirtiesAndUnsets()
-        if fields.count <= 0 {print("In \(self.classForCoder).create, fields count is erroneously zero")}
-        Meteor.call(type(of: self).insertMethod.rawValue, params: [fields]) {(result, error: DDPError?) in
+        var dirties = [String: AnyObject]()
+        var unsets = [String: AnyObject]()
+        getDirtiesAndUnsets(topField: "", dirties: &dirties , unsets: &unsets)
+        if dirties.count <= 0 {print("In \(self.classForCoder).create, dirtiess count is erroneously zero")}
+        Meteor.call(type(of: self).insertMethod.rawValue, params: [dirties]) {(result, error: DDPError?) in
             if let error = error {
                 let rvError = RVError(message: "In \(self.instanceType).insert \(#line) got DDPError for id: \(self.localId)", sourceError: error)
                 callback(nil, rvError)
@@ -761,8 +773,10 @@ extension RVBaseModel {
         return (dirties, unsets)
     }
     func updateById(callback: @escaping(_ updatedModel: RVBaseModel?, _ error: RVError?) -> Void) {
-        var (dirties, unsets) = self.getDirtiesAndUnsets()
-        dirties["location.$.title"] = "location title attempt" as AnyObject?
+        var dirties = [String: AnyObject]()
+        var unsets = [String: AnyObject]()
+        getDirtiesAndUnsets(topField: "", dirties: &dirties , unsets: &unsets)
+  //      dirties["location.title"] = "location title attempt" as AnyObject?
         if (dirties.count < 1) && (unsets.count < 1) {
             callback(self, nil)
         } else {

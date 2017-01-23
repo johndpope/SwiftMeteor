@@ -46,7 +46,7 @@ class RVProfileViewController: UITableViewController {
             image.regularDescription = "TrumpDescription"
     //        image.createdAt = Date()
     //        image.updatedAt = Date()
-     //       profile.image = image
+            profile.image = image
       //      profile.location = RVLocation(fields: [String: AnyObject]())
       //     profile.image = nil
             profile.ownerId = "Elmer"
