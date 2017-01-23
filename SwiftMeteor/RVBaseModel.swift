@@ -24,6 +24,7 @@ class RVBaseModel: MeteorDocument {
     var initializing: Bool = true
     var objects = [String: AnyObject]()
     var dirties = [String: AnyObject]()
+    var unsets = [String: AnyObject]()
 
     init() {
         let id = RVSwiftDDP.sharedInstance.getId()
@@ -80,11 +81,14 @@ class RVBaseModel: MeteorDocument {
         return objects as NSDictionary
 
     }
+    private var _image: RVImage?
     var image: RVImage? {
         get {
+            if let image = _image { return image }
             if let fields = objects[RVKeys.image.rawValue] as? [String: AnyObject] {
                 let image = RVImage(fields: fields)
                 if image.validRecord && !image.deleted {
+                    self._image = image
                     return image
                 }
                 return nil
@@ -92,19 +96,24 @@ class RVBaseModel: MeteorDocument {
             return nil
         }
         set {
+            let current = self.image
             if let rvImage = newValue {
                 rvImage.setParent(parent: self)
-                rvImage.setOwner(owner: self)
+                if let userProfile = RVCoreInfo.sharedInstance.userProfile {
+                    rvImage.setOwner(owner: userProfile)
+                    rvImage.fullName = userProfile.fullName
+                }
                 if let domain = RVCoreInfo.sharedInstance.domain {
                     rvImage.domainId = domain.localId
                 }
-                rvImage.fullName = self.fullName
-                updateDictionary(key: .image , value: rvImage.objects, setDirties: true)
+                rvImage.parentField = .image
+                self._image = updateEmbeddedImage(current: current, newImage: rvImage)
             } else {
                 updateDictionary(key: .image, value: nil, setDirties: true)
             }
         }
     }
+
     var deleted: Bool {
         get {
             if let deleted = getBool(key: .deleted) { return deleted}
@@ -168,14 +177,24 @@ class RVBaseModel: MeteorDocument {
             if let _ = existing as? NSNull {
                 // do nothing
             } else {
-                objects[key.rawValue] = NSNull()
-                dirties[key.rawValue] = NSNull()
+                updateAnyObject(key: key, value: NSNull() as AnyObject, setDirties: true)
             }
         }
     }
     func updateAnyObject(key: RVKeys, value: AnyObject = NSNull(), setDirties: Bool = false) {
-        objects[key.rawValue] = value
-        if setDirties { dirties[key.rawValue] = value }
+        if let _ = value as? NSNull {
+           objects.removeValue(forKey: key.rawValue)
+        } else {
+            objects[key.rawValue] = value
+        }
+
+        if setDirties {
+            if let _ = value as? NSNull {
+                unsets[key.rawValue] = "" as AnyObject
+            } else {
+                dirties[key.rawValue] = value
+            }
+        }
     }
     func updateDictionary(key: RVKeys, value: [String: AnyObject]? = nil, setDirties: Bool = false) {
         if let value = value {
@@ -185,13 +204,11 @@ class RVBaseModel: MeteorDocument {
             } else {
                 self.updateAnyObject(key: key, value: value as AnyObject, setDirties: setDirties)
             }
-        } else {
-            if let _ = objects[key.rawValue] {
+        } else if let _ = objects[key.rawValue] {
                 // currently a non-null value
                 self.updateAnyObject(key: key, value: NSNull(), setDirties: setDirties)
-            } else {
+        } else {
                 // both new and existing are nil or non-existent; don't do anything
-            }
         }
     }
     func updateArray(key: RVKeys, value: [AnyObject]? = nil, setDirties: Bool = false) {
@@ -224,7 +241,8 @@ class RVBaseModel: MeteorDocument {
         } else {
             if let _ = getBool(key: key) {
                 // current a non-null value
-                self.updateAnyObject(key: key, value: NSNull(), setDirties: setDirties)
+                //self.updateAnyObject(key: key, value: NSNull(), setDirties: setDirties)
+                self.unsetAnyObject(key: key, setDirties: setDirties)
             } else {
                 // both new and existing are nil or non-existent; don't do anything
             }
@@ -246,7 +264,8 @@ class RVBaseModel: MeteorDocument {
             // new value is nil
             if let _ = getString(key: key) {
                 // currently a non-null value
-                self.updateAnyObject(key: key, value: NSNull(), setDirties: setDirties)
+                //self.updateAnyObject(key: key, value: NSNull(), setDirties: setDirties)
+                self.unsetAnyObject(key: key, setDirties: setDirties)
             } else {
                 // both new and existing are nil or non-existent; don't do anything
             }
@@ -268,10 +287,18 @@ class RVBaseModel: MeteorDocument {
             // new value is nil
             if let _ = getString(key: key) {
                 // currently a non-null value
-                self.updateAnyObject(key: key, value: NSNull(), setDirties: setDirties)
+                //self.updateAnyObject(key: key, value: NSNull(), setDirties: setDirties)
+                self.unsetAnyObject(key: key, setDirties: setDirties)
             } else {
                 // both new and existing are nil or non-existent; don't do anything
             }
+        }
+    }
+    func unsetAnyObject(key: RVKeys, setDirties: Bool) {
+        objects.removeValue(forKey: key.rawValue)
+        if setDirties {
+            dirties.removeValue(forKey: key.rawValue)
+            unsets[key.rawValue] = "" as AnyObject
         }
     }
     var localId: String? {
@@ -369,6 +396,21 @@ class RVBaseModel: MeteorDocument {
             
         }
     }
+    var parentField: RVKeys? {
+        get {
+            if let rawValue = getString(key: RVKeys.parentField) {
+                if let field = RVKeys(rawValue: rawValue) { return field }
+            }
+            return nil
+        }
+        set {
+            if let field = newValue {
+                updateString(key: RVKeys.parentField, value: field.rawValue, setDirties: true)
+            } else {
+                updateString(key: RVKeys.parentField, value: nil, setDirties: true)
+            }
+        }
+    }
     var shadowId: String? {
         get { return getString(key: RVKeys.shadowId) }
         set { updateString(key: RVKeys.shadowId, value: newValue, setDirties: true)}
@@ -407,6 +449,15 @@ class RVBaseModel: MeteorDocument {
         }
         set {
             updateNumber(key: .schemaVersion, value: NSNumber(value:newValue), setDirties: true)
+        }
+    }
+    var updateCount: Int {
+        get {
+            if let number = getNSNumber(key: .updateCount) { return number.intValue }
+            return -1
+        }
+        set {
+            updateNumber(key: .updateCount, value: NSNumber(value:newValue), setDirties: true)
         }
     }
     var score: Double {
@@ -465,7 +516,11 @@ class RVBaseModel: MeteorDocument {
                 if let domain = RVCoreInfo.sharedInstance.domain {
                     location.domainId = domain.localId
                 }
-                location.fullName = self.fullName 
+                if let userProfile = RVCoreInfo.sharedInstance.userProfile {
+                    location.fullName = userProfile.fullName
+                    location.setOwner(owner: userProfile)
+                }
+                location.parentField = RVKeys.location
                 updateDictionary(key: .location, value: location.objects , setDirties: true)
             } else {
                 updateDictionary(key: .location, value: nil , setDirties: true)
@@ -576,6 +631,9 @@ extension RVBaseModel {
     }
     
     func create(callback: @escaping (_ error: RVError?) -> Void ) {
+        self.updateCount = self.updateCount + 1
+        if let image = self.image { image.updateCount = image.updateCount + 1}
+        if let location = self.location { location.updateCount = location.updateCount + 1}
         var fields = self.dirties
         self.dirties = [String : AnyObject]()
         fields.removeValue(forKey: RVKeys.createdAt.rawValue)
@@ -594,6 +652,7 @@ extension RVBaseModel {
         }
     }
     override func update(_ fields: NSDictionary?, cleared: [String]? ) {
+
         if let fields = fields as? [String : AnyObject] {
             for (rawValue, value) in fields {
                 if let property = RVKeys(rawValue: rawValue) {
@@ -651,16 +710,50 @@ extension RVBaseModel {
         }
 
     }
-
-
-    func updateById(callback: @escaping(_ updatedModel: RVBaseModel?, _ error: RVError?) -> Void) {
+    func embed(key: RVKeys, model: RVBaseModel) {
+        
+    }
+    
+    private func getUpdateFieldsInner() -> ([String: AnyObject], [String: AnyObject]) {
         let dirties = self.dirties
-        print("Dirties are: \(dirties)")
+        let unsets = self.unsets
         self.dirties = [String: AnyObject]()
-        if dirties.count < 1 {
+        self.unsets = [String: AnyObject]()
+        return (dirties, unsets)
+    }
+    func getUpdateFields() -> ([String: AnyObject], [String: AnyObject]) {
+        var (dirties, unsets) = getUpdateFieldsInner()
+        if let image = self.image {
+            let (imageDirties, imageUnsets) = image.getUpdateFields()
+            print("In \(self.classForCoder), imageDirties = \(imageDirties.count) and unsets are \(imageUnsets.count)")
+            if imageDirties.count > 0 { dirties[RVKeys.image.rawValue] = imageDirties as AnyObject }
+            if imageUnsets.count > 0 { unsets[RVKeys.image.rawValue] = imageUnsets as AnyObject }
+        } else {
+            
+        }
+        if let location = self.location {
+            let (locationDirties, locationUnsets) = location.getUpdateFields()
+            if locationDirties.count > 0 { dirties[RVKeys.location.rawValue] = locationDirties as AnyObject }
+            if locationUnsets.count > 0 { unsets[RVKeys.location.rawValue] = locationUnsets as AnyObject }
+        } else {
+            
+        }
+        return (dirties, unsets)
+    }
+    func updateById(callback: @escaping(_ updatedModel: RVBaseModel?, _ error: RVError?) -> Void) {
+        self.updateCount = self.updateCount + 1
+        if let image = self.image {
+            image.updateCount = image.updateCount + 1
+            print("In \(self.instanceType).updateByID, updated image updateCount \(image.updateCount)")
+        } else {
+            print("In \(self.instanceType).updateByID, didn't uypdate image updateCount")
+        }
+        if let location = self.location { location.updateCount = location.updateCount + 1}
+        let (dirties, unsets) = self.getUpdateFields()
+        if (dirties.count < 1) && (unsets.count < 1) {
             callback(self, nil)
         } else {
-            Meteor.call(type(of: self).updateMethod.rawValue, params: [ self.localId as AnyObject, dirties as AnyObject]) { (result: Any? , error: DDPError?) in
+            Meteor.call(type(of: self).updateMethod.rawValue, params: [ self.localId as AnyObject, dirties as AnyObject, unsets as AnyObject]) { (result: Any? , error: DDPError?) in
                 if let error = error {
                     let rvError = RVError(message: "In \(self.instanceType).updateById \(#line) got DDPError for id: \(self.localId)", sourceError: error)
                     callback(nil, rvError)
@@ -788,6 +881,7 @@ extension RVBaseModel {
             output = "\(output)comment <no comment>\n"
         }
         output = addTerm(term: "schemaVersion", input: output, value: "\(self.schemaVersion)")
+        output = addTerm(term: "Update count", input: output, value: "\(self.updateCount)")
         output = "\(output), deleted: \(deleted), "
         output = "\(output), validRecord: \(validRecord), "
         output = addTerm(term: "domainId", input: output, value: self.domainId)

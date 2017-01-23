@@ -23,38 +23,50 @@ class RVProfileViewController: UITableViewController {
         }
     }
     func updateProfile(callback: @escaping() -> Void) {
+        /*
+        let user = RVUserProfile()
+        user.title = "Elmo was here"
+        user.text = "SOme more text 6677777"
+        user.create { (error) in
+            if let error = error {
+                error.printError()
+            }
+        }
+        return
+        */
         if let profile = RVCoreInfo.sharedInstance.userProfile {
             if let text = firstNameTextField.text {profile.firstName = text }
             if let text = middleNameTextField.text {profile.middleName = text }
             if let text = lastNameTextField.text { profile.lastName = text }
             let image = RVImage()
-            image.urlString = "Goober"
-            image.title = "Image Title"
-            image.urlString = "URL STRING"
+            image.urlString = "NEW URL STRING *************** "
+            image.title = "DIrrent TItle"
+            image.urlString = "URL STRINGGGG 88&&&&&&&&&&&&&&&&&&&&&&&&"
             image.regularDescription = "An Image Description"
-            image.updatedAt = Date()
-         //   profile.image = image
-          //  profile.location = RVLocation(fields: [String: AnyObject]())
-        //    profile.image = nil
-            profile.ownerId = "ownerIDGoesHere"
+       //     image.updatedAt = Date()
+            profile.image = image
+      //      profile.location = RVLocation(fields: [String: AnyObject]())
+      //     profile.image = nil
+            profile.ownerId = "Elmer"
             profile.ownerModelType = .household
-            profile.parentId = "parentIDGoesHere"
+            profile.parentId = "parentIDGoesHerrrrrrrrrre"
             profile.parentModelType = .domain
-            profile.handle = "A Handle"
-            profile.comment = "A comment from the client"
-            profile.regularDescription = "A regular description"
-            profile.yob = 1958
-            profile.clientRole = .admin
-            profile.gender = .male
-            profile.validRecord = true
+            profile.handle = "A new handle"
+            profile.comment = "New comment"
+     //       profile.regularDescription = "A regular description"
+     //       profile.yob = 1958
+     //       profile.clientRole = .admin
+     //       profile.gender = .male
+    //        profile.validRecord = true
            // profile.domainId = "DomainID"
-            profile.email = "f@f.com"
-            profile.cellPhone = "CEll phone"
-            profile.homePhone = "Home phone"
-            profile.watchGroupIds = ["ID1", "ID2"]
-            profile.schemaVersion = 1.2
-            profile.title = "A title"
-            profile.text = "Some text"
+    //        profile.email = "f@f.com"
+     //       profile.cellPhone = nil
+            profile.homePhone = nil
+     //       profile.watchGroupIds = ["ID1", "ID2", "SOMETHING"]
+            profile.watchGroupIds = ["ABCD", "1234"]
+            profile.schemaVersion = 15.0
+         //   profile.title = "New title"
+            profile.text = "Alexandar"
             if let domain = RVCoreInfo.sharedInstance.domain {
                 profile.domainId = domain.localId
             }
@@ -63,7 +75,7 @@ class RVProfileViewController: UITableViewController {
                     error.printError()
                     callback()
                 } else if let newProfile = updatedModel as? RVUserProfile {
-                    print("In \(self.classForCoder).updateProfile successful saved")
+                    print("In \(self.classForCoder).updateProfile successful saved\n\(newProfile.toString())")
                     RVCoreInfo.sharedInstance.userProfile = newProfile
                     callback()
                 } else {
@@ -75,12 +87,12 @@ class RVProfileViewController: UITableViewController {
     }
     func setProfileInfo() {
         if let profile = RVCoreInfo.sharedInstance.userProfile {
-            print("------------------\nIn \(self.classForCoder).setProfileInfo, have profile \(profile.toString())")
+           // print("------------------\nIn \(self.classForCoder).setProfileInfo, have profile \(profile.toString())")
             setTextFieldText(text: profile.firstName, textField: firstNameTextField)
             setTextFieldText(text: profile.middleName, textField: middleNameTextField)
             setTextFieldText(text: profile.lastName, textField: lastNameTextField)
         } else {
-            print("In \(self.classForCoder).viewDidLoad, do NOT have profile")
+            print("In \(self.classForCoder).setProfileInfo, do NOT have profile")
         }
     }
     
