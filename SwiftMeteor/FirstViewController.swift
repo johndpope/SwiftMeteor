@@ -176,7 +176,7 @@ class FirstViewController: UIViewController {
         task.title = "d \(three) \(count)"
         task.comment = task.regularDescription
         task.image = RVImage()
-        task.create { (error: RVError?) in
+        task.create { (result, error: RVError?) in
             if let error = error {
                 error.printError()
                 callback(RVError(message: "In \(self.classForCoder).insertATask got error", sourceError: error))

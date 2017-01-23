@@ -29,6 +29,7 @@ extension RVBaseModel {
         current.numberOfFollowers = newModel.numberOfFollowers
         current.numberOfObjections = newModel.numberOfObjections
         current.schemaVersion = newModel.schemaVersion
+        current.updateCount = newModel.updateCount
 //        current.score = newModel.score
         current.special = newModel.special
         current.tags = newModel.tags
@@ -39,47 +40,7 @@ extension RVBaseModel {
         // image
         // location
     }
-    func nullOutBase(current: RVBaseModel) {
-       // current.modelType
-       // current.collection
-        current.title = nil
-        current.regularDescription = nil
-        current.text = nil
-        current.comment = nil
-        current.value = nil
-        current.deleted = true
-        current.owner = nil
-        current.ownerId = nil
-        current.ownerModelType = .unknown
-        current.parentId = nil
-        current.parentModelType = .unknown
-        current.domainId = nil
-        current.fullName = nil
-        current.handle = nil
-        current.numberOfLikes = 0
-        current.numberOfFollowers = 0
-        current.numberOfObjections = 0
-        current.schemaVersion = 0
-        //        current.score = newModel.score
-        current.special = .unknown
-        current.tags = [String]()
-        current.username = nil
-        current.validRecord = false
-        current.visibility = .publicVisibility
-        current.parentField = nil
-        // image
-        // location
-    }
-    func nullOutImage(current: RVImage) {
-        nullOutBase(current: current)
-        current.bytes = 0
-        current.filetype = RVFileType.unkown
-        current.height = 0
-        current.photo_reference = nil
-        //        current.url = newImage.url
-        current.urlString = nil
-        current.width = 0
-    }
+
     func imageUnique(current: RVImage, newImage: RVImage) {
         current.bytes = newImage.bytes
         current.filetype = newImage.filetype
@@ -95,7 +56,7 @@ extension RVBaseModel {
             imageUnique(current: current , newImage: newImage)
             if let currentLocation = current.location {
                 if let newLocation = newImage.location {
-                    current.location = updateEmbeddedLocation(key: .location, current: currentLocation, newLocation: newLocation)
+                    current.location = updateEmbeddedLocation(current: currentLocation, newLocation: newLocation)
                 } else {
                     current.location = nil
                 }
@@ -107,40 +68,9 @@ extension RVBaseModel {
                 // current and new are both nil. No action needed.
             }
             return current
-        } else {
-            return newImage
-        }
+        } else { return newImage }
     }
-    func nullOutLocation(current: RVLocation) {
-        nullOutBase(current: current)
-        current.administrativeArea = nil
-        current.city = nil
-        current.country = nil
-        //current.firstLine = newLocation.firstLine
-        current.geocoded = nil
-        current.geoIndex = nil
-        current.geometry = nil
-        current.iconURLString = nil
-        current.latitude = nil
-        current.locality = nil
-        current.longitude = nil
-        current.neighborhood = nil
-        current.phoneNumber = nil
-        current.photo = nil
-        current.placeId = nil
-        current.postalCode = nil
-        current.record_id = nil
-        current.reference = nil
-        current.route = nil
-        current.state = nil
-        current.street = nil
-        current.street_number = nil
-        current.subLocality = nil
-        current.thoroughfare = nil
-        current.types = nil
-        current.websiteString = nil
-        current.fullAddress = nil
-    }
+
     func locationUnique(current: RVLocation, newLocation: RVLocation) {
         current.administrativeArea = newLocation.administrativeArea
         current.city = newLocation.city
@@ -170,19 +100,11 @@ extension RVBaseModel {
         current.types = newLocation.types
         current.websiteString = newLocation.websiteString
     }
-    func updateEmbeddedLocation(key: RVKeys, current: RVLocation?, newLocation: RVLocation?) -> RVLocation {
+    func updateEmbeddedLocation(current: RVLocation?, newLocation: RVLocation) -> RVLocation {
         if let current = current {
-            if let newLocation = newLocation {
-                updateEmbedded(current: current, newModel: newLocation)
-                locationUnique(current: current, newLocation: newLocation)
-            } else {
-                nullOutLocation(current: current)
-            }
-        } else if let newLocation = newLocation {
-            updateDictionary(key: key, dictionary: newLocation.objects , setDirties: true)
-        } else {
-            // both are nil so do nothing
-        }
-
+            updateEmbedded(current: current, newModel: newLocation)
+            locationUnique(current: current, newLocation: newLocation)
+            return current
+        } else { return newLocation }
     }
 }

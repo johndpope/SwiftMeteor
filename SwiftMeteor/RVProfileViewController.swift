@@ -35,16 +35,18 @@ class RVProfileViewController: UITableViewController {
         return
         */
         if let profile = RVCoreInfo.sharedInstance.userProfile {
+//            profile = RVUserProfile()
             if let text = firstNameTextField.text {profile.firstName = text }
             if let text = middleNameTextField.text {profile.middleName = text }
             if let text = lastNameTextField.text { profile.lastName = text }
             let image = RVImage()
-            image.urlString = "NEW URL STRING *************** "
+      
             image.title = "DIrrent TItle"
-            image.urlString = "URL STRINGGGG 88&&&&&&&&&&&&&&&&&&&&&&&&"
-            image.regularDescription = "An Image Description"
-       //     image.updatedAt = Date()
-            profile.image = image
+            image.urlString = "URL STRINGGGG Hillary"
+            image.regularDescription = "TrumpDescription"
+    //        image.createdAt = Date()
+    //        image.updatedAt = Date()
+     //       profile.image = image
       //      profile.location = RVLocation(fields: [String: AnyObject]())
       //     profile.image = nil
             profile.ownerId = "Elmer"
@@ -70,6 +72,8 @@ class RVProfileViewController: UITableViewController {
             if let domain = RVCoreInfo.sharedInstance.domain {
                 profile.domainId = domain.localId
             }
+//            profile.create(callback: { (updatedModel, error) in
+
             profile.updateById(callback: { (updatedModel, error) in
                 if let error = error {
                     error.printError()
@@ -87,7 +91,7 @@ class RVProfileViewController: UITableViewController {
     }
     func setProfileInfo() {
         if let profile = RVCoreInfo.sharedInstance.userProfile {
-           // print("------------------\nIn \(self.classForCoder).setProfileInfo, have profile \(profile.toString())")
+           print("------------------\nIn \(self.classForCoder).setProfileInfo, have profile \(profile.toString())\n%\n%\n%")
             setTextFieldText(text: profile.firstName, textField: firstNameTextField)
             setTextFieldText(text: profile.middleName, textField: middleNameTextField)
             setTextFieldText(text: profile.lastName, textField: lastNameTextField)

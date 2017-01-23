@@ -48,7 +48,7 @@ class RVSeed {
         if count <= 0 { return }
         if let rootTask = RVCoreInfo.sharedInstance.rootTask {
             let task = createTask(rootTask: rootTask, count: count)
-            task.create(callback: { (error) in
+            task.create(callback: { (result, error) in
                 if let error = error {
                     error.printError()
                 } else {
@@ -113,7 +113,7 @@ class RVSeed {
             task.owner = "Neil"
             task.handle = "Neil"
             task.regularDescription = "Description of Root"
-            task.create(callback: { (error) in
+            task.create(callback: { (result, error) in
                 if let error = error {
                     error.append(message: "In RVSeed.createTaskRoot got error creating root")
                     callback(nil , error)
@@ -148,7 +148,7 @@ class RVSeed {
                     task.handle = "Neil"
                     task.regularDescription = "Description of Root"
                     task.special = RVSpecial.root
-                    task.create(callback: { (error) in
+                    task.create(callback: { (result, error) in
                         if let error = error {
                             error.append(message: "In RVSeed.createTaskRoot, got error creating")
                             callback(task, error)

@@ -170,7 +170,7 @@ extension RVImage {
                                         let urlString = absoluteString.components(separatedBy: "?")[0]
                                         print("In \(classForCoder()).saveImage, uploaded Image to \(urlString)")
                                         rvImage.urlString = urlString
-                                        rvImage.create(callback: { (error) in
+                                        rvImage.create(callback: { (reuslt, error) in
                                             if let error = error {
                                                 error.append(message: "In RVImage.saveImage, got error creating RVImage record, id: \(rvImage.localId)")
                                                 callback(nil, error)

@@ -284,7 +284,13 @@ extension DDPClient {
                     NotificationCenter.default.post(name: Notification.Name(rawValue: DDP_USER_DID_LOGIN), object: nil)
 
                     if let _ = self.delegate {
-                        self.delegate!.ddpUserDidLogin(self.user()!)
+                        if let name = self.user() {
+                            self.delegate!.ddpUserDidLogin(name)
+                        } else {
+                            print("In DDOExtension.login, got a bad state")
+                                        if let c = callback { c(result, error) }
+                        }
+                        
                     }
                     
                 }

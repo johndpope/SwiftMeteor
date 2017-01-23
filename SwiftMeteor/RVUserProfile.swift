@@ -85,9 +85,9 @@ class RVUserProfile: RVBaseModel {
         }
         set {
             if let settings = newValue {
-                updateDictionary(key: .settings, value: settings.objects, setDirties: true)
+                updateDictionary(key: .settings, dictionary: settings.objects, setDirties: true)
             } else {
-                updateDictionary(key: .settings, value: nil, setDirties: true)
+                updateDictionary(key: .settings, dictionary: nil, setDirties: true)
             }
         }
     }

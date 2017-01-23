@@ -146,6 +146,9 @@ class RVRightMenuViewController: RVBaseViewController {
             //print("In \(self.instanceType).initialize, returned from connecting with Meteor")
         }
         hideView(view: passwordView)
+        hideView(view: passwordMessageLabel)
+        hideView(view: emailMessageLabel)
+        hideView(view: loginFailureView)
         hideButtons()
     }
     
