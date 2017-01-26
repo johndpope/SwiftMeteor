@@ -42,7 +42,7 @@ public class RVAWS: NSObject {
             if let sharedInstance = _sharedInstance { return sharedInstance}
             AWSLogger.default().logLevel = AWSLogLevel.error
             if URLProtocol.registerClass(RVS3URLProtocol.self) {
-                print("Successful register")
+           //     print("In \(self.classForCoder()).sharedInstance Successful register")
             } else {
                 print("Not successful register")
             }

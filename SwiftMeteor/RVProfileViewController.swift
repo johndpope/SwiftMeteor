@@ -14,13 +14,16 @@ extension RVProfileViewController: RVCameraDelegate {
             if let chosenImage = info[UIImagePickerControllerOriginalImage] as? UIImage {
                 profileImageView.image = chosenImage
                 if let profile = RVCoreInfo.sharedInstance.userProfile {
-                    let topView = UIView(frame: self.tableView.bounds)
-                    self.tableView.addSubview(topView)
-                    topView.lock()
+
+                    self.tableView.lock()
+                //    showActivity()
+
                     RVImage.saveImage(image: chosenImage, path: nil, filename: "arbitraryname", filetype: .jpeg, parent: profile, params: [String: AnyObject](), callback: { (image, error) in
                         print("RVProfileViewController.didFinish. About to unlock")
-                        topView.unlock()
-                        topView.removeFromSuperview()
+
+                        self.tableView.unlock()
+                        self.stopActivity()
+
                         if let error = error {
                             error.append(message: "In \(self.classForCoder).didFinish, got error ")
                             error.printError()
@@ -107,7 +110,8 @@ class RVProfileViewController: UITableViewController {
     @IBOutlet weak var cellPhoneTextField: UITextField!
     @IBOutlet weak var homePhoneTextField: UITextField!
     
-    
+    let activity = UIActivityIndicatorView(activityIndicatorStyle: .white)
+    let activityView = UIView()
     let genders = [RVGender.female, RVGender.itsComplicated, RVGender.male, RVGender.transgender, RVGender.unknown]
     @IBOutlet weak var genderTextField: UITextField!
     
@@ -138,7 +142,25 @@ class RVProfileViewController: UITableViewController {
             
         }
     }
-
+    func showActivity() {
+        activity.frame = CGRect(x: 0, y: 0, width: 40, height: 40)
+        activity.hidesWhenStopped  = true
+        activityView.frame = self.tableView.bounds
+        activity.center = activityView.center
+        activity.alpha = 1.0
+        activityView.isHidden = false
+        activityView.backgroundColor = UIColor(white: 0.0, alpha: 0.75)
+        activityView.addSubview(activity)
+        activity.startAnimating()
+        self.tableView.addSubview(activityView)
+    }
+    func stopActivity() {
+        activity.stopAnimating()
+        activityView.removeFromSuperview()
+        activity.removeFromSuperview()
+       // self.tableView.setNeedsDisplay()
+        activityView.isHidden = true
+    }
     func updateProfile(callback: @escaping() -> Void) {
         if let profile = RVCoreInfo.sharedInstance.userProfile {
             if let text = firstNameTextField.text {profile.firstName = text.trimmingCharacters(in: trimCharacters) }
@@ -171,7 +193,7 @@ class RVProfileViewController: UITableViewController {
                     if let error = error {
                         error.printError()
                     } else if let uiImage = image {
-                        print("In \(self.classForCoder).setProfileInfo, have image \(uiImage.size.height)")
+                      //  print("In \(self.classForCoder).setProfileInfo, have image \(uiImage.size.height)")
                         self.showImage(imageView: self.profileImageView, uiImage: uiImage)
                     }
                 })
@@ -217,7 +239,7 @@ extension RVProfileViewController: UITextFieldDelegate {
     func textFieldShouldBeginEditing(_ textField: UITextField) -> Bool {return true}// return NO to disallow editing.
     
     func textFieldDidBeginEditing(_ textField: UITextField) {
-        if let pickerTextField = self.genderTextField {
+        if let _ = self.genderTextField {
             if let picker = self.genderPickerView {
                 picker.isHidden = false
                 textField.endEditing(true)

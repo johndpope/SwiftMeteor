@@ -52,11 +52,11 @@ class RVMainLandingViewController: RVBaseViewController {
 
     func loadup() {
         if RVAppState.shared.state == RVAppState.State.ShowProfile {
-            print("In \(self.classForCoder).loadup, have ShowProfile state")
+           // print("In \(self.classForCoder).loadup, have ShowProfile state")
             let storyboard = UIStoryboard(name: RVCoreInfo.sharedInstance.mainStoryboard, bundle: nil)
                 if let viewController = storyboard.instantiateViewController(withIdentifier: "ProfileNavController") as? UINavigationController {
                     self.present(viewController, animated: true, completion: {
-                        print("In \(self.instanceType).loadUp returned from presenting ProfileNavController")
+                        //print("In \(self.instanceType).loadUp returned from presenting ProfileNavController")
                     })
                 }
             

@@ -54,15 +54,17 @@ extension RVLeftMenuController {
                   //  print("In \(self.classForCoder).didSelectRowAt \(indexPath.row), Found Logout")
                     RVSwiftDDP.sharedInstance.logout(callback: { (error) in
                         if let error = error {
-                            error.append(message: "In \(self.classForCoder).didSelectRowAt go error")
+                            error.append(message: "In \(self.classForCoder).didSelectRowAt gor error")
                             error.printError()
                         }
                     })
                 } else if string == "ClearUsers" {
                     RVUserProfile.clearAll()
-                } else {
+                } else if string == "Profile" {
                     RVAppState.shared.state = .ShowProfile
                     RVViewDeck.sharedInstance.toggleSide(side: .center)
+                } else {
+
                     print("In \(self.classForCoder).didSelectRowAt \(indexPath.row), \(string) not handled")
                 }
             }

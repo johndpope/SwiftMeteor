@@ -53,7 +53,7 @@ class RVCamera: NSObject {
             if PHPhotoLibrary.authorizationStatus() != .authorized {
                 PHPhotoLibrary.requestAuthorization(requestAuthorizationHandler)
             } else {
-                print("In \(self.classForCoder).showPhotoLibrary")
+              //  print("In \(self.classForCoder).showPhotoLibrary")
                 show(sourceType: .photoLibrary)
             }
         } else {
@@ -119,7 +119,7 @@ class RVCamera: NSObject {
             picker.showsCameraControls = true
             //picker.modalPresentationStyle = UIModalPresentationStyle.currentContext
         } else {
-            print("Not a camera")
+         //   print("Not a camera")
         }
 
 
