@@ -26,6 +26,8 @@ class RVBaseModel: MeteorDocument {
     var objects = [String: AnyObject]()
     var dirties = [String: AnyObject]()
     var unsets = [String: AnyObject]()
+    var imageInitiallyNull = false
+    var locationInitiallyNull = false
 
     init() {
         let id = RVSwiftDDP.sharedInstance.getId()
@@ -36,6 +38,7 @@ class RVBaseModel: MeteorDocument {
     }
     func initializeProperties() {
         self.modelType = type(of: self).collectionType()
+        self.collection = self.modelType
         self.visibility = .publicVisibility
         self.validRecord = true
         self.deleted = false
@@ -45,6 +48,11 @@ class RVBaseModel: MeteorDocument {
         } else {
             print("In \(instanceType).init, don't have domain")
         }
+        checkEmbeddeds()
+    }
+    func checkEmbeddeds() {
+        if objects[RVKeys.image.rawValue] == nil {imageInitiallyNull = true}
+        if objects[RVKeys.location.rawValue] == nil { locationInitiallyNull = true }
     }
     func checkModelType() {
         if self.modelType == RVModelType.unknown || self.modelType != type(of: self).collectionType() {
@@ -70,6 +78,7 @@ class RVBaseModel: MeteorDocument {
         }
 
         checkModelType()
+        checkEmbeddeds()
     }
     required init(id: String, fields: NSDictionary?) {
         //super.init(id: id, fields: fields )
@@ -81,6 +90,7 @@ class RVBaseModel: MeteorDocument {
         }
         self.localId = id
         checkModelType()
+        checkEmbeddeds()
     }
 
     override  func fields() -> NSDictionary  {
@@ -413,58 +423,65 @@ class RVBaseModel: MeteorDocument {
         get { return getString(key: RVKeys.shadowId) }
         set { updateString(key: RVKeys.shadowId, value: newValue, setDirties: true)}
     }
-    var numberOfLikes: Int {
+    
+    var numberOfLikes: Int? {
         get {
             if let number = getNSNumber(key: .numberOfLikes) { return number.intValue }
-            return 0
+            return nil
         }
         set {
-            updateNumber(key: .numberOfLikes, value: NSNumber(value:newValue), setDirties: true)
+            let number: NSNumber? = (newValue != nil) ? NSNumber(value: newValue!) : nil
+            updateNumber(key: .numberOfLikes, value: number, setDirties: true)
         }
     }
-    var numberOfFollowers: Int {
+    var numberOfFollowers: Int? {
         get {
             if let number = getNSNumber(key: .numberOfFollowers) { return number.intValue }
-            return 0
+            return nil
         }
         set {
-            updateNumber(key: .numberOfFollowers, value: NSNumber(value:newValue), setDirties: true)
+            let number: NSNumber? = (newValue != nil) ? NSNumber(value: newValue!) : nil
+            updateNumber(key: .numberOfFollowers, value: number, setDirties: true)
         }
     }
-    var numberOfObjections: Int {
+    var numberOfObjections: Int? {
         get {
             if let number = getNSNumber(key: .numberOfObjections) { return number.intValue }
-            return 0
+            return nil
         }
         set {
-            updateNumber(key: .numberOfObjections, value: NSNumber(value:newValue), setDirties: true)
+            let number: NSNumber? = (newValue != nil) ? NSNumber(value: newValue!) : nil
+            updateNumber(key: .numberOfObjections, value: number, setDirties: true)
         }
     }
-    var schemaVersion: Double {
+    var schemaVersion: Double? {
         get {
             if let number = getNSNumber(key: .schemaVersion) { return number.doubleValue }
-            return 0.0
+            return nil
         }
         set {
-            updateNumber(key: .schemaVersion, value: NSNumber(value:newValue), setDirties: true)
+            let number: NSNumber? = (newValue != nil) ? NSNumber(value: newValue!) : nil
+            updateNumber(key: .schemaVersion, value: number, setDirties: true)
         }
     }
-    var updateCount: Int {
+    var updateCount: Int? {
         get {
             if let number = getNSNumber(key: .updateCount) { return number.intValue }
-            return -1
+            return nil
         }
         set {
-            updateNumber(key: .updateCount, value: NSNumber(value:newValue), setDirties: true)
+            let number: NSNumber? = (newValue != nil) ? NSNumber(value: newValue!) : nil
+            updateNumber(key: .updateCount, value: number, setDirties: true)
         }
     }
-    var score: Double {
+    var score: Double? {
         get {
             if let number = getNSNumber(key: .score) { return number.doubleValue }
-            return 0.0
+            return nil
         }
         set {
-            updateNumber(key: .score, value: NSNumber(value:newValue), setDirties: true)
+            let number: NSNumber? = (newValue != nil) ? NSNumber(value: newValue!) : nil
+            updateNumber(key: .score, value: number, setDirties: true)
         }
     }
     var tags: [String] {
@@ -656,20 +673,34 @@ extension RVBaseModel {
         //return dictionary
     }
     func getDirtiesAndUnsets(topField: String, dirties: inout [String: AnyObject], unsets: inout [String: AnyObject]) -> Void {
-        if (self.dirties.count > 0) || (self.unsets.count > 0) {self.updateCount = self.updateCount + 1}
+        if (self.dirties.count > 0) || (self.unsets.count > 0) {
+            if self.updateCount == nil { self.updateCount = 0 }
+            else { self.updateCount = self.updateCount! + 1 }
+        }
         var sourceDirties = self.dirties
         self.dirties = [String: AnyObject]()
         var sourceUnsets = self.unsets
         self.unsets = [String: AnyObject]()
         dotNotation(topField: topField, dictionary: &dirties, sourceDictionary: &sourceDirties)
         dotNotation(topField: topField, dictionary: &unsets, sourceDictionary: &sourceUnsets)
+        
         if let location = self.location {
-            let nextField = topField == "" ? RVKeys.location.rawValue : "\(topField).$.\(RVKeys.location.rawValue)"
-            location.getDirtiesAndUnsets(topField: nextField, dirties: &dirties, unsets: &unsets)
+            if locationInitiallyNull {
+                dirties[RVKeys.location.rawValue] = location.objects as AnyObject
+            } else {
+                let nextField = topField == "" ? RVKeys.location.rawValue : "\(topField).$.\(RVKeys.location.rawValue)"
+                location.getDirtiesAndUnsets(topField: nextField, dirties: &dirties, unsets: &unsets)
+            }
         }
         if let image = self.image {
-            let nextField = topField == "" ? RVKeys.image.rawValue : "\(topField).$.\(RVKeys.image.rawValue)"
-            image.getDirtiesAndUnsets(topField: nextField, dirties: &dirties, unsets: &unsets)
+            if imageInitiallyNull {
+            //    print("IN \(self.instanceType).getDirtiesAndUnsets, image is initially null. \(image.objects)")
+                dirties[RVKeys.image.rawValue] = image.objects as AnyObject
+            } else {
+            //    print("In \(self.instanceType).getDirtiesAndUnsets haveImage")
+                let nextField = topField == "" ? RVKeys.image.rawValue : "\(topField).$.\(RVKeys.image.rawValue)"
+                image.getDirtiesAndUnsets(topField: nextField, dirties: &dirties, unsets: &unsets)
+            }
         }
     }
     func create(callback: @escaping (_ model: RVBaseModel?, _ error: RVError?) -> Void ) {

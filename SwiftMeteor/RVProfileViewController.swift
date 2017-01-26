@@ -54,7 +54,47 @@ extension RVProfileViewController: RVCameraDelegate {
                dismiss(animated: true) {  }
     }
 }
-
+extension RVProfileViewController: UIPickerViewDataSource {
+    // returns the number of 'columns' to display.
+    func numberOfComponents(in pickerView: UIPickerView) -> Int {return 1}
+    
+    
+    // returns the # of rows in each component..
+    func pickerView(_ pickerView: UIPickerView, numberOfRowsInComponent component: Int) -> Int {
+        return genders.count
+    }
+}
+extension RVProfileViewController: UIPickerViewDelegate {
+    // returns width of column and height of row for each component.
+    // func pickerView(_ pickerView: UIPickerView, widthForComponent component: Int) -> CGFloat {}
+    // func pickerView(_ pickerView: UIPickerView, rowHeightForComponent component: Int) -> CGFloat {}
+    
+    
+    // these methods return either a plain NSString, a NSAttributedString, or a view (e.g UILabel) to display the row for the component.
+    // for the view versions, we cache any hidden and thus unused views and pass them back for reuse.
+    // If you return back a different object, the old one will be released. the view will be centered in the row rect
+    func pickerView(_ pickerView: UIPickerView, titleForRow row: Int, forComponent component: Int) -> String? {
+        self.view.endEditing(true)
+        if row < genders.count {
+            return genders[row].rawValue
+        } else {
+            return nil
+        }
+    }
+    
+    //func pickerView(_ pickerView: UIPickerView, attributedTitleForRow row: Int, forComponent component: Int) -> NSAttributedString? {}// attributed title is favored if both methods are implemented
+    
+    //func pickerView(_ pickerView: UIPickerView, viewForRow row: Int, forComponent component: Int, reusing view: UIView?) -> UIView {}
+    
+    func pickerView(_ pickerView: UIPickerView, didSelectRow row: Int, inComponent component: Int) {
+        if row < genders.count {
+            if let textField = self.genderTextField {
+                textField.text = genders[row].rawValue
+            }
+        }
+        pickerView.isHidden = true
+    }
+}
 class RVProfileViewController: UITableViewController {
     
     @IBOutlet weak var profileImageView: UIImageView!
@@ -62,6 +102,18 @@ class RVProfileViewController: UITableViewController {
     @IBOutlet weak var middleNameTextField: UITextField!
     @IBOutlet weak var lastNameTextField: UITextField!
     @IBOutlet weak var doneButton: UIBarButtonItem!
+    
+    @IBOutlet weak var genderPickerView: UIPickerView!
+    @IBOutlet weak var cellPhoneTextField: UITextField!
+    @IBOutlet weak var homePhoneTextField: UITextField!
+    
+    
+    let genders = [RVGender.female, RVGender.itsComplicated, RVGender.male, RVGender.transgender, RVGender.unknown]
+    @IBOutlet weak var genderTextField: UITextField!
+    
+    @IBOutlet weak var yobSlider: UISlider!
+    
+    
     let trimCharacters: CharacterSet  = [" ", "\n", "\r", "\t"]
 
     var camera = RVCamera()
@@ -153,6 +205,8 @@ class RVProfileViewController: UITableViewController {
         setProfileInfo()
         camera.delegate = self
         camera.anchorBarButtonItem = doneButton
+        if let picker = self.genderPickerView {picker.isHidden = true }
+        
     }
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         print("In \(self.classForCoder).didSelectRow \(indexPath.row)")
@@ -162,7 +216,14 @@ class RVProfileViewController: UITableViewController {
 extension RVProfileViewController: UITextFieldDelegate {
     func textFieldShouldBeginEditing(_ textField: UITextField) -> Bool {return true}// return NO to disallow editing.
     
-    func textFieldDidBeginEditing(_ textField: UITextField) {}// became first responder
+    func textFieldDidBeginEditing(_ textField: UITextField) {
+        if let pickerTextField = self.genderTextField {
+            if let picker = self.genderPickerView {
+                picker.isHidden = false
+                textField.endEditing(true)
+            }
+        }
+    }// became first responder
     
     func textFieldShouldEndEditing(_ textField: UITextField) -> Bool {return true }// return YES to allow editing to stop and to resign first responder status. NO to disallow the editing session to end
     
