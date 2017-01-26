@@ -14,15 +14,18 @@ extension RVProfileViewController: RVCameraDelegate {
             if let chosenImage = info[UIImagePickerControllerOriginalImage] as? UIImage {
                 profileImageView.image = chosenImage
                 if let profile = RVCoreInfo.sharedInstance.userProfile {
-                    self.tableView.lock()
+                    let topView = UIView(frame: self.tableView.bounds)
+                    self.tableView.addSubview(topView)
+                    topView.lock()
                     RVImage.saveImage(image: chosenImage, path: nil, filename: "arbitraryname", filetype: .jpeg, parent: profile, params: [String: AnyObject](), callback: { (image, error) in
                         print("RVProfileViewController.didFinish. About to unlock")
-                        self.tableView.unlock()
+                        topView.unlock()
+                        topView.removeFromSuperview()
                         if let error = error {
                             error.append(message: "In \(self.classForCoder).didFinish, got error ")
                             error.printError()
                         } else if let rvImage = image {
-                            print("In \(self.classForCoder).didFinsh got rvImage\n\(rvImage)")
+                            print("In \(self.classForCoder).didFinsh got rvImage\n\(rvImage) with id \(rvImage.localId) \(rvImage.shadowId)")
                             profile.image = rvImage
                             profile.updateById(callback: { (profile, error) in
                                 if let error = error {
@@ -30,6 +33,9 @@ extension RVProfileViewController: RVCameraDelegate {
                                 } else if let profile = profile as? RVUserProfile {
                                     RVCoreInfo.sharedInstance.userProfile = profile
                                     print("In \(self.classForCoder).didFinish, successfully updated profile")
+                                    if let image = profile.image {
+                                        print("Profile iamge ids: localId = \(image.localId), \(image.shadowId)")
+                                    }
                                 } else {
                                     print("In \(self.classForCoder).didFinishPicking, on updating Profile, nothing returned")
                                 }
@@ -75,6 +81,11 @@ class RVProfileViewController: UITableViewController {
 
     }
     
+    @IBAction func cancelButtonTouched(_ sender: UIBarButtonItem) {
+        dismiss(animated: true) { 
+            
+        }
+    }
 
     func updateProfile(callback: @escaping() -> Void) {
         if let profile = RVCoreInfo.sharedInstance.userProfile {

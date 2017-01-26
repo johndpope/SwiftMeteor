@@ -197,6 +197,7 @@ extension RVImage {
                                                 error.append(message: "In RVImage.saveImage, got error creating RVImage record")
                                                 callback(nil, error)
                                             } else if let rvImage = rvImage as? RVImage {
+                                                print("Created a new RVImage record with id \(rvImage.localId) \(rvImage.shadowId) $$$$$$$$$$$$$$$$$")
                                                 callback(rvImage, nil)
                                             } else if let rvImage = rvImage {
                                                 print("In RVImage.saveImage, saved actual image, no cast is of type \(rvImage)")

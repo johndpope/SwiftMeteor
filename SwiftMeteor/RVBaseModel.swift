@@ -60,7 +60,7 @@ class RVBaseModel: MeteorDocument {
             badId = false
            // print("Have actual ID")
         } else {
-           // print("In model init, don't have actual ID \(fields)")
+            print("In model init, don't have actual ID \(fields)")
         }
         //super.init(id: _id, fields: self.objects as NSDictionary? )
         super.init(id: _id, fields: NSDictionary() ) // Just neutralizing the parent class.

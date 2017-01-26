@@ -9,6 +9,8 @@
 import Foundation
 extension RVBaseModel {
     func updateEmbedded(current: RVBaseModel, newModel: RVBaseModel) {
+        current.localId = newModel.localId
+        current.shadowId = newModel.shadowId
         current.modelType = newModel.modelType
         current.collection = newModel.collection
         current.title = newModel.title
