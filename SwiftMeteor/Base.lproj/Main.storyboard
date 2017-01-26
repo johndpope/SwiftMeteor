@@ -860,14 +860,14 @@
                                                     </constraints>
                                                 </view>
                                                 <pickerView contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="0Mt-Qk-Loz">
-                                                    <rect key="frame" x="220" y="0.0" width="120" height="82"/>
+                                                    <rect key="frame" x="195" y="0.0" width="170" height="82"/>
                                                     <color key="backgroundColor" red="0.0" green="0.0" blue="1" alpha="1" colorSpace="calibratedRGB"/>
                                                     <color key="tintColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                                     <accessibility key="accessibilityConfiguration">
                                                         <accessibilityTraits key="traits" playsSound="YES"/>
                                                     </accessibility>
                                                     <constraints>
-                                                        <constraint firstAttribute="width" constant="120" id="qHd-PL-dGB"/>
+                                                        <constraint firstAttribute="width" constant="170" id="qHd-PL-dGB"/>
                                                     </constraints>
                                                     <connections>
                                                         <outlet property="dataSource" destination="1Tr-J1-nWA" id="JWB-eW-w0T"/>
@@ -882,6 +882,7 @@
                                                 <constraint firstItem="VUP-vH-cVO" firstAttribute="top" secondItem="JBV-Qp-o6c" secondAttribute="bottom" constant="6" id="ATa-oL-Dga"/>
                                                 <constraint firstAttribute="trailing" secondItem="OYL-Js-cGC" secondAttribute="trailing" id="Ewn-2a-k0p"/>
                                                 <constraint firstItem="VUP-vH-cVO" firstAttribute="leading" secondItem="JBV-Qp-o6c" secondAttribute="leading" id="IBe-Fx-sgw"/>
+                                                <constraint firstAttribute="trailing" secondItem="0Mt-Qk-Loz" secondAttribute="trailing" constant="10" id="NGZ-e1-cxI"/>
                                                 <constraint firstItem="Xlc-fc-Tdn" firstAttribute="width" secondItem="VUP-vH-cVO" secondAttribute="width" id="Onn-Vw-BKe"/>
                                                 <constraint firstItem="OYL-Js-cGC" firstAttribute="top" secondItem="VUP-vH-cVO" secondAttribute="bottom" constant="4" id="WvG-wx-Ec5"/>
                                                 <constraint firstItem="OYL-Js-cGC" firstAttribute="leading" secondItem="n7Z-zW-G5g" secondAttribute="leading" id="XOO-Yz-ul5"/>
@@ -894,7 +895,6 @@
                                                 <constraint firstItem="Xlc-fc-Tdn" firstAttribute="leading" secondItem="eoh-o6-mAP" secondAttribute="leading" id="qLE-yW-rAb"/>
                                                 <constraint firstItem="JBV-Qp-o6c" firstAttribute="trailing" secondItem="VUP-vH-cVO" secondAttribute="trailing" id="uVL-Z5-f2o"/>
                                                 <constraint firstItem="Xlc-fc-Tdn" firstAttribute="leading" secondItem="n7Z-zW-G5g" secondAttribute="leading" constant="8" id="wKi-Ya-RNn"/>
-                                                <constraint firstItem="0Mt-Qk-Loz" firstAttribute="centerX" secondItem="S0V-6G-CpT" secondAttribute="centerX" id="wcn-yR-SaH"/>
                                                 <constraint firstAttribute="trailing" secondItem="VUP-vH-cVO" secondAttribute="trailing" constant="8" id="xBa-AF-r1Y"/>
                                             </constraints>
                                         </tableViewCellContentView>
@@ -959,7 +959,7 @@
                                                     <nil key="highlightedColor"/>
                                                 </label>
                                                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="2222" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="MpD-zK-yx2">
-                                                    <rect key="frame" x="119.5" y="9" width="64" height="24"/>
+                                                    <rect key="frame" x="119.5" y="8.5" width="64" height="24"/>
                                                     <constraints>
                                                         <constraint firstAttribute="width" constant="64" id="wMp-9L-qrz"/>
                                                     </constraints>
@@ -968,7 +968,7 @@
                                                     <color key="highlightedColor" red="0.047834080219999998" green="0.13701518830000001" blue="0.72336632010000002" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                                 </label>
                                                 <slider opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" value="0.5" minValue="0.0" maxValue="1" translatesAutoresizingMaskIntoConstraints="NO" id="vs8-cC-rp0">
-                                                    <rect key="frame" x="8" y="38" width="177.5" height="31"/>
+                                                    <rect key="frame" x="8" y="37.5" width="177.5" height="31"/>
                                                 </slider>
                                             </subviews>
                                             <constraints>

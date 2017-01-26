@@ -819,17 +819,19 @@ extension RVBaseModel {
             callback(self, nil)
         } else {
             Meteor.call(type(of: self).updateMethod.rawValue, params: [ self.localId as AnyObject, dirties as AnyObject, unsets as AnyObject]) { (result: Any? , error: DDPError?) in
-                if let error = error {
-                    let rvError = RVError(message: "In \(self.instanceType).updateById \(#line) got DDPError for id: \(self.localId)", sourceError: error)
-                    callback(nil, rvError)
-                    return
-                } else if let fields = result as? [String : AnyObject] {
-                    // print("In \(self.instanceType).updateById result is \(result)\n------------------")
-                    callback(type(of: self).createInstance(fields: fields), nil)
-                    return
-                } else {
-                    print("In \(self.instanceType).updateById \(#line), no error but no result. id = \(self.localId) \(result)")
-                    callback(nil, nil)
+                DispatchQueue.main.async {
+                    if let error = error {
+                        let rvError = RVError(message: "In \(self.instanceType).updateById \(#line) got DDPError for id: \(self.localId)", sourceError: error)
+                        callback(nil, rvError)
+                        return
+                    } else if let fields = result as? [String : AnyObject] {
+                        // print("In \(self.instanceType).updateById result is \(result)\n------------------")
+                        callback(type(of: self).createInstance(fields: fields), nil)
+                        return
+                    } else {
+                        print("In \(self.instanceType).updateById \(#line), no error but no result. id = \(self.localId) \(result)")
+                        callback(nil, nil)
+                    }
                 }
             }
         }

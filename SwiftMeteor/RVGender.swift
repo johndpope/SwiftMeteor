@@ -9,10 +9,10 @@
 import Foundation
 
 enum RVGender: String {
-    case male = "male"
-    case female = "female"
-    case transgender = "transgender"
-    case itsComplicated = "Its Complicated"
-    case other = "other"
-    case unknown = "unknown"
+    case male = "Male"
+    case female = "Female"
+    case transgender = "Transgender"
+    case itsComplicated = "It's Complicated"
+    case other = "Other"
+    case unknown = "Unknown"
 }

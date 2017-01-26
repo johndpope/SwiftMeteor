@@ -14,17 +14,10 @@ extension RVProfileViewController: RVCameraDelegate {
             if let chosenImage = info[UIImagePickerControllerOriginalImage] as? UIImage {
                 profileImageView.image = chosenImage
                 if let profile = RVCoreInfo.sharedInstance.userProfile {
-
                     self.tableView.lock()
-                //    showActivity()
-
                     RVImage.saveImage(image: chosenImage, path: nil, filename: "arbitraryname", filetype: .jpeg, parent: profile, params: [String: AnyObject](), callback: { (image, error) in
-                        print("RVProfileViewController.didFinish. About to unlock")
-
-                        self.tableView.unlock()
-                        self.stopActivity()
-
                         if let error = error {
+                            self.tableView.unlock()
                             error.append(message: "In \(self.classForCoder).didFinish, got error ")
                             error.printError()
                         } else if let rvImage = image {
@@ -42,8 +35,10 @@ extension RVProfileViewController: RVCameraDelegate {
                                 } else {
                                     print("In \(self.classForCoder).didFinishPicking, on updating Profile, nothing returned")
                                 }
+                                self.tableView.unlock()
                             })
                         } else {
+                            self.tableView.unlock()
                             print("In \(self.classForCoder).didFinish, no error but no image")
                         }
                     })
@@ -79,13 +74,23 @@ extension RVProfileViewController: UIPickerViewDelegate {
     func pickerView(_ pickerView: UIPickerView, titleForRow row: Int, forComponent component: Int) -> String? {
         self.view.endEditing(true)
         if row < genders.count {
+
             return genders[row].rawValue
         } else {
             return nil
         }
     }
     
-    //func pickerView(_ pickerView: UIPickerView, attributedTitleForRow row: Int, forComponent component: Int) -> NSAttributedString? {}// attributed title is favored if both methods are implemented
+    func pickerView(_ pickerView: UIPickerView, attributedTitleForRow row: Int, forComponent component: Int) -> NSAttributedString? {
+        self.view.endEditing(true)
+        if row < genders.count {
+            if let font = UIFont(name: "Georgia", size: 14.0) {
+                return NSAttributedString(string: genders[row].rawValue, attributes: [NSFontAttributeName: font, NSForegroundColorAttributeName: UIColor.white])
+            }
+        }
+        return nil
+            
+    }// attributed title is favored if both methods are implemented
     
     //func pickerView(_ pickerView: UIPickerView, viewForRow row: Int, forComponent component: Int, reusing view: UIView?) -> UIView {}
     
@@ -95,7 +100,7 @@ extension RVProfileViewController: UIPickerViewDelegate {
                 textField.text = genders[row].rawValue
             }
         }
-        pickerView.isHidden = true
+      //  pickerView.isHidden = true
     }
 }
 class RVProfileViewController: UITableViewController {
@@ -109,6 +114,7 @@ class RVProfileViewController: UITableViewController {
     @IBOutlet weak var genderPickerView: UIPickerView!
     @IBOutlet weak var cellPhoneTextField: UITextField!
     @IBOutlet weak var homePhoneTextField: UITextField!
+    var tapGestureRecognizer: UITapGestureRecognizer? = nil
     
     let activity = UIActivityIndicatorView(activityIndicatorStyle: .white)
     let activityView = UIView()
@@ -142,25 +148,7 @@ class RVProfileViewController: UITableViewController {
             
         }
     }
-    func showActivity() {
-        activity.frame = CGRect(x: 0, y: 0, width: 40, height: 40)
-        activity.hidesWhenStopped  = true
-        activityView.frame = self.tableView.bounds
-        activity.center = activityView.center
-        activity.alpha = 1.0
-        activityView.isHidden = false
-        activityView.backgroundColor = UIColor(white: 0.0, alpha: 0.75)
-        activityView.addSubview(activity)
-        activity.startAnimating()
-        self.tableView.addSubview(activityView)
-    }
-    func stopActivity() {
-        activity.stopAnimating()
-        activityView.removeFromSuperview()
-        activity.removeFromSuperview()
-       // self.tableView.setNeedsDisplay()
-        activityView.isHidden = true
-    }
+
     func updateProfile(callback: @escaping() -> Void) {
         if let profile = RVCoreInfo.sharedInstance.userProfile {
             if let text = firstNameTextField.text {profile.firstName = text.trimmingCharacters(in: trimCharacters) }
@@ -235,16 +223,72 @@ class RVProfileViewController: UITableViewController {
     }
     
 }
-extension RVProfileViewController: UITextFieldDelegate {
-    func textFieldShouldBeginEditing(_ textField: UITextField) -> Bool {return true}// return NO to disallow editing.
+extension RVProfileViewController: UIGestureRecognizerDelegate {
     
-    func textFieldDidBeginEditing(_ textField: UITextField) {
-        if let _ = self.genderTextField {
+}
+extension RVProfileViewController: UITextFieldDelegate {
+    func showGenderPicker() {
+        if let picker = self.genderPickerView {
+            picker.backgroundColor = UIColor.blue
+            picker.alpha = 1.0
+            picker.isHidden = false
+        }
+    }
+    func textFieldShouldBeginEditing(_ textField: UITextField) -> Bool {
+ 
+        if textField == genderTextField {
             if let picker = self.genderPickerView {
-                picker.isHidden = false
-                textField.endEditing(true)
+                if picker.isHidden {
+                    showGenderPicker()
+                    setupGestureRecognizer()
+                } else {
+                    picker.isHidden = true
+                  //  textField.endEditing(true)
+                    removeTapGestureRecognizer()
+                }
+            }
+            return false
+        } else {
+            if let picker = self.genderPickerView {
+                if !picker.isHidden {
+                    return false
+                }
             }
         }
+        return true
+    }// return NO to disallow editing.
+    func setupGestureRecognizer() {
+        if let tap = self.tapGestureRecognizer {
+            if let recognizers = self.tableView.gestureRecognizers {
+                for recognizer in recognizers {
+                    if let recognizer = recognizer as? UITapGestureRecognizer {
+                        if recognizer == tap {
+                            self.tableView.removeGestureRecognizer(recognizer)
+                        }
+                    }
+                }
+            }
+            self.tapGestureRecognizer = nil
+        }
+        let tap = UITapGestureRecognizer(target: self, action: #selector(RVProfileViewController.outside))
+        tap.numberOfTapsRequired = 1
+        tap.cancelsTouchesInView = true
+        self.tableView.addGestureRecognizer(tap)
+        tap.delegate = self
+        self.tapGestureRecognizer = tap
+    }
+    func removeTapGestureRecognizer() {
+        if let tap = self.tapGestureRecognizer {
+            if let tableView = self.tableView { tableView.removeGestureRecognizer(tap) }
+            tap.delegate = nil
+            self.tapGestureRecognizer = nil
+        }
+    }
+    @objc func outside(recognizer: UITapGestureRecognizer) {
+        if let picker = self.genderPickerView { picker.isHidden = true }
+        removeTapGestureRecognizer()
+    }
+    func textFieldDidBeginEditing(_ textField: UITextField) {
     }// became first responder
     
     func textFieldShouldEndEditing(_ textField: UITextField) -> Bool {return true }// return YES to allow editing to stop and to resign first responder status. NO to disallow the editing session to end
