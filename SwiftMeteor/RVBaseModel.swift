@@ -53,15 +53,22 @@ class RVBaseModel: MeteorDocument {
     }
     init(fields: [String : AnyObject]) {
         var _id = RVSwiftDDP.sharedInstance.getId()
+        var badId = true
         self.objects = fields
         if let actualId = fields[RVKeys._id.rawValue] as? String {
             _id = actualId
+            badId = false
+           // print("Have actual ID")
         } else {
-            print("Error.......... \(type(of: self)).init(objects no ID provided")
+           // print("In model init, don't have actual ID \(fields)")
         }
         //super.init(id: _id, fields: self.objects as NSDictionary? )
         super.init(id: _id, fields: NSDictionary() ) // Just neutralizing the parent class.
         self.localId = _id
+        if badId && validRecord {
+            print("Error.......... \(type(of: self)).init(objects no ID provided\n\(self.toString())")
+        }
+
         checkModelType()
     }
     required init(id: String, fields: NSDictionary?) {

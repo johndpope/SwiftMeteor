@@ -49,7 +49,6 @@ extension RVProfileViewController: RVCameraDelegate {
     }
 }
 
-//import AVFoundation
 class RVProfileViewController: UITableViewController {
     
     @IBOutlet weak var profileImageView: UIImageView!
