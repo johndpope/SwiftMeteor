@@ -100,12 +100,14 @@ public class RVAWS: NSObject {
     func download(urlString: String, progress: @escaping(Int, Int) -> Void, completion: @escaping(UIImage?, RVError?, SDImageCacheType, Bool, URL?) -> Void ) {
         if let url = URL(string: urlString) {
             SDWebImageManager.shared().downloadImage(with: url, options: SDWebImageOptions(rawValue: 0), progress: progress, completed: { (image, error, type, finished, url) in
-                if let error = error {
-                    let rvError = RVError(message: "Error with SDWebImageManager in RVAWS.download ", sourceError: error)
-                    completion(image, rvError, type, finished, url)
-                } else {
-                    completion(image, nil, type, finished, url)
-                }
+   
+                    if let error = error {
+                        let rvError = RVError(message: "Error with SDWebImageManager in RVAWS.download ", sourceError: error)
+                        completion(image, rvError, type, finished, url)
+                    } else {
+                        completion(image, nil, type, finished, url)
+                    }
+                
             })
         } else {
             let error = RVError(message: "Bad URL String: \(urlString)")

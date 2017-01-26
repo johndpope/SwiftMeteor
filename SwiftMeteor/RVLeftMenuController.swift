@@ -25,6 +25,7 @@ class RVLeftMenuController: RVBaseViewController {
         [MenuKeys.name: "Watchgroups", MenuKeys.displayText: "WatchGroups" ],
         [MenuKeys.name: "Members", MenuKeys.displayText: "Members"],
         [MenuKeys.name: "Logout", MenuKeys.displayText: "Logout"],
+        [MenuKeys.name: "ClearUsers", MenuKeys.displayText: "ClearUsers"]
 
     ]
     override func viewDidLoad() {
@@ -57,6 +58,8 @@ extension RVLeftMenuController {
                             error.printError()
                         }
                     })
+                } else if string == "ClearUsers" {
+                    RVUserProfile.clearAll()
                 } else {
                     RVAppState.shared.state = .ShowProfile
                     RVViewDeck.sharedInstance.toggleSide(side: .center)

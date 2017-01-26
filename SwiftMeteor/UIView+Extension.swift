@@ -34,7 +34,7 @@ extension UIView {
     
     func unlock() {
         if let lockView = viewWithTag(10) {
-            UIView.animate(withDuration: 0.2, animations: {
+            UIView.animate(withDuration: 0.02, animations: {
                 lockView.alpha = 0.0
             }) { finished in
                 lockView.removeFromSuperview()

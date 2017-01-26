@@ -65,6 +65,8 @@
 		28928CD51E18E226003538B8 /* RVDSOperation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 28928CD41E18E226003538B8 /* RVDSOperation.swift */; };
 		28928CD71E199AEA003538B8 /* RVFirstViewTableCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 28928CD61E199AEA003538B8 /* RVFirstViewTableCell.swift */; };
 		28A232971E333E4C00489EB3 /* RVVisibility.swift in Sources */ = {isa = PBXBuildFile; fileRef = 28A232961E333E4C00489EB3 /* RVVisibility.swift */; };
+		28A2A2D91E393719002AA1A8 /* JNW.png in Resources */ = {isa = PBXBuildFile; fileRef = 28A2A2D81E393719002AA1A8 /* JNW.png */; };
+		28A2A2DD1E3945A0002AA1A8 /* RVCamera.swift in Sources */ = {isa = PBXBuildFile; fileRef = 28A2A2DC1E3945A0002AA1A8 /* RVCamera.swift */; };
 		28CB24CC1E34090F0093A067 /* RVAppState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 28CB24CB1E34090F0093A067 /* RVAppState.swift */; };
 		28CE2F601E3402970046EB16 /* RVProfileViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 28CE2F5F1E3402970046EB16 /* RVProfileViewController.swift */; };
 		28D534CD1DF3E9A50003DC11 /* RVActivityIndicator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 28D534CC1DF3E9A50003DC11 /* RVActivityIndicator.swift */; };
@@ -174,6 +176,8 @@
 		28928CD41E18E226003538B8 /* RVDSOperation.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RVDSOperation.swift; sourceTree = "<group>"; };
 		28928CD61E199AEA003538B8 /* RVFirstViewTableCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RVFirstViewTableCell.swift; sourceTree = "<group>"; };
 		28A232961E333E4C00489EB3 /* RVVisibility.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RVVisibility.swift; sourceTree = "<group>"; };
+		28A2A2D81E393719002AA1A8 /* JNW.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = JNW.png; sourceTree = "<group>"; };
+		28A2A2DC1E3945A0002AA1A8 /* RVCamera.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RVCamera.swift; sourceTree = "<group>"; };
 		28CB24CB1E34090F0093A067 /* RVAppState.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RVAppState.swift; sourceTree = "<group>"; };
 		28CE2F5F1E3402970046EB16 /* RVProfileViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RVProfileViewController.swift; sourceTree = "<group>"; };
 		28D534CC1DF3E9A50003DC11 /* RVActivityIndicator.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RVActivityIndicator.swift; sourceTree = "<group>"; };
@@ -331,6 +335,7 @@
 				288E97D91E22B59400753067 /* RVSwiftDDP.swift */,
 				28569A331E2D701B00E43B32 /* RVListener.swift */,
 				28CB24CB1E34090F0093A067 /* RVAppState.swift */,
+				28A2A2DC1E3945A0002AA1A8 /* RVCamera.swift */,
 			);
 			name = Services;
 			sourceTree = "<group>";
@@ -338,6 +343,7 @@
 		2889610A1DEDF21700FC34DB /* Assets */ = {
 			isa = PBXGroup;
 			children = (
+				28A2A2D81E393719002AA1A8 /* JNW.png */,
 			);
 			name = Assets;
 			sourceTree = "<group>";
@@ -636,6 +642,7 @@
 			files = (
 				28F53E791DEB5F71009641F0 /* LaunchScreen.storyboard in Resources */,
 				2802252C1E1C5C6F00D5FB60 /* RVFirstHeaderContentView.xib in Resources */,
+				28A2A2D91E393719002AA1A8 /* JNW.png in Resources */,
 				28F53E761DEB5F71009641F0 /* Assets.xcassets in Resources */,
 				28F53E741DEB5F71009641F0 /* Main.storyboard in Resources */,
 			);
@@ -761,6 +768,7 @@
 				2816A5551E2BD75E00B6804D /* UIView+Extension.swift in Sources */,
 				286CA31F1E327B8000B081B8 /* RVGeoJSON.swift in Sources */,
 				288E97DA1E22B59400753067 /* RVSwiftDDP.swift in Sources */,
+				28A2A2DD1E3945A0002AA1A8 /* RVCamera.swift in Sources */,
 				28928CD11E18BE09003538B8 /* RVBaseDataSource.swift in Sources */,
 				286CA3311E3289F000B081B8 /* RVDomain.swift in Sources */,
 				28CB24CC1E34090F0093A067 /* RVAppState.swift in Sources */,

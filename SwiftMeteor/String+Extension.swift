@@ -72,5 +72,31 @@ extension String {
         }
         return encoded
     }
+    public func trimLeadingAndTrailingSpaces() -> String {
+        return ltrim().rtrim()
+    }
+    func rtrim() -> String {
+        let whitespaceAndNewlineChars:[Character] = ["\n", "\r", "\t", " "]
+        if isEmpty { return ""}
+        var currentIndex = endIndex
+        while currentIndex >= startIndex {
+            currentIndex = self.index(before: currentIndex)
+            let c = self[currentIndex]
+            if whitespaceAndNewlineChars.contains(c) { break }
+        }
+        return self[startIndex...currentIndex]
+    }
+
+    func ltrim() -> String{
+        let whitespaceAndNewlineChars:[Character] = ["\n", "\r", "\t", " "]
+        if isEmpty{ return ""}
+        var currentIndex = startIndex
+        while currentIndex < endIndex {
+            let c = self[currentIndex]
+            if whitespaceAndNewlineChars.contains(c) { break }
+            currentIndex = self.index(after: currentIndex)
+        }
+        return self[currentIndex..<endIndex]
+    }
 
 }

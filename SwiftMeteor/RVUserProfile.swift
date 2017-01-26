@@ -251,3 +251,17 @@ class RVUserProfile: RVBaseModel {
         }
     }
 }
+extension RVUserProfile {
+    class func clearAll() {
+        Meteor.call("userProfile.clear", params: nil) { (result, error: DDPError?) in
+            if let error = error {
+                let rvError = RVError(message: "In RVUserProfile.clearAll() got DDPError", sourceError: error, lineNumber: #line, fileName: "")
+                rvError.printError()
+            } else if let result = result {
+                print("In RVUserProfile.clearAll(), result is \(result)")
+            } else {
+                print("In RVUserProfile.clearAll(), no error but no result")
+            }
+        }
+    }
+}

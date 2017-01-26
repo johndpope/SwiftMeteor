@@ -20,7 +20,10 @@ class RVImage: RVBaseModel {
     override class var      updateMethod: RVMeteorMethods { get { return RVMeteorMethods.UpdateImage } }
     override class var      deleteMethod: RVMeteorMethods { get { return RVMeteorMethods.DeleteImage } }
     override class var      findMethod: RVMeteorMethods { get { return RVMeteorMethods.FindImage}}
-    override class func     createInstance(fields: [String : AnyObject])-> RVBaseModel { return RVImage(fields: fields) }
+    override class func     createInstance(fields: [String : AnyObject])-> RVBaseModel {
+       // print("In RVImage.createInstance. \nFields are: \(fields)")
+        return RVImage(fields: fields)
+    }
 
     override class func modelFromFields(fields: [String: AnyObject]) -> RVBaseModel {
         return RVImage(fields: fields)
@@ -126,6 +129,25 @@ class RVImage: RVBaseModel {
     }
 }
 extension RVImage {
+    func download(callback: @escaping(_ uiImage: UIImage?, _ error: RVError?) -> Void) {
+        if let urlString = self.urlString {
+            RVAWS.sharedInstance.download(urlString: urlString, progress: { (progress, total) in
+                
+            }, completion: { (image, error, cacheTYpe, success, url ) in
+                if let error = error {
+                    error.append(message: "In \(self.classForCoder).download, got error")
+                    callback(nil, error)
+                    return
+                } else if let image = image {
+                    callback(image, nil)
+                    return
+                } else {
+                    print("IN \(self.classForCoder).download, no error but no result")
+                    callback(nil, nil)
+                }
+            })
+        }
+    }
     // path = "goofy/something/
     class func saveImage(image: UIImage, path: String?, filename: String, filetype: RVFileType, parent: RVBaseModel?, params: [String:AnyObject],callback: @escaping(_ rvImage: RVImage?, _ error: RVError?) -> Void ) {
         RVMeteorUser.sharedInstance.userId(callback: {(userId, error) -> Void in
@@ -168,33 +190,21 @@ extension RVImage {
                                     if let url = response.url {
                                         let absoluteString = url.absoluteString
                                         let urlString = absoluteString.components(separatedBy: "?")[0]
-                                        print("In \(classForCoder()).saveImage, uploaded Image to \(urlString)")
+                                   //     print("In \(classForCoder()).saveImage, uploaded Image to \(urlString)")
                                         rvImage.urlString = urlString
-                                        rvImage.create(callback: { (reuslt, error) in
+                                        rvImage.create(callback: { (rvImage, error) in
                                             if let error = error {
-                                                error.append(message: "In RVImage.saveImage, got error creating RVImage record, id: \(rvImage.localId)")
+                                                error.append(message: "In RVImage.saveImage, got error creating RVImage record")
                                                 callback(nil, error)
+                                            } else if let rvImage = rvImage as? RVImage {
+                                                callback(rvImage, nil)
+                                            } else if let rvImage = rvImage {
+                                                print("In RVImage.saveImage, saved actual image, no cast is of type \(rvImage)")
+                                                callback(nil, nil)
+                                            
                                             } else {
-                                                if let id = rvImage.localId {
-                                                    RVImage.retrieveInstance(id: id, callback: { (model , error) in
-                                                        if let error = error {
-                                                            error.append(message: "Error in RVImage.saveImage")
-                                                            callback(nil , error)
-                                                            return
-                                                        } else if let rvImage = model as? RVImage {
-                                                            callback(rvImage, nil)
-                                                            return
-                                                        } else {
-                                                            let rvError = RVError(message: "In RVImage.saveImage, saved image but failed to retrieve rvImage record with id \(rvImage.localId)")
-                                                            callback(nil , rvError)
-                                                            return
-                                                        }
-                                                    })
-                                                } else {
-                                                    let rvError = RVError(message: "In \(self.classForCoder).saveImage, no id")
-                                                    callback(nil, rvError)
-                                                    return
-                                                }
+                                                print("In RVImage.saveImage, saved actual image, no error but no rvImage")
+                                                callback(nil, nil)
                                             }
                                         })
                                         return

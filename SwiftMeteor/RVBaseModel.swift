@@ -48,7 +48,7 @@ class RVBaseModel: MeteorDocument {
     }
     func checkModelType() {
         if self.modelType == RVModelType.unknown || self.modelType != type(of: self).collectionType() {
-            print("In \(instanceType).init invalid model type. Expected \(type(of: self).collectionType()), but received \(self.modelType.rawValue)")
+            print("In \(instanceType).init with ID: \(self.localId), invalid model type. Expected \(type(of: self).collectionType()), but received \(self.modelType.rawValue), objectArray = \(self.objects[RVKeys.modelType.rawValue])\n\(objects)")
         }
     }
     init(fields: [String : AnyObject]) {
@@ -674,8 +674,8 @@ extension RVBaseModel {
             if let error = error {
                 let rvError = RVError(message: "In \(self.instanceType).insert \(#line) got DDPError for id: \(self.localId)", sourceError: error)
                 callback(nil, rvError)
-            } else if let result = result as?[String: AnyObject] {
-                print("In \(self.instanceType).created \(#line) successfully created \(self.localId) and result returned is \(result)")
+            } else if let result = result as? [String: AnyObject] {
+                print("In \(self.instanceType).created \(#line) successfully created \(self.localId)")
                 callback(type(of: self).createInstance(fields: result),  nil)
             } else {
                 print("In \(self.instanceType).insert \(#line), no error but no casted result. id = \(self.localId). Result if any: \(result)")

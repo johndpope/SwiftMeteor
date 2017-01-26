@@ -12,6 +12,7 @@ enum RVGender: String {
     case male = "male"
     case female = "female"
     case transgender = "transgender"
+    case itsComplicated = "Its Complicated"
     case other = "other"
     case unknown = "unknown"
 }

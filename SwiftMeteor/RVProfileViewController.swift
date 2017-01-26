@@ -8,13 +8,58 @@
 
 import UIKit
 import TPKeyboardAvoiding
+extension RVProfileViewController: RVCameraDelegate {
+    func didFinishPicking(picker: UIImagePickerController, info: [String: Any]) -> Void {
+        if let profileImageView = self.profileImageView {
+            if let chosenImage = info[UIImagePickerControllerOriginalImage] as? UIImage {
+                profileImageView.image = chosenImage
+                if let profile = RVCoreInfo.sharedInstance.userProfile {
+                    self.tableView.lock()
+                    RVImage.saveImage(image: chosenImage, path: nil, filename: "arbitraryname", filetype: .jpeg, parent: profile, params: [String: AnyObject](), callback: { (image, error) in
+                        print("RVProfileViewController.didFinish. About to unlock")
+                        self.tableView.unlock()
+                        if let error = error {
+                            error.append(message: "In \(self.classForCoder).didFinish, got error ")
+                            error.printError()
+                        } else if let rvImage = image {
+                            print("In \(self.classForCoder).didFinsh got rvImage\n\(rvImage)")
+                            profile.image = rvImage
+                            profile.updateById(callback: { (profile, error) in
+                                if let error = error {
+                                    error.printError()
+                                } else if let profile = profile as? RVUserProfile {
+                                    RVCoreInfo.sharedInstance.userProfile = profile
+                                    print("In \(self.classForCoder).didFinish, successfully updated profile")
+                                } else {
+                                    print("In \(self.classForCoder).didFinishPicking, on updating Profile, nothing returned")
+                                }
+                            })
+                        } else {
+                            print("In \(self.classForCoder).didFinish, no error but no image")
+                        }
+                    })
+                }
 
+            }
+        }
+        dismiss(animated: true) { }
+    }
+    func pickerCancelled(picker: UIImagePickerController) -> Void {
+               dismiss(animated: true) {  }
+    }
+}
+
+//import AVFoundation
 class RVProfileViewController: UITableViewController {
     
     @IBOutlet weak var profileImageView: UIImageView!
     @IBOutlet weak var firstNameTextField: UITextField!
     @IBOutlet weak var middleNameTextField: UITextField!
     @IBOutlet weak var lastNameTextField: UITextField!
+    @IBOutlet weak var doneButton: UIBarButtonItem!
+    let trimCharacters: CharacterSet  = [" ", "\n", "\r", "\t"]
+
+    var camera = RVCamera()
     
     
     @IBAction func saveButtonTouched(_ sender: UIBarButtonItem) {
@@ -22,58 +67,21 @@ class RVProfileViewController: UITableViewController {
             self.setProfileInfo()
         }
     }
-    func updateProfile(callback: @escaping() -> Void) {
-        /*
-        let user = RVUserProfile()
-        user.title = "Elmo was here"
-        user.text = "SOme more text 6677777"
-        user.create { (error) in
-            if let error = error {
-                error.printError()
-            }
-        }
-        return
-        */
-        if let profile = RVCoreInfo.sharedInstance.userProfile {
-//            profile = RVUserProfile()
-            if let text = firstNameTextField.text {profile.firstName = text }
-            if let text = middleNameTextField.text {profile.middleName = text }
-            if let text = lastNameTextField.text { profile.lastName = text }
-            let image = RVImage()
-      
-            image.title = "DIrrent TItle"
-            image.urlString = "URL STRINGGGG Hillary"
-            image.regularDescription = "TrumpDescription"
-    //        image.createdAt = Date()
-    //        image.updatedAt = Date()
-            profile.image = image
-      //      profile.location = RVLocation(fields: [String: AnyObject]())
-      //     profile.image = nil
-            profile.ownerId = "Elmer"
-            profile.ownerModelType = .household
-            profile.parentId = "parentIDGoesHerrrrrrrrrre"
-            profile.parentModelType = .domain
-            profile.handle = "A new handle"
-            profile.comment = "New comment"
-     //       profile.regularDescription = "A regular description"
-     //       profile.yob = 1958
-     //       profile.clientRole = .admin
-     //       profile.gender = .male
-    //        profile.validRecord = true
-           // profile.domainId = "DomainID"
-    //        profile.email = "f@f.com"
-     //       profile.cellPhone = nil
-            profile.homePhone = nil
-     //       profile.watchGroupIds = ["ID1", "ID2", "SOMETHING"]
-            profile.watchGroupIds = ["ABCD", "1234"]
-            profile.schemaVersion = 15.0
-         //   profile.title = "New title"
-            profile.text = "Alexandar"
-            if let domain = RVCoreInfo.sharedInstance.domain {
-                profile.domainId = domain.localId
-            }
-//            profile.create(callback: { (updatedModel, error) in
+    @IBAction func imageButtonTouched(_ sender: UIButton) {
+        camera.showPhotoLibrary()
 
+    }
+    @IBAction func shootPhoto(_ sender: UIButton) {
+        camera.shootPhoto()
+
+    }
+    
+
+    func updateProfile(callback: @escaping() -> Void) {
+        if let profile = RVCoreInfo.sharedInstance.userProfile {
+            if let text = firstNameTextField.text {profile.firstName = text.trimmingCharacters(in: trimCharacters) }
+            if let text = middleNameTextField.text {profile.middleName = text.trimmingCharacters(in: trimCharacters) }
+            if let text = lastNameTextField.text { profile.lastName = text.trimmingCharacters(in: trimCharacters) }
             profile.updateById(callback: { (updatedModel, error) in
                 if let error = error {
                     error.printError()
@@ -89,12 +97,23 @@ class RVProfileViewController: UITableViewController {
             })
         }
     }
+
     func setProfileInfo() {
         if let profile = RVCoreInfo.sharedInstance.userProfile {
-           print("------------------\nIn \(self.classForCoder).setProfileInfo, have profile \(profile.toString())\n%\n%\n%")
+          // print("------------------\nIn \(self.classForCoder).setProfileInfo, have profile \(profile.toString())\n%\n%\n%")
             setTextFieldText(text: profile.firstName, textField: firstNameTextField)
             setTextFieldText(text: profile.middleName, textField: middleNameTextField)
             setTextFieldText(text: profile.lastName, textField: lastNameTextField)
+            if let rvImage = profile.image {
+                rvImage.download(callback: { (image, error) in
+                    if let error = error {
+                        error.printError()
+                    } else if let uiImage = image {
+                        print("In \(self.classForCoder).setProfileInfo, have image \(uiImage.size.height)")
+                        self.showImage(imageView: self.profileImageView, uiImage: uiImage)
+                    }
+                })
+            }
         } else {
             print("In \(self.classForCoder).setProfileInfo, do NOT have profile")
         }
@@ -120,7 +139,10 @@ class RVProfileViewController: UITableViewController {
         if let image = UIImage(named: "Placeholder") {
             profileImageView.image = image
         }
+      //  self.picker.delegate = self
         setProfileInfo()
+        camera.delegate = self
+        camera.anchorBarButtonItem = doneButton
     }
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         print("In \(self.classForCoder).didSelectRow \(indexPath.row)")
@@ -135,8 +157,10 @@ extension RVProfileViewController: UITextFieldDelegate {
     func textFieldShouldEndEditing(_ textField: UITextField) -> Bool {return true }// return YES to allow editing to stop and to resign first responder status. NO to disallow the editing session to end
     
     func textFieldDidEndEditing(_ textField: UITextField, reason: UITextFieldDidEndEditingReason) {
+        /*
         let text = textField.text == nil ? textField.text! : ""
         if let profile = RVCoreInfo.sharedInstance.userProfile {
+         
             if (firstNameTextField != nil) && (firstNameTextField == textField ){
                 profile.firstName = text
             } else if (middleNameTextField != nil) && (middleNameTextField == textField) {
@@ -144,8 +168,9 @@ extension RVProfileViewController: UITextFieldDelegate {
             } else if (lastNameTextField != nil) && (lastNameTextField == textField) {
                 profile.lastName = text
             }
+ 
         }
-
+*/
     }// if implemented, called in place of textFieldDidEndEditing:
     
     
@@ -170,6 +195,13 @@ extension RVProfileViewController {
         if let textField = textField {
             if let text = text {
                 textField.text = text
+            }
+        }
+    }
+    func showImage(imageView: UIImageView?, uiImage: UIImage?) {
+        if let imageView = imageView {
+            if let uiImage = uiImage {
+                imageView.image = uiImage
             }
         }
     }
