@@ -57,6 +57,20 @@ class RVMainLandingViewController: RVBaseViewController {
             mainState.initialize()
         }
     }
+    func tableView(_ tableView: UITableView, canEditRowAt indexPath: IndexPath) -> Bool {
+        return true
+    }
+
+    func tableView(_ tableView: UITableView, editActionsForRowAt indexPath: IndexPath) -> [UITableViewRowAction]? {
+        let editAction = UITableViewRowAction(style: UITableViewRowActionStyle.default, title: "Edit") { (action, indexPath) in
+            print("In editActions edit callback")
+        }
+        editAction.backgroundColor = UIColor.blue
+        let deleteAction = UITableViewRowAction(style: .default , title: "Delete") { (action, indexPath) in
+            print("In editActions delete callback")
+        }
+        return [editAction, deleteAction]
+    }
 }
 
 
