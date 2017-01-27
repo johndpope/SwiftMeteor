@@ -57,6 +57,13 @@ class RVGMaps {
     static var sharedInstance: RVGMaps = {
         return RVGMaps()
     }()
+    var usaFilter: GMSAutocompleteFilter {
+        get {
+            let filter = GMSAutocompleteFilter()
+            filter.country = "USA"
+            return filter
+        }
+    }
     init() {
         GMSServices.provideAPIKey(APIKey)
         GMSPlacesClient.provideAPIKey(RVAPIKeys.GooglePlacesAPIKey.rawValue)

@@ -7,7 +7,49 @@
 //
 
 import UIKit
+// import GoogleMaps
+import GooglePlaces
 import TPKeyboardAvoiding
+// https://developers.google.com/places/ios-api/autocomplete#add_an_autocomplete_ui_control
+extension RVProfileViewController: GMSAutocompleteViewControllerDelegate {
+    // Handle the user's selection
+    func viewController(_ viewController: GMSAutocompleteViewController, didAutocompleteWith place: GMSPlace) {
+        print("Place name: \(place.name), address: \(place.formattedAddress), attributions: \(place.attributions)")
+        let location = RVLocation(googlePlace: place)
+        print(location.toString())
+        if let profile = RVCoreInfo.sharedInstance.userProfile {
+            profile.location = location
+            profile.updateById(callback: { (updatedProfile, error ) in
+                if let error = error {
+                    error.append(message: "In \(self.classForCoder).didAutocomplete, got error saving profile for location: \(location.toString())")
+                    error.printError()
+                } else if let updatedProfile = updatedProfile as? RVUserProfile {
+                    print("In \(self.classForCoder).didAutocomplete, got updatedProfile \(updatedProfile.toString())")
+                    RVCoreInfo.sharedInstance.userProfile = updatedProfile
+                    self.showProfileInfo()
+                } else {
+                    print("In \(self.classForCoder).didAutocomplete, no error but no updateProfile")
+                }
+            })
+        }
+        dismiss(animated: true) { }
+    }
+    func viewController(_ viewController: GMSAutocompleteViewController, didFailAutocompleteWithError error: Error) {
+        print("In \(self.classForCoder).didFailAutocompleteWithError: \(error.localizedDescription)")
+    }
+    func viewController(_ viewController: GMSAutocompleteViewController, didSelect prediction: GMSAutocompletePrediction) -> Bool {
+        return true
+    }
+    func wasCancelled(_ viewController: GMSAutocompleteViewController) {
+        dismiss(animated: true) {}
+    }
+    func didRequestAutocompletePredictions(_ viewController: GMSAutocompleteViewController) {
+        UIApplication.shared.isNetworkActivityIndicatorVisible = true
+    }
+    func didUpdateAutocompletePredictions(_ viewController: GMSAutocompleteViewController) {
+        UIApplication.shared.isNetworkActivityIndicatorVisible = false
+    }
+}
 extension RVProfileViewController: RVCameraDelegate {
     func didFinishPicking(picker: UIImagePickerController, info: [String: Any]) -> Void {
         if let profileImageView = self.profileImageView {
@@ -21,15 +63,15 @@ extension RVProfileViewController: RVCameraDelegate {
                             error.append(message: "In \(self.classForCoder).didFinish, got error ")
                             error.printError()
                         } else if let rvImage = image {
-                            print("In \(self.classForCoder).didFinsh got rvImage\n\(rvImage) with id \(rvImage.localId) \(rvImage.shadowId)")
+                          //  print("In \(self.classForCoder).didFinsh got rvImage\n\(rvImage) with id \(rvImage.localId) \(rvImage.shadowId)")
                             profile.image = rvImage
-                            profile.updateById(callback: { (profile, error) in
+                            profile.updateById(callback: { (updatedProfile, error) in
                                 if let error = error {
                                     error.printError()
-                                } else if let profile = profile as? RVUserProfile {
-                                    RVCoreInfo.sharedInstance.userProfile = profile
+                                } else if let updatedProfile = updatedProfile as? RVUserProfile {
+                                    RVCoreInfo.sharedInstance.userProfile = updatedProfile
                                     print("In \(self.classForCoder).didFinish, successfully updated profile")
-                                    if let image = profile.image {
+                                    if let image = updatedProfile.image {
                                         print("Profile iamge ids: localId = \(image.localId), \(image.shadowId)")
                                     }
                                 } else {
@@ -63,24 +105,6 @@ extension RVProfileViewController: UIPickerViewDataSource {
     }
 }
 extension RVProfileViewController: UIPickerViewDelegate {
-    // returns width of column and height of row for each component.
-    // func pickerView(_ pickerView: UIPickerView, widthForComponent component: Int) -> CGFloat {}
-    // func pickerView(_ pickerView: UIPickerView, rowHeightForComponent component: Int) -> CGFloat {}
-    
-    
-    // these methods return either a plain NSString, a NSAttributedString, or a view (e.g UILabel) to display the row for the component.
-    // for the view versions, we cache any hidden and thus unused views and pass them back for reuse.
-    // If you return back a different object, the old one will be released. the view will be centered in the row rect
-    func pickerView(_ pickerView: UIPickerView, titleForRow row: Int, forComponent component: Int) -> String? {
-        self.view.endEditing(true)
-        if row < genders.count {
-
-            return genders[row].rawValue
-        } else {
-            return nil
-        }
-    }
-    
     func pickerView(_ pickerView: UIPickerView, attributedTitleForRow row: Int, forComponent component: Int) -> NSAttributedString? {
         self.view.endEditing(true)
         if row < genders.count {
@@ -89,18 +113,9 @@ extension RVProfileViewController: UIPickerViewDelegate {
             }
         }
         return nil
-            
-    }// attributed title is favored if both methods are implemented
-    
-    //func pickerView(_ pickerView: UIPickerView, viewForRow row: Int, forComponent component: Int, reusing view: UIView?) -> UIView {}
-    
+    }
     func pickerView(_ pickerView: UIPickerView, didSelectRow row: Int, inComponent component: Int) {
-        if row < genders.count {
-            if let textField = self.genderTextField {
-                textField.text = genders[row].rawValue
-            }
-        }
-      //  pickerView.isHidden = true
+        if row < genders.count { if let textField = self.genderTextField { textField.text = genders[row].rawValue } }
     }
 }
 class RVProfileViewController: UITableViewController {
@@ -114,6 +129,13 @@ class RVProfileViewController: UITableViewController {
     @IBOutlet weak var genderPickerView: UIPickerView!
     @IBOutlet weak var cellPhoneTextField: UITextField!
     @IBOutlet weak var homePhoneTextField: UITextField!
+    @IBOutlet weak var yobLabel: UILabel!
+    @IBOutlet weak var addressTextField: UITextField!
+    
+    @IBOutlet weak var earliestYOBLabel: UILabel!
+    @IBOutlet weak var latestYOBLabel: UILabel!
+    var yobSliderValueValid: Bool = false
+    
     var tapGestureRecognizer: UITapGestureRecognizer? = nil
     
     let activity = UIActivityIndicatorView(activityIndicatorStyle: .white)
@@ -122,8 +144,19 @@ class RVProfileViewController: UITableViewController {
     @IBOutlet weak var genderTextField: UITextField!
     
     @IBOutlet weak var yobSlider: UISlider!
+    @IBAction func yobSliderValueChanged(_ sender: UISlider) {
+        print("yobSliderValueChanged \(sender.value)")
+        setLabelText(text: "\(Int(sender.value))", label: yobLabel)
+    }
     
-    
+    var latestYOB: Int = {
+        return Calendar.autoupdatingCurrent.component(.year, from: Date())
+    }()
+    var earliestYOB: Int {
+        get {
+           return latestYOB - 90
+        }
+    }
     let trimCharacters: CharacterSet  = [" ", "\n", "\r", "\t"]
 
     var camera = RVCamera()
@@ -131,29 +164,41 @@ class RVProfileViewController: UITableViewController {
     
     @IBAction func saveButtonTouched(_ sender: UIBarButtonItem) {
         updateProfile {
-            self.setProfileInfo()
+            self.showProfileInfo()
         }
     }
     @IBAction func imageButtonTouched(_ sender: UIButton) {
+        removeGenderPicker()
         camera.showPhotoLibrary()
 
     }
     @IBAction func shootPhoto(_ sender: UIButton) {
+        removeGenderPicker()
         camera.shootPhoto()
 
     }
     
     @IBAction func cancelButtonTouched(_ sender: UIBarButtonItem) {
+        removeGenderPicker()
         dismiss(animated: true) { 
             
         }
     }
 
     func updateProfile(callback: @escaping() -> Void) {
+        removeGenderPicker()
         if let profile = RVCoreInfo.sharedInstance.userProfile {
             if let text = firstNameTextField.text {profile.firstName = text.trimmingCharacters(in: trimCharacters) }
             if let text = middleNameTextField.text {profile.middleName = text.trimmingCharacters(in: trimCharacters) }
             if let text = lastNameTextField.text { profile.lastName = text.trimmingCharacters(in: trimCharacters) }
+            if let rawValue = genderTextField.text {
+                if let gender = RVGender(rawValue: rawValue) {
+                    profile.gender = gender
+                } else {
+                    print("In \(self.classForCoder).updateProfile, gendertext nonexistent")
+                }
+            }
+            if yobSliderValueValid { if let slider = yobSlider { profile.yob = NSNumber(value: slider.value).intValue } }
             profile.updateById(callback: { (updatedModel, error) in
                 if let error = error {
                     error.printError()
@@ -170,12 +215,15 @@ class RVProfileViewController: UITableViewController {
         }
     }
 
-    func setProfileInfo() {
+    func showProfileInfo() {
+        removeGenderPicker()
+        setupYOBSlider()
         if let profile = RVCoreInfo.sharedInstance.userProfile {
-          // print("------------------\nIn \(self.classForCoder).setProfileInfo, have profile \(profile.toString())\n%\n%\n%")
+          // print("------------------\nIn \(self.classForCoder).showProfileInfo, have profile \(profile.toString())\n%\n%\n%")
             setTextFieldText(text: profile.firstName, textField: firstNameTextField)
             setTextFieldText(text: profile.middleName, textField: middleNameTextField)
             setTextFieldText(text: profile.lastName, textField: lastNameTextField)
+            setTextFieldText(text: profile.gender.rawValue, textField: genderTextField)
             if let rvImage = profile.image {
                 rvImage.download(callback: { (image, error) in
                     if let error = error {
@@ -186,9 +234,38 @@ class RVProfileViewController: UITableViewController {
                     }
                 })
             }
+            if let location = profile.location {
+                if let address = location.fullAddress {
+                    setTextFieldText(text: address, textField: addressTextField)
+                }
+            }
         } else {
-            print("In \(self.classForCoder).setProfileInfo, do NOT have profile")
+            print("In \(self.classForCoder).showProfileInfo, do NOT have profile")
         }
+    }
+    func setupYOBSlider() {
+        yobSliderValueValid = false
+        setLabelText(text: "\(earliestYOB)", label: earliestYOBLabel)
+        setLabelText(text: "\(latestYOB)", label:latestYOBLabel)
+        if let slider = yobSlider {
+            slider.maximumValue = Float(latestYOB)
+            slider.minimumValue = Float(earliestYOB)
+            if let profile = RVCoreInfo.sharedInstance.userProfile {
+                if let yob = profile.yob {
+                    if (yob >= earliestYOB) && (yob <= latestYOB) {
+                        slider.setValue(Float(yob), animated: true)
+                        setLabelText(text: yob.description, label: yobLabel)
+                        yobSliderValueValid = true
+                        return
+                    }
+                    setLabelText(text: yob.description, label: yobLabel)
+                    slider.setValue(Float(latestYOB - earliestYOB), animated: true)
+                    return
+                }
+            }
+            slider.setValue(Float(latestYOB - earliestYOB), animated: true)
+        }
+        setLabelText(text: "", label: yobLabel)
     }
     
     @IBAction func doneButtonTouched(_ sender: UIBarButtonItem) {
@@ -212,7 +289,7 @@ class RVProfileViewController: UITableViewController {
             profileImageView.image = image
         }
       //  self.picker.delegate = self
-        setProfileInfo()
+        showProfileInfo()
         camera.delegate = self
         camera.anchorBarButtonItem = doneButton
         if let picker = self.genderPickerView {picker.isHidden = true }
@@ -232,19 +309,41 @@ extension RVProfileViewController: UITextFieldDelegate {
             picker.backgroundColor = UIColor.blue
             picker.alpha = 1.0
             picker.isHidden = false
+            if let profile = RVCoreInfo.sharedInstance.userProfile {
+                let gender = profile.gender
+                var row = 0
+                for index in (0..<genders.count) {
+                    if genders[index] == gender {
+                        row = index
+                        break
+                    }
+                }
+                picker.selectRow(row, inComponent: 0, animated: true)
+            }
         }
     }
+    func removeGenderPicker() {
+        if let picker = genderPickerView { picker.isHidden = true }
+        removeTapGestureRecognizer()
+    }
     func textFieldShouldBeginEditing(_ textField: UITextField) -> Bool {
- 
-        if textField == genderTextField {
+        if textField == addressTextField {
+            let filter = RVGMaps.sharedInstance.usaFilter
+            let autocompleteController = GMSAutocompleteViewController()
+
+            autocompleteController.autocompleteFilter = filter
+            autocompleteController.delegate = self
+            present(autocompleteController, animated: true) {
+                //
+            }
+            return false
+        } else if textField == genderTextField {
             if let picker = self.genderPickerView {
                 if picker.isHidden {
                     showGenderPicker()
                     setupGestureRecognizer()
                 } else {
-                    picker.isHidden = true
-                  //  textField.endEditing(true)
-                    removeTapGestureRecognizer()
+                    removeGenderPicker()
                 }
             }
             return false
@@ -328,6 +427,15 @@ extension RVProfileViewController: UITextFieldDelegate {
     func textFieldShouldReturn(_ textField: UITextField) -> Bool {return true}// called when 'return' key pressed. return NO to ignore
 }
 extension RVProfileViewController {
+    func setLabelText(text: String?, label: UILabel?) {
+        if let label = label {
+            if let text = text {
+                label.text = text
+            } else {
+                label.text = ""
+            }
+        }
+    }
     func setTextFieldText(text: String?, textField: UITextField? ) {
         if let textField = textField {
             if let text = text {

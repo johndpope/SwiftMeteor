@@ -34,6 +34,7 @@ class RVLocation: RVBaseModel {
     override class func createInstance(fields: [String : AnyObject])-> RVBaseModel { return RVLocation(fields: fields) }
     private var rawPlaces = [String: AnyObject]()
     private var gmsAddress: GMSAddress? = nil
+    var gmsPlace: GMSPlace? = nil
     var photo: UIImage? = nil
     override init(fields: [String: AnyObject]){
         super.init(fields: fields)
@@ -64,7 +65,9 @@ class RVLocation: RVBaseModel {
     required init(id: String, fields: NSDictionary?) {
         super.init(id: id , fields: fields)
     }
+
     private func absorbPlace(place: GMSPlace) {
+        self.gmsPlace = place
         self.latitude = place.coordinate.latitude
         self.longitude = place.coordinate.longitude
         self.title = place.name
@@ -78,18 +81,23 @@ class RVLocation: RVBaseModel {
                     self.neighborhood = component.name
                 } else if component.type == "locality" { // Portola Valley
                     self.locality = component.name
+                    self.city = component.name
                 } else if component.type == "administrative_area_level_1" { // state
                     self.state = component.name
+                    self.administrativeArea = component.name
                 } else if component.type == "administrative_area_level_2" { // county
-                    
+                    self.administrativeArea2 = component.name
                 } else if component.type == "country" {
                     self.country = component.name
                 } else if component.type == "postal_code" {
                     self.postalCode = component.name
+                } else if component.type == "postal_code_suffix" {
+                    self.postalCodeSuffix = component.name
                 } else if component.type == "subpremise" { // such as "1b"
-                    
+            
+                
                 } else {
-                    print("IN \(self.classForCoder).absorbPlace, got component that was unaddress \(component.type) : \(component.name)")
+                    print("IN \(self.classForCoder).absorbPlace, got component that was unaddressed \(component.type) : \(component.name)")
                 }
             }
         }
@@ -355,10 +363,17 @@ class RVLocation: RVBaseModel {
         get { return getString(key: .administrativeArea) }
         set { updateString(key: .administrativeArea, value: newValue, setDirties: true)}
     }
-    
+    var administrativeArea2: String? {
+        get { return getString(key: .administrativeArea2) }
+        set { updateString(key: .administrativeArea2, value: newValue, setDirties: true)}
+    }
     var postalCode: String? {
         get { return getString(key: .postalCode) }
         set { updateString(key: .postalCode, value: newValue, setDirties: true)}
+    }
+    var postalCodeSuffix: String? {
+        get { return getString(key: .postalCodeSuffix) }
+        set { updateString(key: .postalCodeSuffix, value: newValue, setDirties: true)}
     }
     var city: String? {
         get { return getString(key: .city) }
@@ -520,12 +535,13 @@ class RVLocation: RVBaseModel {
         } else {
             output = "\(output) <no zip>, "
         }
-        
+        output = addTerm(term: "Country", input: output, value: self.country)
         output = addTerm(term: "thoroughfare", input: output, value: self.thoroughfare)
         output = addTerm(term: "Locality", input: output , value: self.locality)
         output = addTerm(term: "subLocality", input: output, value: self.subLocality)
         output = addTerm(term: "neighborhood", input: output, value: self.neighborhood)
         output = addTerm(term: "administrativeArea", input: output, value: self.administrativeArea)
+        output = addTerm(term: "administrativeArea2 (County)", input: output, value: self.administrativeArea2)
         output = addTerm(term: "fullAddress", input: output, value: self.fullAddress)
         output = addTerm(term: "iconURLString", input: output, value: self.iconURLString)
         output = addTerm(term: "websiteString", input: output, value: self.websiteString)
@@ -533,6 +549,16 @@ class RVLocation: RVBaseModel {
         output = addTerm(term: "reference", input: output, value: self.reference)
         output = addTerm(term: "record_id", input: output, value: self.record_id)
         output = addTerm(term: "placeId", input: output, value: self.placeId)
+        if let types = self.types {
+            output = "\(output), types: \(types), "
+        } else {
+            output = "\(output)<no types>, "
+        }
+        if let geometry = self.geometry {
+            output = "\(output) geometry: \(geometry)"
+        } else {
+            output = "\(output) <no geometry>, "
+        }
         if let image = self.image {
             output = "\(output) -- ImageObject: \(image.toString())"
         } else {
