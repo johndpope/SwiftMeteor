@@ -10,11 +10,12 @@ import UIKit
 
 class RVBaseViewController: UIViewController {
     let searchController = UISearchController(searchResultsController: nil)
-    var scopes: [[String: RVKeys]] = [["Handle": RVKeys.handle], ["Title": RVKeys.title]  , ["Comment": RVKeys.comment]]
+   // var scopes: [[String: RVKeys]] = [["Handle": RVKeys.handle], ["Title": RVKeys.title]  , ["Comment": RVKeys.comment]]
     var titles = [String]()
     var instanceType: String { get { return String(describing: type(of: self)) } }
     var stack = [RVBaseModel]()
     var operation: RVOperation = RVOperation(active: false)
+    var mainState: RVMainViewControllerState? = nil
     var dontUseManager: Bool = false
     var listeners = [RVListener]()
     func p(_ message: String, _ method: String = "") { print("In \(instanceType) \(method) \(message)") }
@@ -33,6 +34,7 @@ class RVBaseViewController: UIViewController {
         return nil
     }
     var refreshControl = UIRefreshControl()
+    /*
     private var _manager: RVDSManager? = nil
     var manager: RVDSManager? {
         get {
@@ -46,6 +48,8 @@ class RVBaseViewController: UIViewController {
             return nil
         }
     }
+ */
+    /*
     private var _mainDatasource: RVBaseDataSource? = nil
     var mainDatasource: RVBaseDataSource {
         get {
@@ -73,18 +77,23 @@ class RVBaseViewController: UIViewController {
         print("In \(instanceType). need to override provideFilteredDatasource()")
         return RVBaseDataSource()
     }
+ */
     override func viewDidLoad() {
         super.viewDidLoad()
-        if let manager = self.manager {
+    
+    //    if let manager = self.manager {
             if let tableView = dsScrollView as? UITableView {
                 searchController.searchResultsUpdater = self
                 searchController.dimsBackgroundDuringPresentation = false
                 self.titles = [String]()
-                for scopeTerm in scopes {
-                    if let (title, _) = scopeTerm.first {
-                        self.titles.append(title)
+                if let mainState = self.mainState {
+                    for scopeTerm in mainState.scopes {
+                        if let (title, _) = scopeTerm.first {
+                            self.titles.append(title)
+                        }
                     }
                 }
+
                 let searchBar = searchController.searchBar
                 searchBar.scopeButtonTitles = titles
                 searchBar.selectedScopeButtonIndex = 0
@@ -102,12 +111,17 @@ class RVBaseViewController: UIViewController {
               //  UITextField.appearance(whenContainedInInstancesOf: [UISearchBar.self]).tintColor = UIColor.candyGreen()
                 definesPresentationContext = true
                 tableView.tableHeaderView = searchController.searchBar
-                manager.addSection(section: mainDatasource)
-                manager.addSection(section: filterDatasource)
+     //           if let mainState = self.mainState {
+     //               for section in mainState.datasources {
+     //                   manager.addSection(section: section)
+     //               }
+     //           }
+            //    manager.addSection(section: mainDatasource)
+            //    manager.addSection(section: filterDatasource)
             }
-        } else {
+     //   } else {
            // print("In \(instanceType).viewDidLoad, , manager not set")
-        }
+     //   }
         if let topViewConstraint = self.topViewHeightConstraint {
             self.topViewHeightConstraintConstant = topViewConstraint.constant
         }
@@ -156,7 +170,8 @@ class RVBaseViewController: UIViewController {
     let tab = "\t"
     let sparklingHeart = "\u{1F496}"
 
-    func filterQuery(text: String, scopeIndex: Int) -> RVQuery {
+    /*
+    func filterQuery(text: String, scopeIndex: Int) -> RVQuery? {
         let query = mainDatasource.basicQuery().duplicate()
         print("In \(self.instanceType).filterQuery base class. Need to override")
         query.addAnd(term: RVKeys.commentLowercase, value: text.lowercased() as AnyObject, comparison: .gte)
@@ -164,6 +179,7 @@ class RVBaseViewController: UIViewController {
         query.addSort(field: .commentLowercase, order: .ascending)
         return query
     }
+ */
     
     func setupTopView() {
         if let _ = self.topView {
@@ -199,6 +215,14 @@ class RVBaseViewController: UIViewController {
     func uninstallObservers() {
         for (name, _) in observers {
             NotificationCenter.default.removeObserver(self, name: name, object: nil)
+        }
+    }
+    var manager: RVDSManager? {
+        get {
+            if let state = self.mainState {
+                return state.manager
+            }
+            return nil
         }
     }
 }
@@ -360,6 +384,20 @@ extension RVBaseViewController: UISearchResultsUpdating {
     func updateSearchResultsHelper(searchController: UISearchController) {
         let searchBar = searchController.searchBar
         let scopeIndex = getScopeIndex(searchBar: searchBar)
+        if let mainState = self.mainState {
+            if scopeIndex >= 0 && scopeIndex < mainState.scopes.count {
+                if let (title, _) = mainState.scopes[scopeIndex].first {
+                    searchBar.placeholder = "Search by \(title)"
+                } else {
+                    searchBar.prompt = nil
+                }
+            } else {
+                searchBar.prompt = nil
+            }
+        } else {
+            searchBar.prompt = nil
+        }
+        /*
         if scopeIndex >= 0 && scopeIndex < scopes.count {
             if let (title, _) = scopes[scopeIndex].first {
                 searchBar.placeholder = "Search by \(title)"
@@ -369,6 +407,7 @@ extension RVBaseViewController: UISearchResultsUpdating {
         } else {
             searchBar.prompt = nil
         }
+ */
         let searchText = searchBar.text != nil ?  searchBar.text! : ""
         //p("in updateSearchResults, scopeIndex = \(scopeIndex) and text is \(searchText)")
         var operation = self.operation
@@ -388,49 +427,103 @@ extension RVBaseViewController: UISearchResultsUpdating {
     }
     func runInner2(searchController: UISearchController, operation: RVOperation, searchText: String, scopeIndex: Int) {
         DispatchQueue.main.async {
-            if let manager = self.manager {
-                manager.stopAndResetDatasource(datasource: self.filterDatasource, callback: { (error) in
-                    if let error = error {
-                        error.append(message: "In \(self.instanceType).runSearch, got error stopping")
-                    } else {
-                        // self.p("After stopAndReset \(operation.name)")
-                        let query = self.filterQuery(text: searchText, scopeIndex: scopeIndex)
-                        if operation.sameOperationAndNotCancelled(operation: self.operation) {
-                            if !self.mainDatasource.collapsed { self.mainDatasource.collapse {} }
-                            if searchController.isActive {
-                                manager.startDatasource(datasource: self.filterDatasource, query: query, callback: { (error) in
-                                    //self.p("After startDatasource \(operation.name)")
-                                    if let error = error {
-                                        error.append(message: "In \(self.instanceType).textDidChange, got error")
-                                        error.printError()
-                                    }
-                                    let _ = self.replaceOperation(operation: operation)
-                                })
+            if let mainState = self.mainState {
+                if let manager = self.manager {
+                    if let filterDatasource = mainState.findDatasource(type: RVBaseDataSource.DatasourceType.filter) {
+                        manager.stopAndResetDatasource(datasource: filterDatasource, callback: { (error) in
+                            if let error = error {
+                                error.append(message: "In \(self.instanceType).runSearch, got error stopping")
                             } else {
-                                searchController.searchBar.prompt = nil
-                                searchController.searchBar.placeholder = "Search..."
-                                if let tableView = self.dsScrollView as? UITableView {
-                                    let indexPath = IndexPath(row: 0, section: 0)
-                                    if self.mainDatasource.collapsed {
-                                        self.mainDatasource.expand {
-                                            if manager.numberOfItems(section: manager.section(datasource: self.mainDatasource)) > 0 {
-                                                tableView.scrollToRow(at: indexPath, at: UITableViewScrollPosition.top, animated: true)
+                                // self.p("After stopAndReset \(operation.name)")
+                                let params: [String: AnyObject] = [RVMainViewControllerState.textLabel: searchText as AnyObject, RVMainViewControllerState.scopeIndexLabel: scopeIndex as AnyObject]
+                                if let filterQueryFunction = mainState.queryFunctions[RVBaseDataSource.DatasourceType.filter] {
+                                    let query = filterQueryFunction(params)
+                                    if let mainDatasource = mainState.findDatasource(type: RVBaseDataSource.DatasourceType.main) {
+                                        if let filterDatasource = mainState.findDatasource(type: RVBaseDataSource.DatasourceType.filter) {
+                                            if operation.sameOperationAndNotCancelled(operation: self.operation) {
+                                                if !mainDatasource.collapsed { mainDatasource.collapse {} }
+                                                if searchController.isActive {
+                                                    manager.startDatasource(datasource: filterDatasource, query: query, callback: { (error) in
+                                                        //self.p("After startDatasource \(operation.name)")
+                                                        if let error = error {
+                                                            error.append(message: "In \(self.instanceType).textDidChange, got error")
+                                                            error.printError()
+                                                        }
+                                                        let _ = self.replaceOperation(operation: operation)
+                                                    })
+                                                } else {
+                                                    searchController.searchBar.prompt = nil
+                                                    searchController.searchBar.placeholder = "Search..."
+                                                    if let tableView = self.dsScrollView as? UITableView {
+                                                        let indexPath = IndexPath(row: 0, section: 0)
+                                                        if mainDatasource.collapsed {
+                                                            mainDatasource.expand {
+                                                                if manager.numberOfItems(section: manager.section(datasource: mainDatasource)) > 0 {
+                                                                    tableView.scrollToRow(at: indexPath, at: UITableViewScrollPosition.top, animated: true)
+                                                                }
+                                                            }
+                                                        } else {
+                                                            if manager.numberOfItems(section: manager.section(datasource: mainDatasource)) > 0 {
+                                                                tableView.scrollToRow(at: indexPath, at: UITableViewScrollPosition.top, animated: true)
+                                                            }
+                                                        }
+                                                        let _ = self.replaceOperation(operation: operation)
+                                                    }
+                                                }
+                                                
+                                            } else {
+                                                self.p("Same operation and not cancelled \(operation.name) --------")
                                             }
                                         }
-                                    } else {
-                                        if manager.numberOfItems(section: manager.section(datasource: self.mainDatasource)) > 0 {
-                                            tableView.scrollToRow(at: indexPath, at: UITableViewScrollPosition.top, animated: true)
-                                        }
                                     }
-                                    let _ = self.replaceOperation(operation: operation)
                                 }
+                                
+                                
+                                /*
+                                 
+                                 let query = self.filterQuery(text: searchText, scopeIndex: scopeIndex)
+                                 if operation.sameOperationAndNotCancelled(operation: self.operation) {
+                                 if !self.mainDatasource.collapsed { self.mainDatasource.collapse {} }
+                                 if searchController.isActive {
+                                 if let query = query {
+                                 manager.startDatasource(datasource: self.filterDatasource, query: query, callback: { (error) in
+                                 //self.p("After startDatasource \(operation.name)")
+                                 if let error = error {
+                                 error.append(message: "In \(self.instanceType).textDidChange, got error")
+                                 error.printError()
+                                 }
+                                 let _ = self.replaceOperation(operation: operation)
+                                 })
+                                 }
+                                 } else {
+                                 searchController.searchBar.prompt = nil
+                                 searchController.searchBar.placeholder = "Search..."
+                                 if let tableView = self.dsScrollView as? UITableView {
+                                 let indexPath = IndexPath(row: 0, section: 0)
+                                 if self.mainDatasource.collapsed {
+                                 self.mainDatasource.expand {
+                                 if manager.numberOfItems(section: manager.section(datasource: self.mainDatasource)) > 0 {
+                                 tableView.scrollToRow(at: indexPath, at: UITableViewScrollPosition.top, animated: true)
+                                 }
+                                 }
+                                 } else {
+                                 if manager.numberOfItems(section: manager.section(datasource: self.mainDatasource)) > 0 {
+                                 tableView.scrollToRow(at: indexPath, at: UITableViewScrollPosition.top, animated: true)
+                                 }
+                                 }
+                                 let _ = self.replaceOperation(operation: operation)
+                                 }
+                                 }
+                                 
+                                 } else {
+                                 self.p("Same operation and not cancelled \(operation.name) --------")
+                                 }
+                                 */
                             }
-                            
-                        } else {
-                            self.p("Same operation and not cancelled \(operation.name) --------")
-                        }
+                        })
                     }
-                })
+
+                }
             }
         }
     }

@@ -12,8 +12,8 @@ import SwiftDDP
 class RVMainLandingViewController: RVBaseViewController {
 
     @IBOutlet weak var segmentedControl: UISegmentedControl!
-    override func provideMainDatasource() -> RVBaseDataSource{ return RVTaskDatasource() }
-    override func provideFilteredDatasource() -> RVBaseDataSource { return RVTaskDatasource(maxArraySize: 500, filterMode: true) }
+//    override func provideMainDatasource() -> RVBaseDataSource{ return RVTaskDatasource() }
+//    override func provideFilteredDatasource() -> RVBaseDataSource { return RVTaskDatasource(maxArraySize: 500, filterMode: true) }
 
     @IBAction func segmentedControlValueChanged(_ sender: UISegmentedControl) {
         p("segmentedControlValueChanged", "to index: \(sender.selectedSegmentIndex)")
@@ -27,6 +27,11 @@ class RVMainLandingViewController: RVBaseViewController {
                RVViewDeck.sharedInstance.toggleSide(side: RVViewDeck.Side.right)
     }
     override func viewDidLoad() {
+        if let scrollView = self.dsScrollView {
+            self.mainState = RVMainViewControllerState.tasksState(scrollView: scrollView)
+        } else {
+            print("In \(self.classForCoder).viewDidLoad, no scrollView")
+        }
         super.viewDidLoad()
         if let tableView = self.tableView {
             tableView.register(RVFirstViewHeaderCell.self, forHeaderFooterViewReuseIdentifier: RVFirstViewHeaderCell.identifier)
@@ -66,6 +71,40 @@ class RVMainLandingViewController: RVBaseViewController {
                     error.printError()
                     return
                 } else if let root = root {
+                    if let mainState = self.mainState {
+                        mainState.stack = [root]
+                        if let mainDatasource = mainState.findDatasource(type: RVBaseDataSource.DatasourceType.main) {
+                            if let queryFunction = mainState.queryFunctions[RVBaseDataSource.DatasourceType.main] {
+                                let query = queryFunction([String: AnyObject]())
+                                if let manager = self.manager {
+                                    manager.stopAndResetDatasource(datasource: mainDatasource, callback: { (error) in
+                                        if let error = error {
+                                            error.append(message: "In \(self.instanceType).loadUp, got error stoping main database")
+                                            error.printError()
+                                        } else {
+                                            manager.startDatasource(datasource: mainDatasource, query: query, callback: { (error) in
+                                                if let error = error {
+                                                    error.append(message: "In \(self.instanceType).loadUp, got error starting main database")
+                                                    error.printError()
+                                                }
+                                            })
+                                        }
+                                    })
+                                } else {
+                                    print("In \(self.classForCoder).loadup, no manager")
+                                }
+                            } else {
+                                print("In \(self.classForCoder).loadup, no queryFunction")
+                            }
+                        } else {
+                            print("In \(self.classForCoder).loadup, no mainDatasource")
+                        }
+                    } else {
+                        print("In \(self.classForCoder).loadup, no mainState")
+                    }
+                    
+                    
+                    /*
                     //  print("In \(self.instanceType).loadup() Have root task: \(root._id), \(root.special.rawValue)")
                     self.stack = [root]
                     let query = self.mainDatasource.basicQuery()
@@ -88,6 +127,7 @@ class RVMainLandingViewController: RVBaseViewController {
                         })
                         
                     }
+                    */
                 } else {
                     print("In \(self.instanceType).loadup no root")
                 }
@@ -96,7 +136,16 @@ class RVMainLandingViewController: RVBaseViewController {
 
     }
 
-    override func filterQuery(text: String, scopeIndex: Int ) -> RVQuery {
+    /*
+    override func filterQuery(text: String, scopeIndex: Int ) -> RVQuery? {
+        if let mainState = self.mainState {
+            if let filterQueryFunction = mainState.queryFunctions[RVBaseDataSource.DatasourceType.filter] {
+                let params: [String: AnyObject] = [RVMainViewControllerState.scopeIndexLabel: scopeIndex as AnyObject, RVMainViewControllerState.textLabel : text as AnyObject]
+                return filterQueryFunction(params)
+            }
+        }
+        return nil
+        /*
         let query = filterDatasource.basicQuery().duplicate()
         query.removeAllSortTerms()
         if let top = self.stack.last {
@@ -126,7 +175,9 @@ class RVMainLandingViewController: RVBaseViewController {
             query.addSort(field: .handle, order: .ascending)
         }
         return query
+        */
     }
+ */
 }
 
 
