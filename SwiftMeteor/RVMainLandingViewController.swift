@@ -12,8 +12,7 @@ import SwiftDDP
 class RVMainLandingViewController: RVBaseViewController {
 
     @IBOutlet weak var segmentedControl: UISegmentedControl!
-//    override func provideMainDatasource() -> RVBaseDataSource{ return RVTaskDatasource() }
-//    override func provideFilteredDatasource() -> RVBaseDataSource { return RVTaskDatasource(maxArraySize: 500, filterMode: true) }
+
 
     @IBAction func segmentedControlValueChanged(_ sender: UISegmentedControl) {
         p("segmentedControlValueChanged", "to index: \(sender.selectedSegmentIndex)")
@@ -71,12 +70,11 @@ class RVMainLandingViewController: RVBaseViewController {
                     error.printError()
                     return
                 } else if let root = root {
-                    if let mainState = self.mainState {
-                        mainState.stack = [root]
-                        if let mainDatasource = mainState.findDatasource(type: RVBaseDataSource.DatasourceType.main) {
-                            if let queryFunction = mainState.queryFunctions[RVBaseDataSource.DatasourceType.main] {
+                        self.mainState.stack = [root]
+                        if let mainDatasource = self.mainState.findDatasource(type: RVBaseDataSource.DatasourceType.main) {
+                            if let queryFunction = self.mainState.queryFunctions[RVBaseDataSource.DatasourceType.main] {
                                 let query = queryFunction([String: AnyObject]())
-                                if let manager = self.manager {
+                                    let manager = self.manager
                                     manager.stopAndResetDatasource(datasource: mainDatasource, callback: { (error) in
                                         if let error = error {
                                             error.append(message: "In \(self.instanceType).loadUp, got error stoping main database")
@@ -90,44 +88,15 @@ class RVMainLandingViewController: RVBaseViewController {
                                             })
                                         }
                                     })
-                                } else {
-                                    print("In \(self.classForCoder).loadup, no manager")
-                                }
+
                             } else {
                                 print("In \(self.classForCoder).loadup, no queryFunction")
                             }
                         } else {
                             print("In \(self.classForCoder).loadup, no mainDatasource")
                         }
-                    } else {
-                        print("In \(self.classForCoder).loadup, no mainState")
-                    }
-                    
-                    
-                    /*
-                    //  print("In \(self.instanceType).loadup() Have root task: \(root._id), \(root.special.rawValue)")
-                    self.stack = [root]
-                    let query = self.mainDatasource.basicQuery()
-                    if let top = self.stack.last {
-                        query.addAnd(term: RVKeys.parentId, value: top.localId as AnyObject, comparison: .eq)
-                        query.addAnd(term: RVKeys.parentModelType, value: top.modelType.rawValue as AnyObject, comparison: .eq )
-                    }
-                    if let manager = self.manager {
-                        manager.stopAndResetDatasource(datasource: self.mainDatasource, callback: { (error) in
-                            if let error = error {
-                                error.printError()
-                            } else {
-                                manager.startDatasource(datasource: self.mainDatasource, query: query, callback: { (error) in
-                                    if let error = error {
-                                        error.append(message: "In \(self.instanceType).loadUp, got error starting main database")
-                                        error.printError()
-                                    }
-                                })
-                            }
-                        })
-                        
-                    }
-                    */
+
+
                 } else {
                     print("In \(self.instanceType).loadup no root")
                 }
@@ -135,49 +104,6 @@ class RVMainLandingViewController: RVBaseViewController {
         }
 
     }
-
-    /*
-    override func filterQuery(text: String, scopeIndex: Int ) -> RVQuery? {
-        if let mainState = self.mainState {
-            if let filterQueryFunction = mainState.queryFunctions[RVBaseDataSource.DatasourceType.filter] {
-                let params: [String: AnyObject] = [RVMainViewControllerState.scopeIndexLabel: scopeIndex as AnyObject, RVMainViewControllerState.textLabel : text as AnyObject]
-                return filterQueryFunction(params)
-            }
-        }
-        return nil
-        /*
-        let query = filterDatasource.basicQuery().duplicate()
-        query.removeAllSortTerms()
-        if let top = self.stack.last {
-            query.addAnd(term: RVKeys.parentId, value: top.localId as AnyObject, comparison: .eq)
-            query.addAnd(term: RVKeys.parentModelType, value: top.modelType.rawValue as AnyObject, comparison: .eq )
-        }
-        //let scopeIndex = segmentedControl.selectedSegmentIndex
-        if scopeIndex >= 0 && scopeIndex < scopes.count {
-            if let (_, field) = scopes[scopeIndex].first {
-               // print("In \(self.classForCoder).filterQuery, scope is \(field.rawValue)")
-                if field == .handle || field == .handleLowercase {
-                   // query.addAnd(term: RVKeys.handle, value: text.lowercased() as AnyObject, comparison: .gte)
-                    query.fixedTerm = RVQueryItem(term: RVKeys.handle, value: text.lowercased() as AnyObject, comparison: .regex) // necessary for keeping filter equal or gt filter term
-                    query.addSort(field: .handle, order: .ascending)
-                } else if field == .title {
-                 //   query.addAnd(term: RVKeys.title, value: text.lowercased() as AnyObject, comparison: .gte)
-                    query.fixedTerm = RVQueryItem(term: RVKeys.title, value: text.lowercased() as AnyObject, comparison: .regex) // necessary for keeping filter equal or gt filter term
-                    query.addSort(field: .title, order: .ascending)
-                } else if field == .comment || field == .commentLowercase {
-                 //   query.addAnd(term: RVKeys.comment, value: text.lowercased() as AnyObject, comparison: .gte)
-                    query.fixedTerm = RVQueryItem(term: RVKeys.comment, value: text.lowercased() as AnyObject, comparison: .regex) // necessary for keeping filter equal or gt filter term
-                    query.addSort(field: .comment, order: .ascending)
-                }
-            }
-        } else {
-            query.fixedTerm = RVQueryItem(term: RVKeys.handle, value: text.lowercased() as AnyObject, comparison: .regex) // necessary for keeping filter equal or gt filter term
-            query.addSort(field: .handle, order: .ascending)
-        }
-        return query
-        */
-    }
- */
 }
 
 

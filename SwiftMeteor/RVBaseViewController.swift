@@ -10,12 +10,11 @@ import UIKit
 
 class RVBaseViewController: UIViewController {
     let searchController = UISearchController(searchResultsController: nil)
-   // var scopes: [[String: RVKeys]] = [["Handle": RVKeys.handle], ["Title": RVKeys.title]  , ["Comment": RVKeys.comment]]
     var titles = [String]()
     var instanceType: String { get { return String(describing: type(of: self)) } }
     var stack = [RVBaseModel]()
     var operation: RVOperation = RVOperation(active: false)
-    var mainState: RVMainViewControllerState? = nil
+    var mainState: RVMainViewControllerState = RVMainViewControllerState(scrollView: UIScrollView())
     var dontUseManager: Bool = false
     var listeners = [RVListener]()
     func p(_ message: String, _ method: String = "") { print("In \(instanceType) \(method) \(message)") }
@@ -34,94 +33,39 @@ class RVBaseViewController: UIViewController {
         return nil
     }
     var refreshControl = UIRefreshControl()
-    /*
-    private var _manager: RVDSManager? = nil
-    var manager: RVDSManager? {
-        get {
-            if dontUseManager { return nil}
-            if let manager = self._manager { return manager }
-            if let scrollView = self.dsScrollView {
-                let manager = RVDSManager(scrollView: scrollView)
-                _manager = manager
-                return manager
-            }
-            return nil
-        }
-    }
- */
-    /*
-    private var _mainDatasource: RVBaseDataSource? = nil
-    var mainDatasource: RVBaseDataSource {
-        get {
-            
-            if let datasource = self._mainDatasource { return datasource }
-            let datasource = provideMainDatasource()
-            self._mainDatasource = datasource
-            return datasource
-        }
-    }
-    func provideMainDatasource() -> RVBaseDataSource {
-        print("In \(instanceType). need to override provideMainDatasource()")
-        return RVBaseDataSource()
-    }
-    var _filterDatasource: RVBaseDataSource? = nil
-    var filterDatasource: RVBaseDataSource {
-        get {
-            if let datasource = self._filterDatasource { return datasource }
-            let datasource = provideFilteredDatasource()
-            self._filterDatasource = datasource
-            return datasource
-        }
-    }
-    func provideFilteredDatasource() -> RVBaseDataSource {
-        print("In \(instanceType). need to override provideFilteredDatasource()")
-        return RVBaseDataSource()
-    }
- */
+ 
     override func viewDidLoad() {
         super.viewDidLoad()
-    
-    //    if let manager = self.manager {
-            if let tableView = dsScrollView as? UITableView {
-                searchController.searchResultsUpdater = self
-                searchController.dimsBackgroundDuringPresentation = false
-                self.titles = [String]()
-                if let mainState = self.mainState {
-                    for scopeTerm in mainState.scopes {
-                        if let (title, _) = scopeTerm.first {
-                            self.titles.append(title)
-                        }
-                    }
+        if let tableView = dsScrollView as? UITableView {
+            searchController.searchResultsUpdater = self
+            searchController.dimsBackgroundDuringPresentation = false
+            self.titles = [String]()
+            for scopeTerm in mainState.scopes {
+                if let (title, _) = scopeTerm.first {
+                    self.titles.append(title)
                 }
-
-                let searchBar = searchController.searchBar
-                searchBar.scopeButtonTitles = titles
-                searchBar.selectedScopeButtonIndex = 0
-                searchBar.delegate = self
-                
-                searchBar.prompt = nil
-               // searchBar.searchBarStyle = UISearchBarStyle.prominent
-                searchBar.showsSearchResultsButton = false
-                searchBar.placeholder = " Search..."
-               // searchBar.isTranslucent = false
-              //  searchBar.backgroundImage = UIImage()
-               // searchBar.showsCancelButton = true
-              //  UISearchBar.appearance().barTintColor = UIColor.orange
-              //  UISearchBar.appearance().tintColor = UIColor.blue
-              //  UITextField.appearance(whenContainedInInstancesOf: [UISearchBar.self]).tintColor = UIColor.candyGreen()
-                definesPresentationContext = true
-                tableView.tableHeaderView = searchController.searchBar
-     //           if let mainState = self.mainState {
-     //               for section in mainState.datasources {
-     //                   manager.addSection(section: section)
-     //               }
-     //           }
-            //    manager.addSection(section: mainDatasource)
-            //    manager.addSection(section: filterDatasource)
             }
-     //   } else {
-           // print("In \(instanceType).viewDidLoad, , manager not set")
-     //   }
+    
+            let searchBar = searchController.searchBar
+            searchBar.scopeButtonTitles = titles
+            searchBar.selectedScopeButtonIndex = 0
+            searchBar.delegate = self
+            
+            searchBar.prompt = nil
+           // searchBar.searchBarStyle = UISearchBarStyle.prominent
+            searchBar.showsSearchResultsButton = false
+            searchBar.placeholder = " Search..."
+           // searchBar.isTranslucent = false
+          //  searchBar.backgroundImage = UIImage()
+           // searchBar.showsCancelButton = true
+          //  UISearchBar.appearance().barTintColor = UIColor.orange
+          //  UISearchBar.appearance().tintColor = UIColor.blue
+          //  UITextField.appearance(whenContainedInInstancesOf: [UISearchBar.self]).tintColor = UIColor.candyGreen()
+            definesPresentationContext = true
+            tableView.tableHeaderView = searchController.searchBar
+
+        }
+
         if let topViewConstraint = self.topViewHeightConstraint {
             self.topViewHeightConstraintConstant = topViewConstraint.constant
         }
@@ -170,16 +114,7 @@ class RVBaseViewController: UIViewController {
     let tab = "\t"
     let sparklingHeart = "\u{1F496}"
 
-    /*
-    func filterQuery(text: String, scopeIndex: Int) -> RVQuery? {
-        let query = mainDatasource.basicQuery().duplicate()
-        print("In \(self.instanceType).filterQuery base class. Need to override")
-        query.addAnd(term: RVKeys.commentLowercase, value: text.lowercased() as AnyObject, comparison: .gte)
-        query.removeAllSortTerms()
-        query.addSort(field: .commentLowercase, order: .ascending)
-        return query
-    }
- */
+
     
     func setupTopView() {
         if let _ = self.topView {
@@ -217,13 +152,8 @@ class RVBaseViewController: UIViewController {
             NotificationCenter.default.removeObserver(self, name: name, object: nil)
         }
     }
-    var manager: RVDSManager? {
-        get {
-            if let state = self.mainState {
-                return state.manager
-            }
-            return nil
-        }
+    var manager: RVDSManager {
+        get { return mainState.manager }
     }
 }
 extension RVBaseViewController: UITableViewDelegate {
@@ -235,13 +165,13 @@ extension RVBaseViewController: UITableViewDelegate {
     }
     func tableView(_ tableView: UITableView, willDisplayHeaderView view: UIView, forSection section: Int) {
         if let headerCell = view as? RVFirstViewHeaderCell {
-            if let manager = self.manager {
+
                 if section >= 0 && section < manager.sections.count {
                     let datasource = manager.sections[section]
                     headerCell.delegate = self
                     headerCell.configure(model: nil, datasource: datasource)
                 }
-            }
+            
         }
     }
     func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
@@ -256,7 +186,7 @@ extension RVBaseViewController: UITableViewDelegate {
     }
     func numberOfSections(in tableView: UITableView) -> Int {
         //print("In \(self.classForCoder).numberOfSections... \(manager.sections.count)")
-        if let manager = self.manager {
+
             let count = manager.sections.count
             if count == 0 {
                 showNoMessage(tableView: tableView)
@@ -265,7 +195,7 @@ extension RVBaseViewController: UITableViewDelegate {
                 tableView.separatorStyle = UITableViewCellSeparatorStyle.singleLineEtched
             }
             return count
-        } else  { return 0}
+ 
     }
 }
 extension RVBaseViewController: UITableViewDataSource {
@@ -283,7 +213,7 @@ extension RVBaseViewController: UITableViewDataSource {
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         //    print("In \(self.instanceType).cellForRow...")
         if let cell = tableView.dequeueReusableCell(withIdentifier: RVTaskTableViewCell.identifier, for: indexPath) as? RVTaskTableViewCell {
-            if let manager = self.manager { cell.model = manager.item(indexPath: indexPath) }
+            cell.model = manager.item(indexPath: indexPath)
             return cell
         } else {
             print("In \(self.instanceType).cellForRowAt, did not dequeue first cell type")
@@ -291,12 +221,7 @@ extension RVBaseViewController: UITableViewDataSource {
         return UITableViewCell()
     }
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        if let manager = self.manager {
-            return manager.numberOfItems(section: section)
-        } else {
-            return 0
-        }
-
+        return manager.numberOfItems(section: section)
     }
     func userDidLogin(notification: NSNotification) {
         print("In \(self.instanceType).userDidLogin notification target")
@@ -331,11 +256,9 @@ extension RVBaseViewController: UITableViewDataSource {
         let attrsDictionary = [NSForegroundColorAttributeName : UIColor.white]
         let attributedTitle = NSAttributedString(string: title, attributes: attrsDictionary)
         self.refreshControl.attributedTitle = attributedTitle
-        if let manager = self.manager {
-            if manager.sections.count > 0 {
-                let datasource = manager.sections[0]
-                datasource.loadFront()
-            }
+        if manager.sections.count > 0 {
+            let datasource = manager.sections[0]
+            datasource.loadFront()
         }
         self.refreshControl.endRefreshing()
     }
@@ -384,7 +307,7 @@ extension RVBaseViewController: UISearchResultsUpdating {
     func updateSearchResultsHelper(searchController: UISearchController) {
         let searchBar = searchController.searchBar
         let scopeIndex = getScopeIndex(searchBar: searchBar)
-        if let mainState = self.mainState {
+  
             if scopeIndex >= 0 && scopeIndex < mainState.scopes.count {
                 if let (title, _) = mainState.scopes[scopeIndex].first {
                     searchBar.placeholder = "Search by \(title)"
@@ -394,20 +317,8 @@ extension RVBaseViewController: UISearchResultsUpdating {
             } else {
                 searchBar.prompt = nil
             }
-        } else {
-            searchBar.prompt = nil
-        }
-        /*
-        if scopeIndex >= 0 && scopeIndex < scopes.count {
-            if let (title, _) = scopes[scopeIndex].first {
-                searchBar.placeholder = "Search by \(title)"
-            } else {
-                searchBar.prompt = nil
-            }
-        } else {
-            searchBar.prompt = nil
-        }
- */
+
+
         let searchText = searchBar.text != nil ?  searchBar.text! : ""
         //p("in updateSearchResults, scopeIndex = \(scopeIndex) and text is \(searchText)")
         var operation = self.operation
@@ -427,105 +338,62 @@ extension RVBaseViewController: UISearchResultsUpdating {
     }
     func runInner2(searchController: UISearchController, operation: RVOperation, searchText: String, scopeIndex: Int) {
         DispatchQueue.main.async {
-            if let mainState = self.mainState {
-                if let manager = self.manager {
-                    if let filterDatasource = mainState.findDatasource(type: RVBaseDataSource.DatasourceType.filter) {
-                        manager.stopAndResetDatasource(datasource: filterDatasource, callback: { (error) in
-                            if let error = error {
-                                error.append(message: "In \(self.instanceType).runSearch, got error stopping")
-                            } else {
-                                // self.p("After stopAndReset \(operation.name)")
-                                let params: [String: AnyObject] = [RVMainViewControllerState.textLabel: searchText as AnyObject, RVMainViewControllerState.scopeIndexLabel: scopeIndex as AnyObject]
-                                if let filterQueryFunction = mainState.queryFunctions[RVBaseDataSource.DatasourceType.filter] {
-                                    let query = filterQueryFunction(params)
-                                    if let mainDatasource = mainState.findDatasource(type: RVBaseDataSource.DatasourceType.main) {
-                                        if let filterDatasource = mainState.findDatasource(type: RVBaseDataSource.DatasourceType.filter) {
-                                            if operation.sameOperationAndNotCancelled(operation: self.operation) {
-                                                if !mainDatasource.collapsed { mainDatasource.collapse {} }
-                                                if searchController.isActive {
-                                                    manager.startDatasource(datasource: filterDatasource, query: query, callback: { (error) in
-                                                        //self.p("After startDatasource \(operation.name)")
-                                                        if let error = error {
-                                                            error.append(message: "In \(self.instanceType).textDidChange, got error")
-                                                            error.printError()
+            let manager = self.manager
+            if let filterDatasource = self.mainState.findDatasource(type: RVBaseDataSource.DatasourceType.filter) {
+                manager.stopAndResetDatasource(datasource: filterDatasource, callback: { (error) in
+                    if let error = error {
+                        error.append(message: "In \(self.instanceType).runSearch, got error stopping")
+                    } else {
+                        // self.p("After stopAndReset \(operation.name)")
+                        let params: [String: AnyObject] = [RVMainViewControllerState.textLabel: searchText as AnyObject, RVMainViewControllerState.scopeIndexLabel: scopeIndex as AnyObject]
+                        if let filterQueryFunction = self.mainState.queryFunctions[RVBaseDataSource.DatasourceType.filter] {
+                            let query = filterQueryFunction(params)
+                            if let mainDatasource = self.mainState.findDatasource(type: RVBaseDataSource.DatasourceType.main) {
+                                if let filterDatasource = self.mainState.findDatasource(type: RVBaseDataSource.DatasourceType.filter) {
+                                    if operation.sameOperationAndNotCancelled(operation: self.operation) {
+                                        if !mainDatasource.collapsed { mainDatasource.collapse {} }
+                                        if searchController.isActive {
+                                            manager.startDatasource(datasource: filterDatasource, query: query, callback: { (error) in
+                                                //self.p("After startDatasource \(operation.name)")
+                                                if let error = error {
+                                                    error.append(message: "In \(self.instanceType).textDidChange, got error")
+                                                    error.printError()
+                                                }
+                                                let _ = self.replaceOperation(operation: operation)
+                                            })
+                                        } else {
+                                            searchController.searchBar.prompt = nil
+                                            searchController.searchBar.placeholder = "Search..."
+                                            if let tableView = self.dsScrollView as? UITableView {
+                                                let indexPath = IndexPath(row: 0, section: 0)
+                                                if mainDatasource.collapsed {
+                                                    mainDatasource.expand {
+                                                        if manager.numberOfItems(section: manager.section(datasource: mainDatasource)) > 0 {
+                                                            tableView.scrollToRow(at: indexPath, at: UITableViewScrollPosition.top, animated: true)
                                                         }
-                                                        let _ = self.replaceOperation(operation: operation)
-                                                    })
+                                                    }
                                                 } else {
-                                                    searchController.searchBar.prompt = nil
-                                                    searchController.searchBar.placeholder = "Search..."
-                                                    if let tableView = self.dsScrollView as? UITableView {
-                                                        let indexPath = IndexPath(row: 0, section: 0)
-                                                        if mainDatasource.collapsed {
-                                                            mainDatasource.expand {
-                                                                if manager.numberOfItems(section: manager.section(datasource: mainDatasource)) > 0 {
-                                                                    tableView.scrollToRow(at: indexPath, at: UITableViewScrollPosition.top, animated: true)
-                                                                }
-                                                            }
-                                                        } else {
-                                                            if manager.numberOfItems(section: manager.section(datasource: mainDatasource)) > 0 {
-                                                                tableView.scrollToRow(at: indexPath, at: UITableViewScrollPosition.top, animated: true)
-                                                            }
-                                                        }
-                                                        let _ = self.replaceOperation(operation: operation)
+                                                    if manager.numberOfItems(section: manager.section(datasource: mainDatasource)) > 0 {
+                                                        tableView.scrollToRow(at: indexPath, at: UITableViewScrollPosition.top, animated: true)
                                                     }
                                                 }
-                                                
-                                            } else {
-                                                self.p("Same operation and not cancelled \(operation.name) --------")
+                                                let _ = self.replaceOperation(operation: operation)
                                             }
                                         }
+                                        
+                                    } else {
+                                        self.p("Same operation and not cancelled \(operation.name) --------")
                                     }
                                 }
-                                
-                                
-                                /*
-                                 
-                                 let query = self.filterQuery(text: searchText, scopeIndex: scopeIndex)
-                                 if operation.sameOperationAndNotCancelled(operation: self.operation) {
-                                 if !self.mainDatasource.collapsed { self.mainDatasource.collapse {} }
-                                 if searchController.isActive {
-                                 if let query = query {
-                                 manager.startDatasource(datasource: self.filterDatasource, query: query, callback: { (error) in
-                                 //self.p("After startDatasource \(operation.name)")
-                                 if let error = error {
-                                 error.append(message: "In \(self.instanceType).textDidChange, got error")
-                                 error.printError()
-                                 }
-                                 let _ = self.replaceOperation(operation: operation)
-                                 })
-                                 }
-                                 } else {
-                                 searchController.searchBar.prompt = nil
-                                 searchController.searchBar.placeholder = "Search..."
-                                 if let tableView = self.dsScrollView as? UITableView {
-                                 let indexPath = IndexPath(row: 0, section: 0)
-                                 if self.mainDatasource.collapsed {
-                                 self.mainDatasource.expand {
-                                 if manager.numberOfItems(section: manager.section(datasource: self.mainDatasource)) > 0 {
-                                 tableView.scrollToRow(at: indexPath, at: UITableViewScrollPosition.top, animated: true)
-                                 }
-                                 }
-                                 } else {
-                                 if manager.numberOfItems(section: manager.section(datasource: self.mainDatasource)) > 0 {
-                                 tableView.scrollToRow(at: indexPath, at: UITableViewScrollPosition.top, animated: true)
-                                 }
-                                 }
-                                 let _ = self.replaceOperation(operation: operation)
-                                 }
-                                 }
-                                 
-                                 } else {
-                                 self.p("Same operation and not cancelled \(operation.name) --------")
-                                 }
-                                 */
                             }
-                        })
-                    }
+                        }
 
-                }
+                    }
+                })
             }
-        }
+            
+            }
+        
     }
     func replaceOperation(operation: RVOperation, operationName: String = "") -> RVOperation {
         if operation.sameOperation(operation: self.operation) {

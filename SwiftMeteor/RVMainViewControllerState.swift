@@ -18,6 +18,7 @@ class RVMainViewControllerState {
     var queryFunctions = QueryElement()
     var scopes = [[String: RVKeys]]()
     var manager: RVDSManager
+    var dontUseManager: Bool = false
     init(scrollView: UIScrollView) {
         self.manager = RVDSManager(scrollView: scrollView)
     }
