@@ -48,6 +48,9 @@ class RVBaseModel: MeteorDocument {
         } else {
             print("In \(instanceType).init, don't have domain")
         }
+        if let profile = RVCoreInfo.sharedInstance.userProfile {
+            self.setOwner(owner: profile)
+        }
         checkEmbeddeds()
     }
     func checkEmbeddeds() {
@@ -423,7 +426,16 @@ class RVBaseModel: MeteorDocument {
         get { return getString(key: RVKeys.shadowId) }
         set { updateString(key: RVKeys.shadowId, value: newValue, setDirties: true)}
     }
-    
+    var numberOfMessages: Int? {
+        get {
+            if let number = getNSNumber(key: .numberOfMessages) { return number.intValue }
+            return nil
+        }
+        set {
+            let number: NSNumber? = (newValue != nil) ? NSNumber(value: newValue!) : nil
+            updateNumber(key: .numberOfMessages, value: number, setDirties: true)
+        }
+    }
     var numberOfLikes: Int? {
         get {
             if let number = getNSNumber(key: .numberOfLikes) { return number.intValue }

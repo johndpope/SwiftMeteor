@@ -47,4 +47,11 @@ enum RVMeteorMethods: String {
     case domainUpdate = "domain.update"
     case domainDelete = "domain.delete"
     case domainBulkQuery = "domain.bulkQuery"
+    
+    // WatchGroup
+    case watchGroupCreate = "watchGroup.create"
+    case watchGroupFindById = "watchGroup.findById"
+    case watchGroupUpdate = "watchGroup.update"
+    case watchGroupBulkQuery = "watchGroup.bulkQuery"
+    case watchGroupDelete = "watchGroup.delete"
 }

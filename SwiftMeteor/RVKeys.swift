@@ -49,6 +49,7 @@ enum RVKeys: String {
     case numberOfLikes  = "numberOfLikes"
     case numberOfObjections = "numberOfObjections"
     case numberOfFollowers = "numberOfFollowers"
+    case numberOfMessages = "numberOfMessages"
     
     // Domain
     case domainName     = "domainName"

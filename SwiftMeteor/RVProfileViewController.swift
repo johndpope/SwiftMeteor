@@ -41,6 +41,7 @@ extension RVProfileViewController: GMSAutocompleteViewControllerDelegate {
         return true
     }
     func wasCancelled(_ viewController: GMSAutocompleteViewController) {
+        showProfileInfo()
         dismiss(animated: true) {}
     }
     func didRequestAutocompletePredictions(_ viewController: GMSAutocompleteViewController) {
@@ -137,6 +138,7 @@ class RVProfileViewController: UITableViewController {
     var yobSliderValueValid: Bool = false
     
     var tapGestureRecognizer: UITapGestureRecognizer? = nil
+    var lastTextField: UITextField? = nil
     
     let activity = UIActivityIndicatorView(activityIndicatorStyle: .white)
     let activityView = UIView()
@@ -145,7 +147,8 @@ class RVProfileViewController: UITableViewController {
     
     @IBOutlet weak var yobSlider: UISlider!
     @IBAction func yobSliderValueChanged(_ sender: UISlider) {
-        print("yobSliderValueChanged \(sender.value)")
+     //   print("yobSliderValueChanged \(sender.value)")
+        view.endEditing(true)
         setLabelText(text: "\(Int(sender.value))", label: yobLabel)
     }
     
@@ -168,17 +171,20 @@ class RVProfileViewController: UITableViewController {
         }
     }
     @IBAction func imageButtonTouched(_ sender: UIButton) {
+        view.endEditing(true)
         removeGenderPicker()
         camera.showPhotoLibrary()
 
     }
     @IBAction func shootPhoto(_ sender: UIButton) {
+        view.endEditing(true)
         removeGenderPicker()
         camera.shootPhoto()
 
     }
     
     @IBAction func cancelButtonTouched(_ sender: UIBarButtonItem) {
+        view.endEditing(true)
         removeGenderPicker()
         dismiss(animated: true) { 
             
@@ -293,6 +299,32 @@ class RVProfileViewController: UITableViewController {
         camera.delegate = self
         camera.anchorBarButtonItem = doneButton
         if let picker = self.genderPickerView {picker.isHidden = true }
+        let group = RVWatchGroup()
+        group.title = "Elmo"
+        let image = RVImage()
+        image.title = "First Title"
+        group.image = image
+        group.create { (newGroup, error) in
+            if let error = error {
+                error.printError()
+            } else if let newGroup = newGroup as? RVWatchGroup {
+                print(newGroup.toString())
+                let image = RVImage()
+                image.title = "Image Title"
+                group.image = image
+                group.updateById(callback: { (updatedModel, error) in
+                    if let error = error {
+                        error.printError()
+                    } else if let updatedGroup = updatedModel as? RVWatchGroup {
+                        print(updatedGroup.toString())
+                    } else {
+                        print("In \(self.classForCoder).viewDidLoad  no error but no model")
+                    }
+                })
+            } else {
+                print("In \(self.classForCoder).viewDidLoad WatchGroup no error but no result")
+            }
+        }
         
     }
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
@@ -305,6 +337,7 @@ extension RVProfileViewController: UIGestureRecognizerDelegate {
 }
 extension RVProfileViewController: UITextFieldDelegate {
     func showGenderPicker() {
+        view.endEditing(true)
         if let picker = self.genderPickerView {
             picker.backgroundColor = UIColor.blue
             picker.alpha = 1.0
@@ -327,6 +360,13 @@ extension RVProfileViewController: UITextFieldDelegate {
         removeTapGestureRecognizer()
     }
     func textFieldShouldBeginEditing(_ textField: UITextField) -> Bool {
+        if textField == firstNameTextField { print("FIrst name TextField") }
+        if textField == lastNameTextField { print("Last name textfield")}
+        if textField == middleNameTextField { print("Middle name textField") }
+        if textField == cellPhoneTextField { print("Cellphone textField") }
+        if textField == homePhoneTextField   { print("HomePhone textField") }
+        if textField == genderTextField { print("Gender textField") }
+        if textField == addressTextField { print("Address textField") }
         if textField == addressTextField {
             let filter = RVGMaps.sharedInstance.usaFilter
             let autocompleteController = GMSAutocompleteViewController()
@@ -334,7 +374,7 @@ extension RVProfileViewController: UITextFieldDelegate {
             autocompleteController.autocompleteFilter = filter
             autocompleteController.delegate = self
             present(autocompleteController, animated: true) {
-                //
+                
             }
             return false
         } else if textField == genderTextField {
@@ -350,7 +390,7 @@ extension RVProfileViewController: UITextFieldDelegate {
         } else {
             if let picker = self.genderPickerView {
                 if !picker.isHidden {
-                    return false
+                    return true
                 }
             }
         }
@@ -393,6 +433,15 @@ extension RVProfileViewController: UITextFieldDelegate {
     func textFieldShouldEndEditing(_ textField: UITextField) -> Bool {return true }// return YES to allow editing to stop and to resign first responder status. NO to disallow the editing session to end
     
     func textFieldDidEndEditing(_ textField: UITextField, reason: UITextFieldDidEndEditingReason) {
+        print("In didEnd")
+        if textField == firstNameTextField {
+            if let middle = middleNameTextField {
+                print("Making middle")
+                middle.becomeFirstResponder()
+            }
+        } else if textField == middleNameTextField {
+            if let last = lastNameTextField { last.becomeFirstResponder() }
+        }
         /*
         let text = textField.text == nil ? textField.text! : ""
         if let profile = RVCoreInfo.sharedInstance.userProfile {
@@ -411,20 +460,33 @@ extension RVProfileViewController: UITextFieldDelegate {
     
     
     func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
-      //  print("\(string)")
         if (firstNameTextField != nil) && (firstNameTextField == textField ){
             
         } else if (middleNameTextField != nil) && (middleNameTextField == textField) {
             
         } else if (lastNameTextField != nil) && (lastNameTextField == textField) {
             
+        } else if textField == cellPhoneTextField || textField == homePhoneTextField {
+            if string.characters.count == 1 {
+                if string.contains("#") || string.contains("*") || string.contains("+") || string.contains(";") || string.contains(","){ return false }
+                else {return true}
+            }
         }
         return true
     }// return NO to not change text
     
     func textFieldShouldClear(_ textField: UITextField) -> Bool {return true }// called when clear button pressed. return NO to ignore (no notifications)
     
-    func textFieldShouldReturn(_ textField: UITextField) -> Bool {return true}// called when 'return' key pressed. return NO to ignore
+    func textFieldShouldReturn(_ textField: UITextField) -> Bool {
+        print("In \(self.classForCoder).textFieldShouldReturn")
+        if textField == firstNameTextField { middleNameTextField.becomeFirstResponder()  }
+        if textField == middleNameTextField { lastNameTextField.becomeFirstResponder() }
+        if textField == lastNameTextField { cellPhoneTextField.becomeFirstResponder() }
+        if textField == cellPhoneTextField { homePhoneTextField.becomeFirstResponder() }
+        if textField == homePhoneTextField { genderTextField.becomeFirstResponder() }
+        if textField == genderTextField { addressTextField.becomeFirstResponder() }
+        if textField == addressTextField { textField.resignFirstResponder() }
+        return true}// called when 'return' key pressed. return NO to ignore
 }
 extension RVProfileViewController {
     func setLabelText(text: String?, label: UILabel?) {
