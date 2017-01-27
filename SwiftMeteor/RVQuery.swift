@@ -284,6 +284,7 @@ class RVQuery {
 
         return (filters, projections)
     }
+    
     func updateQuery(front: Bool) -> RVQuery {
         for sortTerm in sortTerms {
             if !updateSort(front: front, field: sortTerm.field){
@@ -303,7 +304,9 @@ class RVQuery {
         }
         return self
     }
+ 
     func updateSort(front: Bool, field: RVKeys) -> Bool {
+       // print("In RVQuery.updateSort, start of it")
         if let andTerm = findAndTerm(term: field) {
             if !front {
                 switch(andTerm.comparison) {
@@ -338,10 +341,14 @@ class RVQuery {
             }
             return true
         } else {
+          //  print("IN RVQuery, updateSort, looking up fixedTerm for field \(field.rawValue)")
             if let fixed = self.fixedTerm {
+                print("In RVQuery.updateSort, fixed term is \(fixed.term.rawValue) and field is \(field.rawValue)")
                 if fixed.term == field {
                     return true
                 }
+            } else {
+                print("In RVQuery.updateSort, no fixed term")
             }
             return false
         }

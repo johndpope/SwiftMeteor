@@ -29,6 +29,10 @@
 		28360E181E0352C400E62384 /* RVBaseCollection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 28360E171E0352C400E62384 /* RVBaseCollection.swift */; };
 		28360E1A1E046C0700E62384 /* RVMeteorUser.swift in Sources */ = {isa = PBXBuildFile; fileRef = 28360E191E046C0700E62384 /* RVMeteorUser.swift */; };
 		28447A681E3B006B001DD9DA /* RVMainViewControllerState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 28447A671E3B006B001DD9DA /* RVMainViewControllerState.swift */; };
+		28447A6A1E3BAB35001DD9DA /* RVMainStateTask.swift in Sources */ = {isa = PBXBuildFile; fileRef = 28447A691E3BAB35001DD9DA /* RVMainStateTask.swift */; };
+		28447A6C1E3BAE80001DD9DA /* RVLeftControllerState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 28447A6B1E3BAE80001DD9DA /* RVLeftControllerState.swift */; };
+		28447A6E1E3BB1BE001DD9DA /* RVWatchGroupState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 28447A6D1E3BB1BE001DD9DA /* RVWatchGroupState.swift */; };
+		28447A701E3BB1F3001DD9DA /* RVWatchGroupDatasource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 28447A6F1E3BB1F3001DD9DA /* RVWatchGroupDatasource.swift */; };
 		284E84A21DFD30F600A9F33A /* RVAWS.swift in Sources */ = {isa = PBXBuildFile; fileRef = 284E84A11DFD30F600A9F33A /* RVAWS.swift */; };
 		284FBAC91DEC125D00446C86 /* RVViewDeck.swift in Sources */ = {isa = PBXBuildFile; fileRef = 284FBAC81DEC125D00446C86 /* RVViewDeck.swift */; };
 		284FBACD1DEC139100446C86 /* RVLeftMenuViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 284FBACC1DEC139100446C86 /* RVLeftMenuViewController.swift */; };
@@ -142,6 +146,10 @@
 		28360E171E0352C400E62384 /* RVBaseCollection.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RVBaseCollection.swift; sourceTree = "<group>"; };
 		28360E191E046C0700E62384 /* RVMeteorUser.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RVMeteorUser.swift; sourceTree = "<group>"; };
 		28447A671E3B006B001DD9DA /* RVMainViewControllerState.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RVMainViewControllerState.swift; sourceTree = "<group>"; };
+		28447A691E3BAB35001DD9DA /* RVMainStateTask.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RVMainStateTask.swift; sourceTree = "<group>"; };
+		28447A6B1E3BAE80001DD9DA /* RVLeftControllerState.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RVLeftControllerState.swift; sourceTree = "<group>"; };
+		28447A6D1E3BB1BE001DD9DA /* RVWatchGroupState.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RVWatchGroupState.swift; sourceTree = "<group>"; };
+		28447A6F1E3BB1F3001DD9DA /* RVWatchGroupDatasource.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RVWatchGroupDatasource.swift; sourceTree = "<group>"; };
 		284E84A11DFD30F600A9F33A /* RVAWS.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RVAWS.swift; sourceTree = "<group>"; };
 		284FBAC81DEC125D00446C86 /* RVViewDeck.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RVViewDeck.swift; sourceTree = "<group>"; };
 		284FBACC1DEC139100446C86 /* RVLeftMenuViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RVLeftMenuViewController.swift; sourceTree = "<group>"; };
@@ -257,6 +265,9 @@
 				28201A451E1DE89C008D8E59 /* RVMainLandingNavigationController.swift */,
 				2813FAF51E20A9B8007E9428 /* RVTaskTableViewCell.swift */,
 				28447A671E3B006B001DD9DA /* RVMainViewControllerState.swift */,
+				28447A691E3BAB35001DD9DA /* RVMainStateTask.swift */,
+				28447A6B1E3BAE80001DD9DA /* RVLeftControllerState.swift */,
+				28447A6D1E3BB1BE001DD9DA /* RVWatchGroupState.swift */,
 			);
 			name = MainLanding;
 			sourceTree = "<group>";
@@ -363,6 +374,7 @@
 				2850AFFE1E1B60130043FEB3 /* RVResultsTableController.swift */,
 				2813FAF31E20A385007E9428 /* RVTaskDatasource.swift */,
 				28EBBB821E255EEC0072B761 /* RVOperation.swift */,
+				28447A6F1E3BB1F3001DD9DA /* RVWatchGroupDatasource.swift */,
 			);
 			name = Datasource;
 			sourceTree = "<group>";
@@ -753,6 +765,7 @@
 				28F5C0AE1E32B5830012E52A /* RVFollow.swift in Sources */,
 				28360E161E034C7A00E62384 /* RVTaskCollection.swift in Sources */,
 				282E07451E3170E100FB5C1F /* String+Extension.swift in Sources */,
+				28447A6A1E3BAB35001DD9DA /* RVMainStateTask.swift in Sources */,
 				2813FAF61E20A9B8007E9428 /* RVTaskTableViewCell.swift in Sources */,
 				286CA3231E327BCA00B081B8 /* RVGMaps.swift in Sources */,
 				28201A441E1DE819008D8E59 /* RVMainLandingTableViewCell.swift in Sources */,
@@ -768,9 +781,11 @@
 				28360E181E0352C400E62384 /* RVBaseCollection.swift in Sources */,
 				28C198FA1E3AB4D400D62DB3 /* RVGMSAutocompleteViewController.swift in Sources */,
 				28D773401E30420200E8EDE0 /* RVBaseModel3.swift in Sources */,
+				28447A701E3BB1F3001DD9DA /* RVWatchGroupDatasource.swift in Sources */,
 				2877761A1E21D19C00902CF7 /* RVSeed.swift in Sources */,
 				28201A461E1DE89C008D8E59 /* RVMainLandingNavigationController.swift in Sources */,
 				286CA32D1E32811100B081B8 /* RVUserProfile.swift in Sources */,
+				28447A6E1E3BB1BE001DD9DA /* RVWatchGroupState.swift in Sources */,
 				2870CCD81DEDE72F005C6FB5 /* RVError.swift in Sources */,
 				2816A5551E2BD75E00B6804D /* UIView+Extension.swift in Sources */,
 				286CA31F1E327B8000B081B8 /* RVGeoJSON.swift in Sources */,
@@ -806,6 +821,7 @@
 				286CA3271E327C9700B081B8 /* RVAPIKeys.swift in Sources */,
 				280DE6E81DEF43380031C352 /* RVS3Protocol.swift in Sources */,
 				286CA31D1E327B5E00B081B8 /* RVGeosearch.swift in Sources */,
+				28447A6C1E3BAE80001DD9DA /* RVLeftControllerState.swift in Sources */,
 				288E97DC1E22D07D00753067 /* RVSpecial.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

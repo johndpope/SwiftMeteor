@@ -299,6 +299,13 @@ class RVProfileViewController: UITableViewController {
         camera.delegate = self
         camera.anchorBarButtonItem = doneButton
         if let picker = self.genderPickerView {picker.isHidden = true }
+
+        
+    }
+    override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        print("In \(self.classForCoder).didSelectRow \(indexPath.row)")
+    }
+    func plugWatchGroup() {
         let group = RVWatchGroup()
         group.title = "Elmo"
         let image = RVImage()
@@ -325,12 +332,7 @@ class RVProfileViewController: UITableViewController {
                 print("In \(self.classForCoder).viewDidLoad WatchGroup no error but no result")
             }
         }
-        
     }
-    override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        print("In \(self.classForCoder).didSelectRow \(indexPath.row)")
-    }
-    
 }
 extension RVProfileViewController: UIGestureRecognizerDelegate {
     

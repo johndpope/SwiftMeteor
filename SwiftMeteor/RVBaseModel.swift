@@ -14,6 +14,7 @@ class RVBaseModel: MeteorDocument {
     class var insertMethod: RVMeteorMethods { get { return RVMeteorMethods.InsertBase } }
     class var updateMethod: RVMeteorMethods { get { return RVMeteorMethods.UpdateBase } }
     class var deleteMethod: RVMeteorMethods { get { return RVMeteorMethods.DeleteBase } }
+    class var deleteAllMethod: RVMeteorMethods { get { return RVMeteorMethods.DeleteAllBase}}
     class var findOneMethod: RVMeteorMethods { get { return RVMeteorMethods.domainFindOne}}
     class var bulkQueryMethod: RVMeteorMethods { get { return RVMeteorMethods.BulkTask } }
     class var findMethod: RVMeteorMethods { get { return RVMeteorMethods.FindBase}}
@@ -522,6 +523,10 @@ class RVBaseModel: MeteorDocument {
             else { self.handleLowercase = nil }
         }
     }
+    var specialCode: String? {
+        get { return getString(key: RVKeys.specialCode) }
+        set { updateString(key: RVKeys.specialCode, value: newValue, setDirties: true)}
+    }
     var handleLowercase: String? {
         get { return getString(key: RVKeys.handleLowercase) }
         set { updateString(key: RVKeys.handleLowercase, value: newValue, setDirties: true)}
@@ -725,7 +730,7 @@ extension RVBaseModel {
                 let rvError = RVError(message: "In \(self.instanceType).insert \(#line) got DDPError for id: \(self.localId)", sourceError: error)
                 callback(nil, rvError)
             } else if let result = result as? [String: AnyObject] {
-                print("In \(self.instanceType).created \(#line) successfully created \(self.localId)")
+                print("In \(self.instanceType).created line \(#line) of RVBaseModel, successfully created \(self.localId)")
                 callback(type(of: self).createInstance(fields: result),  nil)
             } else {
                 print("In \(self.instanceType).insert \(#line), no error but no casted result. id = \(self.localId). Result if any: \(result)")
@@ -872,6 +877,22 @@ extension RVBaseModel {
             } else {
                 print("In RVBaseModel.bulkQuery, no error but no results")
                 callback(nil, nil)
+            }
+        }
+    }
+    class func deleteAll( callback: @escaping(_ error: RVError?) -> Void ) {
+        Meteor.call(deleteAllMethod.rawValue, params: [[RVKeys.specialCode.rawValue: RVCoreInfo.sharedInstance.specialCode]]) { (result, error: DDPError?) in
+            if let error = error {
+                let rvError = RVError(message: "In RVBaseModel.deleteAll() got DDPError", sourceError: error, lineNumber: #line, fileName: "")
+                //rvError.printError()
+                callback(rvError)
+                return
+            } else if let result = result {
+                print("In RVBaseModel.deleteAll(), result is \(result)")
+                callback(nil)
+            } else {
+                print("In RVBaseModelGruop.deleteAll(), no error but no result")
+                callback(nil)
             }
         }
     }

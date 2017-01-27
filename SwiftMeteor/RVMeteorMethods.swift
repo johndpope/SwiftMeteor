@@ -15,6 +15,7 @@ enum RVMeteorMethods: String {
     case UpdateBase = "base.update"
     case FindBase = "base.findInstance"
     case DeleteBase = "base.delete"
+    case DeleteAllBase = "base.deleteAll"
     case InsertImage = "images.insert"
     case UpdateImage = "images.update"
     case DeleteImage = "images.delete"
@@ -54,4 +55,5 @@ enum RVMeteorMethods: String {
     case watchGroupUpdate = "watchGroup.update"
     case watchGroupBulkQuery = "watchGroup.bulkQuery"
     case watchGroupDelete = "watchGroup.delete"
+    case watchGroupDeleteAll = "watchGroup.clear"
 }

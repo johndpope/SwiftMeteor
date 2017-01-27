@@ -24,6 +24,7 @@ class RVCoreInfo: NSObject {
     var userId: String? = nil
     var userProfile: RVUserProfile? = nil
     var domain: RVDomain? = nil
+    var specialCode = "NotValid"
     
     func getUserProfile() {
         if username == nil {
@@ -37,18 +38,11 @@ class RVCoreInfo: NSObject {
                     return
                 } else if let profile = profile {
                     self.userProfile = profile
-                    let domain = RVDomain()
-                    domain.domainName = RVDomainName.PortolaValley
-                    domain.title = "Portola Valley WatchGroup"
-                    domain.findOrCreate(callback: { (domain , error ) in
+                    self.getDomain(callback: { (domain , error) in
                         if let error = error {
-                            error.append(message: "In \(self.classForCoder).getUserProfile, got error")
+                            error.append(message: "In \(self.classForCoder).getUserProfile, got error getting Domain")
                             error.printError()
                             return
-                        } else if let domain = domain {
-                            self.domain = domain
-                        } else {
-                            print("In \(self.classForCoder).getUserProfile, no error but no domain")
                         }
                     })
                 } else {
@@ -56,5 +50,23 @@ class RVCoreInfo: NSObject {
                 }
             })
         }
+    }
+    func getDomain(callback: @escaping(_ profile: RVDomain? , _ error: RVError?)-> Void) {
+        let domain = RVDomain()
+        domain.domainName = RVDomainName.PortolaValley
+        domain.title = "Portola Valley WatchGroup"
+        domain.findOrCreate(callback: { (domain , error ) in
+            if let error = error {
+                error.append(message: "In \(self.classForCoder).getUserProfile, got error")
+                callback(nil, error)
+                return
+            } else if let domain = domain {
+                self.domain = domain
+                callback(domain, nil)
+            } else {
+                print("In \(self.classForCoder).getUserProfile, no error but no domain")
+                callback(nil, nil)
+            }
+        })
     }
 }

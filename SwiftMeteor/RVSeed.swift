@@ -92,36 +92,43 @@ class RVSeed {
         query.limit = 1
         query.addAnd(term: RVKeys.special, value: RVSpecial.root.rawValue as AnyObject, comparison: .eq)
         RVTask.bulkQuery(query: query) { (models, error) in
-            if let error = error {
-                error.append(message: "In RVSeed.createTaskRoot got error searching for Root special")
-                error.printError()
-                callback(nil , error)
-            } else if let tasks = models as? [RVTask] {
-                if let root = tasks.first {
-                    RVCoreInfo.sharedInstance.rootTask = root
-                   // print("In RVSeed.createRootTask, found root with id: \(root._id) \(root.special.rawValue)")
-                    callback(root, nil)
-                    return
-                }
-            }
-            print("In RVSeed.createRootTask, no root task found; now creating one")
-            let task = RVTask()
-            task.special = RVSpecial.root
-            task.title = "Root"
-            task.text = "Root text"
-            task.comment = "Root Root"
-            task.owner = "Neil"
-            task.handle = "Neil"
-            task.regularDescription = "Description of Root"
-            task.create(callback: { (result, error) in
+            DispatchQueue.main.async {
                 if let error = error {
-                    error.append(message: "In RVSeed.createTaskRoot got error creating root")
+                    error.append(message: "In RVSeed.createTaskRoot got error searching for Root special")
+                    error.printError()
                     callback(nil , error)
-                } else {
-                    RVCoreInfo.sharedInstance.rootTask = task
-                    callback(task, nil)
+                    return
+                } else if let tasks = models as? [RVTask] {
+                    if let root = tasks.first {
+                        RVCoreInfo.sharedInstance.rootTask = root
+                        // print("In RVSeed.createRootTask, found root with id: \(root._id) \(root.special.rawValue)")
+                        callback(root, nil)
+                        return
+                    }
                 }
-            })
+                print("In RVSeed.createRootTask, no root task found; now creating one")
+                let task = RVTask()
+                task.special = RVSpecial.root
+                task.title = "Root"
+                task.text = "Root text"
+                task.comment = "Root Root"
+                task.owner = "Neil"
+                task.handle = "Neil"
+                task.regularDescription = "Description of Root"
+                task.create(callback: { (result, error) in
+                    DispatchQueue.main.async {
+                        if let error = error {
+                            error.append(message: "In RVSeed.createTaskRoot got error creating root")
+                            callback(nil , error)
+                        } else {
+                            RVCoreInfo.sharedInstance.rootTask = task
+                            callback(task, nil)
+                        }
+                    }
+
+                })
+            }
+
         }
     }
     class func createTaskRoot(callback: @escaping(_ root: RVTask?, _ error: RVError?) -> Void) {

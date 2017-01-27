@@ -10,66 +10,65 @@ import UIKit
 
 class RVBaseViewController: UIViewController {
     let searchController = UISearchController(searchResultsController: nil)
-    var titles = [String]()
     var instanceType: String { get { return String(describing: type(of: self)) } }
-    var stack = [RVBaseModel]()
     var operation: RVOperation = RVOperation(active: false)
     var mainState: RVMainViewControllerState = RVMainViewControllerState(scrollView: UIScrollView())
-    var dontUseManager: Bool = false
     var listeners = [RVListener]()
     func p(_ message: String, _ method: String = "") { print("In \(instanceType) \(method) \(message)") }
+    // searchBar
+    let backspace = String(describing: UnicodeScalar(8))
+    let tab = "\t"
+    let sparklingHeart = "\u{1F496}"
     @IBOutlet weak var topView: UIView!
     @IBOutlet weak var topViewHeightConstraint: NSLayoutConstraint!
     @IBOutlet weak var tableViewTopConstraint: NSLayoutConstraint!
     var topViewHeightConstraintConstant:CGFloat = 0.0
     @IBOutlet weak var tableView: UITableView!
     @IBOutlet weak var collectionView: UICollectionView!
+    @IBOutlet weak var segmentedControl: UISegmentedControl!
     var dsScrollView: UIScrollView? {
         if let tableView = self.tableView {
             return tableView
         } else if let collectionView = self.collectionView {
             return collectionView
         }
+        print("In \(self.classForCoder).dsScrollView, no scrollView")
         return nil
     }
     var refreshControl = UIRefreshControl()
  
     override func viewDidLoad() {
         super.viewDidLoad()
+        configureSearchController()
+        if let topViewConstraint = self.topViewHeightConstraint { self.topViewHeightConstraintConstant = topViewConstraint.constant }
+        setupTopView()
+    }
+    func configureSearchController() {
         if let tableView = dsScrollView as? UITableView {
             searchController.searchResultsUpdater = self
             searchController.dimsBackgroundDuringPresentation = false
-            self.titles = [String]()
-            for scopeTerm in mainState.scopes {
-                if let (title, _) = scopeTerm.first {
-                    self.titles.append(title)
-                }
-            }
-    
+            var titles = [String]()
+            for scopeTerm in mainState.scopes { if let (title, _) = scopeTerm.first { titles.append(title) } }
+            
             let searchBar = searchController.searchBar
             searchBar.scopeButtonTitles = titles
             searchBar.selectedScopeButtonIndex = 0
             searchBar.delegate = self
             
             searchBar.prompt = nil
-           // searchBar.searchBarStyle = UISearchBarStyle.prominent
+            // searchBar.searchBarStyle = UISearchBarStyle.prominent
             searchBar.showsSearchResultsButton = false
             searchBar.placeholder = " Search..."
-           // searchBar.isTranslucent = false
-          //  searchBar.backgroundImage = UIImage()
-           // searchBar.showsCancelButton = true
-          //  UISearchBar.appearance().barTintColor = UIColor.orange
-          //  UISearchBar.appearance().tintColor = UIColor.blue
-          //  UITextField.appearance(whenContainedInInstancesOf: [UISearchBar.self]).tintColor = UIColor.candyGreen()
+            // searchBar.isTranslucent = false
+            //  searchBar.backgroundImage = UIImage()
+            // searchBar.showsCancelButton = true
+            //  UISearchBar.appearance().barTintColor = UIColor.orange
+            //  UISearchBar.appearance().tintColor = UIColor.blue
+            //  UITextField.appearance(whenContainedInInstancesOf: [UISearchBar.self]).tintColor = UIColor.candyGreen()
             definesPresentationContext = true
             tableView.tableHeaderView = searchController.searchBar
-
+            
         }
-
-        if let topViewConstraint = self.topViewHeightConstraint {
-            self.topViewHeightConstraintConstant = topViewConstraint.constant
-        }
-        setupTopView()
     }
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
@@ -109,19 +108,12 @@ class RVBaseViewController: UIViewController {
         self.uninstallObservers()
     }
 
-    // searchBar
-    let backspace = String(describing: UnicodeScalar(8))
-    let tab = "\t"
-    let sparklingHeart = "\u{1F496}"
-
-
     
     func setupTopView() {
-        if let _ = self.topView {
-            print("In \(instanceType).setupTopView, need to override")
-        }
+        if let _ = self.topView { print("In \(instanceType).setupTopView, need to override") }
     }
     func showTopView() {
+        if !mainState.showTopView   { return }
         if let topView = self.topView {
             topView.isHidden = false
             if let constraint = tableViewTopConstraint {
@@ -348,6 +340,7 @@ extension RVBaseViewController: UISearchResultsUpdating {
                         let params: [String: AnyObject] = [RVMainViewControllerState.textLabel: searchText as AnyObject, RVMainViewControllerState.scopeIndexLabel: scopeIndex as AnyObject]
                         if let filterQueryFunction = self.mainState.queryFunctions[RVBaseDataSource.DatasourceType.filter] {
                             let query = filterQueryFunction(params)
+                           // print("In \(self.classForCoder).runInner2, have new Query")
                             if let mainDatasource = self.mainState.findDatasource(type: RVBaseDataSource.DatasourceType.main) {
                                 if let filterDatasource = self.mainState.findDatasource(type: RVBaseDataSource.DatasourceType.filter) {
                                     if operation.sameOperationAndNotCancelled(operation: self.operation) {
