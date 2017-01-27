@@ -44,6 +44,7 @@ class RVBaseViewController: UIViewController {
         setupTopView()
     }
     func configureSearchController() {
+        if !mainState.installSearchController { return }
         if let tableView = dsScrollView as? UITableView {
             searchController.searchResultsUpdater = self
             searchController.dimsBackgroundDuringPresentation = false

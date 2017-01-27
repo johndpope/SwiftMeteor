@@ -10,6 +10,7 @@ import Foundation
 class RVLeftControllerState: RVMainViewControllerState {
     override func configure() {
         self.dontUseManager = true
+        self.installSearchController = false
     }
     
 }

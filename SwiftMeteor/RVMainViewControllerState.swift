@@ -21,6 +21,7 @@ class RVMainViewControllerState {
     var manager: RVDSManager
     var dontUseManager: Bool = false
     var showTopView = true
+    var installSearchController = true
     var userProfile: RVUserProfile? { get { return RVCoreInfo.sharedInstance.userProfile }}
     var domain: RVDomain? { get { return RVCoreInfo.sharedInstance.domain }}
     init(scrollView: UIScrollView) {
