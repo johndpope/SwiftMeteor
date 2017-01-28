@@ -17,12 +17,20 @@ class RVMainLandingViewController: RVBaseViewController {
     }
     
     @IBAction func doneButtonTouched(_ sender: UIBarButtonItem) { RVViewDeck.sharedInstance.toggleSide(side: RVViewDeck.Side.left) }
-    @IBAction func searchButtonTouched(_ sender: UIBarButtonItem) {
+    func presentWatchGroupCreateEdit(watchGroup: RVWatchGroup?) {
         let storyboard = UIStoryboard(name: RVCoreInfo.sharedInstance.mainStoryboard, bundle: nil)
         if let navController = storyboard.instantiateViewController(withIdentifier: "WatchGroupCreateEditNavController") as? UINavigationController {
-            if let _ = navController.topViewController as? RVWatchGroupCreateEditController { }
+            if let controller = navController.topViewController as? RVWatchGroupCreateEditController {
+                let carrier = RVStateCarrier()
+                carrier.incoming = watchGroup
+                controller.carrier = carrier
+            }
             self.present(navController, animated: true, completion: { })
         }
+    }
+    @IBAction func searchButtonTouched(_ sender: UIBarButtonItem) {
+        
+        presentWatchGroupCreateEdit(watchGroup: nil)
     }
     override func viewDidLoad() {
        // if let scrollView = self.dsScrollView { self.mainState = RVMainStateTask(scrollView: scrollView) }
@@ -68,14 +76,43 @@ class RVMainLandingViewController: RVBaseViewController {
     }
 
     func tableView(_ tableView: UITableView, editActionsForRowAt indexPath: IndexPath) -> [UITableViewRowAction]? {
-        let editAction = UITableViewRowAction(style: UITableViewRowActionStyle.default, title: "Edit") { (action, indexPath) in
-            print("In editActions edit callback")
+        var actions = [UITableViewRowAction]()
+        if let item = manager.item(indexPath: indexPath) as? RVWatchGroup {
+            if let itemOwnerId = item.ownerId {
+                if let userProfile = self.userProfile {
+                    if let userProfileId = userProfile.localId {
+                        if itemOwnerId == userProfileId {
+                            let editAction = UITableViewRowAction(style: UITableViewRowActionStyle.default, title: "Edit") { (action, indexPath) in
+                                if let watchGroup = self.manager.item(indexPath: indexPath) as? RVWatchGroup {
+                                    self.presentWatchGroupCreateEdit(watchGroup: watchGroup)
+                                }
+                            }
+                            editAction.backgroundColor = UIColor.blue
+                            actions.append(editAction)
+                            let deleteAction = UITableViewRowAction(style: .default , title: "Delete") { (action, indexPath) in
+                                print("In editActions delete callback")
+                            }
+                            deleteAction.backgroundColor = UIColor.red
+                            actions.append(deleteAction)
+                        }
+                    }
+                }
+            }
         }
-        editAction.backgroundColor = UIColor.blue
-        let deleteAction = UITableViewRowAction(style: .default , title: "Delete") { (action, indexPath) in
-            print("In editActions delete callback")
+        if actions.count > 0 { return actions }
+        return nil
+    }
+    override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        if let _ = mainState as? RVWatchGroupState {
+            if let cell = tableView.dequeueReusableCell(withIdentifier: RVWatchGroupTableCell.identifier, for: indexPath) as? RVWatchGroupTableCell {
+                cell.model = manager.item(indexPath: indexPath)
+                return cell
+            }
         }
-        return [editAction, deleteAction]
+        return super.tableView(tableView, cellForRowAt: indexPath)
+    }
+    override func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
+        return 110.0
     }
 }
 

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Scheme
-   LastUpgradeVersion = "0820"
+   LastUpgradeVersion = "0700"
    version = "1.3">
    <BuildAction
       parallelizeBuildables = "YES"
@@ -14,7 +14,7 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "4F73ED1AD75F6A4A73B4C81A02EB8CD0"
+               BlueprintIdentifier = "9F611790E62A0D644F3F02B77B88387E"
                BuildableName = "Pods_SwiftMeteor.framework"
                BlueprintName = "Pods-SwiftMeteor"
                ReferencedContainer = "container:Pods.xcodeproj">
@@ -45,7 +45,7 @@
       <MacroExpansion>
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "4F73ED1AD75F6A4A73B4C81A02EB8CD0"
+            BlueprintIdentifier = "9F611790E62A0D644F3F02B77B88387E"
             BuildableName = "Pods_SwiftMeteor.framework"
             BlueprintName = "Pods-SwiftMeteor"
             ReferencedContainer = "container:Pods.xcodeproj">

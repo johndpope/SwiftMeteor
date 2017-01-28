@@ -14,6 +14,7 @@ class RVBaseViewController: UIViewController {
     var operation: RVOperation = RVOperation(active: false)
     var mainState: RVMainViewControllerState = RVMainViewControllerState(scrollView: UIScrollView())
     var listeners = [RVListener]()
+    var userProfile: RVUserProfile? { get { return RVCoreInfo.sharedInstance.userProfile }}
     func p(_ message: String, _ method: String = "") { print("In \(instanceType) \(method) \(message)") }
     // searchBar
     let backspace = String(describing: UnicodeScalar(8))

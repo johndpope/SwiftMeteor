@@ -324,6 +324,70 @@
                                             <outlet property="scoreLabel" destination="eQL-9k-c1L" id="Lyi-nz-fQA"/>
                                         </connections>
                                     </tableViewCell>
+                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" restorationIdentifier="RVWatchGroupTableCell" selectionStyle="blue" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" reuseIdentifier="RVWatchGroupTableCell" rowHeight="109" id="r4E-CY-jps" customClass="RVWatchGroupTableCell" customModule="SwiftMeteor" customModuleProvider="target">
+                                        <rect key="frame" x="0.0" y="114" width="375" height="109"/>
+                                        <autoresizingMask key="autoresizingMask"/>
+                                        <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="r4E-CY-jps" id="xgb-yJ-iRP">
+                                            <rect key="frame" x="0.0" y="0.0" width="375" height="108"/>
+                                            <autoresizingMask key="autoresizingMask"/>
+                                            <subviews>
+                                                <imageView userInteractionEnabled="NO" contentMode="scaleAspectFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="3hH-Oe-okd">
+                                                    <rect key="frame" x="16" y="12" width="60" height="50"/>
+                                                    <constraints>
+                                                        <constraint firstAttribute="height" constant="50" id="5L0-NW-cW4"/>
+                                                        <constraint firstAttribute="width" constant="60" id="sww-TH-bjO"/>
+                                                    </constraints>
+                                                </imageView>
+                                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Text" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="EJQ-72-R7k">
+                                                    <rect key="frame" x="92" y="6" width="275" height="21"/>
+                                                    <fontDescription key="fontDescription" type="boldSystem" pointSize="17"/>
+                                                    <color key="textColor" red="0.39531837959999999" green="0.53252988459999995" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                                    <nil key="highlightedColor"/>
+                                                </label>
+                                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Comment" textAlignment="natural" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="wyR-wU-Vf2">
+                                                    <rect key="frame" x="92" y="35" width="275" height="20"/>
+                                                    <fontDescription key="fontDescription" type="italicSystem" pointSize="16"/>
+                                                    <color key="textColor" red="1" green="0.34957892039999999" blue="0.26400056659999999" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                                    <nil key="highlightedColor"/>
+                                                </label>
+                                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="FullName" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="zzW-sz-MHC">
+                                                    <rect key="frame" x="13" y="69" width="66" height="17"/>
+                                                    <constraints>
+                                                        <constraint firstAttribute="width" constant="66" id="kww-wL-Opl"/>
+                                                    </constraints>
+                                                    <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                                                    <nil key="textColor"/>
+                                                    <nil key="highlightedColor"/>
+                                                </label>
+                                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Score" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="tx4-wQ-shB">
+                                                    <rect key="frame" x="329" y="91.5" width="38" height="17"/>
+                                                    <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                                                    <nil key="textColor"/>
+                                                    <nil key="highlightedColor"/>
+                                                </label>
+                                            </subviews>
+                                            <constraints>
+                                                <constraint firstItem="EJQ-72-R7k" firstAttribute="leading" secondItem="3hH-Oe-okd" secondAttribute="trailing" constant="16" id="4Ct-HO-slh"/>
+                                                <constraint firstItem="wyR-wU-Vf2" firstAttribute="leading" secondItem="EJQ-72-R7k" secondAttribute="leading" id="62V-pb-mPt"/>
+                                                <constraint firstItem="wyR-wU-Vf2" firstAttribute="trailing" secondItem="EJQ-72-R7k" secondAttribute="trailing" id="6fE-wn-HUs"/>
+                                                <constraint firstItem="zzW-sz-MHC" firstAttribute="top" secondItem="3hH-Oe-okd" secondAttribute="bottom" constant="7" id="8Me-Yl-byh"/>
+                                                <constraint firstAttribute="trailing" secondItem="tx4-wQ-shB" secondAttribute="trailing" constant="8" id="8pD-Mi-tiV"/>
+                                                <constraint firstAttribute="bottom" secondItem="tx4-wQ-shB" secondAttribute="bottom" id="9y8-JG-fQN"/>
+                                                <constraint firstItem="zzW-sz-MHC" firstAttribute="centerX" secondItem="3hH-Oe-okd" secondAttribute="centerX" id="CHe-nN-UIY"/>
+                                                <constraint firstItem="wyR-wU-Vf2" firstAttribute="top" secondItem="EJQ-72-R7k" secondAttribute="bottom" constant="8" id="eVr-JI-q17"/>
+                                                <constraint firstItem="3hH-Oe-okd" firstAttribute="leading" secondItem="xgb-yJ-iRP" secondAttribute="leading" constant="16" id="ir6-CH-O5K"/>
+                                                <constraint firstItem="EJQ-72-R7k" firstAttribute="top" secondItem="xgb-yJ-iRP" secondAttribute="top" constant="6" id="ng7-OT-Bl8"/>
+                                                <constraint firstItem="3hH-Oe-okd" firstAttribute="top" secondItem="xgb-yJ-iRP" secondAttribute="topMargin" constant="4" id="zV5-x9-rIt"/>
+                                                <constraint firstAttribute="trailing" secondItem="EJQ-72-R7k" secondAttribute="trailing" constant="8" id="zhK-fY-Qaj"/>
+                                            </constraints>
+                                        </tableViewCellContentView>
+                                        <connections>
+                                            <outlet property="usernameLabel" destination="zzW-sz-MHC" id="pSA-fs-lPz"/>
+                                            <outlet property="watchGroupDescriptionLabel" destination="wyR-wU-Vf2" id="6dV-U9-e3v"/>
+                                            <outlet property="watchGroupImageView" destination="3hH-Oe-okd" id="u5D-t7-7Hc"/>
+                                            <outlet property="watchGroupTitleLabel" destination="EJQ-72-R7k" id="85W-ju-6hc"/>
+                                        </connections>
+                                    </tableViewCell>
                                 </prototypes>
                                 <connections>
                                     <outlet property="dataSource" destination="26z-cv-GPL" id="d73-mG-WjB"/>
@@ -644,7 +708,7 @@
                                             <rect key="frame" x="0.0" y="0.0" width="375" height="414"/>
                                             <autoresizingMask key="autoresizingMask"/>
                                             <subviews>
-                                                <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="JNW.png" translatesAutoresizingMaskIntoConstraints="NO" id="FO6-2f-coK">
+                                                <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="second" translatesAutoresizingMaskIntoConstraints="NO" id="FO6-2f-coK">
                                                     <rect key="frame" x="37" y="4" width="300" height="180"/>
                                                     <color key="backgroundColor" red="0.20392156859999999" green="0.7843137255" blue="0.44705882349999998" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                                     <constraints>
@@ -693,7 +757,7 @@
                                                     <nil key="highlightedColor"/>
                                                 </label>
                                                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Watch Group Manager" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="PG5-Ze-oIe">
-                                                    <rect key="frame" x="101" y="380" width="173" height="21"/>
+                                                    <rect key="frame" x="101" y="379" width="173" height="21"/>
                                                     <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                                     <color key="textColor" red="0.0" green="0.0" blue="1" alpha="1" colorSpace="calibratedRGB"/>
                                                     <nil key="highlightedColor"/>
@@ -753,6 +817,7 @@
                         <outlet property="saveBarButtonItem" destination="9T2-WM-N98" id="dIK-GJ-4xP"/>
                         <outlet property="undoBarButtonItem" destination="wWm-xS-CQw" id="mYU-Jy-Z9L"/>
                         <outlet property="watchGroupDescriptionTextField" destination="p2Z-BC-Zoh" id="shd-RK-nO8"/>
+                        <outlet property="watchGroupImage" destination="FO6-2f-coK" id="Hsq-M2-Zjt"/>
                         <outlet property="watchGroupManagerLabel" destination="PG5-Ze-oIe" id="IQo-We-pcw"/>
                         <outlet property="watchGroupTitleTextField" destination="zb4-G2-mJh" id="fSf-DG-Th0"/>
                     </connections>
@@ -1170,7 +1235,7 @@
                 <navigationController automaticallyAdjustsScrollViewInsets="NO" id="VD4-Bx-25r" sceneMemberID="viewController">
                     <tabBarItem key="tabBarItem" title="Second" image="second" id="cPa-gy-q4n"/>
                     <toolbarItems/>
-                    <navigationBar key="navigationBar" contentMode="scaleToFill" id="I72-nd-5mn">
+                    <navigationBar key="navigationBar" contentMode="scaleToFill" misplaced="YES" id="I72-nd-5mn">
                         <rect key="frame" x="0.0" y="0.0" width="375" height="44"/>
                         <autoresizingMask key="autoresizingMask"/>
                     </navigationBar>
@@ -1188,7 +1253,7 @@
             <objects>
                 <navigationController storyboardIdentifier="RVLeftMenuNavController" automaticallyAdjustsScrollViewInsets="NO" id="80b-jo-56w" customClass="RVLeftMenuNavController" customModule="SwiftMeteor" customModuleProvider="target" sceneMemberID="viewController">
                     <toolbarItems/>
-                    <navigationBar key="navigationBar" contentMode="scaleToFill" barStyle="black" id="g2d-Yd-42s">
+                    <navigationBar key="navigationBar" contentMode="scaleToFill" misplaced="YES" barStyle="black" id="g2d-Yd-42s">
                         <rect key="frame" x="0.0" y="0.0" width="375" height="44"/>
                         <autoresizingMask key="autoresizingMask"/>
                         <color key="barTintColor" red="0.20392156859999999" green="0.7843137255" blue="0.44705882349999998" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
@@ -1247,7 +1312,7 @@
             <objects>
                 <navigationController storyboardIdentifier="ProfileNavController" automaticallyAdjustsScrollViewInsets="NO" id="kwE-ZT-WBO" sceneMemberID="viewController">
                     <toolbarItems/>
-                    <navigationBar key="navigationBar" contentMode="scaleToFill" id="wd2-O6-mAy">
+                    <navigationBar key="navigationBar" contentMode="scaleToFill" misplaced="YES" id="wd2-O6-mAy">
                         <rect key="frame" x="0.0" y="0.0" width="375" height="44"/>
                         <autoresizingMask key="autoresizingMask"/>
                     </navigationBar>
@@ -1265,7 +1330,7 @@
             <objects>
                 <navigationController storyboardIdentifier="WatchGroupCreateEditNavController" automaticallyAdjustsScrollViewInsets="NO" id="syz-ag-EeW" sceneMemberID="viewController">
                     <toolbarItems/>
-                    <navigationBar key="navigationBar" contentMode="scaleToFill" barStyle="black" id="Axq-AT-WeH">
+                    <navigationBar key="navigationBar" contentMode="scaleToFill" misplaced="YES" barStyle="black" id="Axq-AT-WeH">
                         <rect key="frame" x="0.0" y="0.0" width="375" height="44"/>
                         <autoresizingMask key="autoresizingMask"/>
                         <color key="barTintColor" red="0.20392156859999999" green="0.7843137255" blue="0.44705882349999998" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
@@ -1281,7 +1346,6 @@
         </scene>
     </scenes>
     <resources>
-        <image name="JNW.png" width="297" height="327"/>
         <image name="first" width="30" height="30"/>
         <image name="second" width="30" height="30"/>
     </resources>

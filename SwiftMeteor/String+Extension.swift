@@ -73,8 +73,11 @@ extension String {
         return encoded
     }
     public func trimLeadingAndTrailingSpaces() -> String {
-        return ltrim().rtrim()
+        print("In StringExtension, need to correctly implement trimmming \(self)")
+        return self
+        // return ltrim().rtrim()
     }
+
     func rtrim() -> String {
         let whitespaceAndNewlineChars:[Character] = ["\n", "\r", "\t", " "]
         if isEmpty { return ""}
@@ -98,5 +101,6 @@ extension String {
         }
         return self[currentIndex..<endIndex]
     }
+
 
 }

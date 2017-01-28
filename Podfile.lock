@@ -29,6 +29,7 @@ PODS:
     - SwiftWebSocket (~> 2.6.5)
     - XCGLogger
   - SwiftWebSocket (2.6.5)
+  - Toast-Swift (2.0.0)
   - TPKeyboardAvoiding (1.3.1)
   - ViewDeck (3.1.0)
   - XCGLogger (4.0.0):
@@ -47,6 +48,7 @@ DEPENDENCIES:
   - LoremIpsum
   - SDWebImage (~> 3.8)
   - SwiftDDP (~> 0.4.0)
+  - Toast-Swift (~> 2.0.0)
   - TPKeyboardAvoiding
   - ViewDeck
 
@@ -65,10 +67,11 @@ SPEC CHECKSUMS:
   SDWebImage: 098e97e6176540799c27e804c96653ee0833d13c
   SwiftDDP: 63bcefd72c4793bf8d86004862a1adca88eb3bc9
   SwiftWebSocket: 1ef8a0efb023544643bdf480c1ec4a62b204f293
+  Toast-Swift: 5b2f8f720f7e78e48511f693df1f9c9a6e38a25a
   TPKeyboardAvoiding: 0d6af20e95e2850f4c621841225b59ec7d8dd852
   ViewDeck: 942d90dd23c9f97cc8038be352255378167edcca
   XCGLogger: 38063ea89b4c8b23232d18efd2e12eb0005f3ea4
 
-PODFILE CHECKSUM: 90df869a4d572bd4639a446f1367e5fe36410e03
+PODFILE CHECKSUM: 6e0c38d6f8f22163a8fd3608546ea1b4f771f7c9
 
 COCOAPODS: 1.1.1

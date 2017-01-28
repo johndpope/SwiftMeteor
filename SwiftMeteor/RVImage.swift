@@ -186,16 +186,18 @@ extension RVImage {
             RVAWS.sharedInstance.download(urlString: urlString, progress: { (progress, total) in
                 
             }, completion: { (image, error, cacheTYpe, success, url ) in
-                if let error = error {
-                    error.append(message: "In \(self.classForCoder).download, got error")
-                    callback(nil, error)
-                    return
-                } else if let image = image {
-                    callback(image, nil)
-                    return
-                } else {
-                    print("IN \(self.classForCoder).download, no error but no result")
-                    callback(nil, nil)
+                DispatchQueue.main.async {
+                    if let error = error {
+                        error.append(message: "In \(self.classForCoder).download, got error")
+                        callback(nil, error)
+                        return
+                    } else if let image = image {
+                        callback(image, nil)
+                        return
+                    } else {
+                        print("IN \(self.classForCoder).download, no error but no result")
+                        callback(nil, nil)
+                    }
                 }
             })
         }
@@ -229,7 +231,10 @@ extension RVImage {
                     rvImage.orientation = RVImageOrientation.up.UItoRV(orientation: image.imageOrientation)
                     rvImage.bytes = data.count
                     rvImage.filetype = filetype
-                    if let userProfile = RVCoreInfo.sharedInstance.userProfile { rvImage.setOwner(owner: userProfile) }
+                    if let userProfile = RVCoreInfo.sharedInstance.userProfile {
+                        rvImage.setOwner(owner: userProfile)
+                        rvImage.fullName = userProfile.fullName
+                    }
                     if let domain = RVCoreInfo.sharedInstance.domain { rvImage.domainId = domain.localId}
                     if let parent = parent { rvImage.setParent(parent: parent)}
                     if let title = params[RVKeys.title] as? String { rvImage.title = title }
