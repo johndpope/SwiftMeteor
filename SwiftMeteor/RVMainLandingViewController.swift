@@ -17,7 +17,13 @@ class RVMainLandingViewController: RVBaseViewController {
     }
     
     @IBAction func doneButtonTouched(_ sender: UIBarButtonItem) { RVViewDeck.sharedInstance.toggleSide(side: RVViewDeck.Side.left) }
-    @IBAction func searchButtonTouched(_ sender: UIBarButtonItem) { RVViewDeck.sharedInstance.toggleSide(side: RVViewDeck.Side.right) }
+    @IBAction func searchButtonTouched(_ sender: UIBarButtonItem) {
+        let storyboard = UIStoryboard(name: RVCoreInfo.sharedInstance.mainStoryboard, bundle: nil)
+        if let navController = storyboard.instantiateViewController(withIdentifier: "WatchGroupCreateEditNavController") as? UINavigationController {
+            if let _ = navController.topViewController as? RVWatchGroupCreateEditController { }
+            self.present(navController, animated: true, completion: { })
+        }
+    }
     override func viewDidLoad() {
        // if let scrollView = self.dsScrollView { self.mainState = RVMainStateTask(scrollView: scrollView) }
         if let scrollView = self.dsScrollView { mainState = RVWatchGroupState(scrollView: scrollView) }

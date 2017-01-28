@@ -13,6 +13,58 @@ enum RVFileType: String {
     case png    = "image/png"
     case unkown = "unknown"
 }
+enum RVImageOrientation: String {
+    case up = "up"
+    case down = "down"
+    case left = "left"
+    case right = "right"
+    case upMirrored = "upMirrored"
+    case downMirrored = "downMirrored"
+    case leftMirrored = "leftMirrored"
+    case rightMirrored = "rightMirrored"
+    
+    var uiimageOrientation: UIImageOrientation {
+        switch(self) {
+        case .up:
+            return UIImageOrientation.up
+        case .down:
+            return .down
+        case .left:
+            return UIImageOrientation.left
+        case .right:
+            return UIImageOrientation.right
+        case .upMirrored:
+            return UIImageOrientation.upMirrored
+        case .downMirrored:
+            return UIImageOrientation.downMirrored
+        case .leftMirrored:
+            return UIImageOrientation.leftMirrored
+        case .rightMirrored:
+            return UIImageOrientation.rightMirrored
+        }
+    }
+    func UItoRV(orientation: UIImageOrientation) -> RVImageOrientation {
+        switch(orientation) {
+        case .up:
+            return .up
+        case .down:
+            return .down
+        case .left:
+            return .left
+        case .right:
+            return .right
+        case .upMirrored:
+            return .upMirrored
+        case .downMirrored:
+            return .downMirrored
+        case .leftMirrored:
+            return .leftMirrored
+        case .rightMirrored:
+            return .rightMirrored
+        }
+    }
+    
+}
 class RVImage: RVBaseModel {
     static var jpegQuality: CGFloat = 0.9
     override class var      insertMethod: RVMeteorMethods { get { return RVMeteorMethods.InsertImage}}
@@ -149,7 +201,7 @@ extension RVImage {
         }
     }
     // path = "goofy/something/
-    class func saveImage(image: UIImage, path: String?, filename: String, filetype: RVFileType, parent: RVBaseModel?, params: [String:AnyObject],callback: @escaping(_ rvImage: RVImage?, _ error: RVError?) -> Void ) {
+    class func saveImage(image: UIImage, path: String?, filename: String, filetype: RVFileType, parent: RVBaseModel?, params: [RVKeys:AnyObject],callback: @escaping(_ rvImage: RVImage?, _ error: RVError?) -> Void ) {
         RVMeteorUser.sharedInstance.userId(callback: {(userId, error) -> Void in
             if let error = error {
                 error.append(message: "In RVImage.saveImage error getting userId")
@@ -174,10 +226,13 @@ extension RVImage {
                     let rvImage = RVImage()
                     rvImage.height = image.size.height
                     rvImage.width = image.size.width
+                    rvImage.orientation = RVImageOrientation.up.UItoRV(orientation: image.imageOrientation)
                     rvImage.bytes = data.count
                     rvImage.filetype = filetype
+                    if let userProfile = RVCoreInfo.sharedInstance.userProfile { rvImage.setOwner(owner: userProfile) }
+                    if let domain = RVCoreInfo.sharedInstance.domain { rvImage.domainId = domain.localId}
                     if let parent = parent { rvImage.setParent(parent: parent)}
-                    if let title = params[RVKeys.title.rawValue] as? String { rvImage.title = title }
+                    if let title = params[RVKeys.title] as? String { rvImage.title = title }
                     if let id = rvImage.localId {
                         
                         fullPath = fullPath + userId + "/" + id + "/" + filename.lowercased() + "." + fileExtension.lowercased()

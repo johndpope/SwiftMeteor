@@ -81,6 +81,7 @@ enum RVKeys: String {
     case bytes          = "bytes"
     case urlString      = "urlString" // is url in Meteor
     case filetype       = "filetype"
+    case orientation    = "orientation"
     
     case photo_reference = "photo_reference" // New
     case url = "url"  // New

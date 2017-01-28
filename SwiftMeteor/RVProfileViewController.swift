@@ -58,7 +58,7 @@ extension RVProfileViewController: RVCameraDelegate {
                 profileImageView.image = chosenImage
                 if let profile = RVCoreInfo.sharedInstance.userProfile {
                     self.tableView.lock()
-                    RVImage.saveImage(image: chosenImage, path: nil, filename: "arbitraryname", filetype: .jpeg, parent: profile, params: [String: AnyObject](), callback: { (image, error) in
+                    RVImage.saveImage(image: chosenImage, path: nil, filename: "arbitraryname", filetype: .jpeg, parent: profile, params: [RVKeys: AnyObject](), callback: { (image, error) in
                         if let error = error {
                             self.tableView.unlock()
                             error.append(message: "In \(self.classForCoder).didFinish, got error ")

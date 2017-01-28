@@ -30,6 +30,7 @@ class RVBaseModel: MeteorDocument {
     var imageInitiallyNull = false
     var locationInitiallyNull = false
 
+
     init() {
         let id = RVSwiftDDP.sharedInstance.getId()
         super.init(id: id, fields: self.objects as NSDictionary? )
@@ -607,6 +608,21 @@ class RVBaseModel: MeteorDocument {
             return RVVisibility.publicVisibility
         }
         set { updateString(key: .visibility, value: newValue.rawValue, setDirties: true)}
+    }
+    var orientation: RVImageOrientation? {
+        get {
+            if let rawValue = getString(key: .orientation) {
+                if let orientation = RVImageOrientation(rawValue: rawValue) { return orientation}
+            }
+            return nil
+        }
+        set {
+            if let orientation = newValue {
+                updateString(key: .orientation, value: orientation.rawValue, setDirties: true)
+            } else {
+                updateString(key: .orientation, value: nil, setDirties: true)
+            }
+        }
     }
     var validRecord: Bool {
         get {

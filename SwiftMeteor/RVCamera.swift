@@ -11,6 +11,7 @@ import UIKit
 import Photos
 
 class RVCamera: NSObject {
+
     enum SourceType {
         case camera
         case photoLibrary
@@ -143,9 +144,39 @@ class RVCamera: NSObject {
             }
         }
     }
+    func saveImageToDisk(uiImage: UIImage, filename: String, callback: @escaping(_ url: URL?, _ error: RVError?)-> Void) {
+
+        if let data = UIImagePNGRepresentation(uiImage) {
+            do {
+                var fileURL = try FileManager.default.url(for: .documentDirectory, in: .userDomainMask, appropriateFor: nil, create: false)
+                fileURL.appendPathComponent(filename)
+                fileURL.appendPathExtension("png")
+                do {
+                    try data.write(to: fileURL, options: .atomic)
+                    callback(fileURL, nil)
+                } catch let error {
+                    let rvError = RVError(message: "In \(self.classForCoder).saveImageToDisk got error writing to disk \(fileURL.absoluteString)", sourceError: error, lineNumber: #line, fileName: "")
+                    callback(nil, rvError)
+                    return
+                    
+                }
+            } catch let error {
+                let rvError = RVError(message: "In \(self.classForCoder).saveImageToDisk got error getting disk URL", sourceError: error, lineNumber: #line, fileName: "")
+                callback(nil, rvError)
+                return
+            }
+        } else {
+            let error = RVError(message: "In \(self.classForCoder).saveImageToDisk, failed to get data from UIImage \(uiImage)")
+            callback(nil, error)
+        }
+    }
 }
 
 extension RVCamera: UIImagePickerControllerDelegate {
+    // UIImagePickerControllerMediaType:    public.image
+    // UIImagePickerControllerReferenceURL: assets-library://asset/asset.JPG?id=106E99A1-4F6A-45A2-B320-B0AD4A8E8473&ext=JPG
+    // UIImagePickerControllerOriginalImage: <UIImage: 0x618000092980> size {4288, 2848} orientation 0 scale 1.000000
+    // UIImagePickerControllerMediaMetadata: camera only. "{Exif}" and "{TIFF}"
     @objc func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [String : Any]) {
         if let delegate = delegate { delegate.didFinishPicking(picker: picker, info: info) }
 

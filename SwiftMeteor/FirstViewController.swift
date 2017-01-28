@@ -215,7 +215,7 @@ class FirstViewController: UIViewController {
         let path = "thursday/"
         let filename = "hope"
         if let uiImage = UIImage(named: imageName) {
-            RVImage.saveImage(image: uiImage, path: path, filename: filename, filetype: RVFileType.jpeg, parent: parent, params: [RVKeys.title.rawValue: "Caption for image" as AnyObject], callback: { (rvImage, error ) in
+            RVImage.saveImage(image: uiImage, path: path, filename: filename, filetype: RVFileType.jpeg, parent: parent, params: [RVKeys.title: "Caption for image" as AnyObject], callback: { (rvImage, error ) in
                 if let error = error {
                     error.printError()
                 } else if let rvImage = rvImage {
