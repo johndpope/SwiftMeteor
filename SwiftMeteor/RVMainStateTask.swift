@@ -11,7 +11,7 @@ class RVMainStateTask: RVMainViewControllerState {
     override func configure() {
         let state = self
         state.scopes = [["Handle": RVKeys.handle], ["Title": RVKeys.title]  , ["Comment": RVKeys.comment]]
-        state.segmentViewFields = [["Elmer": RVKeys.handle], ["Goober": RVKeys.title]  , ["Something": RVKeys.comment]]
+        state.segmentViewFields = [.WatchGroup, .Members, .Forum]
         let mainDatasource = RVTaskDatasource()
         mainDatasource.datasourceType = .main
         state.datasources.append(mainDatasource)

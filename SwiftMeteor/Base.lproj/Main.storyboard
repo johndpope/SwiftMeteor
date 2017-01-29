@@ -386,7 +386,7 @@
                                     <outlet property="delegate" destination="26z-cv-GPL" id="oxG-Q2-aap"/>
                                 </connections>
                             </tableView>
-                            <view hidden="YES" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="IwX-Tn-Dc7" userLabel="SegmentVIew">
+                            <view hidden="YES" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="IwX-Tn-Dc7" userLabel="TopView">
                                 <rect key="frame" x="0.0" y="0.0" width="375" height="32"/>
                                 <subviews>
                                     <segmentedControl opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="top" segmentControlStyle="plain" selectedSegmentIndex="0" translatesAutoresizingMaskIntoConstraints="NO" id="ghx-s2-IUT">
@@ -411,14 +411,22 @@
                                     <constraint firstAttribute="trailing" secondItem="ghx-s2-IUT" secondAttribute="trailing" constant="10" id="h0w-xU-aYf"/>
                                 </constraints>
                             </view>
+                            <view opaque="NO" userInteractionEnabled="NO" alpha="0.10000000000000001" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="EmY-YP-A87">
+                                <rect key="frame" x="0.0" y="32" width="375" height="571"/>
+                                <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
+                            </view>
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                         <constraints>
+                            <constraint firstItem="H1j-Zv-1yq" firstAttribute="top" secondItem="EmY-YP-A87" secondAttribute="bottom" id="5kV-dN-D7c"/>
                             <constraint firstItem="IwX-Tn-Dc7" firstAttribute="top" secondItem="Bc6-b0-469" secondAttribute="bottom" id="7bu-yH-aHv"/>
                             <constraint firstAttribute="trailing" secondItem="IwX-Tn-Dc7" secondAttribute="trailing" id="FvI-r0-s09"/>
+                            <constraint firstItem="EmY-YP-A87" firstAttribute="top" secondItem="IwX-Tn-Dc7" secondAttribute="bottom" id="M1C-ky-n1o"/>
+                            <constraint firstItem="EmY-YP-A87" firstAttribute="leading" secondItem="e22-yf-b5W" secondAttribute="leading" id="OLP-0f-HsP"/>
                             <constraint firstItem="6Ys-Fs-PRI" firstAttribute="top" secondItem="e22-yf-b5W" secondAttribute="top" id="Qex-qh-39C"/>
                             <constraint firstItem="6Ys-Fs-PRI" firstAttribute="leading" secondItem="e22-yf-b5W" secondAttribute="leading" id="REj-KG-oCq"/>
                             <constraint firstItem="H1j-Zv-1yq" firstAttribute="top" secondItem="6Ys-Fs-PRI" secondAttribute="bottom" id="f7J-kw-ldf"/>
+                            <constraint firstAttribute="trailing" secondItem="EmY-YP-A87" secondAttribute="trailing" id="glM-0u-H9y"/>
                             <constraint firstAttribute="trailing" secondItem="6Ys-Fs-PRI" secondAttribute="trailing" id="lvE-he-B3G"/>
                             <constraint firstItem="IwX-Tn-Dc7" firstAttribute="leading" secondItem="e22-yf-b5W" secondAttribute="leading" id="qLE-ua-QlM"/>
                         </constraints>
@@ -438,6 +446,7 @@
                         </barButtonItem>
                     </navigationItem>
                     <connections>
+                        <outlet property="OverlayView" destination="EmY-YP-A87" id="2Mm-7i-IJn"/>
                         <outlet property="segmentedControl" destination="ghx-s2-IUT" id="DFI-JP-kdm"/>
                         <outlet property="tableView" destination="6Ys-Fs-PRI" id="Eei-Ah-IzM"/>
                         <outlet property="tableViewTopConstraint" destination="Qex-qh-39C" id="hVQ-00-vCL"/>

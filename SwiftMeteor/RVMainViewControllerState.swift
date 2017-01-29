@@ -17,7 +17,7 @@ class RVMainViewControllerState {
     typealias QueryElement = [RVBaseDataSource.DatasourceType : queryFunction]
     var queryFunctions = QueryElement()
     var scopes = [[String: RVKeys]]()
-    var segmentViewFields =  [[String: RVKeys]]()
+    var segmentViewFields =  [RVSegmentKey]()
     var manager: RVDSManager
     var dontUseManager: Bool = false
     var showTopView = true

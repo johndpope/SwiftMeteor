@@ -23,6 +23,7 @@ class RVMainLandingViewController: RVBaseViewController {
     @IBAction func segmentedControlValueChanged(_ sender: UISegmentedControl) {
         p("segmentedControlValueChanged", "to index: \(sender.selectedSegmentIndex)")
     }
+    @IBOutlet weak var OverlayView: UIView!
     
     @IBAction func doneButtonTouched(_ sender: UIBarButtonItem) { RVViewDeck.sharedInstance.toggleSide(side: RVViewDeck.Side.left) }
     func presentWatchGroupCreateEdit(watchGroup: RVWatchGroup?) {
@@ -50,29 +51,48 @@ class RVMainLandingViewController: RVBaseViewController {
     }
     override func viewDidLoad() {
        // if let scrollView = self.dsScrollView { self.mainState = RVMainStateTask(scrollView: scrollView) }
-        if let scrollView = self.dsScrollView { mainState = RVWatchGroupState(scrollView: scrollView) }
+        if let scrollView = self.dsScrollView { mainState = RVWatchGroupListState(scrollView: scrollView) }
         super.viewDidLoad()
         if let tableView = self.tableView {
             tableView.register(RVFirstViewHeaderCell.self, forHeaderFooterViewReuseIdentifier: RVFirstViewHeaderCell.identifier)
+            
+
         }
         RVViewDeck.sharedInstance.toggleSide(side: .right, animated: true)
+    }
+    func setupWatchGroup(){
+        print("In setupWatchGroup")
+        self.mainState = RVWatchGroupState(scrollView: dsScrollView!)
+        setupTopView()
+        if let overlayView = self.OverlayView {
+            let view = RVWatchGroupView(frame: overlayView.bounds)
+            overlayView.addSubview(view)
+        }
     }
     override func setupTopView() {
         if let topView = self.topView {
             if let segmentedControl = self.segmentedControl {
+                self.topView.isHidden = false
+                self.tableView.isUserInteractionEnabled = false
                 var index = 0
                 segmentedControl.removeAllSegments()
                 if mainState.segmentViewFields.count > 0 {
+                    print("In \(self.classForCoder).setupTopView")
                     for segment in mainState.segmentViewFields {
-                        segmentedControl.insertSegment(withTitle: segment.first!.key, at: index, animated: true)
+                        segmentedControl.insertSegment(withTitle: segment.rawValue, at: index, animated: true)
                         index = index + 1
                     }
                     segmentedControl.selectedSegmentIndex = 0
                 } else {
                     print("In \(self.classForCoder).setTopVIew, hiding it")
                     topView.isHidden = true
+                    self.tableView.isUserInteractionEnabled = true
                 }
+            } else {
+                print("In \(self.classForCoder).setupTopView no segmentedControl")
             }
+        } else {
+            print("In \(self.classForCoder).setupTopView no topView")
         }
     }
 
@@ -93,6 +113,9 @@ class RVMainLandingViewController: RVBaseViewController {
     }
     func hideEditButtons() {
         if let tableView = self.tableView { tableView.setEditing(false, animated: true) }
+    }
+    override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        setupWatchGroup()
     }
     func tableView(_ tableView: UITableView, editActionsForRowAt indexPath: IndexPath) -> [UITableViewRowAction]? {
         var actions = [UITableViewRowAction]()
@@ -124,7 +147,7 @@ class RVMainLandingViewController: RVBaseViewController {
         return nil
     }
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        if let _ = mainState as? RVWatchGroupState {
+        if let _ = mainState as? RVWatchGroupListState {
             if let cell = tableView.dequeueReusableCell(withIdentifier: RVWatchGroupTableCell.identifier, for: indexPath) as? RVWatchGroupTableCell {
                 cell.model = manager.item(indexPath: indexPath)
                 return cell
