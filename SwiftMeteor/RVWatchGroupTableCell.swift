@@ -17,6 +17,9 @@ class RVWatchGroupTableCell: RVBaseTableViewCell {
     @IBOutlet weak var watchGroupDescriptionLabel: UILabel!
     
     override func configure() {
+        self.layer.borderWidth = 1.0
+        self.layer.borderColor = UIColor.darkGray.cgColor
+        self.layer.cornerRadius = 5.0
         if let group = self.model as? RVWatchGroup {
             setLabelText(label: usernameLabel, text: group.fullName)
             setLabelText(label: watchGroupTitleLabel, text: group.title)

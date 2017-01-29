@@ -32,6 +32,7 @@ extension RVProfileViewController: GMSAutocompleteViewControllerDelegate {
                 }
             })
         }
+
         dismiss(animated: true) { }
     }
     func viewController(_ viewController: GMSAutocompleteViewController, didFailAutocompleteWithError error: Error) {
@@ -92,7 +93,7 @@ extension RVProfileViewController: RVCameraDelegate {
         dismiss(animated: true) { }
     }
     func pickerCancelled(picker: UIImagePickerController) -> Void {
-               dismiss(animated: true) {  }
+        dismiss(animated: true) {  }
     }
 }
 extension RVProfileViewController: UIPickerViewDataSource {
@@ -186,9 +187,8 @@ class RVProfileViewController: UITableViewController {
     @IBAction func cancelButtonTouched(_ sender: UIBarButtonItem) {
         view.endEditing(true)
         removeGenderPicker()
-        dismiss(animated: true) { 
-            
-        }
+        performSegue(withIdentifier: "unwindFromProfileSceneWithSegue", sender: nil)
+        //dismiss(animated: true) {}
     }
 
     func updateProfile(callback: @escaping() -> Void) {
@@ -278,8 +278,8 @@ class RVProfileViewController: UITableViewController {
         updateProfile{
             print("In \(self.classForCoder).doneButtonTouched callback")
             RVAppState.shared.state = .Regular
-            self.dismiss(animated: true) {
-            }
+            self.performSegue(withIdentifier: "unwindFromProfileSceneWithSegue", sender: nil)
+            //self.dismiss(animated: true) {}
         }
     }
     

@@ -10,8 +10,9 @@ import UIKit
 
 class RVAppState {
     enum State: String {
-        case ShowProfile = "ShowProfile"
-        case Regular = "Regular"
+        case ShowProfile        = "ShowProfile"
+        case Regular            = "Regular"
+        case WatchGroupDetail   = "WatchGroupDetail"
     }
     var state: State = .Regular {
         didSet {

@@ -14,6 +14,7 @@ class RVWatchGroupCreateEditController: RVBaseTableViewController {
     
     let camera = RVCamera()
     var newImage: UIImage? = nil
+    var path = "WatchGroup"
     
     @IBOutlet weak var watchGroupTitleTextField: UITextField!
     @IBOutlet weak var watchGroupDescriptionTextField: UITextField!
@@ -23,8 +24,8 @@ class RVWatchGroupCreateEditController: RVBaseTableViewController {
     @IBOutlet weak var watchGroupImage: UIImageView!
     
     @IBAction func saveButtonTouched(_ sender: UIBarButtonItem) {
-        if let _ = self.carrier.incoming as? RVWatchGroup {
-            
+        if let group = self.carrier.incoming as? RVWatchGroup {
+            updateWatchGroup(group: group)
         } else {
             createNewWatchGroup()
         }
@@ -33,7 +34,9 @@ class RVWatchGroupCreateEditController: RVBaseTableViewController {
     }
     
     @IBAction func doneButtonTouched(_ sender: UIBarButtonItem) {
-        dismiss(animated: true) { }
+        print("IN done button")
+        self.performSegue(withIdentifier: "unwindFromWatchGroupCreateEditWithSeque", sender: self)
+        //dismiss(animated: true) { }
     }
     
     @IBAction func changePictureButtonTouched(_ sender: UIButton) {
@@ -72,13 +75,68 @@ class RVWatchGroupCreateEditController: RVBaseTableViewController {
         alertVC.addAction(albumAction)
         self.present(alertVC, animated: true) { }
     }
+    func updateWatchGroup(group: RVWatchGroup) {
+        if let title = getTextFieldText(textField: watchGroupTitleTextField) {
+            let title = title.trimmingCharacters(in: .whitespacesAndNewlines)
+            if title.characters.count > 0 {
+                group.title = title
+                group.regularDescription = getTextFieldText(textField: watchGroupDescriptionTextField)
+                updateImage(group: group, path: path, title: title, callback: { (rvImage) in
+                    if let rvImage = rvImage { group.image = rvImage }
+                    group.updateById(callback: { (updatedGroup, error) in
+                        if let error = error {
+                            error.printError()
+                            if let tableView = self.tableView { tableView.makeToast("Failed to create record for Group :-(", duration: 2.0, position: .center) }
+                        } else if let updatedGroup = updatedGroup {
+                            self.carrier.incoming = updatedGroup
+                            self.newImage = nil
+                            if let tableView = self.tableView { tableView.makeToast("Successfully updated WatchGroup called \(title)", duration: 3.0, position: .center) }
+                        } else {
+                            if let tableView = self.tableView { tableView.makeToast("No Group returned from server :-(", duration: 2.0, position: .center) }
+                        }
+                        self.unlockTableView()
+                    })
+                })
+            } else {
+                if let tableView = self.tableView { tableView.makeToast("Need to have a title, not just spaces!", duration: 2.0, position: .center) }
+            }
+        } else {
+            if let tableView = self.tableView { tableView.makeToast("Need to have a title!", duration: 2.0, position: .center) }
+        }
+    }
+    func updateImage(group: RVWatchGroup, path: String, title: String, callback: @escaping(_ rvImage: RVImage?)-> Void) {
+        if let newImage = self.newImage {
+            var filename = title.stripForFilename()
+            filename = filename.characters.count > 0 ? filename : "DummyFileName"
+            RVImage.saveImage(image: newImage, path: path, filename: filename, filetype: RVFileType.jpeg, parent: group, params: [.title: title as AnyObject], callback: { (rvImage, error) in
+                if let error = error {
+                    error.printError()
+                    self.unlockTableView()
+                    if let tableView = self.tableView { tableView.makeToast("Failed to upload image :-(", duration: 2.0, position: .center) }
+                    // not executing callback
+                } else if let rvImage = rvImage {
+                    callback(rvImage)
+                    return
+                } else {
+                    self.unlockTableView()
+                    if let tableView = self.tableView { tableView.makeToast("No Image Model returned from server :-(", duration: 2.0, position: .center) }
+                    // not executing callback
+                }
+            })
+        } else {
+            callback(nil)
+        }
+    }
+    func lockTableView() { if let tableView = self.tableView { tableView.lock()} }
+    func unlockTableView() { if let tableView = self.tableView { tableView.unlock() }}
     func createNewWatchGroup() {
         if let title = getTextFieldText(textField: watchGroupTitleTextField) {
             let title = title.trimmingCharacters(in: .whitespacesAndNewlines)
             if title.characters.count > 0 {
                 if let userProfile = self.userProfile {
                     if let domain = self.domain {
-                        let uiImage = self.newImage != nil ? self.newImage! : RVCoreInfo.sharedInstance.watchGroupImagePlaceholder
+                        lockTableView()
+                        if self.newImage == nil { self.newImage = RVCoreInfo.sharedInstance.watchGroupImagePlaceholder }
                         let group = RVWatchGroup()
                         group.title = title
                         group.setOwner(owner: userProfile)
@@ -93,27 +151,21 @@ class RVWatchGroupCreateEditController: RVBaseTableViewController {
                                 group.regularDescription = desc
                             }
                         }
-                        RVImage.saveImage(image: uiImage, path: "watchGroup", filename: "title", filetype: RVFileType.jpeg, parent: group, params: [.title: title as AnyObject], callback: { (rvImage, error) in
-                            if let error = error {
-                                error.printError()
-                                if let tableView = self.tableView { tableView.makeToast("Failed to upload image :-(", duration: 2.0, position: .center) }
-                            } else if let rvImage = rvImage {
-                                group.image = rvImage
-                                group.create(callback: { (newGroup, error) in
-                                    if let error = error {
-                                        error.printError()
-                                        if let tableView = self.tableView { tableView.makeToast("Failed to create record for Group :-(", duration: 2.0, position: .center) }
-                                    } else if let newGroup = newGroup {
-                                        self.carrier.incoming = newGroup
-                                        if let tableView = self.tableView { tableView.makeToast("Successfully created new WatchGroup called \(title)", duration: 3.0, position: .center) }
-                                    } else {
-                                        if let tableView = self.tableView { tableView.makeToast("No Group returned from server :-(", duration: 2.0, position: .center) }
-                                    }
-                                })
-                                return
-                            } else {
-                                if let tableView = self.tableView { tableView.makeToast("No Image Model returned from server :-(", duration: 2.0, position: .center) }
-                            }
+                        self.updateImage(group: group, path: self.path, title: title, callback: { (rvImage: RVImage?) in
+                            group.image = rvImage
+                            group.create(callback: { (newGroup, error) in
+                                if let error = error {
+                                    error.printError()
+                                    if let tableView = self.tableView { tableView.makeToast("Failed to create record for Group :-(", duration: 2.0, position: .center) }
+                                } else if let newGroup = newGroup {
+                                    self.carrier.incoming = newGroup
+                                    self.newImage = nil
+                                    if let tableView = self.tableView { tableView.makeToast("Successfully created new WatchGroup called \(title)", duration: 3.0, position: .center) }
+                                } else {
+                                    if let tableView = self.tableView { tableView.makeToast("No Group returned from server :-(", duration: 2.0, position: .center) }
+                                }
+                                self.unlockTableView()
+                            })
                         })
                         return
                     } else {
@@ -136,7 +188,6 @@ extension RVWatchGroupCreateEditController: RVCameraDelegate {
             let rvError = RVError(message: "In \(instanceType).finishedWriting got erro", sourceError: error , lineNumber: #line, fileName: "")
             rvError.printError()
         } else {
-            print(contextInfo)
             dismiss(animated: true, completion: { })
         }
     }

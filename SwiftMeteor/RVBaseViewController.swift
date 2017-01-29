@@ -243,15 +243,7 @@ extension RVBaseViewController: UITableViewDataSource {
         tableView.backgroundView = self.refreshControl
         tableView.separatorStyle = UITableViewCellSeparatorStyle.singleLineEtched
     }
-    func refresh() {
-        // self.tableView.reloadData
-    //    print("In \(self.classForCoder).refresh")
-        let formatter = DateFormatter()
-        formatter.dateFormat = "MMM d, h:mm a"
-        let title = "Last update: \(formatter.string(from: Date()))"
-        let attrsDictionary = [NSForegroundColorAttributeName : UIColor.white]
-        let attributedTitle = NSAttributedString(string: title, attributes: attrsDictionary)
-        self.refreshControl.attributedTitle = attributedTitle
+    func refreshDatasources() {
         for datasource in mainState.datasources {
             if datasource.datasourceType == .main {
                 if let queryFunction = self.mainState.queryFunctions[RVBaseDataSource.DatasourceType.main] {
@@ -268,9 +260,18 @@ extension RVBaseViewController: UITableViewDataSource {
                         }
                     })
                 }
-
+                
             }
         }
+    }
+    func refresh() {
+        let formatter = DateFormatter()
+        formatter.dateFormat = "MMM d, h:mm a"
+        let title = "Last update: \(formatter.string(from: Date()))"
+        let attrsDictionary = [NSForegroundColorAttributeName : UIColor.white]
+        let attributedTitle = NSAttributedString(string: title, attributes: attrsDictionary)
+        self.refreshControl.attributedTitle = attributedTitle
+        refreshDatasources()
         self.refreshControl.endRefreshing()
     }
     

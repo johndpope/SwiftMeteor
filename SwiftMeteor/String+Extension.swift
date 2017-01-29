@@ -101,6 +101,26 @@ extension String {
         }
         return self[currentIndex..<endIndex]
     }
-
+    func stripForFilename() -> String {
+        var noSpaces = self.replacingOccurrences(of: " ", with: "")
+        noSpaces = noSpaces.replacingOccurrences(of: ":", with: "")
+        noSpaces = noSpaces.replacingOccurrences(of: ",", with: "")
+        noSpaces = noSpaces.replacingOccurrences(of: ";", with: "")
+        noSpaces = noSpaces.replacingOccurrences(of: "-", with: "_")
+        noSpaces = noSpaces.replacingOccurrences(of: "*", with: "")
+        noSpaces = noSpaces.replacingOccurrences(of: "?", with: "")
+        noSpaces = noSpaces.replacingOccurrences(of: "/", with: "")
+        noSpaces = noSpaces.replacingOccurrences(of: "\\", with: "")
+        noSpaces = noSpaces.replacingOccurrences(of: "$", with: "")
+        noSpaces = noSpaces.replacingOccurrences(of: "!", with: "")
+        noSpaces = noSpaces.replacingOccurrences(of: ">", with: "")
+        noSpaces = noSpaces.replacingOccurrences(of: "<", with: "")
+        noSpaces = noSpaces.replacingOccurrences(of: "\n", with: "")
+        noSpaces = noSpaces.replacingOccurrences(of: "\r|", with: "")
+        noSpaces = noSpaces.replacingOccurrences(of: "\t", with: "")
+        noSpaces = noSpaces.replacingOccurrences(of: "~", with: "")
+        noSpaces = noSpaces.replacingOccurrences(of: "`", with: "")
+        return noSpaces
+    }
 
 }

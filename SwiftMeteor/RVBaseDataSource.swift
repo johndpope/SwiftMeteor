@@ -239,6 +239,31 @@ class RVBaseDataSource {
             callback(rvError)
         }
     }
+    func updateItem(item: RVBaseModel) {
+        if let itemId = item.localId {
+            if let tableView = self.scrollView as? UITableView {
+                tableView.beginUpdates()
+                var clone = cloneData()
+                for index in (0..<clone.count) {
+                    if let actualId = clone[index].localId {
+                        if actualId == itemId {
+                            if index < self.array.count {
+                                if let actualId = self.array[index].localId {
+                                    if actualId == itemId { self.array[index] = item }
+                                }
+                            }
+                            break
+                        }
+                    }
+                }
+                tableView.endUpdates()
+            } else if let _ = self.scrollView as? UICollectionView {
+                
+            } else {
+                
+            }
+        }
+    }
     func queryForBack(callback: @escaping(_ error: RVError?) -> Void) {
         if filterMode {
             if self.array.count >= self.maximumArrayLength {
