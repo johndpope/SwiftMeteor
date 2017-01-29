@@ -7,6 +7,9 @@
 //
 
 import UIKit
-class RVWatchGroupForumState: RVMainViewControllerState {
-    
+class RVWatchGroupForumState: RVWatchGroupInfoState {
+    override func configure() {
+        super.configure()
+        self.state = .WatchGroupMessages
+    }
 }

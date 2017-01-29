@@ -8,9 +8,10 @@
 
 import Foundation
 
-class RVWatchGroupState: RVMainViewControllerState {
+class RVWatchGroupInfoState: RVMainViewControllerState {
     override func configure() {
-        segmentViewFields = [.WatchGroup, .Members, .Forum]
+        segmentViewFields = [.WatchGroupInfo, .WatchGroupMembers, .WatchGroupMessages]
         showTopView = true
+        self.state = .WatchGroupInfo
     }
 }

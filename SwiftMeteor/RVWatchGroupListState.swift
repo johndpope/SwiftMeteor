@@ -9,6 +9,7 @@
 import Foundation
 class RVWatchGroupListState: RVMainViewControllerState {
     override func configure() {
+        self.state = .WatchGroupList
         showTopView = false
 //        showTopView = true
         let mainDatasource = RVWatchGroupDatasource()
@@ -17,7 +18,7 @@ class RVWatchGroupListState: RVMainViewControllerState {
         let filterDatasource = RVWatchGroupDatasource(maxArraySize: 300, filterMode: true)
         filterDatasource.datasourceType = .filter
         datasources.append(filterDatasource)
-        for datasource in datasources { manager.addSection(section: datasource) }
+//        for datasource in datasources { manager.addSection(section: datasource) }
         let mainQuery: queryFunction = {(params) in
             let query = mainDatasource.basicQuery()
             if let top = self.stack.last {
@@ -66,7 +67,7 @@ class RVWatchGroupListState: RVMainViewControllerState {
     }
     func loadMain() {
        // self.clearAndCreateWatchGroups()
-  
+          for datasource in datasources { manager.addSection(section: datasource) }
         if let mainDatasource = self.findDatasource(type: RVBaseDataSource.DatasourceType.main) {
             if let queryFunction = self.queryFunctions[RVBaseDataSource.DatasourceType.main] {
                 let query = queryFunction([String: AnyObject]())

@@ -37,6 +37,20 @@ class RVDSManager {
             print("In \(self.instanceType).addSection, invalid scrollView")
         }
     }
+    func removeAllSections(callback: @escaping() -> Void) {
+        if let tableView = self.scrollView as? UITableView {
+            tableView.beginUpdates()
+            let indexSet = IndexSet(0..<sections.count)
+            sections = [RVBaseDataSource]()
+            tableView.deleteSections(indexSet, with: animation)
+            tableView.endUpdates()
+            callback()
+        } else if let _ = self.scrollView as? UICollectionView {
+            
+        } else {
+            callback()
+        }
+    }
     func item(section: Int, location: Int) -> RVBaseModel? {
         if section < sections.count {
             return sections[section].item(location: location)

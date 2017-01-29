@@ -72,7 +72,7 @@
 		28928CD71E199AEA003538B8 /* RVFirstViewTableCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 28928CD61E199AEA003538B8 /* RVFirstViewTableCell.swift */; };
 		2894BA901E3DA76D008AD39C /* RVWatchGroupView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 2894BA8F1E3DA76D008AD39C /* RVWatchGroupView.xib */; };
 		2894BA921E3DA78A008AD39C /* RVWatchGroupView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2894BA911E3DA78A008AD39C /* RVWatchGroupView.swift */; };
-		2894BA951E3DB546008AD39C /* RVWatchGroupState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2894BA941E3DB546008AD39C /* RVWatchGroupState.swift */; };
+		2894BA951E3DB546008AD39C /* RVWatchGroupInfoState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2894BA941E3DB546008AD39C /* RVWatchGroupInfoState.swift */; };
 		2894BA971E3DBF04008AD39C /* RVSegmentKey.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2894BA961E3DBF04008AD39C /* RVSegmentKey.swift */; };
 		2894BA991E3DC565008AD39C /* RVWatchGroupMembersState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2894BA981E3DC565008AD39C /* RVWatchGroupMembersState.swift */; };
 		2894BA9B1E3DC571008AD39C /* RVWatchGroupForumState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2894BA9A1E3DC571008AD39C /* RVWatchGroupForumState.swift */; };
@@ -200,7 +200,7 @@
 		28928CD61E199AEA003538B8 /* RVFirstViewTableCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RVFirstViewTableCell.swift; sourceTree = "<group>"; };
 		2894BA8F1E3DA76D008AD39C /* RVWatchGroupView.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = RVWatchGroupView.xib; sourceTree = "<group>"; };
 		2894BA911E3DA78A008AD39C /* RVWatchGroupView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RVWatchGroupView.swift; sourceTree = "<group>"; };
-		2894BA941E3DB546008AD39C /* RVWatchGroupState.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RVWatchGroupState.swift; sourceTree = "<group>"; };
+		2894BA941E3DB546008AD39C /* RVWatchGroupInfoState.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RVWatchGroupInfoState.swift; sourceTree = "<group>"; };
 		2894BA961E3DBF04008AD39C /* RVSegmentKey.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RVSegmentKey.swift; sourceTree = "<group>"; };
 		2894BA981E3DC565008AD39C /* RVWatchGroupMembersState.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RVWatchGroupMembersState.swift; sourceTree = "<group>"; };
 		2894BA9A1E3DC571008AD39C /* RVWatchGroupForumState.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RVWatchGroupForumState.swift; sourceTree = "<group>"; };
@@ -407,7 +407,7 @@
 		2894BA931E3DB4B7008AD39C /* WatchGroupScene */ = {
 			isa = PBXGroup;
 			children = (
-				2894BA941E3DB546008AD39C /* RVWatchGroupState.swift */,
+				2894BA941E3DB546008AD39C /* RVWatchGroupInfoState.swift */,
 				2894BA961E3DBF04008AD39C /* RVSegmentKey.swift */,
 				2894BA911E3DA78A008AD39C /* RVWatchGroupView.swift */,
 				2894BA8F1E3DA76D008AD39C /* RVWatchGroupView.xib */,
@@ -874,7 +874,7 @@
 				28D534CF1DF3EAC20003DC11 /* RVDownloadTask.swift in Sources */,
 				28E65DA31E1DB1A0004E82F5 /* RVLeftMenuTableViewCell.swift in Sources */,
 				281B91381E01AEF5003AC233 /* RVRecord.swift in Sources */,
-				2894BA951E3DB546008AD39C /* RVWatchGroupState.swift in Sources */,
+				2894BA951E3DB546008AD39C /* RVWatchGroupInfoState.swift in Sources */,
 				284FBAD71DEC161000446C86 /* UIColor+Extension.swift in Sources */,
 				28DE2D971DFE47E900EFEECB /* RVTask.swift in Sources */,
 				28E65DA71E1DB4E5004E82F5 /* RVLeftMenuNavController.swift in Sources */,

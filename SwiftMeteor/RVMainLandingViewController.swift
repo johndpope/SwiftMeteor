@@ -13,15 +13,88 @@ class RVMainLandingViewController: RVBaseViewController {
     let SegueFromMainToWatchGroupEdit = "SegueFromMainToWatchGroupEdit"
     let SegueFromMainToProfileScene = "SegueFromMainToProfileScene"
  //   @IBOutlet weak var segmentedControl: UISegmentedControl!
+    weak var watchGroupInfoView: RVWatchGroupView? = nil
     @IBAction func unwindFromWatchGroupCreateEdit(seque: UIStoryboardSegue) {
         if let _ = seque.source as? RVWatchGroupCreateEditController {
         }
     }
     @IBAction func unwindFromProfileScene(segue: UIStoryboardSegue) {
         if let _ = segue.source as? RVRightMenuViewController {}
+    
+    }
+    func evaluateNewWatchGroupState(index: Int) {
+        if index < mainState.segmentViewFields.count {
+            switch(mainState.segmentViewFields[index]) {
+            case .WatchGroupInfo:
+                setupWatchGroupInfo()
+            case .WatchGroupMembers:
+                setupWatchGroupMembers()
+            case .WatchGroupMessages:
+                setupWatchGroupMessages()
+            default:
+                print("In \(self.classForCoder).evaluateNewWatchGroupState, unhandled state \(mainState.segmentViewFields[index].rawValue)")
+            }
+        
+        }
+    }
+    func setupWatchGroupMembers() {
+            print("In \(self.classForCoder).setUpWatchGroupMembers, after unwind \(self.manager.numberOfSections())")
+            mainState.unwind {
+                if let view = self.watchGroupInfoView {
+                    view.removeFromSuperview()
+                    self.watchGroupInfoView = nil
+                }
+                self.mainState = RVWatchGroupMembersState(scrollView: self.dsScrollView, stack: self.mainState.stack)
+                self.setupTopView()
+                self.mainState.initialize()
+                
+            }
+        
+    }
+    func setupWatchGroupMessages() {
+        mainState.unwind {
+            print("In \(self.classForCoder).setUpWatchGroupMessage, after unwind \(self.manager.numberOfSections())")
+            if let view = self.watchGroupInfoView {
+               view.removeFromSuperview()
+                self.watchGroupInfoView = nil
+            }
+            
+            self.mainState = RVWatchGroupForumState(scrollView: self.dsScrollView, stack: self.mainState.stack)
+            
+            self.setupTopView()
+            self.mainState.initialize()
+ 
+        }
+    }
+    func setupWatchGroupInfo(){
+        mainState.unwind {
+            self.mainState = RVWatchGroupInfoState(scrollView: self.dsScrollView, stack: self.mainState.stack)
+            self.setupTopView()
+            if self.watchGroupInfoView == nil {
+                if let overlayView = self.OverlayView {
+                    if let view = RVWatchGroupView.loadFromNib(frame: overlayView.bounds) {
+                        self.watchGroupInfoView = view
+                        view.state = self.mainState
+                        overlayView.addSubview(view)
+                    }
+                    self.mainState.initialize()
+                }
+            }
+            self.mainState.initialize()
+        }
     }
     @IBAction func segmentedControlValueChanged(_ sender: UISegmentedControl) {
-        p("segmentedControlValueChanged", "to index: \(sender.selectedSegmentIndex)")
+       // p("segmentedControlValueChanged", "to index: \(sender.selectedSegmentIndex)")
+        switch(mainState.state) { // current State
+        case .WatchGroupInfo:
+            evaluateNewWatchGroupState(index: sender.selectedSegmentIndex)
+        case .WatchGroupMembers:
+            evaluateNewWatchGroupState(index: sender.selectedSegmentIndex)
+        case .WatchGroupMessages:
+            evaluateNewWatchGroupState(index: sender.selectedSegmentIndex)
+        default:
+            print("In \(self.classForCoder).segmentedControlValueChanged to unaddressed state: \(mainState.state) \(mainState)")
+        }
     }
     @IBOutlet weak var OverlayView: UIView!
     
@@ -50,25 +123,19 @@ class RVMainLandingViewController: RVBaseViewController {
         presentWatchGroupCreateEdit(watchGroup: nil)
     }
     override func viewDidLoad() {
+        print("In \(self.classForCoder).)viewDidLoad")
        // if let scrollView = self.dsScrollView { self.mainState = RVMainStateTask(scrollView: scrollView) }
-        if let scrollView = self.dsScrollView { mainState = RVWatchGroupListState(scrollView: scrollView) }
+        mainState.unwind {
+            self.mainState = RVWatchGroupListState(scrollView: self.dsScrollView, stack: [RVBaseModel]())
+        }
+   //     if let scrollView = self.dsScrollView { mainState = RVWatchGroupListState(scrollView: scrollView) }
         super.viewDidLoad()
         if let tableView = self.tableView {
             tableView.register(RVFirstViewHeaderCell.self, forHeaderFooterViewReuseIdentifier: RVFirstViewHeaderCell.identifier)
-            
-
         }
         RVViewDeck.sharedInstance.toggleSide(side: .right, animated: true)
     }
-    func setupWatchGroup(){
-        print("In setupWatchGroup")
-        self.mainState = RVWatchGroupState(scrollView: dsScrollView!)
-        setupTopView()
-        if let overlayView = self.OverlayView {
-            let view = RVWatchGroupView(frame: overlayView.bounds)
-            overlayView.addSubview(view)
-        }
-    }
+
     override func setupTopView() {
         if let topView = self.topView {
             if let segmentedControl = self.segmentedControl {
@@ -79,10 +146,23 @@ class RVMainLandingViewController: RVBaseViewController {
                 if mainState.segmentViewFields.count > 0 {
                     print("In \(self.classForCoder).setupTopView")
                     for segment in mainState.segmentViewFields {
-                        segmentedControl.insertSegment(withTitle: segment.rawValue, at: index, animated: true)
+                        segmentedControl.insertSegment(withTitle: segment.segmentLabel, at: index, animated: true)
                         index = index + 1
                     }
-                    segmentedControl.selectedSegmentIndex = 0
+                    let state = mainState.state
+                    for index in (0..<mainState.segmentViewFields.count) {
+                        if state == mainState.segmentViewFields[index] {
+                            segmentedControl.selectedSegmentIndex = index
+                            break
+                        }
+                    }
+
+                    if mainState.state == .WatchGroupInfo {
+                        self.tableView.isUserInteractionEnabled = false
+                    } else {
+                        self.tableView.isUserInteractionEnabled = true
+                    }
+                    print("In \(self.classForCoder).setupTopView, returning")
                 } else {
                     print("In \(self.classForCoder).setTopVIew, hiding it")
                     topView.isHidden = true
@@ -98,6 +178,7 @@ class RVMainLandingViewController: RVBaseViewController {
 
     // Called by RVViewDeck
     func loadup() {
+        print("In \(self.classForCoder).loadup")
         if RVAppState.shared.state == RVAppState.State.ShowProfile {
             performSegue(withIdentifier: SegueFromMainToProfileScene, sender: nil)
             let storyboard = UIStoryboard(name: RVCoreInfo.sharedInstance.mainStoryboard, bundle: nil)
@@ -115,7 +196,12 @@ class RVMainLandingViewController: RVBaseViewController {
         if let tableView = self.tableView { tableView.setEditing(false, animated: true) }
     }
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        setupWatchGroup()
+        if let group = manager.item(indexPath: indexPath) as? RVWatchGroup  {
+            mainState.stack.append(group)
+            setupWatchGroupInfo()
+        } else {
+            print("In \(self.classForCoder).didSelect row, no RVWatchGroup")
+        }
     }
     func tableView(_ tableView: UITableView, editActionsForRowAt indexPath: IndexPath) -> [UITableViewRowAction]? {
         var actions = [UITableViewRowAction]()
