@@ -165,9 +165,9 @@ class RVMainLandingViewController: RVBaseViewController2 {
                     } else {
                         self.tableView.isUserInteractionEnabled = true
                     }
-                    print("In \(self.classForCoder).setupTopView, returning")
+                    
                 } else {
-                    print("In \(self.classForCoder).setTopVIew, hiding it")
+                    
                     topView.isHidden = true
                     self.tableView.isUserInteractionEnabled = true
                 }

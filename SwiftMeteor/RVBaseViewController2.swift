@@ -62,6 +62,7 @@ class RVBaseViewController2: UIViewController {
         installNavigationTitle()
         installRefresh()
         installTableInteractivity()
+        
     }
     func installTableInteractivity() {
         if let tableView = dsScrollView as? UITableView {
@@ -69,10 +70,9 @@ class RVBaseViewController2: UIViewController {
         }
     }
     func installSearchController() {
-        print("In \(self.classForCoder).installSearchController \(mainState.installSearchController)") 
         if mainState.installSearchController {
             if let tableView = self.dsScrollView as? UITableView { tableView.tableHeaderView = self.searchController.searchBar }
-            installSearchControllerScope()
+           // installSearchControllerScope()
         } else if let tableView = self.dsScrollView as? UITableView { if let _ = tableView.tableHeaderView as? UISearchBar { tableView.tableHeaderView = nil } }
     }
     func installSearchControllerScope() {
@@ -131,7 +131,9 @@ class RVBaseViewController2: UIViewController {
     func installTopView() {
         showTopView()
     }
-    func installNavigationTitle() { }
+    func installNavigationTitle() {
+        navigationController?.title = mainState.navigationBarTitle
+    }
     func installSegmentView() {
         if let control = self.segmentedControl {
             var index = 0
