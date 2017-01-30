@@ -10,6 +10,7 @@ import Foundation
 class RVWatchGroupListState: RVMainViewControllerState {
     override func configure() {
         self.state = .WatchGroupList
+        scopes = [["Handle": RVKeys.handle], ["Title": RVKeys.title]  , ["Comment": RVKeys.comment]]
         showTopView = false
 //        showTopView = true
         let mainDatasource = RVWatchGroupDatasource()

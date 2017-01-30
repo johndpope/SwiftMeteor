@@ -39,12 +39,19 @@ class RVMainViewControllerState {
     typealias queryFunction = (_ params: [String: AnyObject]) -> (RVQuery)
     typealias QueryElement = [RVBaseDataSource.DatasourceType : queryFunction]
     var queryFunctions = QueryElement()
+    
+    var showSearchBar: Bool = true
+    var tableViewInteractive: Bool = true
+    var navigationBarTitle: String {
+        get { return "Title Goes Here" }
+    }
     var scopes = [[String: RVKeys]]()
     var segmentViewFields: [RVMainViewControllerState.State] = []
     var manager: RVDSManager
     var dontUseManager: Bool = false
     var showTopView = true
     var installSearchController = true
+    var installRefreshControl: Bool = true
     var userProfile: RVUserProfile? { get { return RVCoreInfo.sharedInstance.userProfile }}
     var domain: RVDomain? { get { return RVCoreInfo.sharedInstance.domain }}
     init(scrollView: UIScrollView? = nil, stack: [RVBaseModel]? = nil) {

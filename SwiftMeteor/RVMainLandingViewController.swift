@@ -9,7 +9,7 @@
 import UIKit
 import SwiftDDP
 
-class RVMainLandingViewController: RVBaseViewController {
+class RVMainLandingViewController: RVBaseViewController2 {
     let SegueFromMainToWatchGroupEdit = "SegueFromMainToWatchGroupEdit"
     let SegueFromMainToProfileScene = "SegueFromMainToProfileScene"
  //   @IBOutlet weak var segmentedControl: UISegmentedControl!
@@ -45,7 +45,8 @@ class RVMainLandingViewController: RVBaseViewController {
                     self.watchGroupInfoView = nil
                 }
                 self.mainState = RVWatchGroupMembersState(scrollView: self.dsScrollView, stack: self.mainState.stack)
-                self.setupTopView()
+                self.install()
+               // self.setupTopView()
                 self.mainState.initialize()
                 
             }
@@ -60,8 +61,8 @@ class RVMainLandingViewController: RVBaseViewController {
             }
             
             self.mainState = RVWatchGroupForumState(scrollView: self.dsScrollView, stack: self.mainState.stack)
-            
-            self.setupTopView()
+            self.install()
+            //self.setupTopView()
             self.mainState.initialize()
  
         }
@@ -69,7 +70,9 @@ class RVMainLandingViewController: RVBaseViewController {
     func setupWatchGroupInfo(){
         mainState.unwind {
             self.mainState = RVWatchGroupInfoState(scrollView: self.dsScrollView, stack: self.mainState.stack)
-            self.setupTopView()
+//
+            self.install()
+            //self.setupTopView()
             if self.watchGroupInfoView == nil {
                 if let overlayView = self.OverlayView {
                     if let view = RVWatchGroupView.loadFromNib(frame: overlayView.bounds) {
@@ -136,7 +139,7 @@ class RVMainLandingViewController: RVBaseViewController {
         RVViewDeck.sharedInstance.toggleSide(side: .right, animated: true)
     }
 
-    override func setupTopView() {
+    override func installTopView() {
         if let topView = self.topView {
             if let segmentedControl = self.segmentedControl {
                 self.topView.isHidden = false

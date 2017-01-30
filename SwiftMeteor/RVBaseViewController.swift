@@ -307,6 +307,7 @@ extension RVBaseViewController: UISearchResultsUpdating {
 
     
     func updateSearchResults(for searchController: UISearchController) {
+        print("In \(self.classForCoder).updateSearchResults")
         if let topView  = self.topView {
             if searchController.isActive && (!topView.isHidden) {
                 self.hideTopView()
