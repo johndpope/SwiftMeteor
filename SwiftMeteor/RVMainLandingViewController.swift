@@ -59,7 +59,7 @@ class RVMainLandingViewController: RVBaseViewController2 {
     }
     func setupWatchGroupMessages() {
         mainState.unwind {
-            print("In \(self.classForCoder).setUpWatchGroupMessage, after unwind \(self.manager.numberOfSections())")
+           // print("In \(self.classForCoder).setUpWatchGroupMessage, after unwind \(self.manager.numberOfSections())")
             if let view = self.watchGroupInfoView {
                view.removeFromSuperview()
                 self.watchGroupInfoView = nil
@@ -158,7 +158,7 @@ class RVMainLandingViewController: RVBaseViewController2 {
                 var index = 0
                 segmentedControl.removeAllSegments()
                 if mainState.segmentViewFields.count > 0 {
-                    print("In \(self.classForCoder).setupTopView")
+                   // print("In \(self.classForCoder).setupTopView")
                     for segment in mainState.segmentViewFields {
                         segmentedControl.insertSegment(withTitle: segment.segmentLabel, at: index, animated: true)
                         index = index + 1
@@ -192,7 +192,7 @@ class RVMainLandingViewController: RVBaseViewController2 {
 
     // Called by RVViewDeck
     func loadup() {
-        print("In \(self.classForCoder).loadup")
+        //print("In \(self.classForCoder).loadup")
         if RVAppState.shared.state == RVAppState.State.ShowProfile {
             performSegue(withIdentifier: SegueFromMainToProfileScene, sender: nil)
             let storyboard = UIStoryboard(name: RVCoreInfo.sharedInstance.mainStoryboard, bundle: nil)

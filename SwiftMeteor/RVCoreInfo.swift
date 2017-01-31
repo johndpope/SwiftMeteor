@@ -18,6 +18,7 @@ class RVCoreInfo: NSObject {
             getUserProfile()
         }
     }
+    var mainState: RVMainViewControllerState = RVMainViewControllerState(scrollView: UIScrollView())
     var mainStoryboard = "Main"
     var loginCredentials: [String: AnyObject]? = nil
     var rootTask: RVTask?

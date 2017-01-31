@@ -13,7 +13,10 @@ class RVBaseViewController2: UIViewController {
     let searchController = UISearchController(searchResultsController: nil)
     var instanceType: String { get { return String(describing: type(of: self)) } }
     var operation: RVOperation = RVOperation(active: false)
-    var mainState: RVMainViewControllerState = RVMainViewControllerState(scrollView: UIScrollView())
+    var mainState: RVMainViewControllerState {
+        get { return RVCoreInfo.sharedInstance.mainState }
+        set{ RVCoreInfo.sharedInstance.mainState = newValue }
+    }
     var userProfile: RVUserProfile? { get { return RVCoreInfo.sharedInstance.userProfile }}
     @IBOutlet weak var topView: UIView!
     @IBOutlet weak var topViewHeightConstraint: NSLayoutConstraint!
