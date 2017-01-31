@@ -94,6 +94,11 @@ enum RVKeys: String {
     case homeVisibility = "homeVisibility"
     case homeVerified = "homeVerified"
     
+    // Message
+    case topic = "topic"
+    case priority = "priority"
+    case messageReport = "messageReport"
+    
     // location
     case geometry = "geometry"
     case latitude = "lat"

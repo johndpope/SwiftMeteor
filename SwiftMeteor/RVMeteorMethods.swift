@@ -56,4 +56,12 @@ enum RVMeteorMethods: String {
     case watchGroupBulkQuery = "watchGroup.bulkQuery"
     case watchGroupDelete = "watchGroup.delete"
     case watchGroupDeleteAll = "watchGroup.clear"
+    
+    // Message
+    case messageCreate = "message.create"
+    case messageUpdate = "message.update"
+    case messageFindById = "message.findById"
+    case messageBulkQuery = "message.bulkQuery"
+    case messageDelete = "message.delete"
+    case messageGroupDeleteAll = "message.clear"
 }

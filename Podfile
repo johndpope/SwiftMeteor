@@ -20,6 +20,7 @@ target 'SwiftMeteor' do
   pod 'GoogleMaps'
   pod 'GooglePlaces'
   pod 'Toast-Swift', '~> 2.0.0'
+  pod 'DropDown'
 
 
   #target 'SwiftMeteorTests' do

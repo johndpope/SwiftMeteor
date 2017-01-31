@@ -742,6 +742,7 @@ extension RVBaseModel {
         getDirtiesAndUnsets(topField: "", dirties: &dirties , unsets: &unsets)
         if dirties.count <= 0 {print("In \(self.classForCoder).create, dirtiess count is erroneously zero")}
         Meteor.call(type(of: self).insertMethod.rawValue, params: [dirties]) {(result, error: DDPError?) in
+
             if let error = error {
                 let rvError = RVError(message: "In \(self.instanceType).insert \(#line) got DDPError for id: \(self.localId)", sourceError: error)
                 callback(nil, rvError)

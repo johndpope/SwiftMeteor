@@ -22,6 +22,11 @@ class RVMainLandingViewController: RVBaseViewController2 {
         if let _ = segue.source as? RVRightMenuViewController {}
     
     }
+    @IBAction func unwindFromMessageCreateScene(segue: UIStoryboardSegue) {
+        if let _ = segue.source as? UINavigationController {
+            
+        }
+    }
     func evaluateNewWatchGroupState(index: Int) {
         if index < mainState.segmentViewFields.count {
             switch(mainState.segmentViewFields[index]) {
@@ -123,10 +128,16 @@ class RVMainLandingViewController: RVBaseViewController2 {
         }
     }
     @IBAction func searchButtonTouched(_ sender: UIBarButtonItem) {
-        presentWatchGroupCreateEdit(watchGroup: nil)
+        if mainState.state == .WatchGroupMessages {
+            performSegue(withIdentifier: "SegueFromMainToMessageCreate", sender: nil)
+        } else {
+            presentWatchGroupCreateEdit(watchGroup: nil)
+        }
     }
     override func viewDidLoad() {
         print("In \(self.classForCoder).)viewDidLoad")
+
+ 
        // if let scrollView = self.dsScrollView { self.mainState = RVMainStateTask(scrollView: scrollView) }
         mainState.unwind {
             self.mainState = RVWatchGroupListState(scrollView: self.dsScrollView, stack: [RVBaseModel]())

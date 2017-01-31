@@ -13,6 +13,7 @@ PODS:
   - AWSS3 (2.4.16):
     - AWSCore (= 2.4.16)
   - CryptoSwift (0.6.7)
+  - DropDown (2)
   - GoogleMaps (2.1.1):
     - GoogleMaps/Maps (= 2.1.1)
   - GoogleMaps/Base (2.1.1)
@@ -43,6 +44,7 @@ DEPENDENCIES:
   - AWSCognitoIdentityProvider
   - AWSLambda
   - AWSS3
+  - DropDown
   - GoogleMaps
   - GooglePlaces
   - LoremIpsum
@@ -61,6 +63,7 @@ SPEC CHECKSUMS:
   AWSLambda: 87ec46e9fc53409dcbe28b70a6ac86a27b87275b
   AWSS3: fef6aa8f8f625df8f67f1b6574fe761f3a4ddc99
   CryptoSwift: 685ae257941e5447474348a2b545583e1a16b573
+  DropDown: 744784d9c9aa505100e942c16acd05430cbb2f0a
   GoogleMaps: a5b5bbe47734e2443bde781a6aa64e69fdb6d785
   GooglePlaces: 35636d86e5020cba3856eb988c09a5491de0a65a
   LoremIpsum: 9029c55d36501b2ee0b05cc9ecda11d3a0479160
@@ -72,6 +75,6 @@ SPEC CHECKSUMS:
   ViewDeck: 942d90dd23c9f97cc8038be352255378167edcca
   XCGLogger: 38063ea89b4c8b23232d18efd2e12eb0005f3ea4
 
-PODFILE CHECKSUM: 6e0c38d6f8f22163a8fd3608546ea1b4f771f7c9
+PODFILE CHECKSUM: e482c7a0a6ad7bc34872e2313e6be00004d502d5
 
 COCOAPODS: 1.1.1
