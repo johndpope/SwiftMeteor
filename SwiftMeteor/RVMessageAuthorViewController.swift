@@ -41,6 +41,7 @@ class RVMessageAuthorViewController: UIViewController {
     }
 
     @IBAction func addChangePhotoButtonTouched(_ sender: UIButton) {
+        
     }
 
     @IBAction func sendButtonTouched(_ sender: UIButton) {
