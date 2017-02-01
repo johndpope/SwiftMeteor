@@ -23,8 +23,16 @@ class RVMainLandingViewController: RVBaseViewController2 {
     
     }
     @IBAction func unwindFromMessageCreateScene(segue: UIStoryboardSegue) {
-        if let _ = segue.source as? UINavigationController {
-            
+        if let controller = segue.source as? RVMessageAuthorViewController {
+            if let payload = controller.seguePayload {
+                print("Have payload")
+                if let menu = payload["Menu"] as? Bool {
+                    if menu {RVViewDeck.sharedInstance.toggleSide(side: RVViewDeck.Side.left)}
+                }
+                controller.seguePayload = nil
+            }
+        } else {
+            print("In unwind controller is \(segue.source)")
         }
     }
     func evaluateNewWatchGroupState(index: Int) {
@@ -106,7 +114,18 @@ class RVMainLandingViewController: RVBaseViewController2 {
     }
     @IBOutlet weak var OverlayView: UIView!
     
-    @IBAction func doneButtonTouched(_ sender: UIBarButtonItem) { RVViewDeck.sharedInstance.toggleSide(side: RVViewDeck.Side.left) }
+    @IBAction func doneButtonTouched(_ sender: UIBarButtonItem) {
+        if mainState.state == .WatchGroupMessages {
+            if let controller = self.presentedViewController as? RVMessageAuthorViewController {
+                controller.performSegue(withIdentifier: RVMessageAuthorViewController.unwindFromMessageCreateSceneWithSegue, sender: ["Menu": true])
+            } else {
+                print("No controller \(self.presentedViewController)")
+            }
+        } else {
+            RVViewDeck.sharedInstance.toggleSide(side: RVViewDeck.Side.left)
+        }
+
+    }
     func presentWatchGroupCreateEdit(watchGroup: RVWatchGroup?) {
         performSegue(withIdentifier: "SegueFromMainToWatchGroupEdit", sender: watchGroup )
     }

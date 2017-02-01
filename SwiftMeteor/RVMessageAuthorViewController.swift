@@ -8,17 +8,24 @@
 
 import UIKit
 import DropDown
+import Google_Material_Design_Icons_Swift
+import Font_Awesome_Swift
 
 class RVMessageAuthorViewController: UIViewController {
+    static let unwindFromMessageCreateSceneWithSegue = "unwindFromMessageCreateSceneWithSegue"
     @IBOutlet weak var reportButton: UIButton!
     @IBOutlet weak var priorityButton: UIButton!
     @IBOutlet weak var imageView: UIImageView!
     @IBOutlet weak var addChangePhotoButton: UIButton!
     @IBOutlet weak var messageContentTextView: UITextView!
-    
+    @IBOutlet weak var sendButton: UIButton!
+    @IBOutlet weak var sendButtonHeightConstraint: NSLayoutConstraint!
+    var sendButtonHeightConstant: CGFloat = 40.0
     let reportDropDown  = DropDown()
     let priorityDropDown = DropDown()
     let textField = UITextField()
+    var seguePayload: [String: AnyObject]? = nil
+    var messageDefaultImage: UIImage? { get { return UIImage(named: "JNW.png") } }
     lazy var dropDowns:[DropDown] = {
         return [self.reportDropDown, self.priorityDropDown]
     }()
@@ -38,13 +45,33 @@ class RVMessageAuthorViewController: UIViewController {
     @IBAction func sendButtonTouched(_ sender: UIButton) {
  
     }
-
+    func showHideSendButton(hide: Bool) {
+        if let button = sendButton { button.isHidden = hide}
+        if let constraint = sendButtonHeightConstraint { constraint.constant = hide ? 0 : sendButtonHeightConstant }
+    }
     override func viewDidLoad() {
         super.viewDidLoad()
         view.addSubview(textField)
+        dressupTextView()
+        if let constraint = sendButtonHeightConstraint { sendButtonHeightConstant = constraint.constant }
+        if let button = addChangePhotoButton {
+        //    button.setGMDIcon(icon: GMDType.GMDPhotoCamera, forState: .normal)
+            button.setFAIcon(icon: .FACamera, iconSize: 35, forState: .normal)
+        //    button.setFAText(prefixText: "P", icon: .FACamera, postfixText: "S", size: 25, forState: .normal, iconSize: 35)
+        }
+        
+    }
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        if let payload = sender as? [String: AnyObject] {
+            self.seguePayload = payload
+        } else {
+            self.seguePayload = nil
+        }
     }
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
+//        if let textView = self.messageContentTextView { textView.text = "" }
+        showHideSendButton(hide: true)
         setupDropDowns()
     }
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
@@ -53,12 +80,28 @@ class RVMessageAuthorViewController: UIViewController {
         }
         super.touchesBegan(touches, with: event)
     }
+    func dressupTextView() {
+        if let view = messageContentTextView {
+            view.layer.borderColor = UIColor.green.cgColor
+            view.layer.borderWidth = 2.0
+            view.layer.cornerRadius = 10.0
+        }
+    }
 }
 extension RVMessageAuthorViewController: UITextViewDelegate {
 //    func textViewShouldBeginEditing(_ textView: UITextView) -> Bool {return true}
 //    func textViewShouldEndEditing(_ textView: UITextView) -> Bool { return true }
     func textViewDidBeginEditing(_ textView: UITextView) {}
-    func textViewDidEndEditing(_ textView: UITextView) {}
+    func textViewDidEndEditing(_ textView: UITextView) {
+        if let text = textView.text {
+            if text.characters.count == 0 {
+                showHideSendButton(hide: true)
+                return
+            }
+        }
+        showHideSendButton(hide: false)
+        
+    }
     func textView(_ textView: UITextView, shouldChangeTextIn range: NSRange, replacementText text: String) -> Bool {
         if text.characters.contains("\r") || text.characters.contains("\n") || text.characters.contains("\t") {
             textView.resignFirstResponder()
@@ -107,25 +150,24 @@ extension RVMessageAuthorViewController {
         }
     }
     func setupPriorityDropDown() {
-        priorityDropDown.anchorView = priorityButton
-        priorityDropDown.bottomOffset = CGPoint(x: 0, y: reportButton.bounds.height)
-        priorityDropDown.dataSource = [
+        let dropDown = priorityDropDown
+        dropDown.anchorView = priorityButton
+        dropDown.bottomOffset = CGPoint(x: 0, y: reportButton.bounds.height)
+        dropDown.dataSource = [
             "General Info",
             "Medium",
             "Urgent"
         ]
         if let button = self.priorityButton {
             let index = 0
-            reportDropDown.selectRow(at: index)
-            if index < reportDropDown.dataSource.count { button.setTitle(reportDropDown.dataSource[index], for: .normal) }
-            reportDropDown.selectionAction = { [unowned self] (index, item) in
+            dropDown.selectRow(at: index)
+            if index < reportDropDown.dataSource.count { button.setTitle(dropDown.dataSource[index], for: .normal) }
+            dropDown.selectionAction = {(index, item) in
+        //    dropDown.selectionAction = { [unowned self] (index, item) in
                 button.setTitle(item, for: .normal)
             }
         }
-        priorityDropDown.selectionAction = { [unowned self] (index, item) in
-            self.priorityButton.setTitle(item, for: .normal)
-        }
-        priorityDropDown.cancelAction = { [unowned self] in
+        dropDown.cancelAction = { [unowned self] in
             self.priorityDropDown.deselectRow(at: self.priorityDropDown.indexForSelectedRow)
             //self.priorityButton.setTitle("Cancelled", for: .normal)
         }
@@ -179,7 +221,8 @@ extension RVMessageAuthorViewController {
             let index = 1
             reportDropDown.selectRow(at: index)
             if index < reportDropDown.dataSource.count { button.setTitle(reportDropDown.dataSource[index], for: .normal) }
-            reportDropDown.selectionAction = { [unowned self] (index, item) in
+            //reportDropDown.selectionAction = { [unowned self] (index, item) in
+            reportDropDown.selectionAction = {(index, item) in
                 button.setTitle(item, for: .normal)
             }
         }

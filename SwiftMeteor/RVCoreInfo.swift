@@ -26,6 +26,7 @@ class RVCoreInfo: NSObject {
     var userProfile: RVUserProfile? = nil
     var domain: RVDomain? = nil
     var specialCode = "NotValid"
+    var buttonActive: Bool = false
     var watchGroupImagePlaceholder: UIImage { get { return UIImage(named: "JNW.png")! } }
     func getUserProfile() {
         if username == nil {

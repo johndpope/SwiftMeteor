@@ -49,6 +49,26 @@
 			<key>isShown</key>
 			<false/>
 		</dict>
+		<key>Font-Awesome-Swift-Font-Awesome-Swift.xcscheme</key>
+		<dict>
+			<key>isShown</key>
+			<false/>
+		</dict>
+		<key>Font-Awesome-Swift.xcscheme</key>
+		<dict>
+			<key>isShown</key>
+			<false/>
+		</dict>
+		<key>Google-Material-Design-Icons-Swift-Google-Material-Design-Icons-Swift.xcscheme</key>
+		<dict>
+			<key>isShown</key>
+			<false/>
+		</dict>
+		<key>Google-Material-Design-Icons-Swift.xcscheme</key>
+		<dict>
+			<key>isShown</key>
+			<false/>
+		</dict>
 		<key>LoremIpsum.xcscheme</key>
 		<dict>
 			<key>isShown</key>
@@ -97,12 +117,12 @@
 	</dict>
 	<key>SuppressBuildableAutocreation</key>
 	<dict>
-		<key>11DFC6F885BFA9BCE8EB6EA0458ABFF8</key>
+		<key>0FD20527D10DB2A5E897205DCEBEEF81</key>
 		<dict>
 			<key>primary</key>
 			<true/>
 		</dict>
-		<key>1351CD354B9E44EB64A12D0D6F357733</key>
+		<key>11DFC6F885BFA9BCE8EB6EA0458ABFF8</key>
 		<dict>
 			<key>primary</key>
 			<true/>
@@ -112,12 +132,17 @@
 			<key>primary</key>
 			<true/>
 		</dict>
-		<key>2A177F71A95D28278C2480A3F2890932</key>
+		<key>1F0B75A94E0C8716614CC422AFD1CE26</key>
 		<dict>
 			<key>primary</key>
 			<true/>
 		</dict>
-		<key>4A3DC565D74E895BFD600B63ED709B54</key>
+		<key>229CA853119F2EE3901E7FCD8A574A8C</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>3A46CA586B87B342DF0E6C46D87F2437</key>
 		<dict>
 			<key>primary</key>
 			<true/>
@@ -137,12 +162,7 @@
 			<key>primary</key>
 			<true/>
 		</dict>
-		<key>567FC71ED6E8866FF3EFACBF989C136D</key>
-		<dict>
-			<key>primary</key>
-			<true/>
-		</dict>
-		<key>5A893FCA8A8B40CCE4BC871FB1EC9BF5</key>
+		<key>569CFE18B4E11C087CEE9D25E431BBB9</key>
 		<dict>
 			<key>primary</key>
 			<true/>
@@ -157,6 +177,11 @@
 			<key>primary</key>
 			<true/>
 		</dict>
+		<key>9735AA72928D41DB06EA697E23930C72</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
 		<key>9F7098779713B711F6C591B62A41F242</key>
 		<dict>
 			<key>primary</key>
@@ -167,12 +192,12 @@
 			<key>primary</key>
 			<true/>
 		</dict>
-		<key>A4CCED26919CAB9F7227AFFE73350343</key>
+		<key>A147422C71C00C54BA08B43096401538</key>
 		<dict>
 			<key>primary</key>
 			<true/>
 		</dict>
-		<key>ABA4BD14723320357FC64922CA157FB2</key>
+		<key>BA453546C51032641C49CACBC22725EE</key>
 		<dict>
 			<key>primary</key>
 			<true/>
@@ -182,7 +207,22 @@
 			<key>primary</key>
 			<true/>
 		</dict>
-		<key>EA54BC70C1F08CE23A9EE62F7DDF3545</key>
+		<key>C39650DB35DF4E9B0187C77A5547AD84</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>D2D7945F7715C7E12360FE3BA1280B37</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>D9DC9030BBC4C3AD1E2D4F076473F347</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>EEC3CA90D3BC9F66353F46FCD891CEF1</key>
 		<dict>
 			<key>primary</key>
 			<true/>

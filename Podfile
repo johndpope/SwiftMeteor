@@ -21,6 +21,8 @@ target 'SwiftMeteor' do
   pod 'GooglePlaces'
   pod 'Toast-Swift', '~> 2.0.0'
   pod 'DropDown'
+  pod 'Google-Material-Design-Icons-Swift'
+  pod 'Font-Awesome-Swift'
 
 
   #target 'SwiftMeteorTests' do
