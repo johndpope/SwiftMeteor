@@ -10,6 +10,7 @@ import UIKit
 import DropDown
 import Google_Material_Design_Icons_Swift
 import Font_Awesome_Swift
+import SwiftSoup
 
 class RVMessageAuthorViewController: UIViewController {
     static let unwindFromMessageCreateSceneWithSegue = "unwindFromMessageCreateSceneWithSegue"
@@ -73,6 +74,27 @@ class RVMessageAuthorViewController: UIViewController {
 //        if let textView = self.messageContentTextView { textView.text = "" }
         showHideSendButton(hide: true)
         setupDropDowns()
+        do{
+            let doc: Document = try SwiftSoup.parse("<div>One</div><span>One</span>")
+            let div: Element = try doc.select("div").first()! // <div></div>
+            try div.html("<p>lorem ipsum</p>") // <div><p>lorem ipsum</p></div>
+            try div.prepend("<p>First</p>")
+            try div.append("<p>Last</p>")
+            print(div)
+            // now div is: <div><p>First</p><p>lorem ipsum</p><p>Last</p></div>
+            
+            let span: Element = try doc.select("span").first()! // <span>One</span>
+            try span.wrap("<li><a href='http://example.com/'></a></li>")
+            print(doc)
+                    messageContentTextView.text = try doc.text()
+            // now: <li><a href="http://example.com/"><span>One</span></a></li>
+        }catch Exception.Error(let type, let message)
+        {
+            print("")
+        }catch{
+            print("")
+        }
+
     }
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
         if let textView = messageContentTextView {

@@ -23,6 +23,7 @@ target 'SwiftMeteor' do
   pod 'DropDown'
   pod 'Google-Material-Design-Icons-Swift'
   pod 'Font-Awesome-Swift'
+  pod 'SwiftSoup'
 
 
   #target 'SwiftMeteorTests' do
