@@ -2,6 +2,7 @@
 platform :ios, '10.0'
 
 target 'SwiftMeteor' do
+	source 'https://github.com/CocoaPods/Specs.git'
   # Comment the next line if you're not using Swift and don't want to use dynamic frameworks
   use_frameworks!
 
@@ -22,7 +23,7 @@ target 'SwiftMeteor' do
   pod 'Toast-Swift', '~> 2.0.0'
   pod 'DropDown'
   pod 'Google-Material-Design-Icons-Swift'
-  pod 'Font-Awesome-Swift'
+  pod 'Font-Awesome-Swift', '~> 1.6.1'
   pod 'SwiftSoup'
 
 

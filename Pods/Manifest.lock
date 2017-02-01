@@ -14,7 +14,7 @@ PODS:
     - AWSCore (= 2.4.16)
   - CryptoSwift (0.6.7)
   - DropDown (2)
-  - Font-Awesome-Swift (1.5.3)
+  - Font-Awesome-Swift (1.6.1)
   - Google-Material-Design-Icons-Swift (1.0.1)
   - GoogleMaps (2.1.1):
     - GoogleMaps/Maps (= 2.1.1)
@@ -48,7 +48,7 @@ DEPENDENCIES:
   - AWSLambda
   - AWSS3
   - DropDown
-  - Font-Awesome-Swift
+  - Font-Awesome-Swift (~> 1.6.1)
   - Google-Material-Design-Icons-Swift
   - GoogleMaps
   - GooglePlaces
@@ -70,7 +70,7 @@ SPEC CHECKSUMS:
   AWSS3: fef6aa8f8f625df8f67f1b6574fe761f3a4ddc99
   CryptoSwift: 685ae257941e5447474348a2b545583e1a16b573
   DropDown: 744784d9c9aa505100e942c16acd05430cbb2f0a
-  Font-Awesome-Swift: 6615ee6b875d148f767ea60b5b4ff54e2ea3122e
+  Font-Awesome-Swift: 70ab020f6749d7048bb49807c3e78b702d78afca
   Google-Material-Design-Icons-Swift: ff587db57d713061f66b8457229d1af2cae84c56
   GoogleMaps: a5b5bbe47734e2443bde781a6aa64e69fdb6d785
   GooglePlaces: 35636d86e5020cba3856eb988c09a5491de0a65a
@@ -84,6 +84,6 @@ SPEC CHECKSUMS:
   ViewDeck: 942d90dd23c9f97cc8038be352255378167edcca
   XCGLogger: 38063ea89b4c8b23232d18efd2e12eb0005f3ea4
 
-PODFILE CHECKSUM: 8d5434e132deeb5ddaa04c573a96689db59212e5
+PODFILE CHECKSUM: df94170c8088b1f3d1afe16bca7279fde0aacf0c
 
 COCOAPODS: 1.1.1

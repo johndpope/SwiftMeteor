@@ -90,9 +90,9 @@ class RVMessageAuthorViewController: UIViewController {
             // now: <li><a href="http://example.com/"><span>One</span></a></li>
         }catch Exception.Error(let type, let message)
         {
-            print("")
-        }catch{
-            print("")
+            print("\(type) \(message)")
+        } catch let error {
+            print("\(error)")
         }
 
     }
