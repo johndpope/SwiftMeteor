@@ -26,8 +26,52 @@ class RVCoreInfo: NSObject {
     var userProfile: RVUserProfile? = nil
     var domain: RVDomain? = nil
     var specialCode = "NotValid"
-    var buttonActive: Bool = false
     var watchGroupImagePlaceholder: UIImage { get { return UIImage(named: "JNW.png")! } }
+    private var activeButton: UIButton? = nil
+    private var activeBarButton: UIBarButtonItem? = nil
+    // True response indicates Button is now in control to move forward
+    func setActiveButtonIfNotActive(_ button: UIButton? = nil, _ barButton: UIBarButtonItem? = nil) -> Bool {
+        if button == nil && barButton == nil {
+            print("In \(self.classForCoder).setActiveButtonIfNotActive, both button and barButton are nil. This is an error.")
+            return false
+        } else if button != nil && barButton != nil {
+            print("In \(self.classForCoder).setActiveButtonIfNotActive, both button and barButton are set. This is an error.")
+            return false
+        } else if self.activeButton != nil && self.activeBarButton != nil {
+            activeButton = button
+            activeBarButton = barButton
+            return true
+        } else { // Get here if one of the two button types is set
+            return false
+        }
+    }
+    // True response indicates that button was the active one
+    func clearActiveButton(_ button: UIButton? = nil, _ barButton: UIBarButtonItem? = nil) -> Bool {
+        if button == nil && barButton == nil {
+            print("In \(self.classForCoder).clearActiveButton, both button and barButton are nil. This is an error.")
+            return false
+        }
+        if button != nil && barButton != nil {
+            print("In \(self.classForCoder).clearActiveButton, both button and barButton are set. This is an error.")
+            return false
+        }
+        if let button = button {
+            if let activeButton = self.activeButton {
+                if button.isEqual(activeButton) {
+                    self.activeButton = nil
+                    return true
+                } else { return false}
+            }
+        } else if let button = barButton {
+            if let activeButton = self.activeBarButton {
+                if button.isEqual(activeButton){
+                    self.activeBarButton = nil
+                    return true
+                } else { return false}
+            }
+        }
+        return false
+    }
     func getUserProfile() {
         if username == nil {
             self.userProfile = nil

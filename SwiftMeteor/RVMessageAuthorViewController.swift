@@ -11,6 +11,7 @@ import DropDown
 import Google_Material_Design_Icons_Swift
 import Font_Awesome_Swift
 import SwiftSoup
+import Toast_Swift
 
 class RVMessageAuthorViewController: UIViewController {
     static let unwindFromMessageCreateSceneWithSegue = "unwindFromMessageCreateSceneWithSegue"
@@ -21,6 +22,16 @@ class RVMessageAuthorViewController: UIViewController {
     @IBOutlet weak var messageContentTextView: UITextView!
     @IBOutlet weak var sendButton: UIButton!
     @IBOutlet weak var sendButtonHeightConstraint: NSLayoutConstraint!
+    @IBOutlet weak var envelopingMessageView: UIView!
+    
+    var topOfStack: RVBaseModel? {get {return RVCoreInfo.sharedInstance.mainState.stack.last}}
+    var userProfile: RVUserProfile? { get { return RVCoreInfo.sharedInstance.userProfile }}
+    func setActiveButtonIfNotActive(_ button: UIButton? = nil, _ barButton: UIBarButtonItem? = nil) -> Bool {
+        return RVCoreInfo.sharedInstance.setActiveButtonIfNotActive(button, barButton)
+    }
+    func clearActiveButton(_ button: UIButton? = nil, _ barButton: UIBarButtonItem? = nil) -> Bool {
+        return RVCoreInfo.sharedInstance.clearActiveButton(button, barButton)
+    }
     var sendButtonHeightConstant: CGFloat = 40.0
     let reportDropDown  = DropDown()
     let priorityDropDown = DropDown()
@@ -31,6 +42,7 @@ class RVMessageAuthorViewController: UIViewController {
         return [self.reportDropDown, self.priorityDropDown]
     }()
     @IBAction func reportButtonTouched(_ sender: UIButton) {
+
         if let textView = self.messageContentTextView { if textView.isFirstResponder { textView.resignFirstResponder() }}
         reportDropDown.show()
     }
@@ -41,10 +53,42 @@ class RVMessageAuthorViewController: UIViewController {
     }
 
     @IBAction func addChangePhotoButtonTouched(_ sender: UIButton) {
+        if !setActiveButtonIfNotActive(sender) { return }
         
     }
 
     @IBAction func sendButtonTouched(_ sender: UIButton) {
+        if !setActiveButtonIfNotActive(sender) { return }
+        if let textView = messageContentTextView {
+            if let text = textView.text {
+                let message = RVMessage()
+                message.text = text
+                if let top = topOfStack {
+                    message.setParent(parent: top)
+                }
+                if let userProfile = self.userProfile {
+                    message.setOwner(owner: userProfile)
+                }
+                message.create(callback: { (result, error) in
+                    if let error = error {
+                        if let view = self.envelopingMessageView {
+                            view.makeToast("Error sending message :-(", duration: 2.0, position: .center)
+                        }
+                        error.printError()
+                    } else if let sentMessage = result as? RVMessage {
+                        if let view = self.envelopingMessageView {
+                            view.makeToast(" Successfully sent message ;-)", duration: 2.0, position: .center)
+                        }
+                        print("In \(self.classForCoder).sendButtonTouched, successfully sent message \n\(sentMessage.toString())")
+                    } else {
+                        print("In \(self.classForCoder).sendButton, no error but no response")
+                        if let view = self.envelopingMessageView {
+                            view.makeToast("In sending message, no error but no result :-(", duration: 2.0, position: .center)
+                        }
+                    }
+                })
+            }
+        }
  
     }
     func showHideSendButton(hide: Bool) {
@@ -75,27 +119,6 @@ class RVMessageAuthorViewController: UIViewController {
 //        if let textView = self.messageContentTextView { textView.text = "" }
         showHideSendButton(hide: true)
         setupDropDowns()
-        do{
-            let doc: Document = try SwiftSoup.parse("<div>One</div><span>One</span>")
-            let div: Element = try doc.select("div").first()! // <div></div>
-            try div.html("<p>lorem ipsum</p>") // <div><p>lorem ipsum</p></div>
-            try div.prepend("<p>First</p>")
-            try div.append("<p>Last</p>")
-            print(div)
-            // now div is: <div><p>First</p><p>lorem ipsum</p><p>Last</p></div>
-            
-            let span: Element = try doc.select("span").first()! // <span>One</span>
-            try span.wrap("<li><a href='http://example.com/'></a></li>")
-            print(doc)
-                    messageContentTextView.text = try doc.text()
-            // now: <li><a href="http://example.com/"><span>One</span></a></li>
-        }catch Exception.Error(let type, let message)
-        {
-            print("\(type) \(message)")
-        } catch let error {
-            print("\(error)")
-        }
-
     }
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
         if let textView = messageContentTextView {

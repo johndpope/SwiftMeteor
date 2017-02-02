@@ -742,17 +742,19 @@ extension RVBaseModel {
         getDirtiesAndUnsets(topField: "", dirties: &dirties , unsets: &unsets)
         if dirties.count <= 0 {print("In \(self.classForCoder).create, dirtiess count is erroneously zero")}
         Meteor.call(type(of: self).insertMethod.rawValue, params: [dirties]) {(result, error: DDPError?) in
-
-            if let error = error {
-                let rvError = RVError(message: "In \(self.instanceType).insert \(#line) got DDPError for id: \(self.localId)", sourceError: error)
-                callback(nil, rvError)
-            } else if let result = result as? [String: AnyObject] {
-                print("In \(self.instanceType).created line \(#line) of RVBaseModel, successfully created \(self.localId)")
-                callback(type(of: self).createInstance(fields: result),  nil)
-            } else {
-                print("In \(self.instanceType).insert \(#line), no error but no casted result. id = \(self.localId). Result if any: \(result)")
-                callback(nil, nil)
+            DispatchQueue.main.async {
+                if let error = error {
+                    let rvError = RVError(message: "In \(self.instanceType).insert \(#line) got DDPError for id: \(self.localId)", sourceError: error)
+                    callback(nil, rvError)
+                } else if let result = result as? [String: AnyObject] {
+                    print("In \(self.instanceType).created line \(#line) of RVBaseModel, successfully created \(self.localId)")
+                    callback(type(of: self).createInstance(fields: result),  nil)
+                } else {
+                    print("In \(self.instanceType).insert \(#line), no error but no casted result. id = \(self.localId). Result if any: \(result)")
+                    callback(nil, nil)
+                }
             }
+
         }
     }
     override func update(_ fields: NSDictionary?, cleared: [String]? ) {
@@ -877,53 +879,60 @@ extension RVBaseModel {
        // print("In RVBaseModel.bulkQuery")
         Meteor.call(bulkQueryMethod.rawValue, params: [filters as AnyObject, projection as AnyObject]) { (result: Any?, error : DDPError?) in
          //           print("In RVBaseModel.bulkQuery has response \(error), \(result)")
-            if let error = error {
-                let rvError = RVError(message: "In RVBaseModel.bulkQuery, got Meteor Error", sourceError: error)
-                callback(nil , rvError)
-                return
-            } else if let items = result as? [[String: AnyObject]] {
-                var models = [RVBaseModel]()
-                for fields in items {
-                    models.append(modelFromFields(fields: fields))
+            DispatchQueue.main.async {
+                if let error = error {
+                    let rvError = RVError(message: "In RVBaseModel.bulkQuery, got Meteor Error", sourceError: error)
+                    callback(nil , rvError)
+                    return
+                } else if let items = result as? [[String: AnyObject]] {
+                    var models = [RVBaseModel]()
+                    for fields in items {
+                        models.append(modelFromFields(fields: fields))
+                    }
+                    callback(models, nil)
+                    return
+                } else if let results = result {
+                    print("In RVBaseModel.bulkQuery, no error, but results are: \n\(results)")
+                    callback(nil, nil)
+                } else {
+                    print("In RVBaseModel.bulkQuery, no error but no results")
+                    callback(nil, nil)
                 }
-                callback(models, nil)
-                return
-            } else if let results = result {
-                print("In RVBaseModel.bulkQuery, no error, but results are: \n\(results)")
-                callback(nil, nil)
-            } else {
-                print("In RVBaseModel.bulkQuery, no error but no results")
-                callback(nil, nil)
             }
         }
     }
     class func deleteAll( callback: @escaping(_ error: RVError?) -> Void ) {
         Meteor.call(deleteAllMethod.rawValue, params: [[RVKeys.specialCode.rawValue: RVCoreInfo.sharedInstance.specialCode]]) { (result, error: DDPError?) in
-            if let error = error {
-                let rvError = RVError(message: "In RVBaseModel.deleteAll() got DDPError", sourceError: error, lineNumber: #line, fileName: "")
-                //rvError.printError()
-                callback(rvError)
-                return
-            } else if let result = result {
-                print("In RVBaseModel.deleteAll(), result is \(result)")
-                callback(nil)
-            } else {
-                print("In RVBaseModelGruop.deleteAll(), no error but no result")
-                callback(nil)
+            DispatchQueue.main.async {
+                if let error = error {
+                    let rvError = RVError(message: "In RVBaseModel.deleteAll() got DDPError", sourceError: error, lineNumber: #line, fileName: "")
+                    //rvError.printError()
+                    callback(rvError)
+                    return
+                } else if let result = result {
+                    print("In RVBaseModel.deleteAll(), result is \(result)")
+                    callback(nil)
+                } else {
+                    print("In RVBaseModelGruop.deleteAll(), no error but no result")
+                    callback(nil)
+                }
             }
+
         }
     }
     func delete(callback: @escaping(_ error: RVError?) -> Void) {
      //   print("--------------------   In \(self.instanceType) delete ---------------------------------")
         Meteor.call(type(of: self).deleteMethod.rawValue, params: [ self.localId as AnyObject]) { (result: Any?, error: DDPError?) in
-            if let error = error {
-                let rvError = RVError(message: "In \(self.instanceType).delete \(#line) got DDPError for id: \(self.localId)", sourceError: error)
-                callback(rvError)
-            } else if let _ = result {
-                callback(nil)
-            } else {
-                print("In \(self.instanceType).delete \(#line), no error but no result. id = \(self.localId)")
-                callback(nil)
+            DispatchQueue.main.async {
+                if let error = error {
+                    let rvError = RVError(message: "In \(self.instanceType).delete \(#line) got DDPError for id: \(self.localId)", sourceError: error)
+                    callback(rvError)
+                } else if let _ = result {
+                    callback(nil)
+                } else {
+                    print("In \(self.instanceType).delete \(#line), no error but no result. id = \(self.localId)")
+                    callback(nil)
+                }
             }
         }
     }
