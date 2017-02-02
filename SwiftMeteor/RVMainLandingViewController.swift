@@ -82,6 +82,7 @@ class RVMainLandingViewController: RVBaseViewController2 {
     }
     func setupWatchGroupInfo(){
         mainState.unwind {
+            if self.dsScrollView == nil { print("In \(self.classForCoder).sestupWatchGroupInfo dsScrollView is nil") }
             self.mainState = RVWatchGroupInfoState(scrollView: self.dsScrollView, stack: self.mainState.stack)
 //
             self.install()

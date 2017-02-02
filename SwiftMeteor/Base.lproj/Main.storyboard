@@ -247,7 +247,7 @@
         <!--RVMainLandingViewController-->
         <scene sceneID="D7x-If-IWd">
             <objects>
-                <viewController storyboardIdentifier="RVMainLandingViewController" id="26z-cv-GPL" userLabel="RVMainLandingViewController" customClass="RVMainLandingViewController" customModule="SwiftMeteor" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="RVMainLandingViewController" id="26z-cv-GPL" userLabel="RVMainLandingViewController" customClass="RVMainLandingViewController2" customModule="SwiftMeteor" customModuleProvider="target" sceneMemberID="viewController">
                     <layoutGuides>
                         <viewControllerLayoutGuide type="top" id="Bc6-b0-469"/>
                         <viewControllerLayoutGuide type="bottom" id="H1j-Zv-1yq"/>

@@ -70,7 +70,9 @@ class RVBaseAppState {
         for datasource in datasources { if datasource.datasourceType == type { return datasource } }
         return nil
     }
-    func configure() {}
+    func configure() {
+        print("In RVBaseAppState.configure")
+    }
     func initialize() {}
     func unwind(callback: @escaping()-> Void) { manager.removeAllSections { callback() } }
 }
