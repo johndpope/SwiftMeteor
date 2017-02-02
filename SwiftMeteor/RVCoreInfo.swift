@@ -37,6 +37,9 @@ class RVCoreInfo: NSObject {
     private var activeButton: UIButton? = nil
     private var activeBarButton: UIBarButtonItem? = nil
     func changeState(newState: RVBaseAppState) {
+        let currentState = self.appState
+        if let _ = currentState as? RVLoggedoutState {
+        } else { newState.lastState = currentState }
         self.appState = newState
     }
     // True response indicates Button is now in control to move forward

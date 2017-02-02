@@ -9,10 +9,10 @@
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <scenes>
-        <!--View Controller-->
+        <!--Login View Controller-->
         <scene sceneID="4Gw-oT-WYo">
             <objects>
-                <viewController storyboardIdentifier="LoginViewController" id="kUN-vo-280" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="LoginViewController" id="kUN-vo-280" customClass="RVLoginViewController" customModule="SwiftMeteor" customModuleProvider="target" sceneMemberID="viewController">
                     <layoutGuides>
                         <viewControllerLayoutGuide type="top" id="8gp-P2-0Rg"/>
                         <viewControllerLayoutGuide type="bottom" id="5Rb-wz-kW7"/>
@@ -44,6 +44,9 @@
                                         <nil key="textColor"/>
                                         <fontDescription key="fontDescription" type="system" pointSize="19"/>
                                         <textInputTraits key="textInputTraits" keyboardType="emailAddress"/>
+                                        <connections>
+                                            <outlet property="delegate" destination="kUN-vo-280" id="qVr-NL-iyy"/>
+                                        </connections>
                                     </textField>
                                 </subviews>
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
@@ -83,6 +86,9 @@
                                         <nil key="textColor"/>
                                         <fontDescription key="fontDescription" type="system" pointSize="19"/>
                                         <textInputTraits key="textInputTraits" keyboardType="emailAddress"/>
+                                        <connections>
+                                            <outlet property="delegate" destination="kUN-vo-280" id="wWi-sy-Y9M"/>
+                                        </connections>
                                     </textField>
                                 </subviews>
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
@@ -113,6 +119,9 @@
                                         <state key="normal" title="Login!">
                                             <color key="titleShadowColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                         </state>
+                                        <connections>
+                                            <action selector="loginButtonTouched:" destination="kUN-vo-280" eventType="touchUpInside" id="FhR-RT-Axu"/>
+                                        </connections>
                                     </button>
                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="y9s-XV-bpa">
                                         <rect key="frame" x="118" y="82" width="140" height="30"/>
@@ -122,6 +131,9 @@
                                         </constraints>
                                         <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                         <state key="normal" title="Reset Password"/>
+                                        <connections>
+                                            <action selector="resetPasswordButtonTouched:" destination="kUN-vo-280" eventType="touchUpInside" id="0Mk-we-eNY"/>
+                                        </connections>
                                     </button>
                                 </subviews>
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
@@ -150,6 +162,9 @@
                                         <state key="normal" title="Register">
                                             <color key="titleShadowColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                         </state>
+                                        <connections>
+                                            <action selector="registerButtonTouched:" destination="kUN-vo-280" eventType="touchUpInside" id="UM4-Dn-UcL"/>
+                                        </connections>
                                     </button>
                                 </subviews>
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
@@ -199,17 +214,31 @@
                         </constraints>
                     </view>
                     <navigationItem key="navigationItem" id="tRp-JK-MZN"/>
+                    <connections>
+                        <outlet property="buttonView" destination="AMV-cK-ddM" id="P0B-Pv-GfM"/>
+                        <outlet property="emailMessageLabel" destination="hbh-V1-vwV" id="Btg-KU-fFd"/>
+                        <outlet property="emailTextField" destination="vqn-2S-9hN" id="eX7-5N-eum"/>
+                        <outlet property="emailView" destination="Qgx-Va-ePB" id="7ch-X1-iwD"/>
+                        <outlet property="loginButton" destination="ETX-gL-MCU" id="b1E-rq-JLn"/>
+                        <outlet property="loginFailureView" destination="K7S-gO-smj" id="biX-mY-Cue"/>
+                        <outlet property="passwordMessageLabel" destination="1yW-3Z-mM7" id="BuZ-7w-vtj"/>
+                        <outlet property="passwordTextField" destination="8UQ-Bj-UrY" id="fBi-o4-IOg"/>
+                        <outlet property="passwordView" destination="ZKX-tO-t6f" id="xhN-hs-IiB"/>
+                        <outlet property="registerButton" destination="wuR-Ta-bMQ" id="eXf-P9-4Ia"/>
+                        <outlet property="registerButtonView" destination="7YG-Or-Erm" id="V23-sf-Vus"/>
+                        <outlet property="resetPasswordButton" destination="y9s-XV-bpa" id="1Ng-Nr-dum"/>
+                    </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="MIX-9u-sOw" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="237" y="-198"/>
+            <point key="canvasLocation" x="500" y="-197"/>
         </scene>
         <!--Navigation Controller-->
         <scene sceneID="KTd-R8-gE5">
             <objects>
                 <navigationController storyboardIdentifier="LoginNavigationController" automaticallyAdjustsScrollViewInsets="NO" id="sLf-NG-Nky" sceneMemberID="viewController">
                     <toolbarItems/>
-                    <navigationBar key="navigationBar" contentMode="scaleToFill" barStyle="black" id="0DL-SE-W8Z">
+                    <navigationBar key="navigationBar" contentMode="scaleToFill" misplaced="YES" barStyle="black" id="0DL-SE-W8Z">
                         <rect key="frame" x="0.0" y="0.0" width="375" height="44"/>
                         <autoresizingMask key="autoresizingMask"/>
                         <color key="barTintColor" red="0.20392156859999999" green="0.7843137255" blue="0.44705882349999998" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>

@@ -37,6 +37,7 @@ class RVBaseAppState {
     var instanceType: String { get { return String(describing: type(of: self)) } }
     var state: State = .Main
     var datasources = [RVBaseDataSource]()
+    var lastState: RVBaseAppState? = nil
     static let scopeIndexLabel = "scopeIndex"
     static let textLabel = "text"
     var stack = [RVBaseModel]()
