@@ -18,7 +18,7 @@ class RVCoreInfo: NSObject {
             getUserProfile()
         }
     }
-    var mainState: RVMainViewControllerState = RVMainViewControllerState(scrollView: UIScrollView())
+    var appState: RVBaseAppState = RVMainViewControllerState(scrollView: UIScrollView())
     var mainStoryboard = "Main"
     var loginCredentials: [String: AnyObject]? = nil
     var rootTask: RVTask?
@@ -29,6 +29,9 @@ class RVCoreInfo: NSObject {
     var watchGroupImagePlaceholder: UIImage { get { return UIImage(named: "JNW.png")! } }
     private var activeButton: UIButton? = nil
     private var activeBarButton: UIBarButtonItem? = nil
+    func changeState(newState: RVBaseAppState) {
+        self.appState = newState
+    }
     // True response indicates Button is now in control to move forward
     func setActiveButtonIfNotActive(_ button: UIButton? = nil, _ barButton: UIBarButtonItem? = nil) -> Bool {
         if button == nil && barButton == nil {

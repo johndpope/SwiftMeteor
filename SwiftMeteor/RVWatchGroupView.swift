@@ -21,7 +21,7 @@ class RVWatchGroupView: UIView {
         super.init(coder: aDecoder)
      //   loadFromNib()
     }
-    var state: RVMainViewControllerState? { didSet { configure() }}
+    var state: RVBaseAppState? { didSet { configure() }}
     
     class func loadFromNib(frame: CGRect) -> RVWatchGroupView? {
         if let views = Bundle.main.loadNibNamed("RVWatchGroupView", owner: nil, options: nil) {

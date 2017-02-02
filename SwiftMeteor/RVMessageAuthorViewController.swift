@@ -29,7 +29,7 @@ class RVMessageAuthorViewController: UIViewController {
             if capturedImage != nil { showHideSendButton(hide: false)}
         }
     }
-    var topOfStack: RVBaseModel? {get {return RVCoreInfo.sharedInstance.mainState.stack.last}}
+    var topOfStack: RVBaseModel? {get {return RVCoreInfo.sharedInstance.appState.stack.last}}
     var userProfile: RVUserProfile? { get { return RVCoreInfo.sharedInstance.userProfile }}
     func setActiveButtonIfNotActive(_ button: UIButton? = nil, _ barButton: UIBarButtonItem? = nil) -> Bool {
         return RVCoreInfo.sharedInstance.setActiveButtonIfNotActive(button, barButton)

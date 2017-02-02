@@ -13,9 +13,9 @@ class RVBaseViewController2: UIViewController {
     let searchController = UISearchController(searchResultsController: nil)
     var instanceType: String { get { return String(describing: type(of: self)) } }
     var operation: RVOperation = RVOperation(active: false)
-    var mainState: RVMainViewControllerState {
-        get { return RVCoreInfo.sharedInstance.mainState }
-        set{ RVCoreInfo.sharedInstance.mainState = newValue }
+    var mainState: RVBaseAppState {
+        get { return RVCoreInfo.sharedInstance.appState }
+        set { RVCoreInfo.sharedInstance.changeState(newState: newValue) }
     }
     var userProfile: RVUserProfile? { get { return RVCoreInfo.sharedInstance.userProfile }}
     @IBOutlet weak var topView: UIView!
