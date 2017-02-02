@@ -24,6 +24,19 @@ class RVMessage: RVBaseModel {
                 return "Urgent"
             }
         }
+        func reverse(rawValue: String?) -> Priority? {
+            if let rawValue = rawValue {
+                switch(self) {
+                case .regular:
+                    if Priority.regular.description == rawValue { return .regular }
+                case .urgent:
+                    if Priority.urgent.description == rawValue { return .urgent }
+                case .importantButNotUrgent:
+                    if Priority.importantButNotUrgent.description == rawValue { return .importantButNotUrgent}
+                }
+            }
+            return nil
+        }
     }
     enum MessageReport: String {
         case routine = "Routine"

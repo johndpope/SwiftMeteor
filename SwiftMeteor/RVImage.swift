@@ -222,7 +222,7 @@ extension RVImage {
                 }
                 var fullPath = ""
                 if let path = path {
-                    fullPath = path.lowercased()
+                    fullPath = path.lowercased() + "/"
                 }
                 if let data = data {
                     let rvImage = RVImage()
@@ -240,7 +240,7 @@ extension RVImage {
                     if let title = params[RVKeys.title] as? String { rvImage.title = title }
                     if let id = rvImage.localId {
                         
-                        fullPath = fullPath + userId + "/" + id + "/" + filename.lowercased() + "." + fileExtension.lowercased()
+                        fullPath = fullPath + userId + "/" + filename.lowercased() + "/" + id + "." + fileExtension.lowercased()
                         RVAWS.sharedInstance.upload(data: data, path: fullPath, contentType: filetype.rawValue, callback: { (data, response, error) in
                             DispatchQueue.main.async {
                                 if let error = error {

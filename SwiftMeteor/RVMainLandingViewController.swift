@@ -154,7 +154,7 @@ class RVMainLandingViewController: RVBaseViewController2 {
         }
     }
     override func viewDidLoad() {
-        print("In \(self.classForCoder).)viewDidLoad")
+       // print("In \(self.classForCoder).)viewDidLoad")
 
  
        // if let scrollView = self.dsScrollView { self.mainState = RVMainStateTask(scrollView: scrollView) }

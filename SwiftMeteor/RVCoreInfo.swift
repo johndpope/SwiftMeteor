@@ -37,7 +37,8 @@ class RVCoreInfo: NSObject {
         } else if button != nil && barButton != nil {
             print("In \(self.classForCoder).setActiveButtonIfNotActive, both button and barButton are set. This is an error.")
             return false
-        } else if self.activeButton != nil && self.activeBarButton != nil {
+        } else if self.activeButton == nil && self.activeBarButton == nil {
+         //   print("In \(self.classForCoder).setActiveButton... passed. Returning true")
             activeButton = button
             activeBarButton = barButton
             return true

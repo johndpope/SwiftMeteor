@@ -23,7 +23,12 @@ class RVMessageAuthorViewController: UIViewController {
     @IBOutlet weak var sendButton: UIButton!
     @IBOutlet weak var sendButtonHeightConstraint: NSLayoutConstraint!
     @IBOutlet weak var envelopingMessageView: UIView!
-    
+    var camera = RVCamera()
+    var capturedImage: RVImage? = nil {
+        didSet {
+            if capturedImage != nil { showHideSendButton(hide: false)}
+        }
+    }
     var topOfStack: RVBaseModel? {get {return RVCoreInfo.sharedInstance.mainState.stack.last}}
     var userProfile: RVUserProfile? { get { return RVCoreInfo.sharedInstance.userProfile }}
     func setActiveButtonIfNotActive(_ button: UIButton? = nil, _ barButton: UIBarButtonItem? = nil) -> Bool {
@@ -54,42 +59,99 @@ class RVMessageAuthorViewController: UIViewController {
 
     @IBAction func addChangePhotoButtonTouched(_ sender: UIButton) {
         if !setActiveButtonIfNotActive(sender) { return }
-        
+        showCameraMenu()
     }
-
+    func getButtonText(button: UIButton?) -> String? {
+        if let button = button {
+            if let label = button.titleLabel {
+                return label.text
+            }
+        }
+        return nil
+    }
     @IBAction func sendButtonTouched(_ sender: UIButton) {
         if !setActiveButtonIfNotActive(sender) { return }
         if let textView = messageContentTextView {
             if let text = textView.text {
                 let message = RVMessage()
+                if let priority = RVMessage.Priority.urgent.reverse(rawValue: getButtonText(button: self.priorityButton)) {
+                    message.priority = priority
+                }
+                if let rawValue = getButtonText(button: self.reportButton) {
+                    if let report = RVMessage.MessageReport(rawValue: rawValue) {
+                        message.messageReport = report
+                    }
+                }
                 message.text = text
                 if let top = topOfStack {
                     message.setParent(parent: top)
                 }
                 if let userProfile = self.userProfile {
                     message.setOwner(owner: userProfile)
+                    message.fullName = userProfile.fullName
                 }
-                message.create(callback: { (result, error) in
-                    if let error = error {
-                        if let view = self.envelopingMessageView {
-                            view.makeToast("Error sending message :-(", duration: 2.0, position: .center)
-                        }
-                        error.printError()
-                    } else if let sentMessage = result as? RVMessage {
-                        if let view = self.envelopingMessageView {
-                            view.makeToast(" Successfully sent message ;-)", duration: 2.0, position: .center)
-                        }
-                        print("In \(self.classForCoder).sendButtonTouched, successfully sent message \n\(sentMessage.toString())")
-                    } else {
-                        print("In \(self.classForCoder).sendButton, no error but no response")
-                        if let view = self.envelopingMessageView {
-                            view.makeToast("In sending message, no error but no result :-(", duration: 2.0, position: .center)
-                        }
+                if let rvImage = self.capturedImage {
+                    rvImage.setParent(parent: message)
+                    if let userProfile = self.userProfile {
+                        rvImage.setOwner(owner: userProfile)
+                        rvImage.fullName = userProfile.fullName
                     }
-                })
+                    print("In \(self.classForCoder).sendBUttonTouched, About to do updateById")
+                    rvImage.updateById(callback: { (updatedRVImage, error) in
+                        if let error = error {
+                            let _ = self.clearActiveButton(sender)
+                            error.append(message: "In \(self.classForCoder).sendButtonTouched error updating image")
+                            error.printError()
+                        } else if let updatedRVImage = updatedRVImage as? RVImage {
+                            print("\n-------------\nIn \(self.classForCoder).sendButton... \n\(updatedRVImage.toString())\n----------")
+                            message.image = updatedRVImage
+                            self.createMessage(message: message)
+                        } else {
+                            let _ = self.clearActiveButton(sender)
+                            print("In\(self.classForCoder).sendBUttonTouched, no error but no updated RVImage")
+                        }
+                    })
+                } else {
+                    createMessage(message: message)
+                }
             }
         }
- 
+    }
+    func createMessage(message: RVMessage) {
+        message.create(callback: { (result, error) in
+            let _ = self.clearActiveButton(self.sendButton)
+            if let error = error {
+                if let view = self.envelopingMessageView {
+                    view.makeToast("Error sending message :-(", duration: 2.0, position: .center)
+                }
+                error.printError()
+            } else if let sentMessage = result as? RVMessage {
+                if let view = self.envelopingMessageView {
+                    view.makeToast(" Successfully sent message ;-)", duration: 2.0, position: .center)
+                }
+                print("In \(self.classForCoder).sendButtonTouched, successfully sent message \n\(sentMessage.toString())")
+            } else {
+                print("In \(self.classForCoder).sendButton, no error but no response")
+                if let view = self.envelopingMessageView {
+                    view.makeToast("In sending message, no error but no result :-(", duration: 2.0, position: .center)
+                }
+            }
+        })
+    }
+    func showCameraMenu() {
+        
+        let alertVC = UIAlertController(title: title, message: "Get Picture from...", preferredStyle: .alert)
+        let cameraAction = UIAlertAction(title: "Camera", style: .default) { (action: UIAlertAction) in
+            self.camera.delegate = self
+            self.camera.shootPhoto()
+        }
+        let albumAction = UIAlertAction(title: "Album", style: .default) { (action) in
+            self.camera.delegate = self
+            self.camera.showPhotoLibrary()
+        }
+        alertVC.addAction(cameraAction)
+        alertVC.addAction(albumAction)
+        self.present(alertVC, animated: true) { }
     }
     func showHideSendButton(hide: Bool) {
         if let button = sendButton { button.isHidden = hide}
@@ -97,6 +159,7 @@ class RVMessageAuthorViewController: UIViewController {
     }
     override func viewDidLoad() {
         super.viewDidLoad()
+//        camera.anchorBarButtonItem = doneButton
         view.addSubview(textField)
         dressupTextView()
         if let constraint = sendButtonHeightConstraint { sendButtonHeightConstant = constraint.constant }
@@ -169,6 +232,49 @@ extension RVMessageAuthorViewController: UITextFieldDelegate {
 //    func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool  {return true}// return NO to not change text
 //    func textFieldShouldClear(_ textField: UITextField) -> Bool {return true}// called when clear button pressed. return NO to ignore (no notifications)
 //    func textFieldShouldReturn(_ textField: UITextField) -> Bool { return true }// called when 'return' key pressed. return NO to ignore.
+}
+
+extension RVMessageAuthorViewController: RVCameraDelegate {
+    @objc func finishedWritingToAlbum(image: UIImage, error: NSError?, contextInfo: UnsafeRawPointer) {
+        if let error = error {
+            let rvError = RVError(message: "In \(self.classForCoder).finishedWriting got erro", sourceError: error , lineNumber: #line, fileName: "")
+            rvError.printError()
+        } else {
+            dismiss(animated: true, completion: { })
+        }
+    }
+    func didFinishPicking(picker: UIImagePickerController, info: [String: Any]) -> Void {
+        if let uiImage = info[UIImagePickerControllerOriginalImage] as? UIImage {
+            self.imageView.image = uiImage
+            RVImage.saveImage(image: uiImage, path: "Message", filename: "message", filetype: .jpeg, parent: nil, params: [RVKeys: AnyObject](), callback: { (rvImage, error) in
+                let _ = self.clearActiveButton(self.addChangePhotoButton)
+                self.capturedImage = nil
+                if let error = error {
+                    error.append(message: "In \(self.classForCoder).didFinishPicking, got error")
+                    error.printError()
+                } else if let rvImage = rvImage {
+                    print("In \(self.classForCoder).didFinishPicking, successfully saved image \n\(rvImage.toString())")
+                    self.capturedImage = rvImage
+
+                } else {
+                    print("In \(self.classForCoder).didFinishPicking no error but no rvImage")
+                }
+                picker.dismiss(animated: true, completion: {
+                    
+                })
+            })
+        } else {
+            let _ = self.clearActiveButton(self.addChangePhotoButton)
+            picker.dismiss(animated: true, completion: { })
+        }
+        
+        
+    }
+    func pickerCancelled(picker: UIImagePickerController) -> Void {
+        print("In \(self.classForCoder).pickerCancelled")
+        let _ = self.clearActiveButton(self.addChangePhotoButton)
+        picker.dismiss(animated: true) {}
+    }
 }
 extension RVMessageAuthorViewController {
     func customizeDropDown(_ sender: AnyObject) {
