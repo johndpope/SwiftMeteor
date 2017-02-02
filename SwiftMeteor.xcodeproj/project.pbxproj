@@ -47,7 +47,7 @@
 		284FBAD71DEC161000446C86 /* UIColor+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 284FBAD61DEC161000446C86 /* UIColor+Extension.swift */; };
 		2850AFFF1E1B60130043FEB3 /* RVResultsTableController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2850AFFE1E1B60130043FEB3 /* RVResultsTableController.swift */; };
 		2851B40E1E43ACC400E9D635 /* RVLoginState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2851B40D1E43ACC400E9D635 /* RVLoginState.swift */; };
-		2851B4131E43ADB100E9D635 /* RVLogoutState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2851B4121E43ADB100E9D635 /* RVLogoutState.swift */; };
+		2851B4131E43ADB100E9D635 /* RVLoggedoutState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2851B4121E43ADB100E9D635 /* RVLoggedoutState.swift */; };
 		28569A341E2D701B00E43B32 /* RVListener.swift in Sources */ = {isa = PBXBuildFile; fileRef = 28569A331E2D701B00E43B32 /* RVListener.swift */; };
 		2861AB611E349A7700612CCA /* RVBaseModel+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2861AB601E349A7700612CCA /* RVBaseModel+Extension.swift */; };
 		286CA31B1E327A3B00B081B8 /* RVGooglePlace.swift in Sources */ = {isa = PBXBuildFile; fileRef = 286CA31A1E327A3B00B081B8 /* RVGooglePlace.swift */; };
@@ -122,6 +122,7 @@
 		28F5C0B21E32BA610012E52A /* RVWatchGroup.swift in Sources */ = {isa = PBXBuildFile; fileRef = 28F5C0B11E32BA610012E52A /* RVWatchGroup.swift */; };
 		28F5C0B41E32BBD00012E52A /* RVClientRole.swift in Sources */ = {isa = PBXBuildFile; fileRef = 28F5C0B31E32BBD00012E52A /* RVClientRole.swift */; };
 		28F838BA1E43C9430002E052 /* RVBaseAppState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 28F838B91E43C9430002E052 /* RVBaseAppState.swift */; };
+		28F838BC1E43CB5F0002E052 /* LoginScene.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 28F838BB1E43CB5F0002E052 /* LoginScene.storyboard */; };
 		362E89CA5B849A39F0EE578F /* Pods_SwiftMeteor.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6B286D927E0BD7C69A075554 /* Pods_SwiftMeteor.framework */; };
 /* End PBXBuildFile section */
 
@@ -184,7 +185,7 @@
 		284FBAD61DEC161000446C86 /* UIColor+Extension.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UIColor+Extension.swift"; sourceTree = "<group>"; };
 		2850AFFE1E1B60130043FEB3 /* RVResultsTableController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RVResultsTableController.swift; sourceTree = "<group>"; };
 		2851B40D1E43ACC400E9D635 /* RVLoginState.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RVLoginState.swift; sourceTree = "<group>"; };
-		2851B4121E43ADB100E9D635 /* RVLogoutState.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RVLogoutState.swift; sourceTree = "<group>"; };
+		2851B4121E43ADB100E9D635 /* RVLoggedoutState.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RVLoggedoutState.swift; sourceTree = "<group>"; };
 		28569A331E2D701B00E43B32 /* RVListener.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RVListener.swift; sourceTree = "<group>"; };
 		2861AB601E349A7700612CCA /* RVBaseModel+Extension.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "RVBaseModel+Extension.swift"; sourceTree = "<group>"; };
 		286CA31A1E327A3B00B081B8 /* RVGooglePlace.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RVGooglePlace.swift; sourceTree = "<group>"; };
@@ -265,6 +266,7 @@
 		28F5C0B11E32BA610012E52A /* RVWatchGroup.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RVWatchGroup.swift; sourceTree = "<group>"; };
 		28F5C0B31E32BBD00012E52A /* RVClientRole.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RVClientRole.swift; sourceTree = "<group>"; };
 		28F838B91E43C9430002E052 /* RVBaseAppState.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RVBaseAppState.swift; sourceTree = "<group>"; };
+		28F838BB1E43CB5F0002E052 /* LoginScene.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = LoginScene.storyboard; sourceTree = "<group>"; };
 		3F442EC15311267BF21BD64D /* Pods_SwiftMeteorTests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_SwiftMeteorTests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		6877A64A500AD32A39F63091 /* Pods-SwiftMeteor.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SwiftMeteor.release.xcconfig"; path = "Pods/Target Support Files/Pods-SwiftMeteor/Pods-SwiftMeteor.release.xcconfig"; sourceTree = "<group>"; };
 		6B286D927E0BD7C69A075554 /* Pods_SwiftMeteor.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_SwiftMeteor.framework; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -372,7 +374,8 @@
 			isa = PBXGroup;
 			children = (
 				2851B40D1E43ACC400E9D635 /* RVLoginState.swift */,
-				2851B4121E43ADB100E9D635 /* RVLogoutState.swift */,
+				2851B4121E43ADB100E9D635 /* RVLoggedoutState.swift */,
+				28F838BB1E43CB5F0002E052 /* LoginScene.storyboard */,
 			);
 			name = "Login Scene";
 			sourceTree = "<group>";
@@ -753,6 +756,7 @@
 				28F53E791DEB5F71009641F0 /* LaunchScreen.storyboard in Resources */,
 				2802252C1E1C5C6F00D5FB60 /* RVFirstHeaderContentView.xib in Resources */,
 				2894BA901E3DA76D008AD39C /* RVWatchGroupView.xib in Resources */,
+				28F838BC1E43CB5F0002E052 /* LoginScene.storyboard in Resources */,
 				28A2A2D91E393719002AA1A8 /* JNW.png in Resources */,
 				2836E6151E407828009CA7EB /* MyCell.xib in Resources */,
 				28F53E761DEB5F71009641F0 /* Assets.xcassets in Resources */,
@@ -902,7 +906,7 @@
 				28928CD11E18BE09003538B8 /* RVBaseDataSource.swift in Sources */,
 				286CA3311E3289F000B081B8 /* RVDomain.swift in Sources */,
 				28CB24CC1E34090F0093A067 /* RVAppState.swift in Sources */,
-				2851B4131E43ADB100E9D635 /* RVLogoutState.swift in Sources */,
+				2851B4131E43ADB100E9D635 /* RVLoggedoutState.swift in Sources */,
 				2861AB611E349A7700612CCA /* RVBaseModel+Extension.swift in Sources */,
 				284FBAD21DEC13FE00446C86 /* RVRightMenuViewController.swift in Sources */,
 				280E0F761DFFBEDF00E597B4 /* RVKeys.swift in Sources */,

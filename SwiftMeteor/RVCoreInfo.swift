@@ -18,6 +18,13 @@ class RVCoreInfo: NSObject {
             getUserProfile()
         }
     }
+    var defaultState: RVBaseAppState {
+        get {
+            var stack = [RVBaseModel]()
+            if let domain = self.domain { stack.append(domain) }
+            return RVMainViewControllerState(scrollView: UIScrollView(), stack: stack)
+        }
+    }
     var appState: RVBaseAppState = RVMainViewControllerState(scrollView: UIScrollView())
     var mainStoryboard = "Main"
     var loginCredentials: [String: AnyObject]? = nil

@@ -7,7 +7,7 @@
 //
 
 import Foundation
-class RVLogoutState: RVBaseAppState {
+class RVLoggedoutState: RVBaseAppState {
     override func configure() {
         super.configure()
         self.state = .LoggedOut
