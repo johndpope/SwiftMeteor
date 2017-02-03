@@ -1,5 +1,5 @@
 //
-//  RVLoginState.swift
+//  RVMenuState.swift
 //  SwiftMeteor
 //
 //  Created by Neil Weintraut on 2/2/17.
@@ -7,11 +7,10 @@
 //
 
 import Foundation
-
-class RVLoggedinState: RVBaseAppState {
+class RVMenuState: RVBaseAppState {
     override func configure() {
         super.configure()
-        self.state = .LoggedIn
+        self.state = .MenuState
         self.showSearchBar = false
         self.showTopView = false
         self.installRefreshControl = false

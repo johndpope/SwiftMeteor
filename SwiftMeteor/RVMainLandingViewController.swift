@@ -167,7 +167,8 @@ class RVMainLandingViewController: RVBaseViewController2 {
         if let tableView = self.tableView {
             tableView.register(RVFirstViewHeaderCell.self, forHeaderFooterViewReuseIdentifier: RVFirstViewHeaderCell.identifier)
         }
-        RVViewDeck.sharedInstance.toggleSide(side: .right, animated: true)
+       // RVViewDeck.sharedInstance.toggleSide(side: .right, animated: true)
+        
     }
 
     override func installTopView() {
@@ -213,7 +214,8 @@ class RVMainLandingViewController: RVBaseViewController2 {
     // Called by RVViewDeck
     func loadup() {
         //print("In \(self.classForCoder).loadup")
-        if RVAppState.shared.state == RVAppState.State.ShowProfile {
+        if mainState.state == .ShowProfile {
+//        if RVAppState.shared.state == RVAppState.State.ShowProfile {
             performSegue(withIdentifier: SegueFromMainToProfileScene, sender: nil)
             let storyboard = UIStoryboard(name: RVCoreInfo.sharedInstance.mainStoryboard, bundle: nil)
             if let viewController = storyboard.instantiateViewController(withIdentifier: "ProfileNavController") as? UINavigationController {

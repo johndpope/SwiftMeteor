@@ -31,8 +31,8 @@ class RVMessageAuthorViewController: UIViewController {
     }
     var topOfStack: RVBaseModel? {get {return RVCoreInfo.sharedInstance.appState.stack.last}}
     var userProfile: RVUserProfile? { get { return RVCoreInfo.sharedInstance.userProfile }}
-    func setActiveButtonIfNotActive(_ button: UIButton? = nil, _ barButton: UIBarButtonItem? = nil) -> Bool {
-        return RVCoreInfo.sharedInstance.setActiveButtonIfNotActive(button, barButton)
+    func becomeActiveButtonIfNotActive(_ button: UIButton? = nil, _ barButton: UIBarButtonItem? = nil) -> Bool {
+        return RVCoreInfo.sharedInstance.becomeActiveButtonIfNotActive(button, barButton)
     }
     func clearActiveButton(_ button: UIButton? = nil, _ barButton: UIBarButtonItem? = nil) -> Bool {
         return RVCoreInfo.sharedInstance.clearActiveButton(button, barButton)
@@ -58,7 +58,7 @@ class RVMessageAuthorViewController: UIViewController {
     }
 
     @IBAction func addChangePhotoButtonTouched(_ sender: UIButton) {
-        if !setActiveButtonIfNotActive(sender) { return }
+        if !becomeActiveButtonIfNotActive(sender) { return }
         showCameraMenu()
     }
     func getButtonText(button: UIButton?) -> String? {
@@ -70,7 +70,7 @@ class RVMessageAuthorViewController: UIViewController {
         return nil
     }
     @IBAction func sendButtonTouched(_ sender: UIButton) {
-        if !setActiveButtonIfNotActive(sender) { return }
+        if !becomeActiveButtonIfNotActive(sender) { return }
         if let textView = messageContentTextView {
             if let text = textView.text {
                 let message = RVMessage()

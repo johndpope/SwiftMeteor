@@ -16,5 +16,5 @@ class RVLoggedoutState: RVBaseAppState {
         self.installRefreshControl = false
         self.installSearchController = false
     }
-    
+    override func initialize() {}
 }

@@ -121,7 +121,7 @@ extension RVProfileViewController: UIPickerViewDelegate {
     }
 }
 class RVProfileViewController: UITableViewController {
-    
+    var appState: RVBaseAppState { get { return RVCoreInfo.sharedInstance.appState } }
     @IBOutlet weak var profileImageView: UIImageView!
     @IBOutlet weak var firstNameTextField: UITextField!
     @IBOutlet weak var middleNameTextField: UITextField!
@@ -277,7 +277,8 @@ class RVProfileViewController: UITableViewController {
     @IBAction func doneButtonTouched(_ sender: UIBarButtonItem) {
         updateProfile{
             print("In \(self.classForCoder).doneButtonTouched callback")
-            RVAppState.shared.state = .Regular
+            RVCoreInfo.sharedInstance.changeState(newState: RVWatchGroupListState(scrollView: nil, stack: self.appState.stack))
+    //        RVAppState.shared.state = .Regular
             self.performSegue(withIdentifier: "unwindFromProfileSceneWithSegue", sender: nil)
             //self.dismiss(animated: true) {}
         }

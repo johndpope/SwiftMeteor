@@ -15,7 +15,7 @@ class RVCoreInfo: NSObject {
     }()
     var username: String? = nil {
         didSet {
-            getUserProfile()
+          //  getUserProfile()
         }
     }
     var defaultState: RVBaseAppState {
@@ -25,7 +25,8 @@ class RVCoreInfo: NSObject {
             return RVMainViewControllerState(scrollView: UIScrollView(), stack: stack)
         }
     }
-    var appState: RVBaseAppState = RVMainViewControllerState(scrollView: UIScrollView())
+    var appState: RVBaseAppState = RVLoggedoutState()
+    //var appState: RVBaseAppState = RVMainViewControllerState(scrollView: UIScrollView())
     var mainStoryboard = "Main"
     var loginCredentials: [String: AnyObject]? = nil
     var rootTask: RVTask?
@@ -36,14 +37,37 @@ class RVCoreInfo: NSObject {
     var watchGroupImagePlaceholder: UIImage { get { return UIImage(named: "JNW.png")! } }
     private var activeButton: UIButton? = nil
     private var activeBarButton: UIBarButtonItem? = nil
+    var isUserLoggedIn: Bool {
+        get {
+            if username != nil { return true }
+            return false
+        }
+    }
+    func logoutCoreInfo() {
+        username = nil
+        userProfile = nil
+        domain = nil
+        loginCredentials = nil
+    }
+    func loginCoreInfo(username: String, userProfile: RVUserProfile, domain: RVDomain ) {
+        self.domain = domain
+        self.userProfile = userProfile
+        self.username = username
+    }
     func changeState(newState: RVBaseAppState) {
         let currentState = self.appState
         if let _ = currentState as? RVLoggedoutState {
-        } else { newState.lastState = currentState }
+        } else {
+            if currentState.doNotInclude {
+                newState.lastState = currentState.lastState
+            } else {
+                newState.lastState = currentState
+            }
+        }
         self.appState = newState
     }
     // True response indicates Button is now in control to move forward
-    func setActiveButtonIfNotActive(_ button: UIButton? = nil, _ barButton: UIBarButtonItem? = nil) -> Bool {
+    func becomeActiveButtonIfNotActive(_ button: UIButton? = nil, _ barButton: UIBarButtonItem? = nil) -> Bool {
         if button == nil && barButton == nil {
             print("In \(self.classForCoder).setActiveButtonIfNotActive, both button and barButton are nil. This is an error.")
             return false

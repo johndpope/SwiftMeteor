@@ -8,7 +8,7 @@
 
 import UIKit
 
-class RVAppState {
+class RVAppState2 {
     enum State: String {
         case ShowProfile        = "ShowProfile"
         case Regular            = "Regular"
@@ -20,7 +20,7 @@ class RVAppState {
         }
     }
     var lastState: State = .Regular 
-    static let shared: RVAppState = {
-        RVAppState()
+    static let shared: RVAppState2 = {
+        RVAppState2()
     }()
 }

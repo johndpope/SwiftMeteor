@@ -237,6 +237,7 @@
                         </barButtonItem>
                     </navigationItem>
                     <connections>
+                        <outlet property="menuButton" destination="1wd-EB-9nq" id="k1t-WN-Kya"/>
                         <outlet property="tableView" destination="K0m-km-FCG" id="kMW-ts-fYS"/>
                     </connections>
                 </viewController>
@@ -438,12 +439,19 @@
                                 <action selector="doneButtonTouched:" destination="26z-cv-GPL" id="8xX-P0-t4I"/>
                             </connections>
                         </barButtonItem>
-                        <barButtonItem key="rightBarButtonItem" systemItem="add" id="EIk-LZ-iKD">
-                            <color key="tintColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
-                            <connections>
-                                <action selector="searchButtonTouched:" destination="26z-cv-GPL" id="ccR-3S-AdT"/>
-                            </connections>
-                        </barButtonItem>
+                        <rightBarButtonItems>
+                            <barButtonItem systemItem="add" id="EIk-LZ-iKD">
+                                <color key="tintColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                                <connections>
+                                    <action selector="searchButtonTouched:" destination="26z-cv-GPL" id="ccR-3S-AdT"/>
+                                </connections>
+                            </barButtonItem>
+                            <barButtonItem title="Login" id="U95-g0-Ony">
+                                <connections>
+                                    <action selector="loginButtonTouched:" destination="26z-cv-GPL" id="MlS-9Q-KgX"/>
+                                </connections>
+                            </barButtonItem>
+                        </rightBarButtonItems>
                     </navigationItem>
                     <connections>
                         <outlet property="OverlayView" destination="EmY-YP-A87" id="2Mm-7i-IJn"/>
@@ -458,6 +466,7 @@
                             <popoverArrowDirection key="popoverArrowDirection" up="YES" down="YES" left="YES" right="YES"/>
                         </segue>
                         <segue destination="D4g-Ah-FoL" kind="presentation" identifier="SegueFromMainToMessageCreate" modalPresentationStyle="overCurrentContext" id="otv-c3-iKG"/>
+                        <segue destination="tON-ys-X9T" kind="show" identifier="SegueFromMainToLoginScene" id="DX3-Qf-Wz9"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="6pq-4W-SsH" userLabel="First Responder" sceneMemberID="firstResponder"/>
@@ -1200,7 +1209,7 @@
                 <placeholder placeholderIdentifier="IBFirstResponder" id="ZFV-9G-EA5" userLabel="First Responder" sceneMemberID="firstResponder"/>
                 <exit id="kHo-AT-ObJ" userLabel="Exit" sceneMemberID="exit"/>
             </objects>
-            <point key="canvasLocation" x="1805.5999999999999" y="583.3583208395803"/>
+            <point key="canvasLocation" x="1697" y="670"/>
         </scene>
         <!--MainTabMenu-->
         <scene sceneID="yl2-sM-qoP">
@@ -1234,14 +1243,14 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <view contentMode="scaleToFill" restorationIdentifier="TopVIew" translatesAutoresizingMaskIntoConstraints="NO" id="S5l-dG-Rn8" userLabel="TopView">
-                                <rect key="frame" x="0.0" y="20" width="375" height="60"/>
+                                <rect key="frame" x="0.0" y="64" width="375" height="60"/>
                                 <color key="backgroundColor" red="0.7019608021" green="0.7019608021" blue="0.7019608021" alpha="1" colorSpace="calibratedRGB"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="60" id="9WW-8x-JSH"/>
                                 </constraints>
                             </view>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="nSX-LP-sqW" userLabel="MessageView">
-                                <rect key="frame" x="0.0" y="80" width="375" height="405"/>
+                                <rect key="frame" x="0.0" y="124" width="375" height="405"/>
                                 <subviews>
                                     <textView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="Zd1-0I-XDf">
                                         <rect key="frame" x="8" y="44" width="359" height="90"/>
@@ -1559,6 +1568,14 @@
             </objects>
             <point key="canvasLocation" x="919" y="670"/>
         </scene>
+        <!--LoginScene-->
+        <scene sceneID="gFs-Ob-zDj">
+            <objects>
+                <viewControllerPlaceholder storyboardName="LoginScene" id="tON-ys-X9T" sceneMemberID="viewController"/>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="E8t-O5-vZn" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="666" y="96"/>
+        </scene>
         <!--Navigation Controller-->
         <scene sceneID="V7E-Gw-rVU">
             <objects>
@@ -1603,6 +1620,6 @@
         <image name="second" width="30" height="30"/>
     </resources>
     <inferredMetricsTieBreakers>
-        <segue reference="otv-c3-iKG"/>
+        <segue reference="0wr-MJ-PdP"/>
     </inferredMetricsTieBreakers>
 </document>

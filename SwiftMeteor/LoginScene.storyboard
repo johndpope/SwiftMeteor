@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="11762" systemVersion="16D32" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="11762" systemVersion="16D32" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES" initialViewController="sLf-NG-Nky">
     <device id="retina4_7" orientation="portrait">
         <adaptation id="fullscreen"/>
     </device>
@@ -9,7 +9,7 @@
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <scenes>
-        <!--Login View Controller-->
+        <!--Login/Register-->
         <scene sceneID="4Gw-oT-WYo">
             <objects>
                 <viewController storyboardIdentifier="LoginViewController" id="kUN-vo-280" customClass="RVLoginViewController" customModule="SwiftMeteor" customModuleProvider="target" sceneMemberID="viewController">
@@ -213,7 +213,7 @@
                             <constraint firstItem="AMV-cK-ddM" firstAttribute="top" secondItem="ZKX-tO-t6f" secondAttribute="bottom" id="xhP-j4-dbB"/>
                         </constraints>
                     </view>
-                    <navigationItem key="navigationItem" id="tRp-JK-MZN"/>
+                    <navigationItem key="navigationItem" title="Login/Register" id="tRp-JK-MZN"/>
                     <connections>
                         <outlet property="buttonView" destination="AMV-cK-ddM" id="P0B-Pv-GfM"/>
                         <outlet property="emailMessageLabel" destination="hbh-V1-vwV" id="Btg-KU-fFd"/>

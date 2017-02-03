@@ -47,7 +47,7 @@ class RVViewDeck: NSObject {
         window.tintColor = UIColor(red: 0.071, green: 0.42, blue: 0.694, alpha: 1.0)
         window.rootViewController = generateControllerStack()
         window.makeKeyAndVisible()
-        addLoginListener()
+      //  addLoginListener()
     }
     func addLoginListener() {
         let _ = RVSwiftDDP.sharedInstance.addListener(listener: self, eventType: .userDidLogin) { (result: [String: AnyObject]?) -> Bool in
@@ -110,6 +110,7 @@ class RVViewDeck: NSObject {
         deckController.delegate = self
         self.leftController = deckController.leftViewController
         self.rightController = deckController.rightViewController
+        self.centerController = tabBarController
         return deckController
     }
     func openSide(side: IIViewDeckSide, animated: Bool = true) {
@@ -140,6 +141,7 @@ class RVViewDeck: NSObject {
                 self.openSide(side: IIViewDeckSide.left, animated: animated)
         
             case .right:
+                print("In \(self.classForCoder).toggleSide, trying to toggle right)")
                 self.openSide(side: IIViewDeckSide.right, animated: animated)
             case .center:
                 self.closeSide(animated: animated)
@@ -171,6 +173,7 @@ extension RVViewDeck: IIViewDeckControllerDelegate {
      */
     func viewDeckController(_ viewDeckController: IIViewDeckController, didOpen side: IIViewDeckSide) {
     // print("In \(self.classForCoder).didOpen, side: \(side.rawValue)")
+        /*
         switch(self.deckController.openSide) {
         case .none:
             if let navController = self.deckController.centerViewController as? RVMainLandingNavigationController {
@@ -178,7 +181,7 @@ extension RVViewDeck: IIViewDeckControllerDelegate {
                     if RVCoreInfo.sharedInstance.username == nil {
                         // not logged in
                         Timer.scheduledTimer(withTimeInterval: 0.5, repeats: false, block: { (timer) in
-                            self.toggleSide(side: .right, animated: true)
+                     //       self.toggleSide(side: .right, animated: true)
                         })
                     } else {
                   //      print("In \(self.classForCoder).viewDeckController.didOpen side \(side), Logged in... need to initiate load")
@@ -198,18 +201,20 @@ extension RVViewDeck: IIViewDeckControllerDelegate {
                 }
             }
         case .right:
+            
             if let navController = self.deckController.rightViewController as? RVRightNavigationController {
                 if let _ = navController.topViewController as? RVRightMenuViewController {
                     if RVCoreInfo.sharedInstance.username == nil {
                     //    print("In \(self.classForCoder).viewDeckController.didClose side \(side). Logged in. Take no action")
                     } else {
                         Timer.scheduledTimer(withTimeInterval: 0.5, repeats: false, block: { (timer) in
-                            self.toggleSide(side: .center, animated: false)
+                         //   self.toggleSide(side: .center, animated: false)
                         })
                     }
                 }
             }
         }
+ */
     }
     
     
@@ -235,6 +240,7 @@ extension RVViewDeck: IIViewDeckControllerDelegate {
      */
     func viewDeckController(_ viewDeckController: IIViewDeckController, didClose side: IIViewDeckSide) {
        // print("In \(self.classForCoder).viewDeckController.didClose side \(side), openSide is \(self.deckController.openSide) username is \(RVCoreInfo.sharedInstance.username)")
+        /*
         switch(self.deckController.openSide) {
         case .none:
             if let navController = self.deckController.centerViewController as? RVMainLandingNavigationController {
@@ -242,11 +248,11 @@ extension RVViewDeck: IIViewDeckControllerDelegate {
                     if RVCoreInfo.sharedInstance.username == nil {
                         // not logged in
                         Timer.scheduledTimer(withTimeInterval: 0.5, repeats: false, block: { (timer) in
-                            self.toggleSide(side: .right, animated: true)
+                          //  self.toggleSide(side: .right, animated: true)
                         })
                     } else {
                    //    print("In \(self.classForCoder).viewDeckController.didClose side \(side), Logged in... need to initiate load")
-                        controller.loadup()
+                        //controller.loadup()
                     }
                 }
             }
@@ -275,6 +281,7 @@ extension RVViewDeck: IIViewDeckControllerDelegate {
                 }
             }
         }
+ */
         
     }
 }

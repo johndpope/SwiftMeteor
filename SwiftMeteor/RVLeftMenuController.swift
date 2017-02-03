@@ -13,10 +13,11 @@ class RVLeftMenuController: RVBaseViewController {
         case name = "name"
         case displayText = "displayText"
     }
+    @IBOutlet weak var menuButton: UIBarButtonItem!
   //  @IBOutlet weak var tableView: UITableView!
     @IBAction func menuButtonTouched(_ sender: UIBarButtonItem) {
         print("In \(self.classForCoder).menuButtonTOuched toggling to center")
-        RVViewDeck.sharedInstance.toggleSide(side: .center)
+        returnToCenter()
     }
 
 
@@ -51,21 +52,33 @@ extension RVLeftMenuController {
             if let (_, string) = selection.first {
                 if string == "Logout" {
                   //  print("In \(self.classForCoder).didSelectRowAt \(indexPath.row), Found Logout")
+                    if !RVCoreInfo.sharedInstance.becomeActiveButtonIfNotActive(nil, menuButton) { return }
                     RVSwiftDDP.sharedInstance.logout(callback: { (error) in
                         if let error = error {
                             error.append(message: "In \(self.classForCoder).didSelectRowAt gor error")
                             error.printError()
                         }
+                        let _ = RVCoreInfo.sharedInstance.clearActiveButton(nil, self.menuButton)
+                        RVViewDeck.sharedInstance.toggleSide(side: .center, animated: false)
                     })
                 } else if string == "ClearUsers" {
                     RVUserProfile.clearAll()
                 } else if string == "Profile" {
-                    RVAppState.shared.state = .ShowProfile
-                    RVViewDeck.sharedInstance.toggleSide(side: .center)
+                    let _ = RVCoreInfo.sharedInstance.changeState(newState: RVShowProfileState(scrollView: nil, stack: mainState.stack))
+              //      RVAppState.shared.state = .ShowProfile
+                    returnToCenter()
                 } else {
 
                     print("In \(self.classForCoder).didSelectRowAt \(indexPath.row), \(string) not handled")
                 }
+            }
+        }
+    }
+    func returnToCenter() {
+        RVViewDeck.sharedInstance.toggleSide(side: .center)
+        if let centerNav = RVViewDeck.sharedInstance.centerController as? UINavigationController {
+            if let center = centerNav.topViewController as? RVMainLandingViewController2 {
+                center.returnFromSideMenu()
             }
         }
     }

@@ -47,6 +47,7 @@ class RVSwiftDDP: NSObject {
     let userDefaults = UserDefaults.standard
     var loginListeners = RVListeners()
     var logoutListeners = RVListeners()
+    var connected: Bool = false
     
     static let sharedInstance: RVSwiftDDP = {
         return RVSwiftDDP()
@@ -84,13 +85,11 @@ class RVSwiftDDP: NSObject {
             let rvError = RVError(message: "In \(self.instanceType).signupViaEmail, email is invalid \(email)", sourceError: nil, lineNumber: #line)
             callback(rvError)
             return
-        }
-        if !password.validPassword() {
+        } else if !password.validPassword() {
             let rvError = RVError(message: "In \(self.instanceType).signupViaEmail, email \(email) is valid, but password \(password) contains spaces")
             callback(rvError)
             return
-        }
-        if let profile = profile {
+        } else if let profile = profile {
             Meteor.client.signupWithEmail(email, password: password, profile: profile as NSDictionary, callback: { (result, error: DDPError?) in
             self.handleSignup(result: result , error: error , callback: callback)
             })
@@ -101,18 +100,20 @@ class RVSwiftDDP: NSObject {
         }
     }
     func handleSignup(result: Any?, error: DDPError?, callback: @escaping(_ error: RVError?) -> Void ){
-        if let error = error {
-            let rvError = RVError(message: "In \(self.instanceType).signupViaEmail \(#line), got DDPError", sourceError: error, lineNumber: #line)
-            callback(rvError)
-            return
-        } else if let _ = result {
-           // print("In \(self.classForCoder).signupViaEmail line \(#line), result is \(result)")
-            callback(nil)
-            return
-        } else {
-            print("In \(self.classForCoder).signupViaEmail line \(#line), no error but no result")
-            callback(nil)
-            return
+        DispatchQueue.main.async {
+            if let error = error {
+                let rvError = RVError(message: "In \(self.instanceType).signupViaEmail \(#line), got DDPError", sourceError: error, lineNumber: #line)
+                callback(rvError)
+                return
+            } else if let _ = result {
+                // print("In \(self.classForCoder).signupViaEmail line \(#line), result is \(result)")
+                callback(nil)
+                return
+            } else {
+                print("In \(self.classForCoder).signupViaEmail line \(#line), no error but no result")
+                callback(nil)
+                return
+            }
         }
     }
     /**
@@ -123,10 +124,19 @@ class RVSwiftDDP: NSObject {
      */
     func connect(callback: @escaping () -> Void ) {
         Meteor.connect(self.meteorURL) {
-            callback()
+            self.connected = true
+            DispatchQueue.main.async { callback() }
         }
     }
     func logout(callback: @escaping(_ error: RVError?)-> Void) {
+        RVCoreInfo.sharedInstance.logoutCoreInfo()
+        RVCoreInfo.sharedInstance.changeState(newState: RVLoggedoutState())
+        if Meteor.client.user() == nil {
+            callback(nil)
+            logoutListeners.notifyListeners()
+            NotificationCenter.default.post(name: NSNotification.Name(rawValue: RVNotification.userDidLogout.rawValue), object: nil, userInfo: ["user": NSNull()])
+            return
+        }
         Meteor.logout { (result, error) in
             if let error = error {
                 let rvError = RVError(message: "In \(self.classForCoder).logout, got DDPError", sourceError: error)
@@ -210,13 +220,15 @@ class RVSwiftDDP: NSObject {
         }
     }
     func loginWithPassword(email: String, password: String, completionHandler: @escaping (_ result: Any?, _ error: RVError?)-> Void) -> Void {
-        Meteor.loginWithPassword(email, password: password) { (result: Any?, error: DDPError?) in
-            if let error = error {
-                let rvError = RVError(message: "In \(self.instanceType).loginWithPassword, got Meteor Error for email \(email) password \(password)", sourceError: error)
-                completionHandler(result, rvError)
-                return
-            } else {
-                completionHandler(result, nil)
+        DispatchQueue.main.async {
+            Meteor.loginWithPassword(email, password: password) { (result: Any?, error: DDPError?) in
+                if let error = error {
+                    let rvError = RVError(message: "In \(self.instanceType).loginWithPassword, got Meteor Error for email \(email) password \(password)", sourceError: error)
+                    completionHandler(result, rvError)
+                    return
+                } else {
+                    completionHandler(result, nil)
+                }
             }
         }
     }
@@ -230,24 +242,73 @@ class RVSwiftDDP: NSObject {
         }
         NotificationCenter.default.post(name: NSNotification.Name(rawValue: RVNotification.collectionDidChange.rawValue), object: nil, userInfo: notification.userInfo)
     }
-
+    func getUserProfile(username: String?, callback: @escaping (_ success: Bool, _ error: RVError?)-> Void) {
+        if let username = username {
+            RVUserProfile.getOrCreateUsersUserProfile(callback: { (profile, error) in
+                if let error = error {
+                    error.append(message: "In \(self.classForCoder).getUserInfo(), got error")
+                    error.printError()
+                    callback(false, error)
+                    return
+                } else if let userProfile = profile {
+                    let completionHandler = callback
+                    //    RVCoreInfo.sharedInstance.userProfile = profile
+                    self.getDomain(callback: { (domain , error) in
+                        if let error = error {
+                            error.append(message: "In \(self.classForCoder).getUserProfile, got error getting Domain")
+                            error.printError()
+                            completionHandler(false, error)
+                            return
+                        } else if let domain = domain {
+                            //   RVCoreInfo.sharedInstance.domain = domain
+                            RVCoreInfo.sharedInstance.loginCoreInfo(username: username, userProfile: userProfile, domain: domain)
+                            completionHandler(true, nil)
+                            return
+                        } else {
+                            completionHandler(false, nil)
+                        }
+                    })
+                } else {
+                    print("In \(self.classForCoder).getUserInfo(), no error but no profile")
+                    callback(false, nil)
+                }
+            })
+        } else {
+            RVCoreInfo.sharedInstance.logoutCoreInfo()
+        }
+    }
+    func getDomain(callback: @escaping(_ profile: RVDomain? , _ error: RVError?)-> Void) {
+        let domain = RVDomain()
+        domain.domainName = RVDomainName.PortolaValley
+        domain.title = "Portola Valley WatchGroup"
+        domain.findOrCreate(callback: { (domain , error ) in
+            if let error = error { error.append(message: "In \(self.classForCoder).getDomain, got error")}
+            callback(domain, error)
+        })
+    }
 }
 extension RVSwiftDDP: SwiftDDPDelegate {
     func ddpUserDidLogin(_ user:String) {
-   //     print("In \(self.instanceType).ddpUserDidLogin(), User did login as user \(user)")
+        print("In \(self.instanceType).ddpUserDidLogin(), User did login as user \(user)")
         //self.username = user
-        RVCoreInfo.sharedInstance.username = user
-        loginListeners.notifyListeners()
-        NotificationCenter.default.post(name: NSNotification.Name(rawValue: RVNotification.userDidLogin.rawValue), object: nil, userInfo: ["user": user])
-        
+       // RVCoreInfo.sharedInstance.username = user
+        getUserProfile(username: user) { (success, error) in
+            if let error = error {
+                error.printError()
+            } else if success {
+                self.loginListeners.notifyListeners()
+                NotificationCenter.default.post(name: NSNotification.Name(rawValue: RVNotification.userDidLogin.rawValue), object: nil, userInfo: ["user": user])
+            }
+        }
     }
     func ddpUserDidLogout(_ user:String) {
     //    print("In \(self.instanceType).ddpUserDidLogout(), User \(user) did logout")
         //self.username = nil
-        RVCoreInfo.sharedInstance.username = nil
-        RVCoreInfo.sharedInstance.loginCredentials = nil
+       // RVCoreInfo.sharedInstance.username = nil
+       // RVCoreInfo.sharedInstance.loginCredentials = nil
+        RVCoreInfo.sharedInstance.logoutCoreInfo()
         if RVViewDeck.sharedInstance.sideBeingShown == RVViewDeck.Side.left {
-            RVViewDeck.sharedInstance.toggleSide(side: .center, animated: false)
+      //      RVViewDeck.sharedInstance.toggleSide(side: .center, animated: false)
         } else {
             print("In \(self.classForCoder).ddpUserDidLogout on viewDeck side \(RVViewDeck.sharedInstance.sideBeingShown.description)")
         }

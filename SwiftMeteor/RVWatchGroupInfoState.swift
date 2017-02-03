@@ -13,6 +13,6 @@ class RVWatchGroupInfoState: RVMainViewControllerState {
         segmentViewFields = [.WatchGroupInfo, .WatchGroupMembers, .WatchGroupMessages]
         showTopView = true
         self.state = .WatchGroupInfo
-        print("In \(self.instanceType).configure, ")
+       // print("In \(self.instanceType).configure, ")
     }
 }

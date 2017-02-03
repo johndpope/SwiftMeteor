@@ -13,11 +13,14 @@ class RVBaseAppState {
     enum State: String {
         case LoggedOut  = "LoggedOut"
         case LoggedIn   = "LoggedIn"
+        case ShowProfile = "ShowProfile"
+        case MenuState = "MenuState"
         case Main = "Main"
         case WatchGroupList = "WatchGroupList"
         case WatchGroupInfo = "WatchGroupInfo"
         case WatchGroupMessages = "WatchGroupMessages"
         case WatchGroupMembers = "WatchGroupMembers"
+
         
         var segmentLabel: String {
             switch(self) {
@@ -34,6 +37,7 @@ class RVBaseAppState {
             }
         }
     }
+    var doNotInclude: Bool = false
     var instanceType: String { get { return String(describing: type(of: self)) } }
     var state: State = .Main
     var datasources = [RVBaseDataSource]()
@@ -71,7 +75,7 @@ class RVBaseAppState {
         return nil
     }
     func configure() {
-        print("In RVBaseAppState.configure")
+       // print("In RVBaseAppState.configure")
     }
     func initialize() {}
     func unwind(callback: @escaping()-> Void) { manager.removeAllSections { callback() } }

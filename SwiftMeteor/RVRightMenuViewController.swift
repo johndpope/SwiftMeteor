@@ -10,6 +10,7 @@ import UIKit
 import SwiftDDP
 
 class RVRightMenuViewController: RVBaseViewController {
+        var usingNewLogin: Bool = false
     static let identifier: String = "RightMenu"
     
     @IBOutlet weak var emailTextField: UITextField!
@@ -142,6 +143,8 @@ class RVRightMenuViewController: RVBaseViewController {
         }
     }
     override func viewDidLoad() {
+        super.viewDidLoad()
+        if usingNewLogin { return }
         RVSwiftDDP.sharedInstance.connect {
             //print("In \(self.instanceType).initialize, returned from connecting with Meteor")
         }

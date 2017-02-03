@@ -46,7 +46,10 @@ class RVBaseViewController: UIViewController {
         configureSearchController()
         if let topViewConstraint = self.topViewHeightConstraint { self.topViewHeightConstraintConstant = topViewConstraint.constant }
         setupTopView()
-        installRefresh(tableView: self.tableView)
+        if let tableView = self.tableView {
+                    installRefresh(tableView: tableView)
+        }
+
     }
     func configureSearchController() {
         if !mainState.installSearchController { return }
