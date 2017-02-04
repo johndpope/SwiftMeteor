@@ -36,6 +36,35 @@ class RVWatchGroupMembersState: RVWatchGroupInfoState {
             })
         }
     }
+    override func loadMain() {
+        // self.clearAndCreateWatchGroups()
+        for datasource in datasources { manager.addSection(section: datasource)}
+        if let mainDatasource = self.findDatasource(type: RVBaseDataSource.DatasourceType.main) {
+            if let queryFunction = self.queryFunctions[RVBaseDataSource.DatasourceType.main] {
+                let query = queryFunction([String: AnyObject]())
+                self.manager.stopAndResetDatasource(datasource: mainDatasource, callback: { (error) in
+                    if let error = error {
+                        error.append(message: "In \(self.instanceType).loadMain, got error stoping main database")
+                        error.printError()
+                    } else {
+                        self.manager.startDatasource(datasource: mainDatasource, query: query, callback: { (error) in
+                            if let error = error {
+                                error.append(message: "In \(self.instanceType).loadMain, got error starting main database")
+                                error.printError()
+                            } else {
+                                // print("In \(self.instanceType).loadMain, completed start")
+                            }
+                        })
+                    }
+                })
+                return
+            } else {
+                print("In \(self.instanceType).loadMain, no queryFunction")
+            }
+        } else {
+            print("In \(self.instanceType).loadMain, no mainDatasource")
+        }
+    }
 }
 extension RVWatchGroupMembersState {
     func configure2() {
@@ -77,35 +106,7 @@ extension RVWatchGroupMembersState {
         queryFunctions[.filter] = filterQuery
     }
 
-    func loadMain() {
-        // self.clearAndCreateWatchGroups()
-        for datasource in datasources { manager.addSection(section: datasource)}
-        if let mainDatasource = self.findDatasource(type: RVBaseDataSource.DatasourceType.main) {
-            if let queryFunction = self.queryFunctions[RVBaseDataSource.DatasourceType.main] {
-                let query = queryFunction([String: AnyObject]())
-                self.manager.stopAndResetDatasource(datasource: mainDatasource, callback: { (error) in
-                    if let error = error {
-                        error.append(message: "In \(self.instanceType).loadMain, got error stoping main database")
-                        error.printError()
-                    } else {
-                        self.manager.startDatasource(datasource: mainDatasource, query: query, callback: { (error) in
-                            if let error = error {
-                                error.append(message: "In \(self.instanceType).loadMain, got error starting main database")
-                                error.printError()
-                            } else {
-                                // print("In \(self.instanceType).loadMain, completed start")
-                            }
-                        })
-                    }
-                })
-                return
-            } else {
-                print("In \(self.instanceType).loadMain, no queryFunction")
-            }
-        } else {
-            print("In \(self.instanceType).loadMain, no mainDatasource")
-        }
-    }
+
     func createWatchGroups() {
         let titles = ["Bear Gulch", "Golden Oak", "Corte Madera"]
         let handles = ["Joyce", "Lisa", "Jennifer"]

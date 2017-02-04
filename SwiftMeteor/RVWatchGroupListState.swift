@@ -67,7 +67,7 @@ class RVWatchGroupListState: RVMainViewControllerState {
             })
         }
     }
-    func loadMain() {
+    override func loadMain() {
        // self.clearAndCreateWatchGroups()
           for datasource in datasources { manager.addSection(section: datasource) }
         if let mainDatasource = self.findDatasource(type: RVBaseDataSource.DatasourceType.main) {

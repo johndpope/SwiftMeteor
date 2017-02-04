@@ -29,7 +29,7 @@ class RVBaseModel: MeteorDocument {
     var unsets = [String: AnyObject]()
     var imageInitiallyNull = false
     var locationInitiallyNull = false
-
+    var userProfile: RVUserProfile? = nil
 
     init() {
         let id = RVSwiftDDP.sharedInstance.getId()

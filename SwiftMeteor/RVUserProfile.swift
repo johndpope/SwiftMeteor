@@ -205,6 +205,28 @@ class RVUserProfile: RVBaseModel {
         profile.location = location
         return profile
     }
+    class func findById(id: String, callback: @escaping (_ profile: RVUserProfile?, _ error: RVError?) -> Void ) {
+        let minimumLength = 9
+        let maximumLength = 30
+        if (id.characters.count < minimumLength) || (id.characters.count > maximumLength) {
+            let error = RVError(message: "In RVUserProfile.findById, id [\(id)] is erroneously less than \(minimumLength) or more than maximum length \(maximumLength)")
+            callback(nil, error)
+            return
+        } else {
+            Meteor.call(RVMeteorMethods.userProfileFind.rawValue, params: [id], callback: { (result, error) in
+                if let error = error {
+                    let rvError = RVError(message: "In RVUserProfile.findById, got error", sourceError: error, lineNumber: #line, fileName: "")
+                    callback(nil, rvError)
+                    return
+                } else if let fields = result as? [String : AnyObject] {
+                    callback(RVUserProfile(fields: fields), nil)
+                    return
+                } else {
+                    callback(nil, nil)
+                }
+            })
+        }
+    }
     class func getOrCreateUsersUserProfile(callback: @escaping (_ profile: RVUserProfile?, _ error: RVError?) -> Void ) {
         let profile = RVUserProfile()
         profile.username = RVCoreInfo.sharedInstance.username

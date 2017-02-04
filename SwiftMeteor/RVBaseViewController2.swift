@@ -36,6 +36,11 @@ class RVBaseViewController2: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+
+        if let tableView = self.tableView {
+            let inset = self.tableView.contentInset
+            tableView.contentInset = UIEdgeInsets(top: inset.top + 200, left: inset.left, bottom: inset.bottom, right: inset.right)
+        }
         configure()
     }
     override func viewWillAppear(_ animated: Bool) {
@@ -60,6 +65,7 @@ class RVBaseViewController2: UIViewController {
         definesPresentationContext = true
     }
     func install() {
+        print("In \(self.classForCoder).install")
         installSearchController()
         installTopView()
         installNavigationTitle()
@@ -167,8 +173,12 @@ extension RVBaseViewController2: UISearchControllerDelegate {
 }
 extension RVBaseViewController2: UISearchResultsUpdating {
     
-    func hideTopView() { if let view = topView { view.isHidden = true } }
+    func hideTopView() {
+        print("In \(self.instanceType).hideTopView) with state \(mainState) and showTopView: \(mainState.showTopView)")
+        if let view = topView { view.isHidden = true }
+    }
     func showTopView() {
+        print("In \(self.instanceType).showTopView) with state \(mainState) and showTopView: \(mainState.showTopView)")
         if let view = topView { if mainState.showTopView { view.isHidden = false }}
     }
     func updateSearchResults(for searchController: UISearchController) {

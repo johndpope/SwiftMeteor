@@ -72,12 +72,15 @@ class RVMainLandingViewController: RVBaseViewController2 {
                view.removeFromSuperview()
                 self.watchGroupInfoView = nil
             }
-            
-            self.mainState = RVWatchGroupForumState(scrollView: self.dsScrollView, stack: self.mainState.stack)
-            self.install()
-            //self.setupTopView()
-            self.mainState.initialize(scrollView: self.dsScrollView)
- 
+            self.mainState.unwind {
+                self.mainState = RVMessageListState(scrollView: self.dsScrollView, stack: self.mainState.stack)
+                //self.mainState = RVWatchGroupForumState(scrollView: self.dsScrollView, stack: self.mainState.stack)
+                print("In \(self.classForCoder).setupWatchGroupMessage. just installed RVMessageListState")
+                self.install()
+               // self.setupTopView()
+                self.mainState.initialize(scrollView: self.dsScrollView)
+            }
+
         }
     }
     func setupWatchGroupInfo(){
@@ -147,7 +150,7 @@ class RVMainLandingViewController: RVBaseViewController2 {
         }
     }
     @IBAction func searchButtonTouched(_ sender: UIBarButtonItem) {
-        if mainState.state == .WatchGroupMessages {
+        if mainState.state == .WatchGroupMessages || mainState.state == .MessageListState {
             performSegue(withIdentifier: "SegueFromMainToMessageCreate", sender: nil)
         } else {
             presentWatchGroupCreateEdit(watchGroup: nil)
@@ -268,6 +271,11 @@ class RVMainLandingViewController: RVBaseViewController2 {
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         if let _ = mainState as? RVWatchGroupListState {
             if let cell = tableView.dequeueReusableCell(withIdentifier: RVWatchGroupTableCell.identifier, for: indexPath) as? RVWatchGroupTableCell {
+                cell.model = manager.item(indexPath: indexPath)
+                return cell
+            }
+        } else if let _ = mainState as? RVMessageListState {
+            if let cell = tableView.dequeueReusableCell(withIdentifier: RVMessageTableCell.identifier, for: indexPath) as? RVMessageTableCell {
                 cell.model = manager.item(indexPath: indexPath)
                 return cell
             }

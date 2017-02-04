@@ -19,18 +19,20 @@ class RVBaseTableViewCell: UITableViewCell {
         
     }
     override func prepareForReuse() {
-        super.prepareForReuse()
-        
+        self.model = nil
     }
+
 }
 extension RVBaseTableViewCell {
-    func setLabelText(label: UILabel!, text: String?) {
+    func setLabelText(label: UILabel!, text: String?, default: String = "nothing") {
         if let label = label {
-            if let text = text {
-                label.text = text
-            } else {
-                label.text = "nothing"
-            }
+            if let text = text { label.text = text
+            } else { label.text = "nothing" }
+        }
+    }
+    func setLabelText(label: UILabel?, date: Date?) {
+        if let label = label {
+            if let date = date {label.text = RVDateToHumanMapper.shared.timeAgoSinceDate(date: date, numericDates: false)}
         }
     }
     func setButtonText(button: UIButton!, text: String?) {

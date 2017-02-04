@@ -29,15 +29,7 @@ class RVFirstViewTableCell: RVBaseTableViewCell {
     }
 }
 extension RVFirstViewTableCell {
-    override func setLabelText(label: UILabel!, text: String?) {
-        if let label = label {
-            if let text = text {
-                label.text = text
-            } else {
-                label.text = "nothing"
-            }
-        }
-    }
+
     override func setButtonText(button: UIButton!, text: String?) {
         if let button = button {
             if let text = text {
