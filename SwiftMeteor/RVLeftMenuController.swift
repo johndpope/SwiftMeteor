@@ -16,8 +16,8 @@ class RVLeftMenuController: RVBaseViewController {
     @IBOutlet weak var menuButton: UIBarButtonItem!
   //  @IBOutlet weak var tableView: UITableView!
     @IBAction func menuButtonTouched(_ sender: UIBarButtonItem) {
-        print("In \(self.classForCoder).menuButtonTOuched toggling to center")
-        returnToCenter()
+    
+        //returnToCenter()
     }
 
 
@@ -64,9 +64,13 @@ extension RVLeftMenuController {
                 } else if string == "ClearUsers" {
                     RVUserProfile.clearAll()
                 } else if string == "Profile" {
-                    let _ = RVCoreInfo.sharedInstance.changeState(newState: RVShowProfileState(scrollView: nil, stack: mainState.stack))
+                    mainState.unwind {
+                        let _ = RVCoreInfo.sharedInstance.changeState(newState: RVShowProfileState(scrollView: nil, stack: self.mainState.stack))
+                        self.returnToCenter()
+                    }
+
               //      RVAppState.shared.state = .ShowProfile
-                    returnToCenter()
+
                 } else {
 
                     print("In \(self.classForCoder).didSelectRowAt \(indexPath.row), \(string) not handled")
