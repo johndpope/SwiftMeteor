@@ -6,7 +6,7 @@
 //  Copyright © 2017 Neil Weintraut. All rights reserved.
 //
 
-import Foundation
+import UIKit
 class RVWatchGroupMembersState: RVWatchGroupInfoState {
     override func configure() {
         super.configure()
@@ -17,7 +17,8 @@ class RVWatchGroupMembersState: RVWatchGroupInfoState {
     
     
     // Temporary
-    override func initialize() {
+    override func initialize(scrollView: UIScrollView?) {
+        self.manager = RVDSManager(scrollView: scrollView )
         if let domain = RVCoreInfo.sharedInstance.domain {
             stack = [domain]
             self.loadMain()

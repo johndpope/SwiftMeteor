@@ -60,7 +60,7 @@ class RVMainLandingViewController: RVBaseViewController2 {
                 self.mainState = RVWatchGroupMembersState(scrollView: self.dsScrollView, stack: self.mainState.stack)
                 self.install()
                // self.setupTopView()
-                self.mainState.initialize()
+                self.mainState.initialize(scrollView: self.dsScrollView)
                 
             }
         
@@ -76,7 +76,7 @@ class RVMainLandingViewController: RVBaseViewController2 {
             self.mainState = RVWatchGroupForumState(scrollView: self.dsScrollView, stack: self.mainState.stack)
             self.install()
             //self.setupTopView()
-            self.mainState.initialize()
+            self.mainState.initialize(scrollView: self.dsScrollView)
  
         }
     }
@@ -93,10 +93,10 @@ class RVMainLandingViewController: RVBaseViewController2 {
                         view.state = self.mainState
                         overlayView.addSubview(view)
                     }
-                    self.mainState.initialize()
+                    self.mainState.initialize(scrollView: self.dsScrollView)
                 }
             }
-            self.mainState.initialize()
+            self.mainState.initialize(scrollView: self.dsScrollView)
         }
     }
     @IBAction func segmentedControlValueChanged(_ sender: UISegmentedControl) {
@@ -219,7 +219,7 @@ class RVMainLandingViewController: RVBaseViewController2 {
                 self.present(viewController, animated: true, completion: { })
             }
         } else {
-            mainState.initialize()
+            mainState.initialize(scrollView: self.dsScrollView)
         }
     }
     func tableView(_ tableView: UITableView, canEditRowAt indexPath: IndexPath) -> Bool {

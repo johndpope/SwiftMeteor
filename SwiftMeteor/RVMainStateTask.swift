@@ -6,7 +6,7 @@
 //  Copyright © 2017 Neil Weintraut. All rights reserved.
 //
 
-import Foundation
+import UIKit
 class RVMainStateTask: RVMainViewControllerState {
     override func configure() {
         let state = self
@@ -68,7 +68,9 @@ class RVMainStateTask: RVMainViewControllerState {
         })
         state.queryFunctions[RVBaseDataSource.DatasourceType.filter] = filterQuery
     }
-    override func initialize() {
+
+    override func initialize(scrollView: UIScrollView? ) {
+        self.manager = RVDSManager(scrollView: scrollView)
         RVSeed.createRootTask { (root, error) in
             if let error = error {
                 error.printError()

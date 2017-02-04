@@ -6,7 +6,7 @@
 //  Copyright © 2017 Neil Weintraut. All rights reserved.
 //
 
-import Foundation
+import UIKit
 class RVWatchGroupListState: RVMainViewControllerState {
     override func configure() {
         self.state = .WatchGroupList
@@ -48,7 +48,8 @@ class RVWatchGroupListState: RVMainViewControllerState {
         }
         queryFunctions[.filter] = filterQuery
     }
-    override func initialize() {
+    override func initialize(scrollView: UIScrollView?) {
+        self.manager = RVDSManager(scrollView: scrollView)
         if let domain = RVCoreInfo.sharedInstance.domain {
             stack = [domain]
             self.loadMain()

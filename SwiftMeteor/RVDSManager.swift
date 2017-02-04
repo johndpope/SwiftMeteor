@@ -11,9 +11,9 @@ import UIKit
 class RVDSManager {
     var instanceType: String { get { return String(describing: type(of: self)) } }
     var sections = [RVBaseDataSource]()
-    weak var scrollView: UIScrollView!
+    weak var scrollView: UIScrollView?
     let animation = UITableViewRowAnimation.automatic
-    init(scrollView: UIScrollView) {
+    init(scrollView: UIScrollView? = nil) {
         self.scrollView = scrollView
     }
     func section(datasource :RVBaseDataSource)->Int {

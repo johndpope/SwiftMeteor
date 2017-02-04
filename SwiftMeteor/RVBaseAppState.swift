@@ -52,7 +52,7 @@ class RVBaseAppState {
     }
     var scopes = [[String: RVKeys]]()
     var segmentViewFields: [RVMainViewControllerState.State] = []
-    var manager: RVDSManager
+    var manager: RVDSManager = RVDSManager(scrollView: nil)
     var dontUseManager: Bool = false
     var showTopView = true
     var installSearchController = true
@@ -60,8 +60,8 @@ class RVBaseAppState {
     var userProfile: RVUserProfile? { get { return RVCoreInfo.sharedInstance.userProfile }}
     var domain: RVDomain? { get { return RVCoreInfo.sharedInstance.domain }}
     init(scrollView: UIScrollView? = nil, stack: [RVBaseModel]? = nil) {
-        if let scrollView = scrollView { self.manager = RVDSManager(scrollView: scrollView) }
-        else { self.manager = RVDSManager(scrollView: UIScrollView()) }
+      //  if let scrollView = scrollView { self.manager = RVDSManager(scrollView: scrollView) }
+      //  else { self.manager = RVDSManager(scrollView: UIScrollView()) }
         if let stack = stack { self.stack = stack }
         configure()
         if scrollView == nil { print("In \(instanceType).init, no ScrollView provided")}
@@ -71,6 +71,6 @@ class RVBaseAppState {
         return nil
     }
     func configure() {}
-    func initialize() {}
+    func initialize(scrollView: UIScrollView? = nil) {}
     func unwind(callback: @escaping()-> Void) { manager.removeAllSections { callback() } }
 }
