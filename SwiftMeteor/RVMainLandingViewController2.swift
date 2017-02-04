@@ -13,6 +13,9 @@ class RVMainLandingViewController2 : RVMainLandingViewController {
     func becomeActiveButton(button: UIButton? = nil, barButton: UIBarButtonItem? = nil) -> Bool {
         return RVCoreInfo.sharedInstance.becomeActiveButtonIfNotActive(button, barButton)
     }
+    func changeState(newState: RVBaseAppState) {
+        RVCoreInfo.sharedInstance.changeState(newState: newState)
+    }
     func clearActiveButton(button: UIButton? = nil, barButton: UIBarButtonItem? = nil ) -> Bool {
         return RVCoreInfo.sharedInstance.clearActiveButton(button , barButton)
     }
@@ -20,6 +23,7 @@ class RVMainLandingViewController2 : RVMainLandingViewController {
         performSegue(withIdentifier: "SegueFromMainToLoginScene", sender: nil)
     }
     @IBAction override func doneButtonTouched(_ sender: UIBarButtonItem) {
+
         if !self.becomeActiveButton(button: nil, barButton: sender) { return }
         if mainState.state == .WatchGroupMessages {
             if let controller = self.presentedViewController as? RVMessageAuthorViewController {
@@ -31,6 +35,7 @@ class RVMainLandingViewController2 : RVMainLandingViewController {
         } else {
             mainState.unwind {
                 RVViewDeck.sharedInstance.toggleSide(side: RVViewDeck.Side.left)
+                self.changeState(newState: RVMenuState(scrollView: nil, stack: self.mainState.stack))
                 let _ = self.clearActiveButton(button: nil, barButton: sender)
             }
         }
@@ -51,15 +56,6 @@ class RVMainLandingViewController2 : RVMainLandingViewController {
             return
         }
         mainState.unwind {
-            
-        }
-        if let tableView = self.tableView {
-            tableView.beginUpdates()
-            mainState.manager.sections = [RVBaseDataSource]()
-            tableView.reloadData()
-            tableView.endUpdates()
-        }
-       // mainState.unwind {
             let _ = RVCoreInfo.sharedInstance.changeState(newState: RVWatchGroupListState(scrollView: self.dsScrollView, stack: self.mainState.stack))
             if RVSwiftDDP.sharedInstance.connected { DispatchQueue.main.async { self.loadup() } }
             else {
@@ -67,8 +63,16 @@ class RVMainLandingViewController2 : RVMainLandingViewController {
                     if RVSwiftDDP.sharedInstance.connected { self.loadup() }
                 }
             }
+        }
+        /*
+        if let tableView = self.tableView {
+            tableView.beginUpdates()
+            mainState.manager.sections = [RVBaseDataSource]()
+            tableView.reloadData()
+            tableView.endUpdates()
+        }
+         */
 
-       // }
     }
     func addLogoutListener() {
         self.logoutListener = RVSwiftDDP.sharedInstance.addListener(listener: self, eventType: .userDidLogout) { (info) -> Bool in
@@ -77,7 +81,5 @@ class RVMainLandingViewController2 : RVMainLandingViewController {
             return true
         }
     }
-    func returnFromSideMenu() {
-        handleState()
-    }
+    func returnFromSideMenu() { handleState() }
 }

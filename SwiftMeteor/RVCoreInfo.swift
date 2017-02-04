@@ -22,11 +22,10 @@ class RVCoreInfo: NSObject {
         get {
             var stack = [RVBaseModel]()
             if let domain = self.domain { stack.append(domain) }
-            return RVMainViewControllerState(scrollView: UIScrollView(), stack: stack)
+            return RVMainViewControllerState(scrollView: nil, stack: stack)
         }
     }
     var appState: RVBaseAppState = RVLoggedoutState()
-    //var appState: RVBaseAppState = RVMainViewControllerState(scrollView: UIScrollView())
     var mainStoryboard = "Main"
     var loginCredentials: [String: AnyObject]? = nil
     var rootTask: RVTask?

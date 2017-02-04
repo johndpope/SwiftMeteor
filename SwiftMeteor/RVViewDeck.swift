@@ -98,18 +98,18 @@ class RVViewDeck: NSObject {
     func generateControllerStack() -> IIViewDeckController {
         let storyboard = UIStoryboard(name: RVViewDeck.mainStorybardName, bundle: nil)
         let leftViewController = storyboard.instantiateViewController(withIdentifier: RVViewDeck.leftControllerIdentifier)
-        let rightViewController = storyboard.instantiateViewController(withIdentifier: RVViewDeck.rightControllerIdentifier)
+    //    let rightViewController = storyboard.instantiateViewController(withIdentifier: RVViewDeck.rightControllerIdentifier)
         let tabBarController = storyboard.instantiateViewController(withIdentifier: RVViewDeck.centerControllerIdentifier)
         
         
         UITabBar.appearance().tintColor = UIColor().tabBarTintColor()
         //let centerController = UINavigationController(rootViewController: tabBarController)
-        let deckController = IIViewDeckController(center: tabBarController, leftViewController: leftViewController, rightViewController: rightViewController)
+        let deckController = IIViewDeckController(center: tabBarController, leftViewController: leftViewController)
         deckController.preferredContentSize = CGSize(width: 200, height: tabBarController.view.bounds.height)
         self.deckController = deckController
         deckController.delegate = self
         self.leftController = deckController.leftViewController
-        self.rightController = deckController.rightViewController
+        //self.rightController = deckController.rightViewController
         self.centerController = tabBarController
         return deckController
     }

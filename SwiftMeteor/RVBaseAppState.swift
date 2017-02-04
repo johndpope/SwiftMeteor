@@ -65,7 +65,7 @@ class RVBaseAppState {
     var domain: RVDomain? { get { return RVCoreInfo.sharedInstance.domain }}
     init(scrollView: UIScrollView? = nil, stack: [RVBaseModel]? = nil) {
         if let scrollView = scrollView { self.manager = RVDSManager(scrollView: scrollView) }
-        else { self.manager = RVDSManager(scrollView: UIScrollView()) }
+        else { self.manager = RVDSManager(scrollView: scrollView) }
         if let stack = stack { self.stack = stack }
         configure()
         if scrollView == nil { print("In \(instanceType).init, no ScrollView provided")}
