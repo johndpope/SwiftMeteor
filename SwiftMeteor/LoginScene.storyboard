@@ -178,7 +178,7 @@
                                 <rect key="frame" x="0.0" y="500" width="375" height="87"/>
                                 <subviews>
                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Login Failure :-(" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="KlA-5s-I0Z">
-                                        <rect key="frame" x="127.5" y="33.5" width="119" height="21"/>
+                                        <rect key="frame" x="128" y="33" width="119" height="21"/>
                                         <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                         <color key="textColor" red="1" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
                                         <nil key="highlightedColor"/>
@@ -227,9 +227,11 @@
                         <outlet property="registerButton" destination="wuR-Ta-bMQ" id="eXf-P9-4Ia"/>
                         <outlet property="registerButtonView" destination="7YG-Or-Erm" id="V23-sf-Vus"/>
                         <outlet property="resetPasswordButton" destination="y9s-XV-bpa" id="1Ng-Nr-dum"/>
+                        <segue destination="Hpk-R8-f3P" kind="unwind" identifier="UnwindFromLoginToMainLanding" unwindAction="unwindFromLoginSceneToMainLandingWithSegue:" id="291-JK-URW"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="MIX-9u-sOw" userLabel="First Responder" sceneMemberID="firstResponder"/>
+                <exit id="Hpk-R8-f3P" userLabel="Exit" sceneMemberID="exit"/>
             </objects>
             <point key="canvasLocation" x="500" y="-197"/>
         </scene>

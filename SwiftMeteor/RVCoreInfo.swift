@@ -22,10 +22,10 @@ class RVCoreInfo: NSObject {
         get {
             var stack = [RVBaseModel]()
             if let domain = self.domain { stack.append(domain) }
-            return RVMainViewControllerState(scrollView: UIScrollView(), stack: stack)
+            return RVMainViewControllerState(stack: stack)
         }
     }
-    var appState: RVBaseAppState = RVMainViewControllerState(scrollView: UIScrollView())
+    var appState: RVBaseAppState = RVMainViewControllerState()
     var mainStoryboard = "Main"
     var loginCredentials: [String: AnyObject]? = nil
     var rootTask: RVTask?
@@ -86,8 +86,14 @@ class RVCoreInfo: NSObject {
         }
         return false
     }
+    func clearLogin() {
+        domain = nil
+        userProfile = nil
+        username = nil
+        loginCredentials = nil
+    }
     func completeLogin(username: String, callback: @escaping(_ success: Bool, _ error: RVError?) -> Void) {
-        print("In \(self.classForCoder).completeLogin")
+        //print("In \(self.classForCoder).completeLogin")
         RVUserProfile.getOrCreateUsersUserProfile(callback: { (profile, error) in
             if let error = error {
                 error.append(message: "In \(self.classForCoder).getUserInfo(), got error")
@@ -117,7 +123,7 @@ class RVCoreInfo: NSObject {
             }
         })
     }
-    func getUserProfile() {
+    private func getUserProfile() {
         if username == nil {
             self.userProfile = nil
             self.userId = nil

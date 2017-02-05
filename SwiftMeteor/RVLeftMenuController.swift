@@ -30,7 +30,7 @@ class RVLeftMenuController: RVBaseViewController {
 
     ]
     override func viewDidLoad() {
-        if let scrollView = self.dsScrollView { self.mainState = RVLeftControllerState(scrollView: scrollView) }
+       // self.mainState = RVLeftControllerState()
         super.viewDidLoad()
     }
     

@@ -14,12 +14,16 @@ class RVMainLandingViewController: RVBaseViewController2 {
     let SegueFromMainToProfileScene = "SegueFromMainToProfileScene"
  //   @IBOutlet weak var segmentedControl: UISegmentedControl!
     weak var watchGroupInfoView: RVWatchGroupView? = nil
+    @IBAction func unwindFromLoginSceneToMainLanding(segue: UIStoryboardSegue) {
+        self.mainState = RVWatchGroupListState(stack: self.mainState.stack)
+        mainState.initialize(scrollView: dsScrollView)
+    }
     @IBAction func unwindFromWatchGroupCreateEdit(seque: UIStoryboardSegue) {
         if let _ = seque.source as? RVWatchGroupCreateEditController {
         }
     }
     @IBAction func unwindFromProfileScene(segue: UIStoryboardSegue) {
-        if let _ = segue.source as? RVRightMenuViewController {}
+        print("In \(self.classForCoder).unwindFromProfileScene.......should not get here")
     
     }
     @IBAction func unwindFromMessageCreateScene(segue: UIStoryboardSegue) {
@@ -37,7 +41,8 @@ class RVMainLandingViewController: RVBaseViewController2 {
     }
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
-        if userProfile == nil {
+       // print("In \(self.classForCoder).viewDidAppear with state \(mainState) \(mainState.state)")
+        if mainState.state == .LoggedOut {
             self.performSegue(withIdentifier: "SegueFromWatchGroupListToLoginScene", sender: nil)
         }
     }
@@ -63,7 +68,7 @@ class RVMainLandingViewController: RVBaseViewController2 {
                     view.removeFromSuperview()
                     self.watchGroupInfoView = nil
                 }
-                self.mainState = RVWatchGroupMembersState(scrollView: self.dsScrollView, stack: self.mainState.stack)
+                self.mainState = RVWatchGroupMembersState(stack: self.mainState.stack)
                 self.install()
                // self.setupTopView()
                 self.mainState.initialize(scrollView: self.dsScrollView)
@@ -79,7 +84,7 @@ class RVMainLandingViewController: RVBaseViewController2 {
                 self.watchGroupInfoView = nil
             }
             self.mainState.unwind {
-                self.mainState = RVMessageListState(scrollView: self.dsScrollView, stack: self.mainState.stack)
+                self.mainState = RVMessageListState(stack: self.mainState.stack)
                 //self.mainState = RVWatchGroupForumState(scrollView: self.dsScrollView, stack: self.mainState.stack)
                 print("In \(self.classForCoder).setupWatchGroupMessage. just installed RVMessageListState")
                 self.install()
@@ -91,8 +96,9 @@ class RVMainLandingViewController: RVBaseViewController2 {
     }
     func setupWatchGroupInfo(){
         mainState.unwind {
-            self.mainState = RVWatchGroupInfoState(scrollView: self.dsScrollView, stack: self.mainState.stack)
+            self.mainState = RVWatchGroupInfoState(stack: self.mainState.stack)
 //
+            print("In \(self.classForCoder).setupWatchGroupInfo()")
             self.install()
             //self.setupTopView()
             if self.watchGroupInfoView == nil {
@@ -163,11 +169,10 @@ class RVMainLandingViewController: RVBaseViewController2 {
         }
     }
     override func viewDidLoad() {
-        mainState.unwind { self.mainState = RVWatchGroupListState(scrollView: self.dsScrollView, stack: [RVBaseModel]()) }
+        print("In \(self.classForCoder).viewDidLoad")
+        // mainState.unwind { self.mainState = RVWatchGroupListState(stack: [RVBaseModel]()) }
         super.viewDidLoad()
-        if let tableView = self.tableView {
-            tableView.register(RVFirstViewHeaderCell.self, forHeaderFooterViewReuseIdentifier: RVFirstViewHeaderCell.identifier)
-        }
+        if let tableView = self.tableView { tableView.register(RVFirstViewHeaderCell.self, forHeaderFooterViewReuseIdentifier: RVFirstViewHeaderCell.identifier) }
     
 
         // RVViewDeck.sharedInstance.toggleSide(side: .right, animated: true)
@@ -270,6 +275,7 @@ class RVMainLandingViewController: RVBaseViewController2 {
         return nil
     }
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        //print("In \(self.classForCoder).cellForRowAt: \(indexPath.row), mainState is \(mainState)")
         if let _ = mainState as? RVWatchGroupListState {
             if let cell = tableView.dequeueReusableCell(withIdentifier: RVWatchGroupTableCell.identifier, for: indexPath) as? RVWatchGroupTableCell {
                 cell.model = manager.item(indexPath: indexPath)

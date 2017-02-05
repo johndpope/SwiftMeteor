@@ -247,7 +247,7 @@
         <!--RVMainLandingViewController-->
         <scene sceneID="D7x-If-IWd">
             <objects>
-                <viewController storyboardIdentifier="RVMainLandingViewController" id="26z-cv-GPL" userLabel="RVMainLandingViewController" customClass="RVMainLandingViewController" customModule="SwiftMeteor" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController id="26z-cv-GPL" userLabel="RVMainLandingViewController" customClass="RVMainLandingViewController" customModule="SwiftMeteor" customModuleProvider="target" sceneMemberID="viewController">
                     <layoutGuides>
                         <viewControllerLayoutGuide type="top" id="Bc6-b0-469"/>
                         <viewControllerLayoutGuide type="bottom" id="H1j-Zv-1yq"/>
@@ -523,7 +523,7 @@
                             <popoverArrowDirection key="popoverArrowDirection" up="YES" down="YES" left="YES" right="YES"/>
                         </segue>
                         <segue destination="D4g-Ah-FoL" kind="presentation" identifier="SegueFromMainToMessageCreate" modalPresentationStyle="overCurrentContext" id="otv-c3-iKG"/>
-                        <segue destination="zCb-EW-P8k" kind="show" identifier="SegueFromWatchGroupListToLoginScene" id="UsJ-Tv-YXU"/>
+                        <segue destination="zCb-EW-P8k" kind="presentation" identifier="SegueFromWatchGroupListToLoginScene" id="UsJ-Tv-YXU"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="6pq-4W-SsH" userLabel="First Responder" sceneMemberID="firstResponder"/>
@@ -1563,7 +1563,7 @@
         <!--Main Landing Navigation Controller-->
         <scene sceneID="Dd9-rR-ABn">
             <objects>
-                <navigationController storyboardIdentifier="RVMainLandingNavigationController" automaticallyAdjustsScrollViewInsets="NO" id="BFM-MQ-ke1" customClass="RVMainLandingNavigationController" customModule="SwiftMeteor" customModuleProvider="target" sceneMemberID="viewController">
+                <navigationController storyboardIdentifier="WatchGroupList" automaticallyAdjustsScrollViewInsets="NO" id="BFM-MQ-ke1" customClass="RVMainLandingNavigationController" customModule="SwiftMeteor" customModuleProvider="target" sceneMemberID="viewController">
                     <toolbarItems/>
                     <simulatedStatusBarMetrics key="simulatedStatusBarMetrics" statusBarStyle="lightContent"/>
                     <simulatedNavigationBarMetrics key="simulatedTopBarMetrics" translucent="NO"/>

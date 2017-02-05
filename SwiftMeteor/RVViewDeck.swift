@@ -12,9 +12,12 @@ import ViewDeck
 class RVViewDeck: NSObject {
     enum Controllers: String {
         case Profile = "ProfileNavController"
+        case WatchGroupList = "WatchGroupList"
         var storyBoard: String {
             switch(self) {
             case .Profile:
+                return "Main"
+            case .WatchGroupList:
                 return "Main"
             }
         }
@@ -43,10 +46,10 @@ class RVViewDeck: NSObject {
     static let mainStorybardName: String = "Main"
     static let leftControllerIdentifier: String =  RVLeftMenuNavController.identifier
     static let rightControllerIdentifier: String = RVRightNavigationController.identiifer
-    static let centerControllerIdentifier: String = RVMainLandingNavigationController.identifier
+    static let centerControllerIdentifier: String = RVViewDeck.Controllers.WatchGroupList.rawValue
     
     var deckController: IIViewDeckController = IIViewDeckController()
-    var leftController: UIViewController! {
+    var leftViewController: UIViewController! {
         get { return deckController.leftViewController }
         set { deckController.leftViewController = newValue }
     }
@@ -75,10 +78,11 @@ class RVViewDeck: NSObject {
         let leftViewController = storyboard.instantiateViewController(withIdentifier: RVViewDeck.leftControllerIdentifier)
         let centerController = storyboard.instantiateViewController(withIdentifier: RVViewDeck.centerControllerIdentifier)
         let deckController = IIViewDeckController(center: centerController, leftViewController: leftViewController)
+        //print("in \(self.classForCoder).viewDeck is \(deckController)")
         deckController.preferredContentSize = CGSize(width: 200, height: centerController.view.bounds.height)
         self.deckController = deckController
         deckController.delegate = self
-        self.leftController = deckController.leftViewController
+        //self.leftViewController = deckController.leftViewController
         return deckController
     }
     func openSide(side: IIViewDeckSide, animated: Bool = true) { self.deckController.open(side, animated: animated) }

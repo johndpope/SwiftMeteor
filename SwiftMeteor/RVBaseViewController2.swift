@@ -36,16 +36,17 @@ class RVBaseViewController2: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-
+/*
         if let tableView = self.tableView {
             let inset = self.tableView.contentInset
             tableView.contentInset = UIEdgeInsets(top: inset.top + 200, left: inset.left, bottom: inset.bottom, right: inset.right)
         }
+ */
         configure()
     }
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        
+        //print("IN \(self.classForCoder).viewWIllAppear")
         install()
     }
     func configure() {
@@ -65,7 +66,7 @@ class RVBaseViewController2: UIViewController {
         definesPresentationContext = true
     }
     func install() {
-        print("In \(self.classForCoder).install")
+        //print("In \(self.classForCoder).install")
         installSearchController()
         installTopView()
         installNavigationTitle()

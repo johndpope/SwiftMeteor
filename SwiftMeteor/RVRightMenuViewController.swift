@@ -130,9 +130,7 @@ class RVRightMenuViewController: RVBaseViewController {
                                                 self.operation = RVOperation(active: false)
                                             }
                                         })
-
                                     }
-
                                 })
                             }
                         }
@@ -148,16 +146,43 @@ class RVRightMenuViewController: RVBaseViewController {
         hideView(view: emailMessageLabel)
         hideView(view: loginFailureView)
         hideButtons()
+        addLogInOutListeners()
+        
     }
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
-        RVSwiftDDP.sharedInstance.connect {
-            //print("In \(self.instanceType).initialize, returned from connecting with Meteor")
+        if !RVSwiftDDP.sharedInstance.connected {
+            RVSwiftDDP.sharedInstance.connect {
+                //print("In \(self.instanceType).initialize, returned from connecting with Meteor")
+            }
+        } else {
         }
+
+
+        print("In \(self.classForCoder).viewDidAppear \(self.presentingViewController)")
     }
     
     override func addLogInOutListeners() {
-        print("In \(self.classForCoder).addLoginOutListeners")
+        print("In \(self.classForCoder).addLogInOutListeners ")
+        var listener = RVSwiftDDP.sharedInstance.addListener(listener: self, eventType: .userDidLogin) { (_ info: [String: AnyObject]? ) -> Bool in
+            print("In \(self.classForCoder).addLogInOutListeners, \(RVSwiftEvent.userDidLogin.rawValue) returned")
+            if let _ = self.presentingViewController as? RVMainLandingViewController {
+                print("\(self.classForCoder). login listener found RVMainLandingViewController")
+                self.performSegue(withIdentifier: "UnwindFromLoginToMainLanding", sender: nil)
+            } else {
+                print("In \(self.classForCoder).addLogInOutListeners cast \(self.presentingViewController)")
+                print("\(self.viewDeckController?.centerViewController)   \(self.viewDeckController?.leftViewController)")
+                print("In \(RVViewDeck.sharedInstance.centerViewController) \(RVViewDeck.sharedInstance.leftViewController)")
+            }
+            return true
+        }
+        if let listener = listener { listeners.append(listener) }
+        listener = RVSwiftDDP.sharedInstance.addListener(listener: self, eventType: .userDidLogout, callback: { (_ info: [String: AnyObject]? ) -> Bool in
+            print("In \(self.classForCoder).addLogInOutListeners, \(RVSwiftEvent.userDidLogout.rawValue) returned")
+            return true
+        })
+        if let listener = listener { listeners.append(listener) }
+
         /*
         Timer.scheduledTimer(withTimeInterval: 0.05, repeats: false) { (timer) in
             if let _ = RVCoreInfo.sharedInstance.username {

@@ -39,6 +39,10 @@ class RVSwiftDDP: NSObject {
         case DDP_USER_DID_LOGOUT = "DDP_USER_DID_LOGOUT"// Notification Name
     }
     var instanceType: String { get { return String(describing: type(of: self)) } }
+    var appState: RVBaseAppState {
+        get { return RVCoreInfo.sharedInstance.appState }
+        set { RVCoreInfo.sharedInstance.changeState(newState: newValue) }
+    }
     let meteorURL = "wss://rnmpassword-nweintraut.c9users.io/websocket"
     let userDidLogin = "userDid"
     //var username: String? = nil
@@ -47,6 +51,7 @@ class RVSwiftDDP: NSObject {
     let userDefaults = UserDefaults.standard
     var loginListeners = RVListeners()
     var logoutListeners = RVListeners()
+    var connected: Bool = false
     
     static let sharedInstance: RVSwiftDDP = {
         return RVSwiftDDP()
@@ -123,6 +128,7 @@ class RVSwiftDDP: NSObject {
      */
     func connect(callback: @escaping () -> Void ) {
         Meteor.connect(self.meteorURL) {
+            self.connected = true
             callback()
         }
     }
@@ -235,8 +241,6 @@ class RVSwiftDDP: NSObject {
 extension RVSwiftDDP: SwiftDDPDelegate {
     func ddpUserDidLogin(_ user:String) {
         print("In \(self.instanceType).ddpUserDidLogin(), User did login as user \(user)")
-        //self.username = user
-       // RVCoreInfo.sharedInstance.username = user
         RVCoreInfo.sharedInstance.completeLogin(username: user) { (success, error) in
             if let error = error {
                 error.append(message: "In \(self.classForCoder).ddpUserDidLogin user: \(user), got error")
@@ -244,6 +248,7 @@ extension RVSwiftDDP: SwiftDDPDelegate {
                 return
             } else if success {
                 RVCoreInfo.sharedInstance.changeState(newState: RVLoggedInState())
+                //print("In \(self.classForCoder).ddpUserDidLogin, about to notify [\(self.loginListeners.listeners.count)] listeners and publish notification \(RVNotification.userDidLogin.rawValue)")
                 self.loginListeners.notifyListeners()
                 NotificationCenter.default.post(name: NSNotification.Name(rawValue: RVNotification.userDidLogin.rawValue), object: nil, userInfo: ["user": user])
             } else {
@@ -254,13 +259,17 @@ extension RVSwiftDDP: SwiftDDPDelegate {
     func ddpUserDidLogout(_ user:String) {
     //    print("In \(self.instanceType).ddpUserDidLogout(), User \(user) did logout")
         //self.username = nil
-        RVCoreInfo.sharedInstance.username = nil
-        RVCoreInfo.sharedInstance.loginCredentials = nil
+        RVCoreInfo.sharedInstance.clearLogin()
         if RVViewDeck.sharedInstance.sideBeingShown == RVViewDeck.Side.left {
-            print("In \(self.classForCoder).ddpUserDidLogout. about to toggleView Deck")
-            RVViewDeck.sharedInstance.toggleSide(side: .center, animated: false)
+            print("In \(self.classForCoder).ddpUserDidLogout. about to toggleView Deck to center")
+            appState.unwind {
+                self.appState = RVLoggedoutState(stack: [RVBaseModel]())
+                RVViewDeck.sharedInstance.centerViewController = RVViewDeck.sharedInstance.instantiateController(controller: .WatchGroupList)
+                RVViewDeck.sharedInstance.toggleSide(side: .center, animated: false)
+            }
+
         } else {
-            print("In \(self.classForCoder).ddpUserDidLogout on viewDeck side \(RVViewDeck.sharedInstance.sideBeingShown.description)")
+            print("In \(self.classForCoder).ddpUserDidLogout on viewDeck side \(RVViewDeck.sharedInstance.sideBeingShown.description), not toggling")
         }
         logoutListeners.notifyListeners()
         NotificationCenter.default.post(name: NSNotification.Name(rawValue: RVNotification.userDidLogout.rawValue), object: nil, userInfo: ["user": user])

@@ -80,11 +80,15 @@ class RVBaseViewController: UIViewController {
         super.viewWillAppear(animated)
        // self.installObservers()
         showTopView()
-       // addLogInOutListeners()
+      // addLogInOutListeners()
     }
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         // addLogInOutListeners()
+    }
+    override func viewDidDisappear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        removeLogInOutListeners()
     }
     func addLogInOutListeners() {
         print("In \(self.classForCoder).addLogInOutListeners in RVBaseViewController need to override this method")

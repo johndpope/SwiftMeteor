@@ -61,12 +61,11 @@ class RVBaseAppState {
     var installRefreshControl: Bool = true
     var userProfile: RVUserProfile? { get { return RVCoreInfo.sharedInstance.userProfile }}
     var domain: RVDomain? { get { return RVCoreInfo.sharedInstance.domain }}
-    init(scrollView: UIScrollView? = nil, stack: [RVBaseModel]? = nil) {
+    init(stack: [RVBaseModel]? = nil) {
       //  if let scrollView = scrollView { self.manager = RVDSManager(scrollView: scrollView) }
       //  else { self.manager = RVDSManager(scrollView: UIScrollView()) }
         if let stack = stack { self.stack = stack }
         configure()
-        if scrollView == nil { print("In \(instanceType).init, no ScrollView provided")}
     }
     func findDatasource(type: RVBaseDataSource.DatasourceType) -> RVBaseDataSource? {
         for datasource in datasources { if datasource.datasourceType == type { return datasource } }

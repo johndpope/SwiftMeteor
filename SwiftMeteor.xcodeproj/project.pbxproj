@@ -32,6 +32,7 @@
 		2834609F1E4680920009D606 /* RVDateToHumanMapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2834609E1E4680920009D606 /* RVDateToHumanMapper.swift */; };
 		283460A11E468D1C0009D606 /* RVProfileState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 283460A01E468D1C0009D606 /* RVProfileState.swift */; };
 		283460A51E469BDD0009D606 /* WatchGroups.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 283460A41E469BDD0009D606 /* WatchGroups.storyboard */; };
+		283460A71E46C3A90009D606 /* RVBaseBaseViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 283460A61E46C3A90009D606 /* RVBaseBaseViewController.swift */; };
 		28360E161E034C7A00E62384 /* RVTaskCollection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 28360E151E034C7A00E62384 /* RVTaskCollection.swift */; };
 		28360E181E0352C400E62384 /* RVBaseCollection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 28360E171E0352C400E62384 /* RVBaseCollection.swift */; };
 		28360E1A1E046C0700E62384 /* RVMeteorUser.swift in Sources */ = {isa = PBXBuildFile; fileRef = 28360E191E046C0700E62384 /* RVMeteorUser.swift */; };
@@ -178,6 +179,7 @@
 		2834609E1E4680920009D606 /* RVDateToHumanMapper.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RVDateToHumanMapper.swift; sourceTree = "<group>"; };
 		283460A01E468D1C0009D606 /* RVProfileState.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RVProfileState.swift; sourceTree = "<group>"; };
 		283460A41E469BDD0009D606 /* WatchGroups.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = WatchGroups.storyboard; sourceTree = "<group>"; };
+		283460A61E46C3A90009D606 /* RVBaseBaseViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RVBaseBaseViewController.swift; sourceTree = "<group>"; };
 		28360E151E034C7A00E62384 /* RVTaskCollection.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RVTaskCollection.swift; sourceTree = "<group>"; };
 		28360E171E0352C400E62384 /* RVBaseCollection.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RVBaseCollection.swift; sourceTree = "<group>"; };
 		28360E191E046C0700E62384 /* RVMeteorUser.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RVMeteorUser.swift; sourceTree = "<group>"; };
@@ -396,6 +398,7 @@
 				28B0CFA21E3C38AD000C74DC /* RVStateCarrier.swift */,
 				28F400E81E3EBD9A00F660B4 /* RVBaseViewController2.swift */,
 				28F838B91E43C9430002E052 /* RVBaseAppState.swift */,
+				283460A61E46C3A90009D606 /* RVBaseBaseViewController.swift */,
 			);
 			name = BaseClasses;
 			sourceTree = "<group>";
@@ -896,6 +899,7 @@
 				283D370D1E3D256C00ADCBBA /* RVWatchGroupTableCell.swift in Sources */,
 				286CA32B1E327F8200B081B8 /* RVUserNotificationSetting.swift in Sources */,
 				284FBAD01DEC13B600446C86 /* RVBaseViewController.swift in Sources */,
+				283460A71E46C3A90009D606 /* RVBaseBaseViewController.swift in Sources */,
 				287B74701E1C2EE900900864 /* RVFirstViewHeaderCell.swift in Sources */,
 				2802252E1E1C5C9500D5FB60 /* RVFirstHeaderContentView.swift in Sources */,
 				2850AFFF1E1B60130043FEB3 /* RVResultsTableController.swift in Sources */,
