@@ -60,6 +60,19 @@ extension RVLeftMenuController {
                     })
                 } else if string == "ClearUsers" {
                     RVUserProfile.clearAll()
+                } else if string == "Watchgroups" {
+                    var stack = [RVBaseModel]()
+                    if mainState.stack.count >= 2 {
+                        for index in (0..<2) {
+                            stack.append(mainState.stack[index])
+                        }
+                        mainState.unwind {
+                            self.mainState = RVWatchGroupListState(stack: stack)
+                            RVViewDeck.sharedInstance.centerViewController = RVViewDeck.sharedInstance.instantiateController(controller: .WatchGroupList)
+                            RVViewDeck.sharedInstance.toggleSide(side: .center)
+                        }
+                    }
+            
                 } else if string == "Profile" {
                     print("In \(self.classForCoder).didSelectRowAt, about to install Profile and toggle to center")
                     deck.centerViewController = deck.instantiateController(controller: .Profile)

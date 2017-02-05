@@ -25,6 +25,7 @@ class RVMessageListState: RVBaseAppState {
         datasources.append(filterDatasource)
         //        for datasource in datasources { manager.addSection(section: datasource) }
         let mainQuery: queryFunction = {(params) in
+            print("In \(self.instanceType).mainQuery")
             let query = mainDatasource.basicQuery()
             if let top = self.stack.last {
                 query.addAnd(term: .parentId, value: top.localId as AnyObject, comparison: .eq)
@@ -34,6 +35,7 @@ class RVMessageListState: RVBaseAppState {
         }
         queryFunctions[.main] = mainQuery
         let filterQuery: queryFunction = {(params) in
+
             let query = filterDatasource.basicQuery()
             query.removeAllSortTerms()
             if let top = self.stack.last {

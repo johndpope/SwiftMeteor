@@ -16,7 +16,7 @@ class RVMainLandingViewController: RVBaseViewController2 {
     weak var watchGroupInfoView: RVWatchGroupView? = nil
     @IBAction func unwindFromLoginSceneToMainLanding(segue: UIStoryboardSegue) {
         self.mainState = RVWatchGroupListState(stack: self.mainState.stack)
-        mainState.initialize(scrollView: dsScrollView)
+        //mainState.initialize(scrollView: dsScrollView)
     }
     @IBAction func unwindFromWatchGroupCreateEdit(seque: UIStoryboardSegue) {
         if let _ = seque.source as? RVWatchGroupCreateEditController {
@@ -41,10 +41,13 @@ class RVMainLandingViewController: RVBaseViewController2 {
     }
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
-       // print("In \(self.classForCoder).viewDidAppear with state \(mainState) \(mainState.state)")
+       print("In \(self.classForCoder).viewDidAppear with state \(mainState) \(mainState.state)")
         if mainState.state == .LoggedOut {
             self.performSegue(withIdentifier: "SegueFromWatchGroupListToLoginScene", sender: nil)
+        } else {
+            mainState.initialize(scrollView: dsScrollView)
         }
+      //
     }
     func evaluateNewWatchGroupState(index: Int) {
         if index < mainState.segmentViewFields.count {
@@ -241,6 +244,9 @@ class RVMainLandingViewController: RVBaseViewController2 {
         if let group = manager.item(indexPath: indexPath) as? RVWatchGroup  {
             mainState.stack.append(group)
             setupWatchGroupInfo()
+            let query = RVQuery()
+            query.addAnd(term: .ownerId, value: userProfile!.localId as AnyObject, comparison: .eq)
+            query.addAnd(term: .followedId, value: group.localId as AnyObject, comparison: .eq)
         } else {
             print("In \(self.classForCoder).didSelect row, no RVWatchGroup")
         }

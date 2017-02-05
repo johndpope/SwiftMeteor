@@ -19,6 +19,12 @@ class RVWatchGroupMembersState: RVWatchGroupInfoState {
     // Temporary
     override func initialize(scrollView: UIScrollView?) {
         self.manager = RVDSManager(scrollView: scrollView )
+        if self.stack.count < 2 {
+            print("In \(self.instanceType).initialize, stack count is less than 2")
+        } else {
+            loadMain()
+        }
+        /*
         if let domain = RVCoreInfo.sharedInstance.domain {
             stack = [domain]
             self.loadMain()
@@ -35,6 +41,7 @@ class RVWatchGroupMembersState: RVWatchGroupInfoState {
                 }
             })
         }
+ */
     }
     override func loadMain() {
         // self.clearAndCreateWatchGroups()
@@ -79,69 +86,46 @@ extension RVWatchGroupMembersState {
 
         let mainQuery: queryFunction = {(params) in
             let query = mainDatasource.basicQuery()
-            if let top = self.stack.last {
-                query.addAnd(term: .domainId, value: top.localId as AnyObject, comparison: .eq)
+            if let _ = self.stack.first as? RVDomain {
+                if let group = self.stack[1] as? RVWatchGroup {
+                    if let groupId = group.localId {
+                        query.addAnd(term: .followedId, value: groupId as AnyObject, comparison: .eq)
+                        query.addSort(field: .fullName, order: .ascending)
+                        query.addAnd(term: .fullName, value: "" as AnyObject, comparison: .gte)
+                        return query
+                    }
+                }
             }
-            query.addAnd(term: .title, value: "" as AnyObject, comparison: .gte)
-            query.addSort(field: .title, order: .ascending)
+            print("In \(self.instanceType).configure2, missing domain or gruop")
             return query
         }
         queryFunctions[.main] = mainQuery
         let filterQuery: queryFunction = {(params) in
-            let query = filterDatasource.basicQuery()
+            let query = mainDatasource.basicQuery()
             query.removeAllSortTerms()
-            if let top = self.stack.last {
-                query.addAnd(term: .domainId, value: top.localId as AnyObject, comparison: .eq)
+            if let _ = self.stack.first as? RVDomain {
+                if let group = self.stack[1] as? RVWatchGroup {
+                    if let groupId = group.localId {
+                        query.addAnd(term: .followedId, value: groupId as AnyObject, comparison: .eq)
+
+                        query.addAnd(term: .fullName, value: "" as AnyObject, comparison: .gte)
+                        if let text = params[RVMainViewControllerState.textLabel] as? String {
+                            query.fixedTerm = RVQueryItem(term: .fullName, value: text.lowercased() as AnyObject, comparison: .regex)
+                            query.addSort(field: .fullName, order: .ascending)
+                        } else {
+                            print("IN \(self.instanceType).configure, filterQueryFunction, setting fixedTerm to .title, no text")
+                            query.fixedTerm = RVQueryItem(term: .fullName, value: "a" as AnyObject, comparison: .regex)
+                            query.addSort(field: .fullName, order: .ascending)
+                        }
+                        return query
+                    }
+                }
             }
-            if let text = params[RVMainViewControllerState.textLabel] as? String {
-                query.fixedTerm = RVQueryItem(term: .title, value: text.lowercased() as AnyObject, comparison: .regex)
-                query.addSort(field: .title, order: .ascending)
-            } else {
-                print("IN \(self.instanceType).configure, filterQueryFunction, setting fixedTerm to .title, no text")
-                query.fixedTerm = RVQueryItem(term: .title, value: "a" as AnyObject, comparison: .regex)
-                query.addSort(field: .title, order: .ascending)
-            }
+            print("In \(self.instanceType).configure2, missing domain or gruop")
             return query
         }
         queryFunctions[.filter] = filterQuery
     }
 
 
-    func createWatchGroups() {
-        let titles = ["Bear Gulch", "Golden Oak", "Corte Madera"]
-        let handles = ["Joyce", "Lisa", "Jennifer"]
-        let comments = ["Neat area", "A Shaped", "Hmmmmm"]
-        if let domain = self.domain {
-            if let userProfile = self.userProfile {
-                for index in (0..<titles.count) {
-                    let group = RVWatchGroup()
-                    group.title = titles[index]
-                    group.handle = handles[index]
-                    group.comment = comments[index]
-                    group.domainId = domain.localId
-                    group.setOwner(owner: userProfile)
-                    group.setParent(parent: domain)
-                    group.create(callback: { (savedGroup, error) in
-                        if let error = error {
-                            error.printError()
-                        } else if let savedGroup = savedGroup {
-                            print("In \(self.instanceType).createWatchGroups, created \(savedGroup.title!), \(savedGroup.handle!), comment: \(savedGroup.comment!)")
-                        } else {
-                            print("In \(self.instanceType).createWatchGroups, no error but no result")
-                        }
-                    })
-                }
-            }
-        }
-    }
-    func clearAndCreateWatchGroups() {
-        RVWatchGroup.deleteAll { (error ) in
-            if let error = error {
-                error.printError()
-            } else {
-                print("In \(self.instanceType).clearWatchGroup, returned without error")
-                self.createWatchGroups()
-            }
-        }
-    }
 }

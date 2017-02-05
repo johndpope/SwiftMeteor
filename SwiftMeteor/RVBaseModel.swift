@@ -30,6 +30,8 @@ class RVBaseModel: MeteorDocument {
     var imageInitiallyNull = false
     var locationInitiallyNull = false
     var userProfile: RVUserProfile? = nil
+    var loggedInUser: RVUserProfile? { get {return RVCoreInfo.sharedInstance.userProfile}}
+    var appDomain: RVDomain? { get { return RVCoreInfo.sharedInstance.domain }}
 
     init() {
         let id = RVSwiftDDP.sharedInstance.getId()
