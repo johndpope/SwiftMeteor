@@ -184,10 +184,14 @@ class RVProfileViewController: UITableViewController {
 
     }
     
-    @IBAction func cancelButtonTouched(_ sender: UIBarButtonItem) {
+    @IBAction func menuButtonTouched(_ sender: UIBarButtonItem) {
+        print("Menu button touched")
+    
+   // @IBAction func cancelButtonTouched(_ sender: UIBarButtonItem) {
         view.endEditing(true)
         removeGenderPicker()
-        performSegue(withIdentifier: "unwindFromProfileSceneWithSegue", sender: nil)
+        RVViewDeck.sharedInstance.toggleSide(side: .left)
+      //  performSegue(withIdentifier: "unwindFromProfileSceneWithSegue", sender: nil)
         //dismiss(animated: true) {}
     }
 
@@ -275,12 +279,18 @@ class RVProfileViewController: UITableViewController {
     }
     
     @IBAction func doneButtonTouched(_ sender: UIBarButtonItem) {
+        print("In \(self.classForCoder).doneBUttonTouched")
+        view.endEditing(true)
+        removeGenderPicker()
+        RVViewDeck.sharedInstance.toggleSide(side: .left)
+        /*
         updateProfile{
             print("In \(self.classForCoder).doneButtonTouched callback")
             RVAppState.shared.state = .Regular
             self.performSegue(withIdentifier: "unwindFromProfileSceneWithSegue", sender: nil)
             //self.dismiss(animated: true) {}
         }
+ */
     }
     
     override func viewDidLoad() {

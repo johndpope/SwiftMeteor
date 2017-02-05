@@ -234,12 +234,22 @@ class RVSwiftDDP: NSObject {
 }
 extension RVSwiftDDP: SwiftDDPDelegate {
     func ddpUserDidLogin(_ user:String) {
-   //     print("In \(self.instanceType).ddpUserDidLogin(), User did login as user \(user)")
+        print("In \(self.instanceType).ddpUserDidLogin(), User did login as user \(user)")
         //self.username = user
-        RVCoreInfo.sharedInstance.username = user
-        loginListeners.notifyListeners()
-        NotificationCenter.default.post(name: NSNotification.Name(rawValue: RVNotification.userDidLogin.rawValue), object: nil, userInfo: ["user": user])
-        
+       // RVCoreInfo.sharedInstance.username = user
+        RVCoreInfo.sharedInstance.completeLogin(username: user) { (success, error) in
+            if let error = error {
+                error.append(message: "In \(self.classForCoder).ddpUserDidLogin user: \(user), got error")
+                error.printError()
+                return
+            } else if success {
+                RVCoreInfo.sharedInstance.changeState(newState: RVLoggedInState())
+                self.loginListeners.notifyListeners()
+                NotificationCenter.default.post(name: NSNotification.Name(rawValue: RVNotification.userDidLogin.rawValue), object: nil, userInfo: ["user": user])
+            } else {
+                print("In \(self.classForCoder).ddpUserDidLogin, no error but failure")
+            }
+        }
     }
     func ddpUserDidLogout(_ user:String) {
     //    print("In \(self.instanceType).ddpUserDidLogout(), User \(user) did logout")
@@ -247,6 +257,7 @@ extension RVSwiftDDP: SwiftDDPDelegate {
         RVCoreInfo.sharedInstance.username = nil
         RVCoreInfo.sharedInstance.loginCredentials = nil
         if RVViewDeck.sharedInstance.sideBeingShown == RVViewDeck.Side.left {
+            print("In \(self.classForCoder).ddpUserDidLogout. about to toggleView Deck")
             RVViewDeck.sharedInstance.toggleSide(side: .center, animated: false)
         } else {
             print("In \(self.classForCoder).ddpUserDidLogout on viewDeck side \(RVViewDeck.sharedInstance.sideBeingShown.description)")

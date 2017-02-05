@@ -142,14 +142,18 @@ class RVRightMenuViewController: RVBaseViewController {
         }
     }
     override func viewDidLoad() {
-        RVSwiftDDP.sharedInstance.connect {
-            //print("In \(self.instanceType).initialize, returned from connecting with Meteor")
-        }
+
         hideView(view: passwordView)
         hideView(view: passwordMessageLabel)
         hideView(view: emailMessageLabel)
         hideView(view: loginFailureView)
         hideButtons()
+    }
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        RVSwiftDDP.sharedInstance.connect {
+            //print("In \(self.instanceType).initialize, returned from connecting with Meteor")
+        }
     }
     
     override func addLogInOutListeners() {

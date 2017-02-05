@@ -35,6 +35,12 @@ class RVMainLandingViewController: RVBaseViewController2 {
             print("In unwind controller is \(segue.source)")
         }
     }
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        if userProfile == nil {
+            self.performSegue(withIdentifier: "SegueFromWatchGroupListToLoginScene", sender: nil)
+        }
+    }
     func evaluateNewWatchGroupState(index: Int) {
         if index < mainState.segmentViewFields.count {
             switch(mainState.segmentViewFields[index]) {
@@ -157,19 +163,14 @@ class RVMainLandingViewController: RVBaseViewController2 {
         }
     }
     override func viewDidLoad() {
-       // print("In \(self.classForCoder).)viewDidLoad")
-
- 
-       // if let scrollView = self.dsScrollView { self.mainState = RVMainStateTask(scrollView: scrollView) }
-        mainState.unwind {
-            self.mainState = RVWatchGroupListState(scrollView: self.dsScrollView, stack: [RVBaseModel]())
-        }
-   //     if let scrollView = self.dsScrollView { mainState = RVWatchGroupListState(scrollView: scrollView) }
+        mainState.unwind { self.mainState = RVWatchGroupListState(scrollView: self.dsScrollView, stack: [RVBaseModel]()) }
         super.viewDidLoad()
         if let tableView = self.tableView {
             tableView.register(RVFirstViewHeaderCell.self, forHeaderFooterViewReuseIdentifier: RVFirstViewHeaderCell.identifier)
         }
-        RVViewDeck.sharedInstance.toggleSide(side: .right, animated: true)
+    
+
+        // RVViewDeck.sharedInstance.toggleSide(side: .right, animated: true)
     }
 
     override func installTopView() {

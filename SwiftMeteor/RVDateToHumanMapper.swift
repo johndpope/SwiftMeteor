@@ -17,7 +17,7 @@ class RVDateToHumanMapper {
             let hourString = (hour > 12) ? "\(hour - 12)" : "\(hour)"
             if let minutes = components.minute {
                 let amPM = hour > 12 ? " am" : " pm"
-                //let timeZone = components.timeZone != nil ? components.timeZone!.description ""
+                // let timeZone = components.timeZone != nil ? components.timeZone!.description ""
                 return " at: " + hourString.description + ":" + minutes.description + amPM // + " " + timeZone
             }
         }

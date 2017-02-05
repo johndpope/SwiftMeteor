@@ -15,7 +15,7 @@ class RVCoreInfo: NSObject {
     }()
     var username: String? = nil {
         didSet {
-            getUserProfile()
+            //getUserProfile()
         }
     }
     var defaultState: RVBaseAppState {
@@ -86,6 +86,37 @@ class RVCoreInfo: NSObject {
         }
         return false
     }
+    func completeLogin(username: String, callback: @escaping(_ success: Bool, _ error: RVError?) -> Void) {
+        print("In \(self.classForCoder).completeLogin")
+        RVUserProfile.getOrCreateUsersUserProfile(callback: { (profile, error) in
+            if let error = error {
+                error.append(message: "In \(self.classForCoder).getUserInfo(), got error")
+                error.printError()
+                return
+            } else if let profile = profile {
+                // self.userProfile = profile
+                self.getDomain(callback: { (domain , error) in
+                    if let error = error {
+                        error.append(message: "In \(self.classForCoder).getUserProfile, got error getting Domain")
+                        error.printError()
+                        callback(false, error)
+                        return
+                    } else if let domain = domain {
+                        self.domain = domain
+                        self.userProfile = profile
+                        self.username = username
+                        callback(true, nil)
+                        return
+                    } else {
+                        callback(false, nil)
+                    }
+                })
+                return
+            } else {
+                print("In \(self.classForCoder).getUserInfo(), no error but no profile")
+            }
+        })
+    }
     func getUserProfile() {
         if username == nil {
             self.userProfile = nil
@@ -97,12 +128,16 @@ class RVCoreInfo: NSObject {
                     error.printError()
                     return
                 } else if let profile = profile {
-                    self.userProfile = profile
+                   // self.userProfile = profile
                     self.getDomain(callback: { (domain , error) in
                         if let error = error {
                             error.append(message: "In \(self.classForCoder).getUserProfile, got error getting Domain")
                             error.printError()
                             return
+                        } else {
+                            self.domain = domain
+                            self.userProfile = profile
+                            
                         }
                     })
                 } else {

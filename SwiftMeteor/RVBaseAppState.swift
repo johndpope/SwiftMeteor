@@ -19,6 +19,7 @@ class RVBaseAppState {
         case WatchGroupMessages = "WatchGroupMessages"
         case WatchGroupMembers = "WatchGroupMembers"
         case MessageListState = "MessageListState"
+        case ShowProfile = "ShowProfile"
         
         var segmentLabel: String {
             switch(self) {

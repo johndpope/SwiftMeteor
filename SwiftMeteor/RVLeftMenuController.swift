@@ -9,6 +9,7 @@
 import UIKit
 class RVLeftMenuController: RVBaseViewController {
     static let identifier = "RVLeftMenuController"
+    var deck: RVViewDeck { get {return RVViewDeck.sharedInstance}}
     enum MenuKeys: String {
         case name = "name"
         case displayText = "displayText"
@@ -60,8 +61,9 @@ extension RVLeftMenuController {
                 } else if string == "ClearUsers" {
                     RVUserProfile.clearAll()
                 } else if string == "Profile" {
-                    RVAppState.shared.state = .ShowProfile
-                    RVViewDeck.sharedInstance.toggleSide(side: .center)
+                    print("In \(self.classForCoder).didSelectRowAt, about to install Profile and toggle to center")
+                    deck.centerViewController = deck.instantiateController(controller: .Profile)
+                    deck.toggleSide(side: .center)
                 } else {
 
                     print("In \(self.classForCoder).didSelectRowAt \(indexPath.row), \(string) not handled")

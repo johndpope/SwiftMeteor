@@ -8,6 +8,6 @@
 
 import Foundation
 
-class RVLoginState: RVBaseAppState {
+class RVLoggedInState: RVBaseAppState {
     
 }
