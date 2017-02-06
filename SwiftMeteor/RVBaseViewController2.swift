@@ -15,7 +15,7 @@ class RVBaseViewController2: UIViewController {
     var operation: RVOperation = RVOperation(active: false)
     var mainState: RVBaseAppState {
         get { return RVCoreInfo.sharedInstance.appState }
-        set { RVCoreInfo.sharedInstance.changeState(newState: newValue) }
+        set { RVCoreInfo.sharedInstance.appState = newValue}
     }
     var userProfile: RVUserProfile? { get { return RVCoreInfo.sharedInstance.userProfile }}
     @IBOutlet weak var topView: UIView!

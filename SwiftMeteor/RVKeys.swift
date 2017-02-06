@@ -46,6 +46,7 @@ enum RVKeys: String {
     case validRecord    = "validRecord"
     case updateCount    = "updateCount"
     case specialCode    = "specialCode"
+    case defaultSelection = "defaultSelection"
     
     case numberOfLikes  = "numberOfLikes"
     case numberOfObjections = "numberOfObjections"

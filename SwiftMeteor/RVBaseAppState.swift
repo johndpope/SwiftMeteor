@@ -11,15 +11,16 @@
 import UIKit
 class RVBaseAppState {
     enum State: String {
-        case LoggedOut  = "LoggedOut"
-        case LoggedIn   = "LoggedIn"
-        case Main = "Main"
-        case WatchGroupList = "WatchGroupList"
-        case WatchGroupInfo = "WatchGroupInfo"
+        case LoggedOut          = "LoggedOut"
+        case LoggedIn            = "LoggedIn"
+        case Main               = "Main"
+        case WatchGroupList     = "WatchGroupList"
+        case WatchGroupInfo     = "WatchGroupInfo"
         case WatchGroupMessages = "WatchGroupMessages"
-        case WatchGroupMembers = "WatchGroupMembers"
-        case MessageListState = "MessageListState"
-        case ShowProfile = "ShowProfile"
+        case WatchGroupMembers  = "WatchGroupMembers"
+        case MessageListState   = "MessageListState"
+        case ShowProfile        = "ShowProfile"
+        case UserList           = "UserList"
         
         var segmentLabel: String {
             switch(self) {
@@ -36,6 +37,10 @@ class RVBaseAppState {
             }
         }
     }
+    var topInTopAreaHeight: CGFloat = 0.0
+    var controllerOuterSegmentedViewHeight: CGFloat = 0.0
+    var bottomInTopAreaHeight: CGFloat = 0.0
+    
     var instanceType: String { get { return String(describing: type(of: self)) } }
     var state: State = .Main
     var datasources = [RVBaseDataSource]()
@@ -49,9 +54,8 @@ class RVBaseAppState {
     
     var showSearchBar: Bool = true
     var tableViewInteractive: Bool = true
-    var navigationBarTitle: String {
-        get { return "Title Goes Here" }
-    }
+    var navigationBarTitle: String = "Title Goes Here" 
+    var navigationBarColor: UIColor { get { return RVCoreInfo.sharedInstance.navigationBarColor }}
     var scopes = [[String: RVKeys]]()
     var segmentViewFields: [RVMainViewControllerState.State] = []
     var manager: RVDSManager = RVDSManager(scrollView: nil)
@@ -72,12 +76,12 @@ class RVBaseAppState {
         return nil
     }
     func configure() {}
-    func initialize(scrollView: UIScrollView? = nil) {
+    func initialize(scrollView: UIScrollView? = nil, callback: @escaping (_ error: RVError?) -> Void) {
         self.manager = RVDSManager(scrollView: scrollView)
-        loadMain()
+        loadMain(callback: callback)
     }
     
-    func loadMain() {
+    func loadMain(callback: @escaping (_ error: RVError?) -> Void) {
         // self.clearAndCreateWatchGroups()
         for datasource in datasources { manager.addSection(section: datasource)}
         if let mainDatasource = self.findDatasource(type: RVBaseDataSource.DatasourceType.main) {
@@ -87,23 +91,29 @@ class RVBaseAppState {
                     if let error = error {
                         error.append(message: "In \(self.instanceType).loadMain, got error stoping main database")
                         error.printError()
+                        callback(error)
                     } else {
                         self.manager.startDatasource(datasource: mainDatasource, query: query, callback: { (error) in
                             if let error = error {
                                 error.append(message: "In \(self.instanceType).loadMain, got error starting main database")
                                 error.printError()
+                                callback(error)
                             } else {
+                                callback(nil)
                                 // print("In \(self.instanceType).loadMain, completed start")
                             }
                         })
+                        return
                     }
                 })
                 return
             } else {
                 print("In \(self.instanceType).loadMain, no queryFunction")
+                callback(nil)
             }
         } else {
             print("In \(self.instanceType).loadMain, no mainDatasource")
+            callback(nil)
         }
     }
     func unwind(callback: @escaping()-> Void) { manager.removeAllSections { callback() } }

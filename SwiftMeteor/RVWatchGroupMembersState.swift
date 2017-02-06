@@ -17,12 +17,12 @@ class RVWatchGroupMembersState: RVWatchGroupInfoState {
     
     
     // Temporary
-    override func initialize(scrollView: UIScrollView?) {
+    override func initialize(scrollView: UIScrollView?, callback: @escaping (_ error: RVError?) -> Void) {
         self.manager = RVDSManager(scrollView: scrollView )
         if self.stack.count < 2 {
             print("In \(self.instanceType).initialize, stack count is less than 2")
         } else {
-            loadMain()
+            loadMain(callback: callback)
         }
         /*
         if let domain = RVCoreInfo.sharedInstance.domain {
@@ -43,7 +43,7 @@ class RVWatchGroupMembersState: RVWatchGroupInfoState {
         }
  */
     }
-    override func loadMain() {
+    override func loadMain(callback: @escaping (_ error: RVError?) -> Void) {
         // self.clearAndCreateWatchGroups()
         for datasource in datasources { manager.addSection(section: datasource)}
         if let mainDatasource = self.findDatasource(type: RVBaseDataSource.DatasourceType.main) {

@@ -18,6 +18,10 @@ class RVFollow: RVBaseModel {
     override class func createInstance(fields: [String : AnyObject])-> RVBaseModel { return RVFollow(fields: fields) }
     override class func modelFromFields(fields: [String: AnyObject]) -> RVBaseModel { return RVFollow(fields: fields) }
     
+    override func initializeProperties() {
+        super.initializeProperties()
+        self.defaultSelection = false
+    }
     var followedId: String? {
         get { return getString(key: .followedId) }
         set { updateString(key: .followedId, value: newValue, setDirties: true) }
@@ -30,6 +34,13 @@ class RVFollow: RVBaseModel {
             return RVModelType.unknown
         }
         set { updateString(key: .followedModelType, value: newValue.rawValue, setDirties: true)}
+    }
+    var defaultSelection: Bool {
+        get {
+            if let selection = getBool(key: .defaultSelection) { return selection }
+            return false
+        }
+        set { updateBool(key: .defaultSelection, value: newValue, setDirties: true) }
     }
     class func createWithComponents(following: RVBaseModel, callback: @escaping(_ follow: RVFollow?, _ error: RVError?) -> Void ) {
         let follow = RVFollow()

@@ -41,7 +41,7 @@ class RVSwiftDDP: NSObject {
     var instanceType: String { get { return String(describing: type(of: self)) } }
     var appState: RVBaseAppState {
         get { return RVCoreInfo.sharedInstance.appState }
-        set { RVCoreInfo.sharedInstance.changeState(newState: newValue) }
+        set { RVCoreInfo.sharedInstance.appState = newValue }
     }
     let meteorURL = "wss://rnmpassword-nweintraut.c9users.io/websocket"
     let userDidLogin = "userDid"
@@ -133,6 +133,11 @@ class RVSwiftDDP: NSObject {
         }
     }
     func logout(callback: @escaping(_ error: RVError?)-> Void) {
+        if Meteor.client.user() == nil {
+            callback(nil)
+            logoutListeners.notifyListeners()
+            NotificationCenter.default.post(name: NSNotification.Name(rawValue: RVNotification.userDidLogout.rawValue), object: nil, userInfo: nil)
+        }
         Meteor.logout { (result, error) in
             if let error = error {
                 let rvError = RVError(message: "In \(self.classForCoder).logout, got DDPError", sourceError: error)
@@ -247,7 +252,7 @@ extension RVSwiftDDP: SwiftDDPDelegate {
                 error.printError()
                 return
             } else if success {
-                RVCoreInfo.sharedInstance.changeState(newState: RVLoggedInState())
+                RVCoreInfo.sharedInstance.appState = RVLoggedInState()
                 //print("In \(self.classForCoder).ddpUserDidLogin, about to notify [\(self.loginListeners.listeners.count)] listeners and publish notification \(RVNotification.userDidLogin.rawValue)")
                 self.loginListeners.notifyListeners()
                 NotificationCenter.default.post(name: NSNotification.Name(rawValue: RVNotification.userDidLogin.rawValue), object: nil, userInfo: ["user": user])

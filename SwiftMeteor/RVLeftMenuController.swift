@@ -77,6 +77,10 @@ extension RVLeftMenuController {
                     print("In \(self.classForCoder).didSelectRowAt, about to install Profile and toggle to center")
                     deck.centerViewController = deck.instantiateController(controller: .Profile)
                     deck.toggleSide(side: .center)
+                } else if string == "Members" {
+                    RVCoreInfo.sharedInstance.appState = RVUserListState()
+                    deck.centerViewController = deck.instantiateController(controller: .UserList)
+                    deck.toggleSide(side: .center)
                 } else {
 
                     print("In \(self.classForCoder).didSelectRowAt \(indexPath.row), \(string) not handled")

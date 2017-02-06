@@ -12,7 +12,7 @@ class RVBaseBaseViewController: UIViewController {
     var operation: RVOperation = RVOperation(active: false)
     var appState: RVBaseAppState {
         get { return RVCoreInfo.sharedInstance.appState }
-        set { RVCoreInfo.sharedInstance.changeState(newState: newValue) }
+        set { RVCoreInfo.sharedInstance.appState = newValue }
     }
     var listeners = [RVListener]()
     var userProfile: RVUserProfile? { get { return RVCoreInfo.sharedInstance.userProfile }}

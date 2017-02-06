@@ -13,12 +13,15 @@ class RVViewDeck: NSObject {
     enum Controllers: String {
         case Profile = "ProfileNavController"
         case WatchGroupList = "WatchGroupList"
+        case UserList = "UserList"
         var storyBoard: String {
             switch(self) {
             case .Profile:
                 return "Main"
             case .WatchGroupList:
                 return "Main"
+            case .UserList:
+                return "UserList"
             }
         }
     }

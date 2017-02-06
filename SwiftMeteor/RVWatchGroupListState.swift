@@ -48,26 +48,28 @@ class RVWatchGroupListState: RVMainViewControllerState {
         }
         queryFunctions[.filter] = filterQuery
     }
-    override func initialize(scrollView: UIScrollView?) {
+    override func initialize(scrollView: UIScrollView?, callback: @escaping (_ error: RVError?) -> Void) {
         self.manager = RVDSManager(scrollView: scrollView)
         if let domain = RVCoreInfo.sharedInstance.domain {
             stack = [domain]
-            self.loadMain()
+            self.loadMain(callback: callback)
         } else {
             RVCoreInfo.sharedInstance.getDomain(callback: { (domain , error) in
                 if let error = error {
                     error.append(message: "In \(self.instanceType).initialize, error getting domain")
                     error.printError()
+                    callback(error)
                 } else if let domain = domain {
                     self.stack = [domain]
-                    self.loadMain()
+                    self.loadMain(callback: callback)
                 } else {
                     print("In \(self.instanceType).initialize, no error but no domain")
+                    callback(nil)
                 }
             })
         }
     }
-    override func loadMain() {
+    override func loadMain(callback: @escaping (_ error: RVError?) -> Void) {
        // self.clearAndCreateWatchGroups()
           for datasource in datasources { manager.addSection(section: datasource) }
         if let mainDatasource = self.findDatasource(type: RVBaseDataSource.DatasourceType.main) {
@@ -77,12 +79,15 @@ class RVWatchGroupListState: RVMainViewControllerState {
                     if let error = error {
                         error.append(message: "In \(self.instanceType).loadMain, got error stoping main database")
                         error.printError()
+                        callback(error)
                     } else {
                         self.manager.startDatasource(datasource: mainDatasource, query: query, callback: { (error) in
                             if let error = error {
                                 error.append(message: "In \(self.instanceType).loadMain, got error starting main database")
                                 error.printError()
+                                callback(error)
                             } else {
+                                callback(error)
                                 // print("In \(self.instanceType).loadMain, completed start")
                             }
                         })
@@ -91,9 +96,13 @@ class RVWatchGroupListState: RVMainViewControllerState {
                 return
             } else {
                 print("In \(self.instanceType).loadMain, no queryFunction")
+                let error = RVError(message: "In \(self.instanceType).loadMain, no queryFunction")
+                callback(error)
             }
         } else {
             print("In \(self.instanceType).loadMain, no mainDatasource")
+            let error = RVError(message: "In \(self.instanceType).loadMain, no mainDatasource")
+            callback(error)
         }
     }
     func createWatchGroups() {

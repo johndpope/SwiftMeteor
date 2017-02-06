@@ -10,14 +10,10 @@ import Foundation
 import SwiftDDP
 
 class RVCoreInfo: NSObject {
-    static let sharedInstance: RVCoreInfo = {
-        return RVCoreInfo()
-    }()
-    var username: String? = nil {
-        didSet {
-            //getUserProfile()
-        }
-    }
+    static let sharedInstance: RVCoreInfo = { return RVCoreInfo() }()
+    
+    
+    var username: String? = nil
     var defaultState: RVBaseAppState {
         get {
             var stack = [RVBaseModel]()
@@ -25,7 +21,11 @@ class RVCoreInfo: NSObject {
             return RVMainViewControllerState(stack: stack)
         }
     }
-    var appState: RVBaseAppState = RVMainViewControllerState()
+    private var _appState: RVBaseAppState = RVLoggedoutState()
+    var appState: RVBaseAppState {
+        get { return _appState }
+        set { changeState(newState: newValue)}
+    }
     var mainStoryboard = "Main"
     var loginCredentials: [String: AnyObject]? = nil
     var rootTask: RVTask?
@@ -33,6 +33,19 @@ class RVCoreInfo: NSObject {
     var userProfile: RVUserProfile? = nil
     var domain: RVDomain? = nil
     var specialCode = "NotValid"
+    var navigationBarColor: UIColor { get {return UIColor(colorLiteralRed: 64/256, green: 128/256, blue: 255/256, alpha: 1.0)}}
+    
+    func userAndDomain() -> (RVUserProfile, String)? {
+        if let userProfile = self.userProfile {
+            if let domain = self.domain {
+                if let domainId = domain.localId {
+                    return (userProfile, domainId)
+                }
+            }
+        }
+        return nil
+    }
+    
     var watchGroupImagePlaceholder: UIImage { get { return UIImage(named: "JNW.png")! } }
     private var activeButton: UIButton? = nil
     private var activeBarButton: UIBarButtonItem? = nil
@@ -40,7 +53,7 @@ class RVCoreInfo: NSObject {
         let currentState = self.appState
         if let _ = currentState as? RVLoggedoutState {
         } else { newState.lastState = currentState }
-        self.appState = newState
+        self._appState = newState
     }
     // True response indicates Button is now in control to move forward
     func setActiveButtonIfNotActive(_ button: UIButton? = nil, _ barButton: UIBarButtonItem? = nil) -> Bool {

@@ -45,7 +45,11 @@ class RVMainLandingViewController: RVBaseViewController2 {
         if mainState.state == .LoggedOut {
             self.performSegue(withIdentifier: "SegueFromWatchGroupListToLoginScene", sender: nil)
         } else {
-            mainState.initialize(scrollView: dsScrollView)
+            mainState.initialize(scrollView: self.dsScrollView, callback: { (error) in
+                if let error = error {
+                    error.printError()
+                }
+            })
         }
       //
     }
@@ -74,7 +78,11 @@ class RVMainLandingViewController: RVBaseViewController2 {
                 self.mainState = RVWatchGroupMembersState(stack: self.mainState.stack)
                 self.install()
                // self.setupTopView()
-                self.mainState.initialize(scrollView: self.dsScrollView)
+                self.mainState.initialize(scrollView: self.dsScrollView, callback: { (error) in
+                    if let error = error {
+                        error.printError()
+                    }
+                })
                 
             }
         
@@ -92,7 +100,11 @@ class RVMainLandingViewController: RVBaseViewController2 {
                 print("In \(self.classForCoder).setupWatchGroupMessage. just installed RVMessageListState")
                 self.install()
                // self.setupTopView()
-                self.mainState.initialize(scrollView: self.dsScrollView)
+                self.mainState.initialize(scrollView: self.dsScrollView, callback: { (error) in
+                    if let error = error {
+                        error.printError()
+                    }
+                })
             }
 
         }
@@ -111,10 +123,19 @@ class RVMainLandingViewController: RVBaseViewController2 {
                         view.state = self.mainState
                         overlayView.addSubview(view)
                     }
-                    self.mainState.initialize(scrollView: self.dsScrollView)
+                    self.mainState.initialize(scrollView: self.dsScrollView, callback: { (error) in
+                        if let error = error {
+                            error.printError()
+                        }
+                    })
+                    return
                 }
             }
-            self.mainState.initialize(scrollView: self.dsScrollView)
+            self.mainState.initialize(scrollView: self.dsScrollView, callback: { (error) in
+                if let error = error {
+                    error.printError()
+                }
+            })
         }
     }
     @IBAction func segmentedControlValueChanged(_ sender: UISegmentedControl) {
@@ -231,7 +252,11 @@ class RVMainLandingViewController: RVBaseViewController2 {
                 self.present(viewController, animated: true, completion: { })
             }
         } else {
-            mainState.initialize(scrollView: self.dsScrollView)
+            mainState.initialize(scrollView: self.dsScrollView, callback: { (error) in
+                if let error = error {
+                    error.printError()
+                }
+            })
         }
     }
     func tableView(_ tableView: UITableView, canEditRowAt indexPath: IndexPath) -> Bool {

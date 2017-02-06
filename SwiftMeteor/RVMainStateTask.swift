@@ -69,11 +69,12 @@ class RVMainStateTask: RVMainViewControllerState {
         state.queryFunctions[RVBaseDataSource.DatasourceType.filter] = filterQuery
     }
 
-    override func initialize(scrollView: UIScrollView? ) {
+    override func initialize(scrollView: UIScrollView?, callback: @escaping (_ error: RVError?) -> Void) {
         self.manager = RVDSManager(scrollView: scrollView)
         RVSeed.createRootTask { (root, error) in
             if let error = error {
                 error.printError()
+                callback(error)
                 return
             } else if let root = root {
                 self.stack = [root]
@@ -84,23 +85,35 @@ class RVMainStateTask: RVMainViewControllerState {
                             if let error = error {
                                 error.append(message: "In \(self.instanceType).loadUp, got error stoping main database")
                                 error.printError()
+                                callback(error)
                             } else {
                                 self.manager.startDatasource(datasource: mainDatasource, query: query, callback: { (error) in
                                     if let error = error {
                                         error.append(message: "In \(self.instanceType).loadUp, got error starting main database")
                                         error.printError()
+                                        callback(error)
+                                    } else {
+                                        callback(error)
                                     }
                                 })
+                                return
                             }
                         })
+                        return
                     } else {
                         print("In \(self.instanceType).initialize, no queryFunction")
+                        let error = RVError(message: "In \(self.instanceType).initialize, no queryFunction")
+                        callback(error)
                     }
                 } else {
                     print("In \(self.instanceType).initialize, no mainDatasource")
+                    let error = RVError(message: "In \(self.instanceType).initialize, no mainDatasource")
+                    callback(error)
                 }
             } else {
                 print("In \(self.instanceType).initialize no root")
+                let error = RVError(message: "In \(self.instanceType).initialize no root")
+                callback(error)
             }
         }
     }
