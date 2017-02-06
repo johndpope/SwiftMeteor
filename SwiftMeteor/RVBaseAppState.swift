@@ -79,12 +79,24 @@ class RVBaseAppState {
     func configure() {}
     func initialize(scrollView: UIScrollView? = nil, callback: @escaping (_ error: RVError?) -> Void) {
         self.manager = RVDSManager(scrollView: scrollView)
-        loadMain(callback: callback)
+        print("In \(self.instanceType).initialize just before datasource")
+        for datasource in datasources { manager.addSection(section: datasource)}
+        initializeInner(callback: callback)
     }
     
+    func initializeInner(callback: @escaping (_ error: RVError?) -> Void) {
+        unloadAllDatasources { (error) in
+            if let error = error {
+                error.append(message: "In \(self.instanceType).loadMain, got error")
+                callback(error)
+            } else {
+                self.loadMain(callback: { (error) in
+                    callback(error)
+                })
+            }
+        }
+    }
     func loadMain(callback: @escaping (_ error: RVError?) -> Void) {
-        // self.clearAndCreateWatchGroups()
-        for datasource in datasources { manager.addSection(section: datasource)}
         if let mainDatasource = self.findDatasource(type: RVBaseDataSource.DatasourceType.main) {
             if let queryFunction = self.queryFunctions[RVBaseDataSource.DatasourceType.main] {
                 let query = queryFunction([String: AnyObject]())
@@ -117,5 +129,30 @@ class RVBaseAppState {
             callback(nil)
         }
     }
+    func unloadAllDatasources(callback: @escaping(_ error: RVError?)-> Void ) {
+        unloadAllDatasourcesInner(count: 0, callback: { (error) in}, completion: callback)
+    }
+    func unloadAllDatasourcesInner(count: Int, callback: @escaping(_ error: RVError?)-> Void, completion: @escaping ( _ error: RVError?) -> Void ) {
+        if count < manager.sections.count {
+            let datasource = manager.sections[count]
+            manager.stopAndResetDatasource(datasource: datasource, callback: { (error) in
+                if let error = error {
+                    error.append(message: "In \(self.instanceType).unloadAllDatasources, got error on count \(count)")
+                    if count == 0 { completion(error) }
+                    else {callback(error) }
+                } else {
+                    self.unloadAllDatasourcesInner(count: count + 1, callback: { (error) in
+                        if count == 0 {completion(error) }
+                        else { callback(nil) }
+                    }, completion: completion)
+                }
+            })
+        } else {
+            if count == 0 {completion(nil)}
+            else {callback(nil) }
+        }
+    }
+    
+    
     func unwind(callback: @escaping()-> Void) { manager.removeAllSections { callback() } }
 }

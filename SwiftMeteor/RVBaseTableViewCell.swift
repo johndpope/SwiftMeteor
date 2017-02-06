@@ -43,9 +43,10 @@ extension RVBaseTableViewCell {
         }
     }
     func showImage(rvImage: RVImage?, imageView: UIImageView? ) {
-        if let model = self.model {
-            if let id = model.localId {
-                if let imageView = imageView {
+        if let imageView = imageView {
+            imageView.image = nil
+            if let model = self.model {
+                if let id = model.localId {
                     if let rvImage = rvImage {
                         rvImage.download(callback: { (uiImage, error) in
                             if let error = error {

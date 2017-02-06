@@ -6,6 +6,7 @@
     <dependencies>
         <deployment identifier="iOS"/>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="11757"/>
+        <capability name="Constraints to layout margins" minToolsVersion="6.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <scenes>
@@ -21,14 +22,6 @@
                         <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="44" sectionHeaderHeight="28" sectionFooterHeight="28" translatesAutoresizingMaskIntoConstraints="NO" id="UDp-CW-cAj">
-                                <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
-                                <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
-                                <connections>
-                                    <outlet property="dataSource" destination="Rl1-NS-cZE" id="mcO-yM-dik"/>
-                                    <outlet property="delegate" destination="Rl1-NS-cZE" id="EJC-kz-gXm"/>
-                                </connections>
-                            </tableView>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="Qcj-0A-1YV">
                                 <rect key="frame" x="0.0" y="64" width="375" height="146"/>
                                 <subviews>
@@ -81,14 +74,71 @@
                                     <constraint firstAttribute="trailing" secondItem="346-ZL-HcE" secondAttribute="trailing" id="oGz-cp-vFX"/>
                                 </constraints>
                             </view>
+                            <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="155" sectionHeaderHeight="28" sectionFooterHeight="28" translatesAutoresizingMaskIntoConstraints="NO" id="UDp-CW-cAj">
+                                <rect key="frame" x="0.0" y="64" width="375" height="603"/>
+                                <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                                <prototypes>
+                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="blue" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" reuseIdentifier="UserCell" rowHeight="155" id="yrU-LX-OJN" customClass="RVUserTableViewCell" customModule="SwiftMeteor" customModuleProvider="target">
+                                        <rect key="frame" x="0.0" y="28" width="375" height="155"/>
+                                        <autoresizingMask key="autoresizingMask"/>
+                                        <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="yrU-LX-OJN" id="kOo-Jy-4DC">
+                                            <rect key="frame" x="0.0" y="0.0" width="375" height="154"/>
+                                            <autoresizingMask key="autoresizingMask"/>
+                                            <subviews>
+                                                <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="Ole-9w-oSV">
+                                                    <rect key="frame" x="16" y="12" width="66" height="66"/>
+                                                    <constraints>
+                                                        <constraint firstAttribute="height" constant="66" id="0i0-He-yyS"/>
+                                                        <constraint firstAttribute="width" constant="66" id="Q1K-SJ-H5Y"/>
+                                                    </constraints>
+                                                </imageView>
+                                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Full Name" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="2" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Anh-Kg-hey">
+                                                    <rect key="frame" x="12" y="84" width="70" height="46"/>
+                                                    <constraints>
+                                                        <constraint firstAttribute="width" constant="70" id="RLy-WR-suq"/>
+                                                        <constraint firstAttribute="height" constant="46" id="ru2-Ch-MnM"/>
+                                                    </constraints>
+                                                    <fontDescription key="fontDescription" type="system" pointSize="15"/>
+                                                    <nil key="textColor"/>
+                                                    <nil key="highlightedColor"/>
+                                                </label>
+                                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="l0c-di-e2P">
+                                                    <rect key="frame" x="92" y="35" width="42" height="21"/>
+                                                    <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                                    <nil key="textColor"/>
+                                                    <nil key="highlightedColor"/>
+                                                </label>
+                                            </subviews>
+                                            <constraints>
+                                                <constraint firstItem="Ole-9w-oSV" firstAttribute="leading" secondItem="kOo-Jy-4DC" secondAttribute="leadingMargin" constant="8" id="Nfv-kB-wyH"/>
+                                                <constraint firstItem="Anh-Kg-hey" firstAttribute="top" secondItem="Ole-9w-oSV" secondAttribute="bottom" constant="6" id="SMb-Lz-NMT"/>
+                                                <constraint firstItem="l0c-di-e2P" firstAttribute="leading" secondItem="Ole-9w-oSV" secondAttribute="trailing" constant="10" id="cpg-Qj-7wo"/>
+                                                <constraint firstItem="Ole-9w-oSV" firstAttribute="top" secondItem="kOo-Jy-4DC" secondAttribute="topMargin" constant="4" id="eJY-Ka-ElU"/>
+                                                <constraint firstItem="Anh-Kg-hey" firstAttribute="top" secondItem="Ole-9w-oSV" secondAttribute="bottom" constant="6" id="gtE-EJ-j5c"/>
+                                                <constraint firstItem="Anh-Kg-hey" firstAttribute="leading" secondItem="kOo-Jy-4DC" secondAttribute="leadingMargin" constant="4" id="prA-u9-9MQ"/>
+                                                <constraint firstItem="l0c-di-e2P" firstAttribute="centerY" secondItem="Ole-9w-oSV" secondAttribute="centerY" id="vQu-TD-cgp"/>
+                                            </constraints>
+                                        </tableViewCellContentView>
+                                        <connections>
+                                            <outlet property="fullNameLabel" destination="Anh-Kg-hey" id="ibe-z8-rxj"/>
+                                            <outlet property="localIdLabel" destination="l0c-di-e2P" id="PXj-hu-TLG"/>
+                                            <outlet property="userImageView" destination="Ole-9w-oSV" id="kpl-g3-TBy"/>
+                                        </connections>
+                                    </tableViewCell>
+                                </prototypes>
+                                <connections>
+                                    <outlet property="dataSource" destination="Rl1-NS-cZE" id="mcO-yM-dik"/>
+                                    <outlet property="delegate" destination="Rl1-NS-cZE" id="EJC-kz-gXm"/>
+                                </connections>
+                            </tableView>
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                         <constraints>
                             <constraint firstAttribute="trailing" secondItem="Qcj-0A-1YV" secondAttribute="trailing" id="0tb-tE-i4g"/>
+                            <constraint firstItem="UDp-CW-cAj" firstAttribute="top" secondItem="usJ-Zp-iGy" secondAttribute="bottom" id="E6E-56-DMM"/>
                             <constraint firstItem="Qcj-0A-1YV" firstAttribute="leading" secondItem="ZdT-oM-gDr" secondAttribute="leading" id="GPa-Vj-zOB"/>
                             <constraint firstItem="jOY-nM-LZX" firstAttribute="top" secondItem="UDp-CW-cAj" secondAttribute="bottom" id="IMU-f4-rlz"/>
                             <constraint firstItem="UDp-CW-cAj" firstAttribute="leading" secondItem="ZdT-oM-gDr" secondAttribute="leading" id="NNY-GI-Vu9"/>
-                            <constraint firstItem="UDp-CW-cAj" firstAttribute="top" secondItem="ZdT-oM-gDr" secondAttribute="top" id="dKI-US-fTv"/>
                             <constraint firstAttribute="trailing" secondItem="UDp-CW-cAj" secondAttribute="trailing" id="jAk-MC-PYz"/>
                             <constraint firstItem="Qcj-0A-1YV" firstAttribute="top" secondItem="usJ-Zp-iGy" secondAttribute="bottom" id="oa6-qL-2NO"/>
                         </constraints>

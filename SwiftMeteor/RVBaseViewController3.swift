@@ -32,7 +32,7 @@ class RVBaseViewController3: UIViewController {
     @IBAction func leftBarButtonTouched(_ sender: UIBarButtonItem) { handleLeftBarButton(barButton: sender) }
     @IBAction func rightBarButtonTouched(_ sender: UIBarButtonItem) { handleRightBarButton(barButton: sender)}
     var dsScrollView: UIScrollView? {
-        if let tableView = self.tableView { return tableView}
+        if let tableView = self.tableView { return tableView }
         if let collectionView = self.collectionView { return collectionView }
         return nil
     }
@@ -42,6 +42,7 @@ class RVBaseViewController3: UIViewController {
     var deck: RVViewDeck { get { return RVViewDeck.sharedInstance }}
     func userProfileAndDomainId() -> (RVUserProfile, String)? { return coreInfo.userAndDomain() }
     override func viewDidLoad() {
+        print("In \(self.classForCoder).viewDidLoad")
         super.viewDidLoad()
         configureNavBar()
         setupTopArea()
@@ -49,12 +50,71 @@ class RVBaseViewController3: UIViewController {
     }
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
+        appState.initialize(scrollView: self.dsScrollView) { (error) in
+            if let error = error {
+                error.append(message: "In \(self.classForCoder).viewDidAppear, got initialize error")
+                error.printError()
+            }
+        }
     }
     
 }
 extension RVBaseViewController3 {
+    func unloadAllDatasources(callback: @escaping(_ error: RVError?)-> Void ) {
+        unloadAllDatasourcesInner(count: 0, callback: { (error) in}, completion: callback)
+    }
+    func unloadAllDatasourcesInner(count: Int, callback: @escaping(_ error: RVError?)-> Void, completion: @escaping ( _ error: RVError?) -> Void ) {
+        if count < appState.manager.sections.count {
+            let datasource = appState.manager.sections[count]
+            appState.manager.stopAndResetDatasource(datasource: datasource, callback: { (error) in
+                if let error = error {
+                    error.append(message: "In \(self.classForCoder).unloadAllDatasources, got error on count \(count)")
+                    if count == 0 { completion(error) }
+                    else {callback(error) }
+                } else {
+                    self.unloadAllDatasourcesInner(count: count + 1, callback: { (error) in
+                        if count == 0 {completion(error) }
+                        else { callback(nil) }
+                    }, completion: completion)
+                }
+            })
+        } else {
+            if count == 0 {completion(nil)}
+            else {callback(nil) }
+        }
+    }
+    func reload() {
+        unloadAllDatasources { (error) in
+            if let error = error {
+                error.append(message: "In \(self.classForCoder).reload, got error")
+                error.printError()
+            } else {
+                self.appState.initialize(scrollView: self.dsScrollView , callback: { (error) in
+                    if let error = error {
+                        error.append(message: "In \(self.classForCoder).unloadAllDatasources line \(#line) error")
+                        error.printError()
+                    }
+                })
+                /*
+                for datasource in self.appState.datasources {
+                    if datasource.datasourceType == .main {
+                        if let queryFunction = self.appState.queryFunctions[RVBaseDataSource.DatasourceType.main] {
+                            let query = queryFunction([String: AnyObject]())
+                            self.appState.manager.startDatasource(datasource: datasource, query: query, callback: { (error) in
+                                if let error = error {
+                                    error.append(message: "In \(self.classForCoder).reload line \(#line), got error")
+                                    error.printError()
+                                }
+                            })
+                        }
+                    }
+                }
+ */
+            }
+        }
+    }
     func updateTableViewInsetHeight() {
-        if let tableView = self.tableView {
+        if let tableView = self.dsScrollView as? UITableView {
             let height = topAreaHeight - tableViewInsetAdditionalHeight
             let inset = tableView.contentInset
             tableView.contentInset = UIEdgeInsets(top: inset.top + height, left: inset.left, bottom: inset.bottom, right: inset.right)
@@ -125,12 +185,16 @@ extension RVBaseViewController3 {
 }
 extension RVBaseViewController3: UITableViewDataSource {
     func numberOfSections(in tableView: UITableView) -> Int {
-        return 0
+        return appState.manager.numberOfSections()
     }
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return 0
+        return appState.manager.numberOfItems(section: section)
     }
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        if let cell = tableView.dequeueReusableCell(withIdentifier: RVUserTableViewCell.identifier, for: indexPath) as? RVUserTableViewCell {
+            cell.model = appState.manager.item(indexPath: indexPath)
+            return cell
+        }
         return UITableViewCell()
     }
 }

@@ -96,6 +96,8 @@
 		289A45F51E47A8A9001BBB29 /* RVBaseViewController3.swift in Sources */ = {isa = PBXBuildFile; fileRef = 289A45F41E47A8A9001BBB29 /* RVBaseViewController3.swift */; };
 		289A45F71E47AEBE001BBB29 /* RVUserListState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 289A45F61E47AEBE001BBB29 /* RVUserListState.swift */; };
 		289A45F91E482D4A001BBB29 /* RVMenuAppState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 289A45F81E482D4A001BBB29 /* RVMenuAppState.swift */; };
+		289A45FB1E483FB3001BBB29 /* RVUserTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 289A45FA1E483FB3001BBB29 /* RVUserTableViewCell.swift */; };
+		289A45FD1E484173001BBB29 /* RVUserDatasource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 289A45FC1E484173001BBB29 /* RVUserDatasource.swift */; };
 		28A232971E333E4C00489EB3 /* RVVisibility.swift in Sources */ = {isa = PBXBuildFile; fileRef = 28A232961E333E4C00489EB3 /* RVVisibility.swift */; };
 		28A2A2D91E393719002AA1A8 /* JNW.png in Resources */ = {isa = PBXBuildFile; fileRef = 28A2A2D81E393719002AA1A8 /* JNW.png */; };
 		28A2A2DD1E3945A0002AA1A8 /* RVCamera.swift in Sources */ = {isa = PBXBuildFile; fileRef = 28A2A2DC1E3945A0002AA1A8 /* RVCamera.swift */; };
@@ -249,6 +251,8 @@
 		289A45F41E47A8A9001BBB29 /* RVBaseViewController3.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RVBaseViewController3.swift; sourceTree = "<group>"; };
 		289A45F61E47AEBE001BBB29 /* RVUserListState.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RVUserListState.swift; sourceTree = "<group>"; };
 		289A45F81E482D4A001BBB29 /* RVMenuAppState.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RVMenuAppState.swift; sourceTree = "<group>"; };
+		289A45FA1E483FB3001BBB29 /* RVUserTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RVUserTableViewCell.swift; sourceTree = "<group>"; };
+		289A45FC1E484173001BBB29 /* RVUserDatasource.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RVUserDatasource.swift; sourceTree = "<group>"; };
 		28A232961E333E4C00489EB3 /* RVVisibility.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RVVisibility.swift; sourceTree = "<group>"; };
 		28A2A2D81E393719002AA1A8 /* JNW.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = JNW.png; sourceTree = "<group>"; };
 		28A2A2DC1E3945A0002AA1A8 /* RVCamera.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RVCamera.swift; sourceTree = "<group>"; };
@@ -504,6 +508,7 @@
 				28447A6F1E3BB1F3001DD9DA /* RVWatchGroupDatasource.swift */,
 				283460981E46627C0009D606 /* RVMessageDatasource.swift */,
 				289A45ED1E46F45A001BBB29 /* RVFollowDatasource.swift */,
+				289A45FC1E484173001BBB29 /* RVUserDatasource.swift */,
 			);
 			name = Datasource;
 			sourceTree = "<group>";
@@ -529,6 +534,7 @@
 				289A45F01E47A775001BBB29 /* UserList.storyboard */,
 				289A45F21E47A888001BBB29 /* RVUserListViewController.swift */,
 				289A45F61E47AEBE001BBB29 /* RVUserListState.swift */,
+				289A45FA1E483FB3001BBB29 /* RVUserTableViewCell.swift */,
 			);
 			name = UserList;
 			sourceTree = "<group>";
@@ -912,6 +918,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				289A45FD1E484173001BBB29 /* RVUserDatasource.swift in Sources */,
 				286CA32F1E3285B300B081B8 /* RVSetting.swift in Sources */,
 				2870CCD11DECD81F005C6FB5 /* AWSUserFileManager.swift in Sources */,
 				28E65DA11E1DB166004E82F5 /* RVLeftMenuController.swift in Sources */,
@@ -1030,6 +1037,7 @@
 				280DE6E81DEF43380031C352 /* RVS3Protocol.swift in Sources */,
 				286CA31D1E327B5E00B081B8 /* RVGeosearch.swift in Sources */,
 				28447A6C1E3BAE80001DD9DA /* RVLeftControllerState.swift in Sources */,
+				289A45FB1E483FB3001BBB29 /* RVUserTableViewCell.swift in Sources */,
 				288E97DC1E22D07D00753067 /* RVSpecial.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
