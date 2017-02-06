@@ -63,8 +63,12 @@ extension RVBaseViewController3 {
     }
     func handleLeftBarButton(barButton: UIBarButtonItem) {
         if !coreInfo.setActiveButtonIfNotActive(nil, barButton) { return }
-        deck.toggleSide(side: .left)
-        let _ = coreInfo.clearActiveButton(nil, barButton)
+        appState.unwind {
+            self.appState = RVMenuAppState()
+            self.deck.toggleSide(side: .left)
+            let _ = self.coreInfo.clearActiveButton(nil, barButton)
+        }
+
     }
     func handleRightBarButton(barButton: UIBarButtonItem) {
         if !coreInfo.setActiveButtonIfNotActive(nil, barButton) { return }
@@ -74,7 +78,10 @@ extension RVBaseViewController3 {
     func setupTopArea() {
         setHeightConstant(constraint: topViewInTopAreaHeightConstraint, constant: appState.topInTopAreaHeight)
         if let control = controllerSegmentedControl { control.isHidden = (appState.controllerOuterSegmentedViewHeight == 0) ? true : false }
-        if let view = controllerOuterSegementedControlView { view.isHidden = (appState.controllerOuterSegmentedViewHeight == 0) ? true : false }
+        if let view = controllerOuterSegementedControlView {
+            view.isHidden = (appState.controllerOuterSegmentedViewHeight == 0) ? true : false
+            view.backgroundColor = appState.navigationBarColor
+        }
         setHeightConstant(constraint: controllerOuterSegmentControlViewHeightConstraint, constant: appState.controllerOuterSegmentedViewHeight)
         setHeightConstant(constraint: bottomViewInTopAreaHeightConstraint, constant: appState.bottomInTopAreaHeight)
     }

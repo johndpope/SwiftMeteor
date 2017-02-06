@@ -42,8 +42,8 @@
                                     <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="wcd-ah-jjz">
                                         <rect key="frame" x="0.0" y="30" width="375" height="32"/>
                                         <subviews>
-                                            <segmentedControl opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="top" segmentControlStyle="bordered" selectedSegmentIndex="0" translatesAutoresizingMaskIntoConstraints="NO" id="U7F-Ks-1fW">
-                                                <rect key="frame" x="2" y="2" width="371" height="29"/>
+                                            <segmentedControl opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="top" segmentControlStyle="bar" selectedSegmentIndex="0" translatesAutoresizingMaskIntoConstraints="NO" id="U7F-Ks-1fW">
+                                                <rect key="frame" x="2" y="0.0" width="371" height="29"/>
                                                 <color key="backgroundColor" red="0.97500573079999997" green="0.94011389710000004" blue="0.68204833379999996" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                                 <segments>
                                                     <segment title="First"/>
@@ -56,7 +56,7 @@
                                             <constraint firstItem="U7F-Ks-1fW" firstAttribute="leading" secondItem="wcd-ah-jjz" secondAttribute="leading" constant="2" id="9T1-3h-Tn2"/>
                                             <constraint firstAttribute="height" constant="32" id="H5R-RV-6fz"/>
                                             <constraint firstAttribute="trailing" secondItem="U7F-Ks-1fW" secondAttribute="trailing" constant="2" id="Zc9-Ay-c56"/>
-                                            <constraint firstItem="U7F-Ks-1fW" firstAttribute="top" secondItem="wcd-ah-jjz" secondAttribute="top" constant="2" id="jCU-0T-4PN"/>
+                                            <constraint firstItem="U7F-Ks-1fW" firstAttribute="top" secondItem="wcd-ah-jjz" secondAttribute="top" id="jCU-0T-4PN"/>
                                         </constraints>
                                     </view>
                                     <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="346-ZL-HcE">

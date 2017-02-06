@@ -10,6 +10,7 @@ import UIKit
 class RVLeftMenuController: RVBaseViewController {
     static let identifier = "RVLeftMenuController"
     var deck: RVViewDeck { get {return RVViewDeck.sharedInstance}}
+    var coreInfo: RVCoreInfo { get { return RVCoreInfo.sharedInstance }}
     enum MenuKeys: String {
         case name = "name"
         case displayText = "displayText"
@@ -78,9 +79,11 @@ extension RVLeftMenuController {
                     deck.centerViewController = deck.instantiateController(controller: .Profile)
                     deck.toggleSide(side: .center)
                 } else if string == "Members" {
-                    RVCoreInfo.sharedInstance.appState = RVUserListState()
-                    deck.centerViewController = deck.instantiateController(controller: .UserList)
-                    deck.toggleSide(side: .center)
+                    coreInfo.appState.unwind {
+                        self.coreInfo.appState = RVUserListState()
+                        self.deck.centerViewController = self.deck.instantiateController(controller: .UserList)
+                        self.deck.toggleSide(side: .center)
+                    }
                 } else {
 
                     print("In \(self.classForCoder).didSelectRowAt \(indexPath.row), \(string) not handled")
