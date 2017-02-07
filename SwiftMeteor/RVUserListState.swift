@@ -11,10 +11,11 @@ class RVUserListState: RVBaseAppState {
     override func configure() {
         self.state = .UserList
         navigationBarTitle = "User List"
-        topInTopAreaHeight = 0
-        controllerOuterSegmentedViewHeight = 32.0
-        bottomInTopAreaHeight = 0
+        topInTopAreaHeight = 10.0
+        controllerOuterSegmentedViewHeight = 30.0
+        bottomInTopAreaHeight = 23.0
         scopes = [[String: RVKeys]]()
+        scopes = [["Handle": RVKeys.handle], ["Title": RVKeys.title]  , ["Comment": RVKeys.comment]]
         segmentViewFields = [.WatchGroupInfo, .WatchGroupMembers, .WatchGroupMessages]
         showTopView = true
         showSearchBar = true

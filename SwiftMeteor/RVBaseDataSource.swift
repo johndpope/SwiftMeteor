@@ -142,7 +142,12 @@ class RVBaseDataSource {
                                         queryTerm.value = title.lowercased() as AnyObject
                                     }
                                 }
-                                
+                            case .fullName:
+                                if let fullName = candidate.fullName {
+                                    if let queryTerm = query.findAndTerm(term: sort.field) {
+                                        queryTerm.value = fullName.lowercased() as AnyObject
+                                    }
+                                }
                             default:
                                 print("in \(self.instanceType).queryForFront, term \(sort.field.rawValue) not implemented")
                             }
@@ -324,7 +329,12 @@ class RVBaseDataSource {
                                             queryTerm.value = title.lowercased() as AnyObject
                                         }
                                     }
-                                    
+                                case .fullName:
+                                    if let fullName = candidate.fullName {
+                                        if let queryTerm = query.findAndTerm(term: sort.field) {
+                                            queryTerm.value = fullName.lowercased() as AnyObject
+                                        }
+                                    }
                                 default:
                                     print("in \(self.instanceType).queryForBack..., term \(sort.field.rawValue) not implemented")
                                 }

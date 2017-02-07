@@ -63,7 +63,7 @@ class RVBaseModel: MeteorDocument {
     }
     func checkModelType() {
         if self.modelType == RVModelType.unknown || self.modelType != type(of: self).collectionType() {
-            print("In \(instanceType).init with ID: \(self.localId), invalid model type. Expected \(type(of: self).collectionType()), but received \(self.modelType.rawValue), objectArray = \(self.objects[RVKeys.modelType.rawValue])\n\(objects)")
+           // print("In \(instanceType).init with ID: \(self.localId), invalid model type. Expected \(type(of: self).collectionType()), but received \(self.modelType.rawValue), objectArray = \(self.objects[RVKeys.modelType.rawValue])\n\(objects)")
         }
     }
     init(fields: [String : AnyObject]) {
@@ -75,7 +75,7 @@ class RVBaseModel: MeteorDocument {
             badId = false
            // print("Have actual ID")
         } else {
-            print("In model init, don't have actual ID \(fields)")
+            //print("In model init, don't have actual ID \(fields)")
         }
         //super.init(id: _id, fields: self.objects as NSDictionary? )
         super.init(id: _id, fields: NSDictionary() ) // Just neutralizing the parent class.
