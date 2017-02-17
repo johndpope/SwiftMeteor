@@ -220,7 +220,7 @@ extension RVBaseViewController3 {
     func installRefresh() {
         if let tableView = dsScrollView as? UITableView {
             if appState.installRefreshControl {
-                print("in \(self.classForCoder).installRefresh() ")
+                //print("in \(self.classForCoder).installRefresh() ")
                 tableView.backgroundView = self.refreshControl
                 tableView.separatorStyle = UITableViewCellSeparatorStyle.singleLineEtched
             }
