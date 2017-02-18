@@ -72,4 +72,16 @@ enum RVMeteorMethods: String {
     case followBulkQuery = "follow.bulkQuery"
     case followDelete = "follow.delete"
     case followDeleteAll = "follow.deleteAll"
+    
+    
+    // PrivateChat
+    case privateChatCreate = "privateChat.create"
+    case privateChatUpdate = "privateChat.update"
+    case privateChatFindById = "privateChat.findById"
+    case privateChatBulkQuery = "privateChat.bulkQuery"
+    case privateChatDelete = "privateChat.delete"
+    case privateChatDeleteAll = "privateChat.deleteAll"
+    case privateChatSpecialLookup = "privateChat.specialLookup"
+    
+    
 }

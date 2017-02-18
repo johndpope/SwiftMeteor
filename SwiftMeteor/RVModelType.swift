@@ -21,4 +21,5 @@ enum RVModelType: String  {
     case watchgroup = "watchGroup"
     case location = "location"
     case domain = "domain"
+    case privateChat = "privateChat"
 }

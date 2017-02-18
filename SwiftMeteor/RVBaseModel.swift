@@ -922,18 +922,18 @@ extension RVBaseModel {
 
         }
     }
-    func delete(callback: @escaping(_ error: RVError?) -> Void) {
+    func delete(callback: @escaping(_ number: Int, _ error: RVError?) -> Void) {
      //   print("--------------------   In \(self.instanceType) delete ---------------------------------")
         Meteor.call(type(of: self).deleteMethod.rawValue, params: [ self.localId as AnyObject]) { (result: Any?, error: DDPError?) in
             DispatchQueue.main.async {
                 if let error = error {
                     let rvError = RVError(message: "In \(self.instanceType).delete \(#line) got DDPError for id: \(self.localId)", sourceError: error)
-                    callback(rvError)
-                } else if let _ = result {
-                    callback(nil)
+                    callback(-1, rvError)
+                } else if let count = result as? Int {
+                    callback(count, nil)
                 } else {
                     print("In \(self.instanceType).delete \(#line), no error but no result. id = \(self.localId)")
-                    callback(nil)
+                    callback(-1, nil)
                 }
             }
         }

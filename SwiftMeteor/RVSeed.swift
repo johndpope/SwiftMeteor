@@ -73,7 +73,7 @@ class RVSeed {
                 print("In RVSeed.clear, got [\(models.count)] result")
                 for model in models {
                     if let task = model as? RVTask {
-                        task.delete(callback: { (error) in
+                        task.delete(callback: { (count, error) in
                             if let error = error {
                                 print(error)
                             }

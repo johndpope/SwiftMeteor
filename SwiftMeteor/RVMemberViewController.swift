@@ -47,6 +47,16 @@ class RVMemberViewController: SLKTextViewController {
     }
     override func viewDidLoad() {
         
+        RVPrivateChat.specialPrivateChatLookup(otherUser: RVCoreInfo.sharedInstance.userProfile!) { (chat, error) in
+            if let error = error {
+                error.printError()
+            } else if let chat = chat {
+                print("In \(self.classForCoder)\n\(chat.toString())")
+                chat.delete(callback: { (count, error ) in if let error = error { error.printError() } })
+            } else {
+                print("In \(self.classForCoder).   no error but no privateChat result")
+            }
+        }
         // Register a SLKTextView subclass, if you need any special appearance and/or behavior customisation.
         self.registerClass(forTextView: RVSlackMessageTextView.classForCoder())
 
@@ -57,7 +67,7 @@ class RVMemberViewController: SLKTextViewController {
         }
         
         super.viewDidLoad()
-        
+    
         self.commonInit()
         
         // Example's configuration

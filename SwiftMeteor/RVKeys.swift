@@ -136,4 +136,8 @@ enum RVKeys: String {
 
     
     case metaQueryTerm  = "$meta"
+    
+    // Private Chat
+    case userProfileID0 = "userProfileID0"
+    case userProfileID1 = "userProfileID1"
 }

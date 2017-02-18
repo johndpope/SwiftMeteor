@@ -22,6 +22,7 @@ class RVBaseAppState {
         case ShowProfile        = "ShowProfile"
         case UserList           = "UserList"
         case Menu               = "Menu"
+        case MemberToMemberChat = "MemberToMemberChat"
         
         var segmentLabel: String {
             switch(self) {
