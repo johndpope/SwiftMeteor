@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="11762" systemVersion="16D32" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES">
+    <device id="retina4_7" orientation="portrait">
+        <adaptation id="fullscreen"/>
+    </device>
+    <dependencies>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="11757"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
+    </dependencies>
+    <objects>
+        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner"/>
+        <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
+        <view contentMode="scaleToFill" id="iN0-l3-epB" customClass="RVMessageTableViewCell" customModule="SwiftMeteor" customModuleProvider="target">
+            <rect key="frame" x="0.0" y="0.0" width="364" height="148"/>
+            <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+            <subviews>
+                <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="SOM-El-guB">
+                    <rect key="frame" x="2" y="2" width="360" height="144"/>
+                    <subviews>
+                        <imageView userInteractionEnabled="NO" contentMode="scaleAspectFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="JNW.png" translatesAutoresizingMaskIntoConstraints="NO" id="MIO-Ja-WnJ">
+                            <rect key="frame" x="8" y="52" width="40" height="40"/>
+                            <constraints>
+                                <constraint firstAttribute="height" constant="40" id="79u-Wq-sEz"/>
+                                <constraint firstAttribute="width" constant="40" id="c0x-BI-Bep"/>
+                            </constraints>
+                        </imageView>
+                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Uxf-6Y-5fs">
+                            <rect key="frame" x="56" y="33" width="294" height="21"/>
+                            <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                            <nil key="textColor"/>
+                            <nil key="highlightedColor"/>
+                        </label>
+                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="HLZ-ab-Azp">
+                            <rect key="frame" x="56" y="8" width="294" height="21"/>
+                            <fontDescription key="fontDescription" type="boldSystem" pointSize="17"/>
+                            <nil key="textColor"/>
+                            <nil key="highlightedColor"/>
+                        </label>
+                    </subviews>
+                    <color key="backgroundColor" red="0.7019608021" green="0.7019608021" blue="0.7019608021" alpha="1" colorSpace="calibratedRGB"/>
+                    <constraints>
+                        <constraint firstItem="Uxf-6Y-5fs" firstAttribute="leading" secondItem="MIO-Ja-WnJ" secondAttribute="trailing" constant="8" id="6jU-XU-L6Q"/>
+                        <constraint firstItem="Uxf-6Y-5fs" firstAttribute="top" secondItem="HLZ-ab-Azp" secondAttribute="bottom" constant="4" id="Ez0-ai-9Rg"/>
+                        <constraint firstItem="HLZ-ab-Azp" firstAttribute="top" secondItem="SOM-El-guB" secondAttribute="top" constant="8" id="JEC-7q-ZG7"/>
+                        <constraint firstItem="MIO-Ja-WnJ" firstAttribute="leading" secondItem="SOM-El-guB" secondAttribute="leading" constant="8" id="NTc-Kh-K3Q"/>
+                        <constraint firstItem="MIO-Ja-WnJ" firstAttribute="centerY" secondItem="SOM-El-guB" secondAttribute="centerY" id="Pbs-XX-dEe"/>
+                        <constraint firstAttribute="trailing" secondItem="HLZ-ab-Azp" secondAttribute="trailing" constant="10" id="Zbh-oR-NVT"/>
+                        <constraint firstItem="HLZ-ab-Azp" firstAttribute="leading" secondItem="MIO-Ja-WnJ" secondAttribute="trailing" constant="8" id="tf3-SR-ejr"/>
+                        <constraint firstAttribute="trailing" secondItem="Uxf-6Y-5fs" secondAttribute="trailing" constant="10" id="xtr-06-1Xf"/>
+                    </constraints>
+                </view>
+            </subviews>
+            <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+            <constraints>
+                <constraint firstItem="SOM-El-guB" firstAttribute="top" secondItem="iN0-l3-epB" secondAttribute="top" constant="2" id="6Bg-Gd-isK"/>
+                <constraint firstAttribute="trailing" secondItem="SOM-El-guB" secondAttribute="trailing" constant="2" id="BNm-kG-IiP"/>
+                <constraint firstItem="SOM-El-guB" firstAttribute="leading" secondItem="iN0-l3-epB" secondAttribute="leading" constant="2" id="FWc-eJ-UV4"/>
+                <constraint firstAttribute="bottom" secondItem="SOM-El-guB" secondAttribute="bottom" constant="2" id="grs-b5-O6w"/>
+            </constraints>
+            <freeformSimulatedSizeMetrics key="simulatedDestinationMetrics"/>
+            <connections>
+                <outlet property="authorImageView" destination="MIO-Ja-WnJ" id="8T0-rY-EHT"/>
+                <outlet property="messageContentLabel" destination="Uxf-6Y-5fs" id="out-7c-99g"/>
+                <outlet property="outerView" destination="SOM-El-guB" id="21m-s5-GGM"/>
+                <outlet property="titleLabel" destination="HLZ-ab-Azp" id="SOK-VY-e1P"/>
+            </connections>
+            <point key="canvasLocation" x="28" y="-205"/>
+        </view>
+    </objects>
+    <resources>
+        <image name="JNW.png" width="297" height="327"/>
+    </resources>
+</document>

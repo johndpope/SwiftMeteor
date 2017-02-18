@@ -167,11 +167,20 @@
                         <outlet property="tableView" destination="UDp-CW-cAj" id="VVL-Pt-c1B"/>
                         <outlet property="topViewInTopArea" destination="nQo-JX-vpB" id="TiB-5i-VOM"/>
                         <outlet property="topViewInTopAreaHeightConstraint" destination="XVX-UJ-lUf" id="ayu-s0-jAG"/>
+                        <segue destination="uZj-Hh-Sk1" kind="show" identifier="SegueFromMemberListToMemberScene" id="bxn-qh-gCC"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="ese-us-f6t" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="920.79999999999995" y="162.3688155922039"/>
+        </scene>
+        <!--MemberScene-->
+        <scene sceneID="Dgi-ox-tAi">
+            <objects>
+                <viewControllerPlaceholder storyboardName="MemberScene" id="uZj-Hh-Sk1" sceneMemberID="viewController"/>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="irj-DR-3ii" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="1542" y="163"/>
         </scene>
         <!--Navigation Controller-->
         <scene sceneID="AnN-TB-VPB">
@@ -181,7 +190,7 @@
                     <navigationBar key="navigationBar" contentMode="scaleToFill" misplaced="YES" barStyle="black" id="mty-Yi-zvs">
                         <rect key="frame" x="0.0" y="0.0" width="375" height="44"/>
                         <autoresizingMask key="autoresizingMask"/>
-                        <color key="barTintColor" red="0.20392156859999999" green="0.7843137255" blue="0.44705882349999998" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                        <color key="barTintColor" red="0.25098039215686274" green="0.50196078431372548" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                     </navigationBar>
                     <nil name="viewControllers"/>
                     <connections>

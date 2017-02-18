@@ -84,6 +84,11 @@
 			<key>isShown</key>
 			<false/>
 		</dict>
+		<key>SlackTextViewController.xcscheme</key>
+		<dict>
+			<key>isShown</key>
+			<false/>
+		</dict>
 		<key>SwiftDDP.xcscheme</key>
 		<dict>
 			<key>isShown</key>
@@ -122,17 +127,12 @@
 	</dict>
 	<key>SuppressBuildableAutocreation</key>
 	<dict>
-		<key>01003E0A63474B4A1F92C67EDF1DEE61</key>
-		<dict>
-			<key>primary</key>
-			<true/>
-		</dict>
 		<key>11DFC6F885BFA9BCE8EB6EA0458ABFF8</key>
 		<dict>
 			<key>primary</key>
 			<true/>
 		</dict>
-		<key>12BF20404391466E34F6715CB46D8D30</key>
+		<key>1231D29EA59269C3E4B8105F70693BFB</key>
 		<dict>
 			<key>primary</key>
 			<true/>
@@ -147,7 +147,7 @@
 			<key>primary</key>
 			<true/>
 		</dict>
-		<key>3983475CB5B10B4C82C3A1072A171407</key>
+		<key>38E4981445CD47EAAB46C8D880006F61</key>
 		<dict>
 			<key>primary</key>
 			<true/>
@@ -157,7 +157,7 @@
 			<key>primary</key>
 			<true/>
 		</dict>
-		<key>44D6B20B81F57DD9C422AF45E0631179</key>
+		<key>442411D78FD9F516665941E664694E35</key>
 		<dict>
 			<key>primary</key>
 			<true/>
@@ -167,12 +167,12 @@
 			<key>primary</key>
 			<true/>
 		</dict>
-		<key>51A468299378D695DD23E1C6283D099A</key>
+		<key>53C6112213829CB147F47E473C93F271</key>
 		<dict>
 			<key>primary</key>
 			<true/>
 		</dict>
-		<key>53C6112213829CB147F47E473C93F271</key>
+		<key>55F753ED6FA240E99C2CAF98CF5C9375</key>
 		<dict>
 			<key>primary</key>
 			<true/>
@@ -182,12 +182,22 @@
 			<key>primary</key>
 			<true/>
 		</dict>
-		<key>5AFDF729EF33A1E83470DFB38447028F</key>
+		<key>5E0F6DC051942C26FF2A0668E0CBCB7A</key>
 		<dict>
 			<key>primary</key>
 			<true/>
 		</dict>
 		<key>6BB1C1403B2419F911818DA8413FDA07</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>7C1BAF05C79991777B55FB56B3C6DF63</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>8664FE470BEC7BD3B2EE48BDCF907A1B</key>
 		<dict>
 			<key>primary</key>
 			<true/>
@@ -222,17 +232,17 @@
 			<key>primary</key>
 			<true/>
 		</dict>
-		<key>F8A069592C6371433FB5E809337822FC</key>
+		<key>D32CF5DED285D8E7D3A97A127E87D940</key>
 		<dict>
 			<key>primary</key>
 			<true/>
 		</dict>
-		<key>FB6E189E23E7D46D69579FE3064288B1</key>
+		<key>E935809DD9A78FCFEC4AD0D15104477B</key>
 		<dict>
 			<key>primary</key>
 			<true/>
 		</dict>
-		<key>FD9F9E6A45B235DF2DE53953D2159167</key>
+		<key>F2A4C14ECC997CFA503B83892506A96F</key>
 		<dict>
 			<key>primary</key>
 			<true/>

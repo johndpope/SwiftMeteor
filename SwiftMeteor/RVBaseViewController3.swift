@@ -264,6 +264,7 @@ extension RVBaseViewController3: UISearchControllerDelegate {
         searchBar.showsSearchResultsButton = false
         searchBar.placeholder = "Search..."
         definesPresentationContext = true
+        searchBar.barTintColor = appState.navigationBarColor
     }
 }
 extension RVBaseViewController3: UISearchBarDelegate {

@@ -25,6 +25,7 @@ target 'SwiftMeteor' do
   pod 'Google-Material-Design-Icons-Swift'
   pod 'Font-Awesome-Swift', '~> 1.6.1'
   pod 'SwiftSoup'
+  pod 'SlackTextViewController'
 
 
   #target 'SwiftMeteorTests' do

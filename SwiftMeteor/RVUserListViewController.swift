@@ -10,4 +10,7 @@ import UIKit
 
 class RVUserListViewController: RVBaseViewController3 {
 
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        performSegue(withIdentifier: "SegueFromMemberListToMemberScene", sender: nil)
+    }
 }
