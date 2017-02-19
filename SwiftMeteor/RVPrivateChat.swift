@@ -81,7 +81,7 @@ class RVPrivateChat: RVBaseModel {
 
     }
     override func toString() -> String {
-        var output = "-------------------------------RVPrivateChat instance Unique Fields: --------------------------------"
+        var output = "-------------------------------RVPrivateChat instance Unique Fields: --------------------------------\n"
         output = addTerm(term: RVKeys.userProfileID0.rawValue , input: output, value: self.userProfileID0)
         output = addTerm(term: RVKeys.userProfileID1.rawValue , input: output, value: self.userProfileID1)
         output = "\(output)\n\(super.toString())"

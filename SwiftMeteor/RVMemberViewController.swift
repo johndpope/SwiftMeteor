@@ -12,8 +12,9 @@ import LoremIpsum
 let DEBUG_CUSTOM_TYPING_INDICATOR = true
 
 class RVMemberViewController: SLKTextViewController {
+    var setupSLKDatasource: Bool = true
     //var messages = ["Elmer", "Goofy", "NumbNuts", "Jennifer", "Michele", "Julia", "Nola", "Zebra", "Acenia", "Simone", "Laura"]
-    var messages = [RVSlackMessage]()
+    //var messages = [RVSlackMessage]()
     var camera = RVCamera()
     var users: Array = ["Allen", "Anna", "Alicia", "Arnold", "Armando", "Antonio", "Brad", "Catalaya", "Christoph", "Emerson", "Eric", "Everyone", "Steve"]
     var channels: Array = ["General", "Random", "iOS", "Bugs", "Sports", "Android", "UI", "SSB"]
@@ -47,16 +48,7 @@ class RVMemberViewController: SLKTextViewController {
     }
     override func viewDidLoad() {
         
-        RVPrivateChat.specialPrivateChatLookup(otherUser: RVCoreInfo.sharedInstance.userProfile!) { (chat, error) in
-            if let error = error {
-                error.printError()
-            } else if let chat = chat {
-                print("In \(self.classForCoder)\n\(chat.toString())")
-                chat.delete(callback: { (count, error ) in if let error = error { error.printError() } })
-            } else {
-                print("In \(self.classForCoder).   no error but no privateChat result")
-            }
-        }
+
         // Register a SLKTextView subclass, if you need any special appearance and/or behavior customisation.
         self.registerClass(forTextView: RVSlackMessageTextView.classForCoder())
 
@@ -589,7 +581,7 @@ extension RVMemberViewController {
     // MARK: - Example's Configuration
     
     func configureDataSource() {
-        
+        if !setupSLKDatasource { return }
         var array = [RVSlackMessage]()
         
         for _ in 0..<100 {

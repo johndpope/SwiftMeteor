@@ -39,6 +39,7 @@ class RVBaseAppState {
             }
         }
     }
+    var baseModel: RVBaseModel? = nil 
     var topInTopAreaHeight: CGFloat = 0.0
     var controllerOuterSegmentedViewHeight: CGFloat = 0.0
     var bottomInTopAreaHeight: CGFloat = 0.0
