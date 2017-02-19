@@ -19,7 +19,7 @@ class RVMemberToMemberChatState: RVBaseAppState {
         
         
         navigationBarTitle = "Private Chat"
-        topInTopAreaHeight = 50.0
+        topInTopAreaHeight = 100.0
         controllerOuterSegmentedViewHeight = 0.0
         bottomInTopAreaHeight = 0.0
         scopes = [[String: RVKeys]]()
@@ -38,7 +38,7 @@ class RVMemberToMemberChatState: RVBaseAppState {
         let mainQuery: queryFunction = {(params) in
             //     print("In \(self.instanceType).mainQuery")
             let query = mainDatasource.basicQuery()
-            if let baseModel = self.baseModel {
+            if let baseModel = RVCoreInfo.sharedInstance.appState.stack.last {
                 query.addAnd(term: .parentId, value: baseModel.localId as AnyObject, comparison: .eq)
             }
             query.addAnd(term: .createdAt, value: RVEJSON.convertToEJSONDate(Date()) as AnyObject, comparison: .lte)

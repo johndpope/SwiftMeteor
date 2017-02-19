@@ -69,7 +69,7 @@ class RVMainLandingViewController: RVBaseViewController2 {
         }
     }
     func setupWatchGroupMembers() {
-            print("In \(self.classForCoder).setUpWatchGroupMembers, after unwind \(self.manager.numberOfSections())")
+          //  print("In \(self.classForCoder).setUpWatchGroupMembers, after unwind \(self.manager.numberOfSections())")
             mainState.unwind {
                 if let view = self.watchGroupInfoView {
                     view.removeFromSuperview()

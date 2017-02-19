@@ -63,8 +63,16 @@ class RVDSManager {
         }
         return nil
     }
-    func numberOfSections() -> Int {
-        return sections.count
+    func numberOfSections(scrollView: UIScrollView?) -> Int {
+        if self.scrollView == nil && scrollView == nil { return sections.count }
+        if let managerScrollView = self.scrollView {
+            if let incoming = scrollView {
+                if managerScrollView == incoming {
+                    return sections.count
+                }
+            }
+        }
+        return 0
     }
     func numberOfItems(section: Int) -> Int {
         if (section >= 0) && (section < sections.count) {

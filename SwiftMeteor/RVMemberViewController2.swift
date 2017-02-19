@@ -15,6 +15,11 @@ class RVMemberViewController2: RVMemberViewController {
     @IBOutlet weak var controllerSegmentedControl: UISegmentedControl!
     @IBOutlet weak var bottomViewInTopArea: UIView!
 
+    @IBOutlet weak var pipButton: UIButton!
+    @IBOutlet weak var userProfilePicture: UIImageView!
+    @IBOutlet weak var fullNameLabel: UILabel!
+    @IBOutlet weak var topicLabel: UILabel!
+    
     @IBOutlet weak var topViewInTopAreaHeightConstraint: NSLayoutConstraint!
     var originalTopViewInTopAreaHeightConstant: CGFloat = 0.0
     @IBOutlet weak var controllerOuterSegmentControlViewHeightConstraint: NSLayoutConstraint!
@@ -40,31 +45,77 @@ class RVMemberViewController2: RVMemberViewController {
     var refreshControl = UIRefreshControl()
     func userProfileAndDomainId() -> (RVUserProfile, String)? { return coreInfo.userAndDomain() }
 
+    
+    @IBAction func typingIndicatorTouched(_ sender: UIButton) {
+        simulateUserTyping(sender)
+    }
+    
+    @IBAction func appendButtonTouched(_ sender: UIButton) {
+        fillWithText(sender)
+    }
+    @IBAction func editButtonTouched(_ sender: UIButton) {
+        editRandomMessage(sender)
+    }
+    
+    @IBAction func pipButtonTouched(_ sender: UIButton) {
+                togglePIPWindow(sender)
+    }
+    @IBAction func showHideButtonTouched(_ sender: UIButton) {
+        print("ShowHideTouched")
+        hideOrShowTextInputbar(sender)
+    }
 }
 extension RVMemberViewController2 {
     override func viewDidLoad() {
         setupSLKDatasource = false
         super.viewDidLoad()
-
     }
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
-        installUIComponents()
+
+
+       // print("In \(self.classForCoder).viewDidAppear just before appState initialize \(appState.state.rawValue) -------")
+
+        if !appState.loaded {
+                    installUIComponents()
+            configureOverlay()
+
+            appState.initialize(scrollView: self.dsScrollView) { (error) in
+                self.appState.loaded = true
+                if let error = error {
+                    error.append(message: "In \(self.classForCoder).viewDidAppear, got initialize error")
+                    error.printError()
+                } else {
+                    print("In \(self.classForCoder).viewDidAppear returned from appState initialize \(self.appState.state.rawValue) ----------")
+                }
+            }
+        }
+    }
+    func configureOverlay() {
+        if let buddy = appState.stack.last as? RVUserProfile {
+            if let label = self.fullNameLabel { label.text = buddy.fullName != nil ? buddy.fullName! : ""}
+            if let avatar = buddy.image {
+                if let imageView = self.userProfilePicture {
+                    avatar.download(callback: { (image, error) in
+                        if let error = error {
+                            error.printError()
+                        } else if let image = image {
+                            imageView.image = image
+                        }
+                    })
+                }
+            }
+        }
+        if let button = self.pipButton {
+            if let image = button.image(for: .normal) {
+                if let inverted = invertColor(image: image) {
+                    button.setImage(inverted, for: .normal)
+                }
+            }
+        }
         if let outerView = self.outerTopAreaView {
             self.view.bringSubview(toFront: outerView)
         }
-        print("In \(self.classForCoder).viewDidAppear just before appState initialize \(appState.state.rawValue) -------")
-        
-        appState.initialize(scrollView: self.dsScrollView) { (error) in
-            if let error = error {
-                error.append(message: "In \(self.classForCoder).viewDidAppear, got initialize error")
-                error.printError()
-            } else {
-                 print("In \(self.classForCoder).viewDidAppear returned from appState initialize \(self.appState.state.rawValue) ----------")
-            }
-        }
- 
- 
     }
     override func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         
@@ -85,8 +136,8 @@ extension RVMemberViewController2 {
             
             var width = tableView.frame.width-RVMessageTableViewCell.AvatarHeight
             width -= 25.0
-            var username = ""
-            var messageContent = ""
+            var username        = ""
+            var messageContent  = ""
             if let message = message as? RVMessage {
                 if let fullName = message.fullName { username = fullName }
                 if let content = message.text { messageContent = content }

@@ -335,7 +335,7 @@ extension RVBaseViewController2: UITableViewDataSource {
         tableView.separatorStyle = UITableViewCellSeparatorStyle.none
     }
     func numberOfSections(in tableView: UITableView) -> Int {
-        let count = manager.sections.count
+        let count = manager.numberOfSections(scrollView: tableView)
         if count == 0 {
             showNoMessage(tableView: tableView)
         }

@@ -32,7 +32,7 @@ class RVUserListViewController: RVBaseViewController3 {
                                         // chat.delete(callback: { (count, error ) in if let error = error { error.printError() } })
                                         self.appState.unwind {
                                             let memberToMemberState = RVMemberToMemberChatState()
-                                            memberToMemberState.baseModel = member
+                                            memberToMemberState.stack.append(member)
                                             self.appState = memberToMemberState
                                             tableView.deselectRow(at: indexPath, animated: true)
                                         }

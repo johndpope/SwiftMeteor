@@ -18,7 +18,7 @@
                 <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="SOM-El-guB">
                     <rect key="frame" x="2" y="2" width="360" height="144"/>
                     <subviews>
-                        <imageView userInteractionEnabled="NO" contentMode="scaleAspectFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="JNW.png" translatesAutoresizingMaskIntoConstraints="NO" id="MIO-Ja-WnJ">
+                        <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="JNW.png" translatesAutoresizingMaskIntoConstraints="NO" id="MIO-Ja-WnJ">
                             <rect key="frame" x="8" y="52" width="40" height="40"/>
                             <constraints>
                                 <constraint firstAttribute="height" constant="40" id="79u-Wq-sEz"/>

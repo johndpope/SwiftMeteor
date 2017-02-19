@@ -187,7 +187,7 @@ extension RVBaseViewController: UITableViewDelegate {
     func numberOfSections(in tableView: UITableView) -> Int {
         //print("In \(self.classForCoder).numberOfSections... \(manager.sections.count)")
 
-            let count = manager.sections.count
+            let count = manager.numberOfSections(scrollView: tableView)
             if count == 0 {
                 showNoMessage(tableView: tableView)
             } else {

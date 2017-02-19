@@ -348,6 +348,11 @@ extension RVMemberViewController: RVCameraDelegate {
             dismiss(animated: true, completion: { })
         }
     }
+    func insertImage(window: UIWindow, image: UIImage) {
+        let imageView = UIImageView(frame: window.bounds)
+        imageView.image = image
+        window.addSubview(imageView)
+    }
     func didFinishPicking(picker: UIImagePickerController, info: [String: Any]) -> Void {
         if let uiImage = info[UIImagePickerControllerOriginalImage] as? UIImage {
             //self.imageView.image = uiImage
@@ -359,6 +364,9 @@ extension RVMemberViewController: RVCameraDelegate {
                     error.printError()
                 } else if let rvImage = rvImage {
                     print("In \(self.classForCoder).didFinishPicking, successfully saved image \n\(rvImage.toString())")
+                      //  self.hidePIPWindow()
+                        self.showPIPWindow()
+                    self.insertImage(window: self.pipWindow!, image: uiImage)
               //      self.capturedImage = rvImage
                     
                 } else {
@@ -611,9 +619,26 @@ extension RVMemberViewController {
     }
     
     // MARK: - Action Methods
-    
+    func invertColor(image: UIImage?) -> UIImage? {
+        if let image = image {
+            if let filter = CIFilter(name: "CIColorInvert") {
+                filter.setValue(CIImage(image: image), forKey: kCIInputImageKey)
+                if let filtered = filter.outputImage {
+                    return UIImage(ciImage: filtered)
+                }
+                
+            }
+        }
+        return nil
+    }
     func hideOrShowTextInputbar(_ sender: AnyObject) {
-        
+        if let button = sender as? UIButton {
+            let hide = !self.isTextInputbarHidden
+            let image = hide ? UIImage(named: "icn_arrow_up") : UIImage(named: "icn_arrow_down")
+            let inverted = invertColor(image: image)
+            self.setTextInputbarHidden(hide, animated: true)
+            button.setImage(inverted , for: .normal)
+        }
         guard let buttonItem = sender as? UIBarButtonItem else {
             return
         }
@@ -734,40 +759,55 @@ extension RVMemberViewController {
     func togglePIPWindow(_ sender: AnyObject) {
         
         if self.pipWindow == nil {
-            self.showPIPWindow(sender)
+            self.showPIPWindow()
         }
         else {
-            self.hidePIPWindow(sender)
+            self.hidePIPWindow(callback: {
+                
+            })
         }
     }
     
-    func showPIPWindow(_ sender: AnyObject) {
-        
-        var frame = CGRect(x: self.view.frame.width - 60.0, y: 0.0, width: 50.0, height: 50.0)
-        frame.origin.y = self.textInputbar.frame.minY - 60.0
-        
-        self.pipWindow = UIWindow(frame: frame)
-        self.pipWindow?.backgroundColor = UIColor.black
-        self.pipWindow?.layer.cornerRadius = 10
-        self.pipWindow?.layer.masksToBounds = true
-        self.pipWindow?.isHidden = false
-        self.pipWindow?.alpha = 0.0
-        
-        UIApplication.shared.keyWindow?.addSubview(self.pipWindow!)
-        
-        UIView.animate(withDuration: 0.25, animations: { [unowned self] () -> Void in
-            self.pipWindow?.alpha = 1.0
-        })
+    func showPIPWindow() {
+                print("In \(self.classForCoder).showPIPWindow")
+        hidePIPWindow {
+            let width: CGFloat = 60
+            let height: CGFloat = 60
+            let space: CGFloat = 10
+            
+            var frame = CGRect(x: self.view.frame.width - (width + space), y: 0.0, width: width, height: height)
+            frame.origin.y = self.textInputbar.frame.minY - (height + space)
+            let pip = UIWindow(frame: frame)
+            pip.backgroundColor = UIColor.black
+            pip.layer.cornerRadius = 10
+            pip.layer.masksToBounds = true
+            pip.isHidden = false
+            pip.alpha = 0.0
+            self.pipWindow = pip
+            if let keyWindow = UIApplication.shared.keyWindow {
+                print("In \(self.classForCoder).showPipWindow frame is \(frame)")
+                keyWindow.addSubview(pip)
+                UIView.animate(withDuration: 0.25, animations: { () -> Void in
+                    pip.alpha = 1.0
+                })
+            } else {
+                print("In \(self.classForCoder).showPipWindow no keyWindow")
+            }
+        }
     }
     
-    func hidePIPWindow(_ sender: AnyObject) {
-        
-        UIView.animate(withDuration: 0.3, animations: { [unowned self] () -> Void in
-            self.pipWindow?.alpha = 0.0
-            }, completion: { [unowned self] (finished) -> Void in
-                self.pipWindow?.isHidden = true
-                self.pipWindow = nil
-        })
+    func hidePIPWindow(callback: @escaping() -> Void) {
+        print("In \(self.classForCoder).hidePIPWindow")
+        if let pip = self.pipWindow {
+            UIView.animate(withDuration: 0.3, animations: { () -> Void in
+                pip.alpha = 0.0
+                }, completion: { [unowned self] (finished) -> Void in
+                    pip.isHidden = true
+                    pip.removeFromSuperview()
+                    self.pipWindow = nil
+                    callback()
+            })
+        } else { callback() }
     }
     
 

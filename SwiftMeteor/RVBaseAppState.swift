@@ -39,7 +39,8 @@ class RVBaseAppState {
             }
         }
     }
-    var baseModel: RVBaseModel? = nil 
+   // var baseModel: RVBaseModel? = nil
+    var loaded: Bool = false
     var topInTopAreaHeight: CGFloat = 0.0
     var controllerOuterSegmentedViewHeight: CGFloat = 0.0
     var bottomInTopAreaHeight: CGFloat = 0.0
@@ -81,7 +82,7 @@ class RVBaseAppState {
     func configure() {}
     func initialize(scrollView: UIScrollView? = nil, callback: @escaping (_ error: RVError?) -> Void) {
         self.manager = RVDSManager(scrollView: scrollView)
-        print("In \(self.instanceType).initialize just before datasource --------------------------")
+     //   print("In \(self.instanceType).initialize just before datasource --------------------------")
         for datasource in datasources { manager.addSection(section: datasource)}
         initializeInner(callback: callback)
     }

@@ -183,7 +183,7 @@ extension RVBaseViewController3 {
 }
 extension RVBaseViewController3: UITableViewDataSource {
     func numberOfSections(in tableView: UITableView) -> Int {
-        return manager.sections.count
+        return manager.numberOfSections(scrollView: tableView)
     }
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         let count = appState.manager.numberOfItems(section: section)

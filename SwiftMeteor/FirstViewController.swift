@@ -691,7 +691,7 @@ extension FirstViewController: UITableViewDataSource {
     }
     func numberOfSections(in tableView: UITableView) -> Int {
         //print("In \(self.classForCoder).numberOfSections... \(manager.sections.count)")
-        let count = manager.sections.count
+        let count = manager.numberOfSections(scrollView: tableView)
         if count == 0 {
 
             let messageLabel = UILabel(frame: CGRect(x: 0, y: 0, width: self.view.bounds.size.width, height: self.view.bounds.size.height))
