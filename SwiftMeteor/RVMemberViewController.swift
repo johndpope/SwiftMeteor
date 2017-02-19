@@ -14,7 +14,7 @@ let DEBUG_CUSTOM_TYPING_INDICATOR = true
 class RVMemberViewController: SLKTextViewController {
     var setupSLKDatasource: Bool = true
     //var messages = ["Elmer", "Goofy", "NumbNuts", "Jennifer", "Michele", "Julia", "Nola", "Zebra", "Acenia", "Simone", "Laura"]
-    //var messages = [RVSlackMessage]()
+    var messages = [RVSlackMessage]()
     var camera = RVCamera()
     var users: Array = ["Allen", "Anna", "Alicia", "Arnold", "Armando", "Antonio", "Brad", "Catalaya", "Christoph", "Emerson", "Eric", "Everyone", "Steve"]
     var channels: Array = ["General", "Random", "iOS", "Bugs", "Sports", "Android", "UI", "SSB"]
@@ -195,6 +195,7 @@ extension RVMemberViewController {
     }
     
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        print("IN \(self.classForCoder).numberOfRowsInSection. SHOULD NOT BE HERE")
         if tableView == self.tableView { return self.messages.count
         } else {
             if let searchResult = self.searchResult { return searchResult.count }
@@ -214,7 +215,7 @@ extension RVMemberViewController {
  
     
     func messageCellForRowAtIndexPath(_ indexPath: IndexPath) -> RVMessageTableViewCell {
-        
+                print("IN \(self.classForCoder).messageCellForRowAtIndexPath. SHOULD NOT BE HERE")
         let cell = self.tableView.dequeueReusableCell(withIdentifier: RVMessageTableViewCell.identifier) as! RVMessageTableViewCell
         
         if cell.gestureRecognizers?.count == nil {
@@ -242,7 +243,7 @@ extension RVMemberViewController {
     }
     
     func autoCompletionCellForRowAtIndexPath(_ indexPath: IndexPath) -> RVMessageTableViewCell {
-        
+        print("In \(self.classForCoder).autoCompletionCellForRow. Wondering what this is being called")
         let cell = self.autoCompletionView.dequeueReusableCell(withIdentifier: RVMessageTableViewCell.AutoCompletionCellIdentifier) as! RVMessageTableViewCell
         cell.indexPath = indexPath
         cell.selectionStyle = .default
@@ -269,7 +270,7 @@ extension RVMemberViewController {
     }
 
     override func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        
+                        print("IN \(self.classForCoder).heightForRowAt. SHOULD NOT BE HERE")
         if tableView == self.tableView {
             let message = self.messages[(indexPath as NSIndexPath).row]
             
@@ -425,7 +426,7 @@ extension RVMemberViewController {
     
     // Notifies the view controller when the right button's action has been triggered, manually or by using the keyboard return key.
     override func didPressRightButton(_ sender: Any!) {
-        
+        print("In \(self.classForCoder).didPressRightBUtton. should not be here")
         // This little trick validates any pending auto-correction or auto-spelling just after hitting the 'Send' button
         self.textView.refreshFirstResponder()
         
@@ -581,7 +582,9 @@ extension RVMemberViewController {
     // MARK: - Example's Configuration
     
     func configureDataSource() {
+
         if !setupSLKDatasource { return }
+        print("In \(self.classForCoder).configureDataSource. Shouldn't be here")
         var array = [RVSlackMessage]()
         
         for _ in 0..<100 {

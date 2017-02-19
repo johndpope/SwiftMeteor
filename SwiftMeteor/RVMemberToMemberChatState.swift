@@ -8,7 +8,7 @@
 
 import Foundation
 class RVMemberToMemberChatState: RVBaseAppState {
-    var chatBuddy: RVUserProfile? = nil
+    //var chatBuddy: RVUserProfile? = nil
     override func configure() {
         super.configure()
         self.state = .MemberToMemberChat

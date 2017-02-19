@@ -81,7 +81,7 @@ class RVBaseAppState {
     func configure() {}
     func initialize(scrollView: UIScrollView? = nil, callback: @escaping (_ error: RVError?) -> Void) {
         self.manager = RVDSManager(scrollView: scrollView)
-        //print("In \(self.instanceType).initialize just before datasource")
+        print("In \(self.instanceType).initialize just before datasource --------------------------")
         for datasource in datasources { manager.addSection(section: datasource)}
         initializeInner(callback: callback)
     }

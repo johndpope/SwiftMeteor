@@ -50,13 +50,17 @@ extension RVMemberViewController2 {
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         installUIComponents()
+        print("In \(self.classForCoder).viewDidAppear just before appState initialize \(appState.state.rawValue) -------")
         
         appState.initialize(scrollView: self.dsScrollView) { (error) in
             if let error = error {
                 error.append(message: "In \(self.classForCoder).viewDidAppear, got initialize error")
                 error.printError()
+            } else {
+                 print("In \(self.classForCoder).viewDidAppear returned from appState initialize \(self.appState.state.rawValue) ----------")
             }
         }
+ 
  
     }
     override func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
@@ -213,6 +217,60 @@ extension RVMemberViewController2 {
              */
         }
     }
+    override func didPressRightButton(_ sender: Any!) {
+        
+        // This little trick validates any pending auto-correction or auto-spelling just after hitting the 'Send' button
+        self.textView.refreshFirstResponder()
+        /*
+        let message = RVSlackMessage()
+        message.username = LoremIpsum.name()
+        message.text = self.textView.text
+        */
+        let indexPath = IndexPath(row: 0, section: 0)
+        let rowAnimation: UITableViewRowAnimation = self.isInverted ? .bottom : .top
+        let scrollPosition: UITableViewScrollPosition = self.isInverted ? .bottom : .top
+        
+        self.tableView.beginUpdates()
+        print("In \(self.classForCoder).didPressRightButtton need to fix")
+       // self.messages.insert(message, at: 0)
+        self.tableView.insertRows(at: [indexPath], with: rowAnimation)
+        self.tableView.endUpdates()
+        
+        self.tableView.scrollToRow(at: indexPath, at: scrollPosition, animated: true)
+        
+        // Fixes the cell from blinking (because of the transform, when using translucent cells)
+        // See https://github.com/slackhq/SlackTextViewController/issues/94#issuecomment-69929927
+        self.tableView.reloadRows(at: [indexPath], with: .automatic)
+        
+        super.didPressRightButton(sender)
+    }
+    override func editCellMessage(_ gesture: UIGestureRecognizer) {
+        
+        guard let cell = gesture.view as? RVMessageTableViewCell else { return }
+        print("In \(self.classForCoder).editCellMessage. Need to fix")
+        // self.editingMessage = self.messages[cell.indexPath.row]
+        self.editText(self.editingMessage.text)
+        
+        self.tableView.scrollToRow(at: cell.indexPath, at: .bottom, animated: true)
+    }
+    
+
+    
+    override func editLastMessage(_ sender: AnyObject?) {
+        
+        if self.textView.text.characters.count > 0 {
+            return
+        }
+        
+        let lastSectionIndex = self.tableView.numberOfSections-1
+        let lastRowIndex = self.tableView.numberOfRows(inSection: lastSectionIndex)-1
+        print("In \(self.classForCoder).editLastMessage. Need to fix")
+       // let lastMessage = self.messages[lastRowIndex]
+        
+        // self.editText(lastMessage.text)
+        
+        self.tableView.scrollToRow(at: IndexPath(row: lastRowIndex, section: lastSectionIndex), at: .bottom, animated: true)
+    }
     func installUIComponents() {
         configureSearchController()
         configureRefresh()
@@ -267,7 +325,7 @@ extension RVMemberViewController2: UISearchControllerDelegate {
             if let tableView = self.dsScrollView as? UITableView { tableView.tableHeaderView = self.searchController.searchBar }
             return
         } else if let tableView = self.dsScrollView as? UITableView { if let _ = tableView.tableHeaderView as? UISearchBar { tableView.tableHeaderView = nil } }
-        print("In \(self.classForCoder).installSearchController passed test \(appState.state.rawValue)")
+        print("In \(self.classForCoder).installSearchController failed test \(appState.state.rawValue)")
     }
     func installTableInteractivity() { if let tableView = dsScrollView as? UITableView { tableView.isUserInteractionEnabled = appState.tableViewInteractive } }
     func configureSearchController() {
@@ -298,6 +356,7 @@ extension RVMemberViewController2: UISearchResultsUpdating {
         updateSearchResultsHelper(searchController: searchController)
     }
     func updateSearchResultsHelper(searchController: UISearchController) {
+        print("In \(self.classForCoder).updateSearchResultsController. Should not be here -------------------------------")
         let searchBar = searchController.searchBar
         let scopeIndex = getScopeIndex(searchBar: searchBar)
         
@@ -401,11 +460,18 @@ extension RVMemberViewController2: UISearchResultsUpdating {
 // UITableViewDataSource
 extension RVMemberViewController2 {
     override func numberOfSections(in tableView: UITableView) -> Int {
-        return manager.sections.count
+        //print("In \(self.classForCoder).numberOfSections \(appState.state.rawValue), \(appState.manager.sections.count)")
+        if appState.state == .MemberToMemberChat { return manager.sections.count}
+        else { return 0 }
+
     }
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        let count = appState.manager.numberOfItems(section: section)
-        return count
+                print("In \(self.classForCoder).numberOfItems \(appState.manager.numberOfItems(section: section))")
+        if appState.state == .MemberToMemberChat {
+            return appState.manager.numberOfItems(section: section)
+        } else {
+            return 0
+        }
     }
 
     
