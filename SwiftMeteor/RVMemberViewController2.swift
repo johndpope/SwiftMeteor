@@ -50,6 +50,9 @@ extension RVMemberViewController2 {
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         installUIComponents()
+        if let outerView = self.outerTopAreaView {
+            self.view.bringSubview(toFront: outerView)
+        }
         print("In \(self.classForCoder).viewDidAppear just before appState initialize \(appState.state.rawValue) -------")
         
         appState.initialize(scrollView: self.dsScrollView) { (error) in
@@ -466,7 +469,7 @@ extension RVMemberViewController2 {
 
     }
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-                print("In \(self.classForCoder).numberOfItems \(appState.manager.numberOfItems(section: section))")
+                //print("In \(self.classForCoder).numberOfItems \(appState.manager.numberOfItems(section: section))")
         if appState.state == .MemberToMemberChat {
             return appState.manager.numberOfItems(section: section)
         } else {
