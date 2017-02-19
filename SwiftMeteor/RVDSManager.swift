@@ -63,6 +63,11 @@ class RVDSManager {
         }
         return nil
     }
+    func forceFrontZone(indexPath: IndexPath) {
+        if indexPath.section < sections.count {
+            sections[indexPath.section].forceFrontZone(location: 0)
+        }
+    }
     func numberOfSections(scrollView: UIScrollView?) -> Int {
         if self.scrollView == nil && scrollView == nil { return sections.count }
         if let managerScrollView = self.scrollView {

@@ -23,7 +23,8 @@ class RVMemberViewController: SLKTextViewController {
     var commands: Array = ["msg", "call", "text", "skype", "kick", "invite"]
     
     var searchResult: [String]?
-    
+    var userProfile: RVUserProfile? { get { return RVCoreInfo.sharedInstance.userProfile } }
+    var domain: RVDomain? { get {return RVCoreInfo.sharedInstance.domain}}
     var pipWindow: UIWindow?
     var editingMessage = RVSlackMessage()
     override var tableView: UITableView { get { return super.tableView! } }
@@ -439,6 +440,10 @@ extension RVMemberViewController {
     
     // Notifies the view controller when the right button's action has been triggered, manually or by using the keyboard return key.
     override func didPressRightButton(_ sender: Any!) {
+        if !setupSLKDatasource {
+            super.didPressRightButton(sender)
+            return
+        }
         print("In \(self.classForCoder).didPressRightBUtton. should not be here")
         // This little trick validates any pending auto-correction or auto-spelling just after hitting the 'Send' button
         self.textView.refreshFirstResponder()

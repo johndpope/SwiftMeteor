@@ -457,8 +457,11 @@ class RVBaseDataSource {
         }
         return nil
     }
+    func forceFrontZone(location: Int) {
+        self.inFrontZone(location: location)
+    }
     func inFrontZone(location: Int) {
-      //  print("In \(self.instanceType).inFrontZone. location = \(location), offset = \(self.offset), array count = \(self.array.count)")
+       // print("In \(self.instanceType).inFrontZone. location = \(location), offset = \(self.offset), array count = \(self.array.count)")
         if self.filterMode { return }
         if (Date().timeIntervalSince1970 - self.frontTime) < minimumInterval { return }
         if frontTimer { return }
@@ -517,7 +520,7 @@ class RVBaseDataSource {
     }
     
     func loadFront() {
-        print("In \(self.instanceType).loadFront()... should this be used?")
+     //   print("In \(self.instanceType).loadFront()... should this be used?")
         if (Date().timeIntervalSince1970 - self.frontTime) < minimumInterval { return }
         if frontTimer { return }
         frontTimer = true
@@ -554,7 +557,7 @@ class RVBaseDataSource {
     }
  
     func inBackZone(location: Int) {
-    //    print("In \(self.instanceType).inBackZone. location = \(location), offset = \(self.offset), array count = \(self.array.count)")
+      //  print("In \(self.instanceType).inBackZone. location = \(location), offset = \(self.offset), array count = \(self.array.count)")
         if Date().timeIntervalSince1970 - self.backTime < minimumInterval { return }
         if backTimer { return }
         backTimer = true

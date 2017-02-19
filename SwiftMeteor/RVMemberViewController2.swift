@@ -9,7 +9,7 @@
 import UIKit
 
 class RVMemberViewController2: RVMemberViewController {
-
+    
     @IBOutlet weak var topViewInTopArea: UIView!
     @IBOutlet weak var controllerOuterSegementedControlView: UIView!
     @IBOutlet weak var controllerSegmentedControl: UISegmentedControl!
@@ -117,7 +117,51 @@ extension RVMemberViewController2 {
     }
     
     
-    
+    // Notifies the view controller when the right button's action has been triggered, manually or by using the keyboard return key.
+    override func didPressRightButton(_ sender: Any!) {
+        print("In \(self.classForCoder).didPressRightBUtton. should not be here")
+        // This little trick validates any pending auto-correction or auto-spelling just after hitting the 'Send' button
+        self.textView.refreshFirstResponder()
+        
+        let message = RVMessage()
+        if let userProfile = userProfile {
+            message.setOwner(owner: userProfile)
+            message.fullName = userProfile.fullName
+            if let domain = self.domain { message.domainId = domain.localId }
+            if let top = self.appState.stack.last {
+                message.setParent(parent: top)
+            }
+                message.text = self.textView.text
+                message.create(callback: { (actualMessage, error ) in
+                    if let error = error {
+                        error.printError()
+                    } else if let actualMessage = actualMessage {
+                        print("In \(self.classForCoder), have actual Message")
+                        let indexPath = IndexPath(row: 0, section: 0)
+                        let rowAnimation: UITableViewRowAnimation = self.isInverted ? .bottom : .top
+                        let scrollPosition: UITableViewScrollPosition = self.isInverted ? .bottom : .top
+                        
+                        if self.manager.numberOfItems(section: 0) > 0 {
+                            self.tableView.beginUpdates()
+                            //self.messages.insert(message, at: 0)
+                            //self.tableView.insertRows(at: [indexPath], with: rowAnimation)
+                            self.tableView.endUpdates()
+                            
+                            self.tableView.scrollToRow(at: indexPath, at: scrollPosition, animated: true)
+                            
+                            // Fixes the cell from blinking (because of the transform, when using translucent cells)
+                            // See https://github.com/slackhq/SlackTextViewController/issues/94#issuecomment-69929927
+                            self.tableView.reloadRows(at: [indexPath], with: .automatic)
+                        }
+                        self.manager.forceFrontZone(indexPath: indexPath)
+                       // let _ = self.manager.item(indexPath: indexPath)
+
+                        super.didPressRightButton(sender)
+                    }
+                })
+            
+        }
+    }
     
     override func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         
@@ -273,33 +317,7 @@ extension RVMemberViewController2 {
              */
         }
     }
-    override func didPressRightButton(_ sender: Any!) {
-        
-        // This little trick validates any pending auto-correction or auto-spelling just after hitting the 'Send' button
-        self.textView.refreshFirstResponder()
-        /*
-        let message = RVSlackMessage()
-        message.username = LoremIpsum.name()
-        message.text = self.textView.text
-        */
-        let indexPath = IndexPath(row: 0, section: 0)
-        let rowAnimation: UITableViewRowAnimation = self.isInverted ? .bottom : .top
-        let scrollPosition: UITableViewScrollPosition = self.isInverted ? .bottom : .top
-        
-        self.tableView.beginUpdates()
-        print("In \(self.classForCoder).didPressRightButtton need to fix")
-       // self.messages.insert(message, at: 0)
-        self.tableView.insertRows(at: [indexPath], with: rowAnimation)
-        self.tableView.endUpdates()
-        
-        self.tableView.scrollToRow(at: indexPath, at: scrollPosition, animated: true)
-        
-        // Fixes the cell from blinking (because of the transform, when using translucent cells)
-        // See https://github.com/slackhq/SlackTextViewController/issues/94#issuecomment-69929927
-        self.tableView.reloadRows(at: [indexPath], with: .automatic)
-        
-        super.didPressRightButton(sender)
-    }
+
     override func editCellMessage(_ gesture: UIGestureRecognizer) {
         
         guard let cell = gesture.view as? RVMessageTableViewCell else { return }
@@ -522,7 +540,7 @@ extension RVMemberViewController2 {
 
     }
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-                //print("In \(self.classForCoder).numberOfItems \(appState.manager.numberOfItems(section: section))")
+                //print("In \(self.classForCoder).numberOfItems in section: \(section), items: \(appState.manager.numberOfItems(section: section))")
         if appState.state == .MemberToMemberChat {
             return appState.manager.numberOfItems(section: section)
         } else {

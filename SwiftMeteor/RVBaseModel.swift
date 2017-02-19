@@ -749,7 +749,7 @@ extension RVBaseModel {
                     let rvError = RVError(message: "In \(self.instanceType).insert \(#line) got DDPError for id: \(self.localId)", sourceError: error)
                     callback(nil, rvError)
                 } else if let result = result as? [String: AnyObject] {
-                    print("In \(self.instanceType).created line \(#line) of RVBaseModel, successfully created \(self.localId)")
+                  //  print("In \(self.instanceType).created line \(#line) of RVBaseModel, successfully created \(self.localId)")
                     callback(type(of: self).createInstance(fields: result),  nil)
                 } else {
                     print("In \(self.instanceType).insert \(#line), no error but no casted result. id = \(self.localId). Result if any: \(result)")
