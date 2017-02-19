@@ -9,7 +9,7 @@
 import UIKit
 
 class RVMemberViewController2: RVMemberViewController {
-    @IBOutlet weak var outerTopAreaView: UIView!
+
     @IBOutlet weak var topViewInTopArea: UIView!
     @IBOutlet weak var controllerOuterSegementedControlView: UIView!
     @IBOutlet weak var controllerSegmentedControl: UISegmentedControl!
@@ -113,10 +113,12 @@ extension RVMemberViewController2 {
                 }
             }
         }
-        if let outerView = self.outerTopAreaView {
-            self.view.bringSubview(toFront: outerView)
-        }
+        if let outerView = self.outerTopAreaView { self.view.bringSubview(toFront: outerView) }
     }
+    
+    
+    
+    
     override func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         
         if tableView == self.tableView {

@@ -12,6 +12,7 @@ import LoremIpsum
 let DEBUG_CUSTOM_TYPING_INDICATOR = true
 
 class RVMemberViewController: SLKTextViewController {
+     @IBOutlet weak var outerTopAreaView: UIView!
     var setupSLKDatasource: Bool = true
     //var messages = ["Elmer", "Goofy", "NumbNuts", "Jennifer", "Michele", "Julia", "Nola", "Zebra", "Acenia", "Simone", "Laura"]
     var messages = [RVSlackMessage]()
@@ -365,8 +366,12 @@ extension RVMemberViewController: RVCameraDelegate {
                 } else if let rvImage = rvImage {
                     print("In \(self.classForCoder).didFinishPicking, successfully saved image \n\(rvImage.toString())")
                       //  self.hidePIPWindow()
-                        self.showPIPWindow()
+                        self.view.bringSubview(toFront: self.tableView)
+                        self.showPIPWindow(callback: {
+                            if let outerView = self.outerTopAreaView { self.view.bringSubview(toFront: outerView) }
+                        })
                     self.insertImage(window: self.pipWindow!, image: uiImage)
+                    
               //      self.capturedImage = rvImage
                     
                 } else {
@@ -759,7 +764,9 @@ extension RVMemberViewController {
     func togglePIPWindow(_ sender: AnyObject) {
         
         if self.pipWindow == nil {
-            self.showPIPWindow()
+            self.showPIPWindow(callback: {
+                
+            })
         }
         else {
             self.hidePIPWindow(callback: {
@@ -768,8 +775,8 @@ extension RVMemberViewController {
         }
     }
     
-    func showPIPWindow() {
-                print("In \(self.classForCoder).showPIPWindow")
+    func showPIPWindow(callback: @escaping() -> Void) {
+                //print("In \(self.classForCoder).showPIPWindow")
         hidePIPWindow {
             let width: CGFloat = 60
             let height: CGFloat = 60
@@ -787,17 +794,20 @@ extension RVMemberViewController {
             if let keyWindow = UIApplication.shared.keyWindow {
                 print("In \(self.classForCoder).showPipWindow frame is \(frame)")
                 keyWindow.addSubview(pip)
-                UIView.animate(withDuration: 0.25, animations: { () -> Void in
+                UIView.animate(withDuration: 0.25, animations: {
                     pip.alpha = 1.0
+                }, completion: { (success) in
+                    callback()
                 })
             } else {
                 print("In \(self.classForCoder).showPipWindow no keyWindow")
+                callback()
             }
         }
     }
     
     func hidePIPWindow(callback: @escaping() -> Void) {
-        print("In \(self.classForCoder).hidePIPWindow")
+        //print("In \(self.classForCoder).hidePIPWindow")
         if let pip = self.pipWindow {
             UIView.animate(withDuration: 0.3, animations: { () -> Void in
                 pip.alpha = 0.0
