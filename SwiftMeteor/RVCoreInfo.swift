@@ -45,7 +45,15 @@ class RVCoreInfo: NSObject {
         }
         return nil
     }
-    
+    private var _messageCollection: RVMessageCollection? = nil
+    var messageCollection: RVMessageCollection {
+        get {
+            if let collection = self._messageCollection { return collection }
+            let collection = RVMessageCollection(name: "Message")
+            self._messageCollection = collection
+            return collection 
+        }
+    }
     var watchGroupImagePlaceholder: UIImage { get { return UIImage(named: "JNW.png")! } }
     private var activeButton: UIButton? = nil
     private var activeBarButton: UIBarButtonItem? = nil

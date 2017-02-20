@@ -40,6 +40,7 @@ class RVBaseAppState {
         }
     }
    // var baseModel: RVBaseModel? = nil
+    var mainDatasource: RVMessageDatasource? = nil
     var loaded: Bool = false
     var topInTopAreaHeight: CGFloat = 0.0
     var controllerOuterSegmentedViewHeight: CGFloat = 0.0
@@ -81,6 +82,11 @@ class RVBaseAppState {
     }
     func configure() {}
     func initialize(scrollView: UIScrollView? = nil, callback: @escaping (_ error: RVError?) -> Void) {
+        if loaded {
+            callback(nil)
+            return
+        }
+        loaded = true
         self.manager = RVDSManager(scrollView: scrollView)
      //   print("In \(self.instanceType).initialize just before datasource --------------------------")
         for datasource in datasources { manager.addSection(section: datasource)}
@@ -134,6 +140,10 @@ class RVBaseAppState {
     }
     func unloadAllDatasources(callback: @escaping(_ error: RVError?)-> Void ) {
         unloadAllDatasourcesInner(count: 0, callback: { (error) in}, completion: callback)
+        unloadAllDatasourcesInner(count: 0, callback: { (error) in }) { (error) in
+            self.loaded = false
+            callback(error)
+        }
     }
     func unloadAllDatasourcesInner(count: Int, callback: @escaping(_ error: RVError?)-> Void, completion: @escaping ( _ error: RVError?) -> Void ) {
         if count < manager.sections.count {
@@ -158,4 +168,5 @@ class RVBaseAppState {
     
     
     func unwind(callback: @escaping()-> Void) { manager.removeAllSections { callback() } }
+    func subscribe() {}
 }

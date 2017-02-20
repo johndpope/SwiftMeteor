@@ -381,9 +381,9 @@ class RVBaseDataSource {
         
         self.bulkQuery(query: query) { (models, error) in
             if let error = error {
-                print("In \(self.instanceType).subscribeToTasks, got error")
+                print("In \(self.instanceType).queryForBackHelper, got error")
                 error.printError()
-                error.append(message: "In \(self.instanceType).subscribeToTasks, got error")
+                error.append(message: "In \(self.instanceType).queryForBackHelper, got error")
                 operation.cancelled = true
                 self.replaceBackOperation(operation: operation)
                 callback(error)
@@ -398,7 +398,7 @@ class RVBaseDataSource {
                 }
                 callback(nil)
             } else {
-                print("In \(self.instanceType).subscribeToTasks, no error but no results")
+                print("In \(self.instanceType).queryForBackHelper, no error but no results")
                 operation.cancelled = true
                 self.replaceBackOperation(operation: operation)
             }

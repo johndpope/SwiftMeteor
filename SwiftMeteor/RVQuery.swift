@@ -72,6 +72,13 @@ class RVQueryItem {
 }
 
 class RVQuery {
+    let decadeAgo: Date = {
+        let dateFormatter = DateFormatter()
+        let dateAsString = "01-01-1999 23:59"
+        dateFormatter.dateFormat = "dd-MM-yyyy HH:mm"
+        return dateFormatter.date(from: dateAsString)!
+    }()
+    
     var instanceType: String { get { return String(describing: type(of: self)) } }
     func duplicate() -> RVQuery {
         let query = RVQuery()

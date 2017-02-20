@@ -8,6 +8,48 @@
 //
 
 import Foundation
+
+class RVMessageCollection: RVAbstractMeteorCollection {
+    var messages = [RVMessage]()
+    // Include any logic that needs to occur when a document is added to the collection on the server
+    override public func documentWasAdded(_ collection:String, id:String, fields:NSDictionary?) {
+//        let user = User(id, fields)
+        let message = RVMessage(id: id, fields: fields)
+        messages.append(message)
+        var output = "#\(messages.count-1): "
+        if let parentId = message.parentId { output = "\(output), parentId: \(parentId) " }
+        if let id = message.localId { output = "\(output) id=\(id), "}
+
+        if let fullName = message.fullName { output = "\(output), fullName: \(fullName) " }
+        if let createdAt = message.createdAt { output = "\(output), createdAt: \(createdAt) " }
+    
+        print("In \(self.classForCoder).documentWasAdded \(output)")
+        
+    }
+    
+    // Include any logic that needs to occur when a document is changed on the server
+    override public func documentWasChanged(_ collection:String, id:String, fields:NSDictionary?, cleared:[String]?) {
+        print("In \(self.classForCoder).documentWasChanged \(id), \(fields)")
+        /*
+        if let index = contacts.indexOf({ contact in return contact._id == id }) {
+            contact = contacts[index]
+            contact.update(fields)
+            contacts[index] = contact
+        }
+ */
+    }
+    
+    // Include any logic that needs to occur when a document is removed on the server
+    override public func documentWasRemoved(_ collection:String, id:String) {
+        print("In \(self.classForCoder).documentWasRemoved \(id)")
+        /*
+        if let index = contacts.indexOf({ contact in return contact._id == id }) {
+            contacts[index] = nil
+        }
+ */
+    }
+}
+
 class RVMessage: RVBaseModel {
     enum Priority: Int {
         case regular = 0

@@ -65,10 +65,16 @@ class RVMemberViewController2: RVMemberViewController {
         hideOrShowTextInputbar(sender)
     }
 }
+import SwiftDDP
+class Message: MeteorDocument {
+    var collection: String = "Messages"
+}
+
 extension RVMemberViewController2 {
     override func viewDidLoad() {
         setupSLKDatasource = false
         super.viewDidLoad()
+       // let messages = MeteorCollection<Message>(name: "Messages")
     }
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
@@ -79,7 +85,9 @@ extension RVMemberViewController2 {
         if !appState.loaded {
                     installUIComponents()
             configureOverlay()
-
+            if let appState = self.appState as? RVMemberToMemberChatState {
+                appState.subscribe()
+            }
             appState.initialize(scrollView: self.dsScrollView) { (error) in
                 self.appState.loaded = true
                 if let error = error {

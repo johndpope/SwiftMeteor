@@ -64,6 +64,7 @@ enum RVMeteorMethods: String {
     case messageBulkQuery = "message.bulkQuery"
     case messageDelete = "message.delete"
     case messageGroupDeleteAll = "message.clear"
+    case messagesWQuery = "messagesWQuery"
     
     // Follow
     case followCreate = "follow.create"

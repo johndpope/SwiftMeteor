@@ -8,6 +8,7 @@
 
 import Foundation
 class RVMemberToMemberChatState: RVBaseAppState {
+
     //var chatBuddy: RVUserProfile? = nil
     override func configure() {
         super.configure()
@@ -28,6 +29,7 @@ class RVMemberToMemberChatState: RVBaseAppState {
 
         
         let mainDatasource = RVMessageDatasource()
+        self.mainDatasource = mainDatasource
         mainDatasource.datasourceType =  .main
         datasources.append(mainDatasource)
         
@@ -64,5 +66,21 @@ class RVMemberToMemberChatState: RVBaseAppState {
         }
         queryFunctions[.filter] = filterQuery
     }
-    
+    override func subscribe() {
+        if let datasource = self.mainDatasource {
+        
+            let query = datasource.basicQuery()
+            if let baseModel = RVCoreInfo.sharedInstance.appState.stack.last {
+                query.addAnd(term: .parentId, value: baseModel.localId as AnyObject, comparison: .eq)
+            }
+            query.addSort(field: .createdAt, order: .ascending)
+            query.addAnd(term: .createdAt, value: RVEJSON.convertToEJSONDate(query.decadeAgo) as AnyObject, comparison: .gt)
+            let (filters, projections) = query.query()
+            let _ = RVCoreInfo.sharedInstance.messageCollection
+            RVSwiftDDP.sharedInstance.subscribe(method: .messagesWQuery, params: [filters as AnyObject, projections as AnyObject]) {
+                print("In \(self.instanceType) got subscribe callback")
+            }
+        }
+
+    }
 }
