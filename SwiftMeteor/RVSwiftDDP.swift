@@ -105,9 +105,17 @@ class RVSwiftDDP: NSObject {
             })
         }
     }
-    func subscribe(method: RVMeteorMethods, params: [Any]?, callback: @escaping() -> Void) {
-        Meteor.subscribe(method.rawValue, params: params, callback: callback)
+    /* Returns ID of the Subscription */
+    func subscribe(method: RVMeteorMethods, params: [Any]?, callback: @escaping() -> Void) -> String {
+        return Meteor.subscribe(method.rawValue, params: params, callback: callback)
     }
+    func unsubscribe(collectionName: String, callback: @escaping() -> Void ) -> [String] {
+        return Meteor.unsubscribe(collectionName, callback: callback)
+    }
+    func unsubscribe(subscriptionId: String, callback: @escaping() -> Void ) {
+        return Meteor.unsubscribe(withId: subscriptionId, callback: callback)
+    }
+    
     func handleSignup(result: Any?, error: DDPError?, callback: @escaping(_ error: RVError?) -> Void ){
         if let error = error {
             let rvError = RVError(message: "In \(self.instanceType).signupViaEmail \(#line), got DDPError", sourceError: error, lineNumber: #line)
