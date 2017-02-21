@@ -80,7 +80,7 @@ extension RVMemberViewController2 {
         super.viewDidAppear(animated)
 
 
-       // print("In \(self.classForCoder).viewDidAppear just before appState initialize \(appState.state.rawValue) -------")
+       print("In \(self.classForCoder).viewDidAppear just before appState initialize \(appState.state.rawValue) -------")
 
         if !appState.loaded {
                     installUIComponents()
@@ -89,7 +89,6 @@ extension RVMemberViewController2 {
                 appState.subscribe()
             }
             appState.initialize(scrollView: self.dsScrollView) { (error) in
-                self.appState.loaded = true
                 if let error = error {
                     error.append(message: "In \(self.classForCoder).viewDidAppear, got initialize error")
                     error.printError()

@@ -66,7 +66,7 @@ class RVMemberToMemberChatState: RVBaseAppState {
         }
         queryFunctions[.filter] = filterQuery
     }
-    override func subscribe() {
+    func subscribe(callback: @escaping ()-> Void) {
         if let datasource = self.mainDatasource {
         
             let query = datasource.basicQuery()
@@ -77,11 +77,14 @@ class RVMemberToMemberChatState: RVBaseAppState {
             query.addAnd(term: .createdAt, value: RVEJSON.convertToEJSONDate(query.decadeAgo) as AnyObject, comparison: .gt)
             let (filters, projections) = query.query()
             let _ = RVCoreInfo.sharedInstance.messageCollection
-            let subscription = RVSwiftDDP.sharedInstance.subscribe(method: .messagesWQuery, params: [filters as AnyObject, projections as AnyObject]) {
-                print("In \(self.instanceType) got subscribe callback")
+            self.subscriptionId = RVSwiftDDP.sharedInstance.subscribe(method: .messagesWQuery, params: [filters as AnyObject, projections as AnyObject]) {
+                callback()
             }
-            print("In \(self.instanceType).subscribe, subscription is \(subscription)")
         }
-
+    }
+    deinit {
+        if let id = self.subscriptionId {
+            RVSwiftDDP.sharedInstance.unsubscribe(subscriptionId: id, callback: { })
+        }
     }
 }

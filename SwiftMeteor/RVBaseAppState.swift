@@ -40,6 +40,7 @@ class RVBaseAppState {
         }
     }
    // var baseModel: RVBaseModel? = nil
+    var subscriptionId: String? = nil
     var mainDatasource: RVMessageDatasource? = nil
     var loaded: Bool = false
     var topInTopAreaHeight: CGFloat = 0.0
@@ -94,6 +95,7 @@ class RVBaseAppState {
     }
     
     func initializeInner(callback: @escaping (_ error: RVError?) -> Void) {
+        print("In \(self.instanceType).initializeInner")
         unloadAllDatasources { (error) in
             if let error = error {
                 error.append(message: "In \(self.instanceType).loadMain, got error")
@@ -106,6 +108,7 @@ class RVBaseAppState {
         }
     }
     func loadMain(callback: @escaping (_ error: RVError?) -> Void) {
+        print("In \(self.instanceType).loadMain")
         if let mainDatasource = self.findDatasource(type: RVBaseDataSource.DatasourceType.main) {
             if let queryFunction = self.queryFunctions[RVBaseDataSource.DatasourceType.main] {
                 let query = queryFunction([String: AnyObject]())
@@ -139,9 +142,8 @@ class RVBaseAppState {
         }
     }
     func unloadAllDatasources(callback: @escaping(_ error: RVError?)-> Void ) {
-        unloadAllDatasourcesInner(count: 0, callback: { (error) in}, completion: callback)
+       // unloadAllDatasourcesInner(count: 0, callback: { (error) in}, completion: callback)
         unloadAllDatasourcesInner(count: 0, callback: { (error) in }) { (error) in
-            self.loaded = false
             callback(error)
         }
     }
@@ -167,6 +169,10 @@ class RVBaseAppState {
     }
     
     
-    func unwind(callback: @escaping()-> Void) { manager.removeAllSections { callback() } }
+    func unwind(callback: @escaping()-> Void) {
+        manager.removeAllSections { callback()
+            self.loaded = false
+        }
+    }
     func subscribe() {}
 }
