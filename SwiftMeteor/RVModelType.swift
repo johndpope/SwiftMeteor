@@ -22,4 +22,5 @@ enum RVModelType: String  {
     case location = "location"
     case domain = "domain"
     case privateChat = "privateChat"
+    case transaction = "transaction"
 }

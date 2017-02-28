@@ -19,6 +19,7 @@ class RVBaseDataSource {
         case filter = "Filter"
         case unknown = "Unknown"
     }
+    var subscriptionId: String? = nil
     var delegate: RVDatasourceDelegate? = nil
     var instanceType: String { get { return String(describing: type(of: self)) } }
     var filterMode: Bool = false
@@ -1058,5 +1059,10 @@ class RVBaseDataSource {
         }
         self.operations.addOperation(operation: RVDSOperation(name: .collapseOperation))
         callback()
+    }
+    deinit {
+        if let id = self.subscriptionId {
+            RVSwiftDDP.sharedInstance.unsubscribe(subscriptionId: id, callback: { })
+        }
     }
 }

@@ -47,6 +47,8 @@ enum RVKeys: String {
     case updateCount    = "updateCount"
     case specialCode    = "specialCode"
     case defaultSelection = "defaultSelection"
+    case topParentId    = "topParentId"
+    case topParentModelType = "topParentModelType"
     
     case numberOfLikes  = "numberOfLikes"
     case numberOfObjections = "numberOfObjections"
@@ -140,4 +142,8 @@ enum RVKeys: String {
     // Private Chat
     case userProfileID0 = "userProfileID0"
     case userProfileID1 = "userProfileID1"
+    
+    case payload = "payload"
+    case transactionType = "transactionType"
+    case targetUserProfileId = "targetUserProfileId"
 }

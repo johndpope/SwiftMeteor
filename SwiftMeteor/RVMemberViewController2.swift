@@ -86,7 +86,9 @@ extension RVMemberViewController2 {
                     installUIComponents()
             configureOverlay()
             if let appState = self.appState as? RVMemberToMemberChatState {
-                appState.subscribe()
+                appState.subscribe {
+                    
+                }
             }
             appState.initialize(scrollView: self.dsScrollView) { (error) in
                 if let error = error {

@@ -66,7 +66,7 @@ class RVMemberToMemberChatState: RVBaseAppState {
         }
         queryFunctions[.filter] = filterQuery
     }
-    func subscribe(callback: @escaping ()-> Void) {
+    override func subscribe(callback: @escaping ()-> Void) {
         if let datasource = self.mainDatasource {
         
             let query = datasource.basicQuery()
@@ -82,9 +82,6 @@ class RVMemberToMemberChatState: RVBaseAppState {
             }
         }
     }
-    deinit {
-        if let id = self.subscriptionId {
-            RVSwiftDDP.sharedInstance.unsubscribe(subscriptionId: id, callback: { })
-        }
-    }
+
+
 }

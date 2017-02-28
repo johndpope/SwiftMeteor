@@ -170,9 +170,23 @@ class RVBaseAppState {
     
     
     func unwind(callback: @escaping()-> Void) {
-        manager.removeAllSections { callback()
-            self.loaded = false
+        self.unsubscribe {
+            self.manager.removeAllSections {
+                self.loaded = false
+                callback()
+            }
         }
     }
-    func subscribe() {}
+    func subscribe(callback: @escaping() -> Void) {}
+    deinit {
+        if let id = self.subscriptionId {
+            RVSwiftDDP.sharedInstance.unsubscribe(subscriptionId: id, callback: { })
+        }
+    }
+    func unsubscribe(callback: @escaping() -> Void) {
+        if let id = subscriptionId {
+            self.subscriptionId = nil
+            RVSwiftDDP.sharedInstance.unsubscribe(subscriptionId: id, callback: callback)
+        }
+    }
 }

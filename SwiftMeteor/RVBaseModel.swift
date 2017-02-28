@@ -349,6 +349,19 @@ class RVBaseModel: MeteorDocument {
         }
         set { updateString(key: RVKeys.parentModelType, value: newValue.rawValue, setDirties: true)}
     }
+    var topParentId: String? {
+        get { return getString(key: RVKeys.topParentId) }
+        set { updateString(key: RVKeys.topParentId, value: newValue, setDirties: true)}
+    }
+    var topParentModelType: RVModelType {
+        get {
+            if let rawValue = getString(key: .topParentModelType) {
+                if let type = RVModelType(rawValue: rawValue) { return type }
+            }
+            return RVModelType.unknown
+        }
+        set { updateString(key: RVKeys.topParentModelType, value: newValue.rawValue, setDirties: true)}
+    }
     
     var collection: RVModelType {
         get {
