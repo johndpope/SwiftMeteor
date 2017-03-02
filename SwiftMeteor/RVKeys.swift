@@ -144,6 +144,9 @@ enum RVKeys: String {
     case userProfileID1 = "userProfileID1"
     
     case payload = "payload"
+    case entityId = "entityId"
+    case entityModelType = "entityModelType"
     case transactionType = "transactionType"
     case targetUserProfileId = "targetUserProfileId"
+    case readState = "readState"
 }

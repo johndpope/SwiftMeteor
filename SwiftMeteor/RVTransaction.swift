@@ -45,4 +45,26 @@ class RVTransaction: RVBaseModel {
         get { return getString(key: .targetUserProfileId) }
         set { updateString(key: .targetUserProfileId, value: newValue, setDirties: true) }
     }
+    var entityId: String? {
+        get { return getString(key: .entityId) }
+        set { updateString(key: .entityId, value: newValue, setDirties: true) }
+    }
+    var entityModelType: RVModelType {
+        get {
+            if let rawValue = getString(key: .entityModelType) {
+                if let type = RVModelType(rawValue: rawValue) { return type }
+            }
+            return .unknown
+        }
+        set { updateString(key: .entityModelType, value: newValue.rawValue, setDirties: true) }
+    }
+    var readState: RVReadState {
+        get {
+            if let rawValue = getString(key: .readState) {
+                if let type = RVReadState(rawValue: rawValue) { return type }
+            }
+            return .unknown
+        }
+        set { updateString(key: .readState, value: newValue.rawValue, setDirties: true) }
+    }
 }

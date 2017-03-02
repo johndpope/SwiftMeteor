@@ -656,6 +656,10 @@ class RVBaseModel: MeteorDocument {
         self.parentId = parent.localId
         self.parentModelType = parent.modelType
     }
+    func setTopParent(topParent:RVBaseModel) {
+        self.topParentId = topParent.localId
+        self.topParentModelType = topParent.modelType
+    }
     func setOwner(owner: RVBaseModel){
         self.ownerId = owner.localId
         self.ownerModelType = owner.modelType
@@ -750,6 +754,22 @@ extension RVBaseModel {
                 image.getDirtiesAndUnsets(topField: nextField, dirties: &dirties, unsets: &unsets)
             }
         }
+    }
+    func createTransaction(title: String) -> RVTransaction {
+        let transaction = RVTransaction()
+        transaction.title = title 
+        transaction.topParentId = self.topParentId
+        transaction.topParentModelType = self.topParentModelType
+        transaction.parentId = self.parentId
+        transaction.parentModelType = self.parentModelType
+        transaction.transactionType = .added
+        transaction.ownerId = self.ownerId
+        transaction.fullName = self.fullName
+        transaction.domainId = self.domainId
+        transaction.entityId = self.localId
+        transaction.entityModelType = self.modelType
+        transaction.readState = .unread
+        return transaction
     }
     func create(callback: @escaping (_ model: RVBaseModel?, _ error: RVError?) -> Void ) {
         var dirties = [String: AnyObject]()

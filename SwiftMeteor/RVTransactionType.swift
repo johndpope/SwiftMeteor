@@ -8,6 +8,14 @@
 
 import Foundation
 enum RVTransactionType: String {
+    case added = "Added"
+    case updated = "Updated"
     case imageAdded = "ImageAdded"
     case unknown = "unknown"
 }
+enum RVReadState: String {
+    case unread = "unread"
+    case read = "read"
+    case unknown = "unknown"
+}
+
