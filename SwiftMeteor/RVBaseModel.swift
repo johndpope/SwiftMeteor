@@ -765,6 +765,7 @@ extension RVBaseModel {
         transaction.transactionType = .added
         transaction.ownerId = self.ownerId
         transaction.fullName = self.fullName
+        transaction.handle = self.handle
         transaction.domainId = self.domainId
         transaction.entityId = self.localId
         transaction.entityModelType = self.modelType

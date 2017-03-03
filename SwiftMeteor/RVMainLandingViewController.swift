@@ -15,6 +15,7 @@ class RVMainLandingViewController: RVBaseViewController2 {
  //   @IBOutlet weak var segmentedControl: UISegmentedControl!
     weak var watchGroupInfoView: RVWatchGroupView? = nil
     @IBAction func unwindFromLoginSceneToMainLanding(segue: UIStoryboardSegue) {
+        //print("In \(self.classForCoder).unwindFromLoginScene")
         self.mainState = RVWatchGroupListState(stack: self.mainState.stack)
         //mainState.initialize(scrollView: dsScrollView)
     }

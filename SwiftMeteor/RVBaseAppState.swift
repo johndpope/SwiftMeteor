@@ -187,6 +187,8 @@ class RVBaseAppState {
         if let id = subscriptionId {
             self.subscriptionId = nil
             RVSwiftDDP.sharedInstance.unsubscribe(subscriptionId: id, callback: callback)
+        } else {
+            callback()
         }
     }
 }

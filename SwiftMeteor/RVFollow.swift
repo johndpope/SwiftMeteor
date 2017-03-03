@@ -48,6 +48,7 @@ class RVFollow: RVBaseModel {
             if let domain = follow.appDomain {
                 follow.setOwner(owner: user)
                 follow.fullName = user.fullName
+                follow.handle = user.handle 
                 follow.domainId = domain.localId
                 follow.followedId = following.localId
                 follow.followedModelType = following.modelType

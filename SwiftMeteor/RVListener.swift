@@ -51,7 +51,7 @@ class RVListeners: NSObject {
     }
     func notifyListeners() {
         for listener in self.listeners {
-                         //  print("In \(self.classForCoder).notifyListeners, doing listener \(listener.identifier)")
+                         //print("In \(self.classForCoder).notifyListeners, doing listener \(listener)")
             if !listener.handler(nil) {
 
                 return

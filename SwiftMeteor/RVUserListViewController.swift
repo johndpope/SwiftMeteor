@@ -24,7 +24,7 @@ class RVUserListViewController: RVBaseViewController3 {
                     if let member = payload["chatBuddy"] as? RVUserProfile {
                         if let indexPath = payload["indexPath"] as? IndexPath {
                             if let tableView = self.tableView {
-                                RVPrivateChat.specialPrivateChatLookup(otherUser: RVCoreInfo.sharedInstance.userProfile!) { (chat, error) in
+                                RVPrivateChat.specialPrivateChatLookup(otherUser: member) { (chat, error) in
                                     if let error = error {
                                         error.printError()
                                     } else if let chat = chat {

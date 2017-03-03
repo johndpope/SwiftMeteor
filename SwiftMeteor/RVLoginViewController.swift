@@ -140,8 +140,12 @@ class RVLoginViewController: RVBaseBaseViewController {
     func addLogInOutListeners() {
        // print("In \(self.classForCoder).addLogInOutListeners Installing Listeners")
         var listener = RVSwiftDDP.sharedInstance.addListener(listener: self, eventType: .userDidLogin) { (_ info: [String: AnyObject]? ) -> Bool in
-            //print("In \(self.classForCoder).addLogInOutListeners callback, \(RVSwiftEvent.userDidLogin.rawValue) returned")
-            self.appState.unwind { self.performSegue(withIdentifier: "UnwindFromLoginToMainLanding" , sender: nil) }
+       // print("In \(self.classForCoder).addLogInOutListeners callback, \(RVSwiftEvent.userDidLogin.rawValue) returned")
+            print("\(self.appState)")
+            self.appState.unwind {
+                //print("In \(self.classForCoder).addLogInOutListeners(), returned from unwind")
+                self.performSegue(withIdentifier: "UnwindFromLoginToMainLanding" , sender: nil)
+            }
             return true
         }
         if let listener = listener { listeners.append(listener) }
@@ -421,7 +425,8 @@ extension RVLoginViewController: UITextFieldDelegate {
             operation.active = true
         }
         self.loginRegisterState = nil
-        RVSwiftDDP.sharedInstance.loginWithPassword(email: email.lowercased(), password: "\(Date().timeIntervalSince1970)", completionHandler: { (result , error) in
+        let password =  "\(Date().timeIntervalSince1970)" // Plug with invalid password
+        RVSwiftDDP.sharedInstance.loginWithPassword(email: email.lowercased(), password: password, completionHandler: { (result , error) in
             if let error = error {
                 if !operation.cancelled && operation.identifier == self.operation.identifier {
                     if let original = error.sourceError as? DDPError{
@@ -451,7 +456,8 @@ extension RVLoginViewController: UITextFieldDelegate {
                     // do nothing
                 }
             } else {
-                print("In \(self.classForCoder).lookup, did not error, but supposed to get one")
+                // will get this if already logged in (and regardless of what is sent as email and password)
+                print("In \(self.classForCoder).lookup, did not error, but supposed to get one. Email is: \(email) and password is: \(password)")
             }
         })
     }

@@ -275,7 +275,7 @@ extension RVSwiftDDP: SwiftDDPDelegate {
                 return
             } else if success {
                 RVCoreInfo.sharedInstance.appState = RVLoggedInState()
-                //print("In \(self.classForCoder).ddpUserDidLogin, about to notify [\(self.loginListeners.listeners.count)] listeners and publish notification \(RVNotification.userDidLogin.rawValue)")
+               // print("In \(self.classForCoder).ddpUserDidLogin, about to notify [\(self.loginListeners.listeners.count)] listeners and publish notification \(RVNotification.userDidLogin.rawValue)")
                 self.loginListeners.notifyListeners()
                 NotificationCenter.default.post(name: NSNotification.Name(rawValue: RVNotification.userDidLogin.rawValue), object: nil, userInfo: ["user": user])
             } else {
