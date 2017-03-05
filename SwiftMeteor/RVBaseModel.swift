@@ -724,6 +724,12 @@ extension RVBaseModel {
         }
         //return dictionary
     }
+    func returnDirtiesAndUnsets() -> ([String: AnyObject], [String: AnyObject]) {
+        var dirties = [String: AnyObject]()
+        var unsets = [String: AnyObject]()
+        getDirtiesAndUnsets(topField: "", dirties: &dirties , unsets: &unsets)
+        return (dirties, unsets)
+    }
     func getDirtiesAndUnsets(topField: String, dirties: inout [String: AnyObject], unsets: inout [String: AnyObject]) -> Void {
         if (self.dirties.count > 0) || (self.unsets.count > 0) {
             if self.updateCount == nil { self.updateCount = 0 }
@@ -776,8 +782,9 @@ extension RVBaseModel {
         var dirties = [String: AnyObject]()
         var unsets = [String: AnyObject]()
         getDirtiesAndUnsets(topField: "", dirties: &dirties , unsets: &unsets)
+        let (tdirties, tunsets) = createTransaction(title: "").returnDirtiesAndUnsets()
         if dirties.count <= 0 {print("In \(self.classForCoder).create, dirtiess count is erroneously zero")}
-        Meteor.call(type(of: self).insertMethod.rawValue, params: [dirties]) {(result, error: DDPError?) in
+        Meteor.call(type(of: self).insertMethod.rawValue, params: [dirties, tdirties]) {(result, error: DDPError?) in
             DispatchQueue.main.async {
                 if let error = error {
                     let rvError = RVError(message: "In \(self.instanceType).insert \(#line) got DDPError for id: \(self.localId)", sourceError: error)

@@ -26,6 +26,7 @@ class RVLeftMenuController: RVBaseViewController {
         [MenuKeys.name: "Profile", MenuKeys.displayText: "Profile"],
         [MenuKeys.name: "Watchgroups", MenuKeys.displayText: "WatchGroups" ],
         [MenuKeys.name: "Members", MenuKeys.displayText: "Members"],
+        [MenuKeys.name: "Transactions", MenuKeys.displayText: "Transactions"],
         [MenuKeys.name: "Logout", MenuKeys.displayText: "Logout"],
         [MenuKeys.name: "ClearUsers", MenuKeys.displayText: "ClearUsers"]
 
@@ -84,6 +85,9 @@ extension RVLeftMenuController {
                         self.deck.centerViewController = self.deck.instantiateController(controller: .UserList)
                         self.deck.toggleSide(side: .center)
                     }
+                } else if string == "Transactions" {
+                    self.deck.centerViewController = self.deck.instantiateController(controller: .TransactionList)
+                    self.deck.toggleSide(side: .center)
                 } else {
 
                     print("In \(self.classForCoder).didSelectRowAt \(indexPath.row), \(string) not handled")

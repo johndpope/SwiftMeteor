@@ -21,6 +21,7 @@ class RVMemberViewController2: RVMemberViewController {
     @IBOutlet weak var topicLabel: UILabel!
     
     @IBOutlet weak var topViewInTopAreaHeightConstraint: NSLayoutConstraint!
+    var privateChat: RVPrivateChat?
     var originalTopViewInTopAreaHeightConstant: CGFloat = 0.0
     @IBOutlet weak var controllerOuterSegmentControlViewHeightConstraint: NSLayoutConstraint!
     var originalControllerOuterSegmentControlViewHeightConstant: CGFloat = 0.0
@@ -137,8 +138,11 @@ extension RVMemberViewController2 {
             message.setOwner(owner: userProfile)
             message.fullName = userProfile.fullName
             if let domain = self.domain { message.domainId = domain.localId }
-            if let top = self.appState.stack.last {
-                message.setParent(parent: top)
+            if let chat = self.privateChat {
+                message.setParent(parent: chat)
+                message.setTopParent(topParent: chat)
+            } else {
+                print("In \(self.classForCoder).didPressRightButton, no privateChat")
             }
                 message.text = self.textView.text
                 message.create(callback: { (actualMessage, error ) in

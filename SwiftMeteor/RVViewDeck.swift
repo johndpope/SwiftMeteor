@@ -14,6 +14,7 @@ class RVViewDeck: NSObject {
         case Profile = "ProfileNavController"
         case WatchGroupList = "WatchGroupList"
         case UserList = "UserList"
+        case TransactionList = "TransactionList"
         var storyBoard: String {
             switch(self) {
             case .Profile:
@@ -22,6 +23,8 @@ class RVViewDeck: NSObject {
                 return "Main"
             case .UserList:
                 return "UserList"
+            case .TransactionList:
+                return "TransactionList"
             }
         }
     }

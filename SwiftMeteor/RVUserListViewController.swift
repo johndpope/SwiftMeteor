@@ -31,6 +31,14 @@ class RVUserListViewController: RVBaseViewController3 {
                                         print("In \(self.classForCoder)\n\(chat.toString())")
                                         // chat.delete(callback: { (count, error ) in if let error = error { error.printError() } })
                                         self.appState.unwind {
+                                            if let nav = segue.destination as? UINavigationController {
+                                                if let destination = nav.topViewController as? RVMemberViewController2 {
+                                                    destination.privateChat = chat
+                                                }
+
+                                            } else {
+                                                print("In \(self.classForCoder).prepareForSegue, destination is not RVMemberViewController2")
+                                            }
                                             let memberToMemberState = RVMemberToMemberChatState()
                                             memberToMemberState.stack.append(member)
                                             self.appState = memberToMemberState

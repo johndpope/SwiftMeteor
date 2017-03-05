@@ -84,5 +84,8 @@ enum RVMeteorMethods: String {
     case privateChatDeleteAll = "privateChat.deleteAll"
     case privateChatSpecialLookup = "privateChat.specialLookup"
     
+    // Transaction
+    case transactionBulkQuery = "transaction.bulgQuery"
+    
     
 }

@@ -149,4 +149,5 @@ enum RVKeys: String {
     case transactionType = "transactionType"
     case targetUserProfileId = "targetUserProfileId"
     case readState = "readState"
+    case archived = "archived"
 }

@@ -9,6 +9,12 @@
 /* Begin PBXBuildFile section */
 		2802252C1E1C5C6F00D5FB60 /* RVFirstHeaderContentView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 2802252B1E1C5C6F00D5FB60 /* RVFirstHeaderContentView.xib */; };
 		2802252E1E1C5C9500D5FB60 /* RVFirstHeaderContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2802252D1E1C5C9500D5FB60 /* RVFirstHeaderContentView.swift */; };
+		2806BAEB1E6BCB43005CA637 /* TransactionList.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 2806BAEA1E6BCB43005CA637 /* TransactionList.storyboard */; };
+		2806BAED1E6BCBFE005CA637 /* RVBaseViewController4.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2806BAEC1E6BCBFE005CA637 /* RVBaseViewController4.swift */; };
+		2806BAEF1E6BCC37005CA637 /* RVTransactionViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2806BAEE1E6BCC37005CA637 /* RVTransactionViewController.swift */; };
+		2806BAF11E6BD070005CA637 /* RVSearchControllerDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2806BAF01E6BD070005CA637 /* RVSearchControllerDelegate.swift */; };
+		2806BAF31E6BE5E8005CA637 /* RVTransactionDatasource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2806BAF21E6BE5E7005CA637 /* RVTransactionDatasource.swift */; };
+		2806BAF51E6BEBB2005CA637 /* RVTransactionCollection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2806BAF41E6BEBB2005CA637 /* RVTransactionCollection.swift */; };
 		280C675E1E21DE600075FB4E /* RVCoreInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 280C675D1E21DE600075FB4E /* RVCoreInfo.swift */; };
 		280DE6E81DEF43380031C352 /* RVS3Protocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 280DE6E71DEF43380031C352 /* RVS3Protocol.swift */; };
 		280E0F761DFFBEDF00E597B4 /* RVKeys.swift in Sources */ = {isa = PBXBuildFile; fileRef = 280E0F751DFFBEDF00E597B4 /* RVKeys.swift */; };
@@ -177,6 +183,12 @@
 		07BD65EBD12BB5752CC9715C /* Pods-SwiftMeteor.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SwiftMeteor.debug.xcconfig"; path = "Pods/Target Support Files/Pods-SwiftMeteor/Pods-SwiftMeteor.debug.xcconfig"; sourceTree = "<group>"; };
 		2802252B1E1C5C6F00D5FB60 /* RVFirstHeaderContentView.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = RVFirstHeaderContentView.xib; sourceTree = "<group>"; };
 		2802252D1E1C5C9500D5FB60 /* RVFirstHeaderContentView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RVFirstHeaderContentView.swift; sourceTree = "<group>"; };
+		2806BAEA1E6BCB43005CA637 /* TransactionList.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = TransactionList.storyboard; sourceTree = "<group>"; };
+		2806BAEC1E6BCBFE005CA637 /* RVBaseViewController4.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RVBaseViewController4.swift; sourceTree = "<group>"; };
+		2806BAEE1E6BCC37005CA637 /* RVTransactionViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RVTransactionViewController.swift; sourceTree = "<group>"; };
+		2806BAF01E6BD070005CA637 /* RVSearchControllerDelegate.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RVSearchControllerDelegate.swift; sourceTree = "<group>"; };
+		2806BAF21E6BE5E7005CA637 /* RVTransactionDatasource.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RVTransactionDatasource.swift; sourceTree = "<group>"; };
+		2806BAF41E6BEBB2005CA637 /* RVTransactionCollection.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RVTransactionCollection.swift; sourceTree = "<group>"; };
 		280C675D1E21DE600075FB4E /* RVCoreInfo.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RVCoreInfo.swift; sourceTree = "<group>"; };
 		280DE6E71DEF43380031C352 /* RVS3Protocol.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RVS3Protocol.swift; sourceTree = "<group>"; };
 		280E0F751DFFBEDF00E597B4 /* RVKeys.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RVKeys.swift; sourceTree = "<group>"; };
@@ -359,6 +371,19 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		2806BAE91E6BCB25005CA637 /* Version3 */ = {
+			isa = PBXGroup;
+			children = (
+				2806BAEA1E6BCB43005CA637 /* TransactionList.storyboard */,
+				2806BAEC1E6BCBFE005CA637 /* RVBaseViewController4.swift */,
+				2806BAEE1E6BCC37005CA637 /* RVTransactionViewController.swift */,
+				2806BAF01E6BD070005CA637 /* RVSearchControllerDelegate.swift */,
+				2806BAF21E6BE5E7005CA637 /* RVTransactionDatasource.swift */,
+				2806BAF41E6BEBB2005CA637 /* RVTransactionCollection.swift */,
+			);
+			name = Version3;
+			sourceTree = "<group>";
+		};
 		2815FDF71E56C58900A7B829 /* MemberScene */ = {
 			isa = PBXGroup;
 			children = (
@@ -690,6 +715,7 @@
 		28F53E6B1DEB5F71009641F0 /* SwiftMeteor */ = {
 			isa = PBXGroup;
 			children = (
+				2806BAE91E6BCB25005CA637 /* Version3 */,
 				283460A21E469BB40009D606 /* Version2 */,
 				283460971E46625C0009D606 /* Messages */,
 				2851B4111E43AD9C00E9D635 /* Login Scene */,
@@ -902,6 +928,7 @@
 				2836E6151E407828009CA7EB /* MyCell.xib in Resources */,
 				28C67C751E56C81D00A7E92C /* MemberScene.storyboard in Resources */,
 				28F53E761DEB5F71009641F0 /* Assets.xcassets in Resources */,
+				2806BAEB1E6BCB43005CA637 /* TransactionList.storyboard in Resources */,
 				28F53E741DEB5F71009641F0 /* Main.storyboard in Resources */,
 				28C67C771E56CD5D00A7E92C /* RVMessageTableViewCell.xib in Resources */,
 			);
@@ -1018,6 +1045,7 @@
 				284FBAD41DEC142B00446C86 /* RVMainTabViewController.swift in Sources */,
 				28F5C0B41E32BBD00012E52A /* RVClientRole.swift in Sources */,
 				28F5C0AE1E32B5830012E52A /* RVFollow.swift in Sources */,
+				2806BAF51E6BEBB2005CA637 /* RVTransactionCollection.swift in Sources */,
 				28360E161E034C7A00E62384 /* RVTaskCollection.swift in Sources */,
 				282E07451E3170E100FB5C1F /* String+Extension.swift in Sources */,
 				28E525E11E5D5A0F00B84EAB /* RVTransaction.swift in Sources */,
@@ -1028,10 +1056,12 @@
 				28201A441E1DE819008D8E59 /* RVMainLandingTableViewCell.swift in Sources */,
 				28B0CFA71E3C5E46000C74DC /* PHPhotoLibrary+Extension.swift in Sources */,
 				28E65DA51E1DB1D1004E82F5 /* RVBaseTableViewCell.swift in Sources */,
+				2806BAED1E6BCBFE005CA637 /* RVBaseViewController4.swift in Sources */,
 				28928CD51E18E226003538B8 /* RVDSOperation.swift in Sources */,
 				2836E6171E407CC8009CA7EB /* NiceButton.swift in Sources */,
 				28C67C791E56CD7500A7E92C /* RVMessageTableViewCell.swift in Sources */,
 				28E525E31E5D5F9700B84EAB /* RVTransactionType.swift in Sources */,
+				2806BAF31E6BE5E8005CA637 /* RVTransactionDatasource.swift in Sources */,
 				28DE2D9B1DFE665400EFEECB /* RVModelType.swift in Sources */,
 				286CA3251E327BF200B081B8 /* RVGoogleDataProvider.swift in Sources */,
 				284B31A41E406A5300E2118D /* RVMessageAuthorViewController.swift in Sources */,
@@ -1067,8 +1097,10 @@
 				289A45F91E482D4A001BBB29 /* RVMenuAppState.swift in Sources */,
 				2834609F1E4680920009D606 /* RVDateToHumanMapper.swift in Sources */,
 				2857BFFF1E57AEA200865FDC /* RVSlackMessage.swift in Sources */,
+				2806BAF11E6BD070005CA637 /* RVSearchControllerDelegate.swift in Sources */,
 				28CB24CC1E34090F0093A067 /* RVAppState.swift in Sources */,
 				2851B4131E43ADB100E9D635 /* RVLoggedoutState.swift in Sources */,
+				2806BAEF1E6BCC37005CA637 /* RVTransactionViewController.swift in Sources */,
 				2861AB611E349A7700612CCA /* RVBaseModel+Extension.swift in Sources */,
 				284FBAD21DEC13FE00446C86 /* RVRightMenuViewController.swift in Sources */,
 				280E0F761DFFBEDF00E597B4 /* RVKeys.swift in Sources */,

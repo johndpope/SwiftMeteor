@@ -25,6 +25,11 @@ class RVTransaction: RVBaseModel {
     override class var bulkQueryMethod: RVMeteorMethods { get { return RVMeteorMethods.privateChatBulkQuery } }
     override class func createInstance(fields: [String : AnyObject])-> RVBaseModel { return RVTransaction(fields: fields) }
     override class func modelFromFields(fields: [String: AnyObject]) -> RVBaseModel { return RVTransaction(fields: fields) }
+    override func initializeProperties() {
+        super.initializeProperties()
+        self.readState = .unread
+        self.archived = false
+    }
     var payload: [String: AnyObject] {
         get {
             if let payload = getDictionary(key: .payload) { return payload }
@@ -66,5 +71,14 @@ class RVTransaction: RVBaseModel {
             return .unknown
         }
         set { updateString(key: .readState, value: newValue.rawValue, setDirties: true) }
+    }
+    var archived: Bool {
+        get {
+            if let archived = getBool(key: .archived) { return archived }
+            return false
+        }
+        set {
+            updateBool(key: .archived, value: newValue, setDirties: true)
+        }
     }
 }
