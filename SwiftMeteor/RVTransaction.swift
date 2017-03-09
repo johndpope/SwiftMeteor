@@ -17,12 +17,12 @@
 import Foundation
 class RVTransaction: RVBaseModel {
     override class func collectionType() -> RVModelType { return RVModelType.transaction }
-    override class var insertMethod: RVMeteorMethods { get { return RVMeteorMethods.privateChatCreate } }
-    override class var updateMethod: RVMeteorMethods { get { return RVMeteorMethods.privateChatUpdate } }
-    override class var deleteMethod: RVMeteorMethods { get { return RVMeteorMethods.privateChatDelete } }
-    override class var findMethod: RVMeteorMethods { get { return RVMeteorMethods.privateChatFindById}}
-    override class var deleteAllMethod: RVMeteorMethods { get { return RVMeteorMethods.privateChatDeleteAll}}
-    override class var bulkQueryMethod: RVMeteorMethods { get { return RVMeteorMethods.privateChatBulkQuery } }
+    override class var insertMethod: RVMeteorMethods { get { return RVMeteorMethods.transactionCreate } }
+    override class var updateMethod: RVMeteorMethods { get { return RVMeteorMethods.transactionUpdate } }
+    override class var deleteMethod: RVMeteorMethods { get { return RVMeteorMethods.transactionDelete } }
+    override class var findMethod: RVMeteorMethods { get { return RVMeteorMethods.transactionFindById}}
+    override class var deleteAllMethod: RVMeteorMethods { get { return RVMeteorMethods.transactionDeleteAll}}
+    override class var bulkQueryMethod: RVMeteorMethods { get { return RVMeteorMethods.transactionBulkQuery } }
     override class func createInstance(fields: [String : AnyObject])-> RVBaseModel { return RVTransaction(fields: fields) }
     override class func modelFromFields(fields: [String: AnyObject]) -> RVBaseModel { return RVTransaction(fields: fields) }
     override func initializeProperties() {
@@ -72,13 +72,5 @@ class RVTransaction: RVBaseModel {
         }
         set { updateString(key: .readState, value: newValue.rawValue, setDirties: true) }
     }
-    var archived: Bool {
-        get {
-            if let archived = getBool(key: .archived) { return archived }
-            return false
-        }
-        set {
-            updateBool(key: .archived, value: newValue, setDirties: true)
-        }
-    }
+
 }

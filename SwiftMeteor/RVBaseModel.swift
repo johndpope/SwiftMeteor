@@ -27,7 +27,7 @@ class RVBaseModel: MeteorDocument {
     var objects = [String: AnyObject]()
     var dirties = [String: AnyObject]()
     var unsets = [String: AnyObject]()
-    var imageInitiallyNull = false
+    var imageUpdated = false
     var locationInitiallyNull = false
     var userProfile: RVUserProfile? = nil
     var loggedInUser: RVUserProfile? { get {return RVCoreInfo.sharedInstance.userProfile}}
@@ -47,10 +47,11 @@ class RVBaseModel: MeteorDocument {
         self.validRecord = true
         self.deleted = false
         self.special = .regular
+        self.archived = false
         if let domain = RVCoreInfo.sharedInstance.domain {
             self.domainId = domain.localId
         } else {
-            print("In \(instanceType).init, don't have domain")
+            if self.modelType != .domain { print("In \(instanceType).init, don't have domain") }
         }
         if let profile = RVCoreInfo.sharedInstance.userProfile {
             self.setOwner(owner: profile)
@@ -58,7 +59,7 @@ class RVBaseModel: MeteorDocument {
         checkEmbeddeds()
     }
     func checkEmbeddeds() {
-        if objects[RVKeys.image.rawValue] == nil {imageInitiallyNull = true}
+     //   if objects[RVKeys.image.rawValue] == nil {imageInitiallyNull = true}
         if objects[RVKeys.location.rawValue] == nil { locationInitiallyNull = true }
     }
     func checkModelType() {
@@ -103,6 +104,15 @@ class RVBaseModel: MeteorDocument {
     override  func fields() -> NSDictionary  {
         return self.getFields() as NSDictionary
     }
+    var archived: Bool {
+        get {
+            if let archived = getBool(key: .archived) { return archived }
+            return false
+        }
+        set {
+            updateBool(key: .archived, value: newValue, setDirties: true)
+        }
+    }
     private var _image: RVImage?
     var image: RVImage? {
         get {
@@ -110,6 +120,12 @@ class RVBaseModel: MeteorDocument {
             if let fields = objects[RVKeys.image.rawValue] as? [String: AnyObject] {
                 let image = RVImage(fields: fields)
                 if image.validRecord && !image.deleted {
+                                        print("In \(self.classForCoder).image valid")
+                    self._image = image
+                    self.objects.removeValue(forKey: RVKeys.image.rawValue)
+                    return image
+                } else if !image.deleted {
+                    print("In \(self.classForCoder).image not deleted")
                     self._image = image
                     self.objects.removeValue(forKey: RVKeys.image.rawValue)
                     return image
@@ -120,6 +136,7 @@ class RVBaseModel: MeteorDocument {
         }
         set {
             if let rvImage = newValue {
+                self.imageUpdated = true
                 rvImage.setParent(parent: self)
                 if let userProfile = RVCoreInfo.sharedInstance.userProfile {
                     rvImage.setOwner(owner: userProfile)
@@ -128,7 +145,7 @@ class RVBaseModel: MeteorDocument {
                 if let domain = RVCoreInfo.sharedInstance.domain {
                     rvImage.domainId = domain.localId
                 }
-                rvImage.parentField = .image
+               // rvImage.parentField = .image
                 self._image = updateEmbeddedImage(current: self.image, newImage: rvImage)
                 objects.removeValue(forKey: RVKeys.image.rawValue)
                 dirties.removeValue(forKey: RVKeys.image.rawValue)
@@ -331,6 +348,7 @@ class RVBaseModel: MeteorDocument {
         get { return getString(key: RVKeys.ownerId) }
         set { updateString(key: RVKeys.ownerId, value: newValue, setDirties: true)}
     }
+    
     var owner: String? {
         get { return getString(key: RVKeys.owner) }
         set { updateString(key: RVKeys.owner, value: newValue, setDirties: true)}
@@ -424,6 +442,12 @@ class RVBaseModel: MeteorDocument {
             
         }
     }
+    func setLoggedInUserAsOwner() {
+        if let userProfile = loggedInUser {
+            self.setOwner(owner: userProfile)
+        }
+    }
+    /*
     var parentField: RVKeys? {
         get {
             if let rawValue = getString(key: RVKeys.parentField) {
@@ -439,6 +463,7 @@ class RVBaseModel: MeteorDocument {
             }
         }
     }
+ */
     var shadowId: String? {
         get { return getString(key: RVKeys.shadowId) }
         set { updateString(key: RVKeys.shadowId, value: newValue, setDirties: true)}
@@ -571,7 +596,7 @@ class RVBaseModel: MeteorDocument {
                     location.fullName = userProfile.fullName
                     location.setOwner(owner: userProfile)
                 }
-                location.parentField = RVKeys.location
+  //              location.parentField = RVKeys.location
                 _location = self.updateEmbeddedLocation(current: self.location, newLocation: location)
                 objects.removeValue(forKey: RVKeys.location.rawValue)
                 dirties.removeValue(forKey: RVKeys.location.rawValue)
@@ -652,6 +677,8 @@ class RVBaseModel: MeteorDocument {
         get { return getString(key: .domainId) }
         set {updateString(key: .domainId, value: newValue, setDirties: true) }
     }
+    func setDomainId() { self.domainId = RVCoreInfo.sharedInstance.domainId }
+    func getAppDomainId()-> String? { return RVCoreInfo.sharedInstance.domainId }
     func setParent(parent:RVBaseModel) {
         self.parentId = parent.localId
         self.parentModelType = parent.modelType
@@ -751,14 +778,22 @@ extension RVBaseModel {
             }
         }
         if let image = self.image {
+            if imageUpdated {
+                dirties[RVKeys.image.rawValue] = image.objects as AnyObject
+
+            }
+            /*
             if imageInitiallyNull {
-            //    print("IN \(self.instanceType).getDirtiesAndUnsets, image is initially null. \(image.objects)")
+                print("IN \(self.instanceType).getDirtiesAndUnsets, image is initially null. \(image.objects)")
                 dirties[RVKeys.image.rawValue] = image.objects as AnyObject
             } else {
-            //    print("In \(self.instanceType).getDirtiesAndUnsets haveImage")
+                print("In \(self.instanceType).getDirtiesAndUnsets haveImage")
                 let nextField = topField == "" ? RVKeys.image.rawValue : "\(topField).$.\(RVKeys.image.rawValue)"
-                image.getDirtiesAndUnsets(topField: nextField, dirties: &dirties, unsets: &unsets)
+                print("NextField = \(nextField)")
+                //image.getDirtiesAndUnsets(topField: nextField, dirties: &dirties, unsets: &unsets)
+                dirties[RVKeys.image.rawValue] = image.objects as AnyObject
             }
+ */
         }
     }
     func createTransaction(title: String) -> RVTransaction {
@@ -779,11 +814,18 @@ extension RVBaseModel {
         return transaction
     }
     func create(callback: @escaping (_ model: RVBaseModel?, _ error: RVError?) -> Void ) {
+        if let loggedInUser = self.loggedInUser { self.setOwner(owner: loggedInUser) }
+        else {
+            callback(nil, RVError(message: "In \(self.classForCoder).create, no loggedInUser"))
+            return
+        }
+        self.setDomainId()
         var dirties = [String: AnyObject]()
         var unsets = [String: AnyObject]()
         getDirtiesAndUnsets(topField: "", dirties: &dirties , unsets: &unsets)
-        let (tdirties, tunsets) = createTransaction(title: "").returnDirtiesAndUnsets()
+        let (tdirties, _) = createTransaction(title: "").returnDirtiesAndUnsets()
         if dirties.count <= 0 {print("In \(self.classForCoder).create, dirtiess count is erroneously zero")}
+        print("DIrties = \(dirties)")
         Meteor.call(type(of: self).insertMethod.rawValue, params: [dirties, tdirties]) {(result, error: DDPError?) in
             DispatchQueue.main.async {
                 if let error = error {

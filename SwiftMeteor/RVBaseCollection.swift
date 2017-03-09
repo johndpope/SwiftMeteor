@@ -16,17 +16,15 @@ class RVBaseCollection: AbstractCollection {
         case removed = "removed"
     }
     var collectionName: RVModelType
-    var meteorMethod: RVMeteorMethods
     var query: RVQuery = RVQuery()
     var instanceType: String { get { return String(describing: type(of: self)) } }
     var elements = [RVBaseModel]()
     var subscriptionID: String? = nil
     var listeners = [String]()
-
-    init(name: RVModelType, meteorMethod: RVMeteorMethods) {
+    init(name: RVModelType) {
         self.collectionName = name
-        self.meteorMethod = meteorMethod
-        super.init(name: name.rawValue)
+        //checkIfSubscribed(meteorMethod: meteorMethod)
+        super.init(name: collectionName.rawValue)
     }
     /*
     func findRecord(id: String) -> RVBaseModel? {
@@ -37,9 +35,7 @@ class RVBaseCollection: AbstractCollection {
         return nil
     }
  */
-    func populate(id: String, fields: NSDictionary) -> RVBaseModel {
-        return RVBaseModel(id: id, fields: fields)
-    }
+    func populate(id: String, fields: NSDictionary) -> RVBaseModel { return RVBaseModel(id: id, fields: fields) }
     func addListener(name: String) {
         if let _ = listeners.index(where: {notification in return notification == name}) {
             // do nothing
@@ -51,8 +47,8 @@ class RVBaseCollection: AbstractCollection {
     }
     func removeListener(name: String) {
         var newListeners = self.listeners.map { $0 }
-        newListeners.append(name)
-        self.listeners = newListeners
+      //  newListeners.append(name)
+       // self.listeners = newListeners
         if let index = newListeners.index(where: {notification in return notification == name}) {
             newListeners.remove(at: index)
             self.listeners = newListeners
@@ -66,8 +62,9 @@ class RVBaseCollection: AbstractCollection {
             NotificationCenter.default.post(name: Notification.Name(rawValue: listener), object: model, userInfo: ["eventType": eventType.rawValue, "id": id])
         }
     }
+    
     override public func documentWasAdded(_ collection: String, id: String, fields: NSDictionary?) {
-       // print("RBVBaseCollectio. In document was added")
+       print("\(self.classForCoder).documentWasAdded for collection: \(collection), id: \(id)")
         if let fields = fields {
             let document = populate(id: id, fields: fields)
             var copy = self.elements.map { $0 }
@@ -79,6 +76,7 @@ class RVBaseCollection: AbstractCollection {
             print("In \(#file) #\(#line).documentWasAdded fields is nil")
         }
     }
+
     override public func documentWasChanged(_ collection: String, id: String, fields: NSDictionary?, cleared: [String]?) {
         //print("In \(self.instanceType).documentWasChanged, id: \(id), fields: \(fields)")
         var instance: RVBaseModel? = nil
@@ -101,15 +99,27 @@ class RVBaseCollection: AbstractCollection {
     }
 }
 extension RVBaseCollection {
+    func checkIfSubscribed(meteorMethod: RVMeteorMethods) {
+        if let type = Meteor.collection(meteorMethod.rawValue) {
+            print("Warning. Collection of type: \(meteorMethod.rawValue) already subscribed, yet attempting to subscribe again \(type)")
+        }
+    }
     /**
     Sends a subscription request to the server.
     
     - parameter name:       The name of the subscription.
     */
     func subscribe() -> String {
-        print("In \(self.instanceType).subscripe to \(meteorMethod.rawValue)")
+
+
         let (filters, projections) = self.query.query()
-        self.subscriptionID = Meteor.subscribe(meteorMethod.rawValue, params: [filters as AnyObject, projections as AnyObject])
+        self.subscriptionID = Meteor.subscribe(collectionName.rawValue, params: [filters as AnyObject, projections as AnyObject])
+        return self.subscriptionID!
+    }
+    func subscribe(callback: @escaping()-> Void) -> String {
+
+        let (filters, projections) = self.query.query()
+        self.subscriptionID = Meteor.subscribe(collectionName.rawValue, params: [filters as AnyObject, projections as AnyObject], callback: callback)
         return self.subscriptionID!
     }
 
@@ -120,11 +130,11 @@ extension RVBaseCollection {
      - parameter name:       The name of the subscription.
      - parameter params:     An object containing method arguments, if any.
      */
-    func subscribe(subscription: RVMeteorMethods, query: RVQuery) -> String {
-        self.meteorMethod = subscription
+    func subscribe(query: RVQuery) -> String {
+
         self.query = query
         let (filters, projection) = query.query()
-        self.subscriptionID = Meteor.subscribe(subscription.rawValue, params: [filters as AnyObject, projection as AnyObject])
+        self.subscriptionID = Meteor.subscribe(collectionName.rawValue, params: [filters as AnyObject, projection as AnyObject])
         return self.subscriptionID!
     }
     
@@ -138,10 +148,9 @@ extension RVBaseCollection {
      - parameter callback:   The closure to be executed when the server sends a 'ready' message.
      */
     func subscribe(subscription: RVMeteorMethods, query:RVQuery, callback: DDPCallback?) -> String {
-        self.meteorMethod = subscription
         self.query = query
         let (filters, projection) = query.query()
-        self.subscriptionID = Meteor.subscribe(subscription.rawValue, params: [filters as AnyObject, projection as AnyObject], callback: callback)
+        self.subscriptionID = Meteor.subscribe(collectionName.rawValue, params: [filters as AnyObject, projection as AnyObject], callback: callback)
         return self.subscriptionID!
     }
     
@@ -154,7 +163,7 @@ extension RVBaseCollection {
     func unsubscribe(callback: @escaping () -> Void) -> [String] {
         self.subscriptionID = nil
         print("In \(self.classForCoder).unsubscribe ")
-        return Meteor.unsubscribe(meteorMethod.rawValue, callback: callback)
+        return Meteor.unsubscribe(collectionName.rawValue, callback: callback)
     }
     
     /**

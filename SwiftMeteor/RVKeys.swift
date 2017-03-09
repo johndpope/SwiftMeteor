@@ -27,7 +27,7 @@ enum RVKeys: String {
     case parentModelType = "parentModelType"
     case title          = "title"
     case text           = "text"
-    case parentField    = "parentField"
+ //   case parentField    = "parentField"
     case regularDescription  = "regularDescription"
    // case lowerCaseRegularDescription = "lowerCaseRegularDescription"
     case comment        = "comment"

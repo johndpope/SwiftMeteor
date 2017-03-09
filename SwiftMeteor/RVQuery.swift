@@ -179,7 +179,11 @@ class RVQuery {
         self.sortTerms = [RVSortTerm]()
     }
     func addAnd(term: RVKeys, value: AnyObject, comparison: RVComparison) {
-        let queryItem = RVQueryItem(term: term, value: value, comparison: comparison)
+        var scrubbed: AnyObject = value
+        if let value = value as? Date {
+            scrubbed = RVEJSON.convertToEJSONDate(value) as AnyObject
+        }
+        let queryItem = RVQueryItem(term: term, value: scrubbed, comparison: comparison)
         self.addAnd(queryItem: queryItem)
     }
     private func addAnd(queryItem: RVQueryItem) {
@@ -191,7 +195,11 @@ class RVQuery {
         }
     }
     func addOr(term: RVKeys, value: AnyObject, comparison: RVComparison) {
-        let queryItem = RVQueryItem(term: term, value: value, comparison: comparison)
+        var scrubbed: AnyObject = value
+        if let value = value as? Date {
+            scrubbed = RVEJSON.convertToEJSONDate(value) as AnyObject
+        }
+        let queryItem = RVQueryItem(term: term, value: scrubbed, comparison: comparison)
         self.addOr(queryItem: queryItem)
     }
     private func addOr(queryItem: RVQueryItem) {

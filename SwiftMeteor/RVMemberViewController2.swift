@@ -73,6 +73,7 @@ class Message: MeteorDocument {
 
 extension RVMemberViewController2 {
     override func viewDidLoad() {
+   
         setupSLKDatasource = false
         super.viewDidLoad()
        // let messages = MeteorCollection<Message>(name: "Messages")
@@ -149,7 +150,7 @@ extension RVMemberViewController2 {
                     if let error = error {
                         error.printError()
                     } else if let actualMessage = actualMessage {
-                        print("In \(self.classForCoder), have actual Message")
+                        print("In \(self.classForCoder), have actual Message \(actualMessage.localId!), \(actualMessage.createdAt!) \(actualMessage.parentId!) \(actualMessage.parentModelType)")
                         let indexPath = IndexPath(row: 0, section: 0)
                         let rowAnimation: UITableViewRowAnimation = self.isInverted ? .bottom : .top
                         let scrollPosition: UITableViewScrollPosition = self.isInverted ? .bottom : .top

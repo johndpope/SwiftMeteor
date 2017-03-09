@@ -8,9 +8,17 @@
 
 import UIKit
 class RVTransactionViewController: RVBaseViewController4 {
+    
+    @IBAction func searchButtonTouched(_ sender: UIBarButtonItem) {
+        searchController.isActive = true
+    }
+    @IBAction func menuButtonTouched(_ sender: UIBarButtonItem) {
+            self.deck.toggleSide(side: .left)
+    }
+
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        manager.addSection(section: RVTransactionDatasource())
+       // manager.addSection(section: RVTransactionDatasource())
     }
     
 

@@ -21,6 +21,8 @@ enum RVSwiftEvent: String {
 }
 
 class RVSwiftDDP: NSObject {
+    var messages: RVMessageCollection2!
+    var transactions: RVTransactionCollection!
     enum SignupError: String {
         case emailAlreadyExists = "Email already exist" // DDPError 403
     }
@@ -278,6 +280,17 @@ extension RVSwiftDDP: SwiftDDPDelegate {
                // print("In \(self.classForCoder).ddpUserDidLogin, about to notify [\(self.loginListeners.listeners.count)] listeners and publish notification \(RVNotification.userDidLogin.rawValue)")
                 self.loginListeners.notifyListeners()
                 NotificationCenter.default.post(name: NSNotification.Name(rawValue: RVNotification.userDidLogin.rawValue), object: nil, userInfo: ["user": user])
+                print("IN \(self.classForCoder) about to subscribe")
+                self.messages = RVMessageCollection2()
+                self.messages.query = RVQuery()
+                self.transactions = RVTransactionCollection()
+                let query = RVQuery()
+                query.addAnd(term: .topParentId, value: "88" as AnyObject, comparison: .eq)
+                self.transactions.query = query 
+                let id = self.transactions.subscribe {
+                    print("In \(self.classForCoder).ddpUserDidLogin")
+                }
+                print("In \(self.classForCoder), transaction id = \(id)")
             } else {
                 print("In \(self.classForCoder).ddpUserDidLogin, no error but failure")
             }

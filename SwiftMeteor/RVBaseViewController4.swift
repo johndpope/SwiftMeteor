@@ -12,10 +12,12 @@ class RVBaseViewController4: UIViewController {
     var manager: RVDSManager = RVDSManager()
     let searchController = UISearchController(searchResultsController: nil)
     var searchScopes: [String] { get {return ["Elmer", "Fudd"]}}
-    var installSearchController: Bool { get { return true }}
+    var installSearchControllerInTableView: Bool { get { return false }}
     var dsScrollView: UIScrollView? { get { return tableView }}
     var searchBarPlaceholder: String { get { return "Search..." }}
+    var deck: RVViewDeck { get { return RVViewDeck.sharedInstance }}
     @IBOutlet weak var tableView: UITableView!
+    @IBOutlet weak var searchControllerContainerView: UIView!
 
     override func viewWillAppear(_ animated: Bool) {
         manager = RVDSManager(scrollView: dsScrollView)
@@ -45,9 +47,13 @@ extension RVBaseViewController4: UISearchResultsUpdating {
         searchController.searchBar.barTintColor = UIColor.blue
         searchController.dimsBackgroundDuringPresentation = false
         self.definesPresentationContext = true
-        if let tableView = self.dsScrollView as? UITableView {
-            if installSearchController {  tableView.tableHeaderView = searchController.searchBar}
-            else if let _ = tableView.tableHeaderView as? UISearchBar { tableView.tableHeaderView = nil}
+        searchController.searchBar.removeFromSuperview()
+        if installSearchControllerInTableView {
+            if let tableView = self.dsScrollView as? UITableView {
+                tableView.tableHeaderView = searchController.searchBar
+            }
+        } else {
+            searchControllerContainerView.addSubview(searchController.searchBar)
         }
     }
     func configureScopeBar() {

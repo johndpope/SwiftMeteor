@@ -281,6 +281,7 @@ open class DDPClient: NSObject {
             // Principal callbacks for managing data
             // Document was added
         case .Added: documentQueue.addOperation() {
+            //print("In \(self.classForCoder).ddpMessageHandler\n\(message)")
             if let collection = message.collection,
                 let id = message.id {
                     self.documentWasAdded(collection, id: id, fields: message.fields)

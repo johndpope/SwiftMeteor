@@ -27,15 +27,18 @@ class RVLeftMenuController: RVBaseViewController {
         [MenuKeys.name: "Watchgroups", MenuKeys.displayText: "WatchGroups" ],
         [MenuKeys.name: "Members", MenuKeys.displayText: "Members"],
         [MenuKeys.name: "Transactions", MenuKeys.displayText: "Transactions"],
+        [MenuKeys.name: "Transaction", MenuKeys.displayText: "Transaction"],
         [MenuKeys.name: "Logout", MenuKeys.displayText: "Logout"],
-        [MenuKeys.name: "ClearUsers", MenuKeys.displayText: "ClearUsers"]
+        [MenuKeys.name: "ClearUsers", MenuKeys.displayText: "ClearUsers"],
+        [MenuKeys.name: "Group", MenuKeys.displayText: "Group"],
+        [MenuKeys.name: "RootGroup", MenuKeys.displayText: "RootGroup"]
 
     ]
     override func viewDidLoad() {
        // self.mainState = RVLeftControllerState()
         super.viewDidLoad()
     }
-    
+    var topParentId: String = "88"
 }
 extension RVLeftMenuController {
 
@@ -46,7 +49,46 @@ extension RVLeftMenuController {
             print("Did not find RVLeftMenuTableViewCell")
         }
     }
+    func createdTransaction() -> RVTransaction{
+        let transaction = RVTransaction()
+        transaction.title = title
+        let owner = RVCoreInfo.sharedInstance.userProfile!
+        transaction.topParentId = topParentId
+        transaction.topParentModelType = RVModelType.image
+        transaction.parentId = "12345"
+        transaction.parentModelType = RVModelType.watchgroup
+        transaction.transactionType = .added
+        transaction.ownerId = owner.localId
+        transaction.fullName = owner.fullName
+        transaction.handle = owner.handle
+        transaction.domainId = owner.domainId
+        transaction.entityId = "someMessageEntityId"
+        transaction.entityModelType = RVModelType.message
+        transaction.readState = .unread
+        return transaction
+    }
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+
+
+        /*
+        query.addAnd(term: .modelType , value: RVModelType.transaction.rawValue as AnyObject , comparison: .eq)
+        RVTransaction.bulkQuery(query: query) { (results: [RVBaseModel]?, error ) in
+            if let error = error {
+                error.printError()
+            } else if let models = results as? [RVTransaction] {
+                print("In \(self.classForCoder). have \(models.count) results")
+            } else {
+                print("In \(self.classForCoder).no errors, but no results")
+            }
+        }
+        let collection = RVTransactionCollection()
+        collection.query = query
+        let subscriptionId = collection.subscribe {
+            print("In \(self.instanceType).callback")
+        }
+        */
+
+        //print("In \(self.instanceType).didSelect subscriptionId = \(subscriptionId)")
         //print("\(instanceType).didSelectRow")
         if indexPath.row >= 0 && indexPath.row < menuItems.count {
             let selection = menuItems[indexPath.row]
@@ -88,6 +130,61 @@ extension RVLeftMenuController {
                 } else if string == "Transactions" {
                     self.deck.centerViewController = self.deck.instantiateController(controller: .TransactionList)
                     self.deck.toggleSide(side: .center)
+                } else if string == "Transaction" {
+
+                
+                    let transaction = createdTransaction()
+                    transaction.create(callback: { (result, error) in
+                        if let error = error {
+                            error.printError()
+                        } else if let result = result {
+                            print("In \(self.classForCoder). transaction result: \n\(result.toString())")
+                        } else {
+                            print("In \(self.classForCoder) \(#line)")
+                        }
+                    })
+                } else if string == "Group" {
+
+                    let group = RVGroup()
+                    group.setOwner(owner: RVCoreInfo.sharedInstance.userProfile!)
+                    group.domainId = RVCoreInfo.sharedInstance.domain!.localId
+                    group.parentId = "Elmo"
+                    group.create(callback: { (group , error) in
+                        if let error = error {
+                            error.printError()
+                        } else if let group = group {
+                            print("In \(self.classForCoder). have group \(group.toString())")
+                            let query = RVQuery()
+                            query.addAnd(term: .createdAt, value: query.decadeAgo as AnyObject, comparison: .gte)
+                            query.addSort(field: .createdAt, order: .ascending)
+                            RVGroup.bulkQuery(query: query , callback: { (groups, error) in
+                                if let error = error {
+                                    error.printError()
+                                } else if let groups = groups as? [RVGroup] {
+                                    for group in groups {
+                                        print("In \(self.classForCoder). group { id: \(group.localId!), createdAt: \(group.createdAt!)")
+                                    }
+                                } else {
+                                    print("In \(self.classForCoder).bulkQuery no error but no groups")
+                                }
+                            })
+                            
+                        } else {
+                            print("In \(self.classForCoder). no error no group")
+                        }
+                    })
+                } else if string == "RootGroup" {
+                    
+                    RVGroup.getRootGroup(callback: { (group , error) in
+                        if let error = error {
+                            error.printError()
+                        } else if let group = group {
+                            print("\(group.toString())")
+                        } else {
+                            print("In \(self.classForCoder).RootGroup, no error but no root Group")
+                        }
+                    })
+                
                 } else {
 
                     print("In \(self.classForCoder).didSelectRowAt \(indexPath.row), \(string) not handled")

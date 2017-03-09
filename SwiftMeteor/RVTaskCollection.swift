@@ -14,6 +14,6 @@ class RVTaskCollection: RVBaseCollection {
         return RVTask(id: id, fields: fields)
     }
     init() {
-        super.init(name: RVModelType.task, meteorMethod: RVMeteorMethods.QueryTask)
+        super.init(name: RVModelType.task)
     }
 }

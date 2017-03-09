@@ -65,14 +65,16 @@ extension RVProfileViewController: RVCameraDelegate {
                             error.append(message: "In \(self.classForCoder).didFinish, got error ")
                             error.printError()
                         } else if let rvImage = image {
-                          //  print("In \(self.classForCoder).didFinsh got rvImage\n\(rvImage) with id \(rvImage.localId) \(rvImage.shadowId)")
+                          print("In \(self.classForCoder).didFinsh got rvImage\n\(rvImage) with id \(rvImage.localId) \(rvImage.shadowId)")
+                            print(rvImage.toString())
+                            print("ddddddd")
                             profile.image = rvImage
                             profile.updateById(callback: { (updatedProfile, error) in
                                 if let error = error {
                                     error.printError()
                                 } else if let updatedProfile = updatedProfile as? RVUserProfile {
                                     RVCoreInfo.sharedInstance.userProfile = updatedProfile
-                                    print("In \(self.classForCoder).didFinish, successfully updated profile")
+                                    print("In \(self.classForCoder).didFinish, successfully updated profile\n\(updatedProfile.toString())")
                                     if let image = updatedProfile.image {
                                         print("Profile iamge ids: localId = \(image.localId), \(image.shadowId)")
                                     }

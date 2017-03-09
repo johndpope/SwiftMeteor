@@ -38,7 +38,7 @@ extension RVBaseModel {
         current.username = newModel.username
         current.validRecord = newModel.validRecord
         current.visibility = newModel.visibility
-        current.parentField = newModel.parentField
+       // current.parentField = newModel.parentField
         // image
         // location
     }

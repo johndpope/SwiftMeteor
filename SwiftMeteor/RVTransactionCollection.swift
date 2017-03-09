@@ -9,9 +9,11 @@
 import Foundation
 class RVTransactionCollection: RVBaseCollection {
     init() {
-        super.init(name: .transaction, meteorMethod: .transactionBulkQuery)
+        super.init(name: .transaction)
     }
     override func populate(id: String, fields: NSDictionary) -> RVBaseModel {
-        return RVTransaction(id: id , fields: fields)
+        let transaction = RVTransaction(id: id , fields: fields)
+        print("In \(self.instanceType).populate, have transaction \(transaction.createdAt!) \(transaction.topParentId)")
+        return transaction
     }
 }

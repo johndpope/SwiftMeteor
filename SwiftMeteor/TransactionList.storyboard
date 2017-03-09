@@ -21,6 +21,13 @@
                         <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
+                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="74Q-w3-Ex3">
+                                <rect key="frame" x="0.0" y="64" width="375" height="70"/>
+                                <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="70" id="VLk-Yx-eu1"/>
+                                </constraints>
+                            </view>
                             <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="44" sectionHeaderHeight="28" sectionFooterHeight="28" translatesAutoresizingMaskIntoConstraints="NO" id="JCg-1k-n7E">
                                 <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
@@ -28,21 +35,31 @@
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                         <constraints>
+                            <constraint firstItem="74Q-w3-Ex3" firstAttribute="top" secondItem="KTb-xY-vjS" secondAttribute="bottom" id="2NK-CU-IjN"/>
                             <constraint firstItem="JCg-1k-n7E" firstAttribute="leading" secondItem="1w4-1V-EPj" secondAttribute="leading" id="7Nb-75-Dkv"/>
                             <constraint firstItem="JCg-1k-n7E" firstAttribute="top" secondItem="1w4-1V-EPj" secondAttribute="top" id="NNc-BN-RMM"/>
                             <constraint firstItem="ngn-aa-XOG" firstAttribute="top" secondItem="JCg-1k-n7E" secondAttribute="bottom" id="T0u-Af-p1z"/>
+                            <constraint firstAttribute="trailing" secondItem="74Q-w3-Ex3" secondAttribute="trailing" id="btV-S6-VSu"/>
+                            <constraint firstItem="74Q-w3-Ex3" firstAttribute="leading" secondItem="1w4-1V-EPj" secondAttribute="leading" id="syM-HJ-l22"/>
                             <constraint firstAttribute="trailing" secondItem="JCg-1k-n7E" secondAttribute="trailing" id="yIG-8d-UAi"/>
                         </constraints>
                     </view>
                     <navigationItem key="navigationItem" title="Transaction" id="wCC-sZ-Ena">
-                        <barButtonItem key="leftBarButtonItem" systemItem="done" id="xGV-g2-OFh">
+                        <barButtonItem key="leftBarButtonItem" title="Menu" id="xGV-g2-OFh">
                             <color key="tintColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                            <connections>
+                                <action selector="menuButtonTouched:" destination="HFH-ee-0lh" id="5Tl-bJ-D1Z"/>
+                            </connections>
                         </barButtonItem>
                         <barButtonItem key="rightBarButtonItem" systemItem="search" id="5r9-rk-Rn8">
                             <color key="tintColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                            <connections>
+                                <action selector="searchButtonTouched:" destination="HFH-ee-0lh" id="YjN-Bc-7DG"/>
+                            </connections>
                         </barButtonItem>
                     </navigationItem>
                     <connections>
+                        <outlet property="searchControllerContainerView" destination="74Q-w3-Ex3" id="NyE-qa-Y8f"/>
                         <outlet property="tableView" destination="JCg-1k-n7E" id="T2d-tx-gZ0"/>
                     </connections>
                 </viewController>

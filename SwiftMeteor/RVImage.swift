@@ -233,6 +233,7 @@ extension RVImage {
                     rvImage.filetype = filetype
                     if let userProfile = RVCoreInfo.sharedInstance.userProfile {
                         rvImage.setOwner(owner: userProfile)
+                        print("\nIN \(self.classForCoder()).saveImage, \(rvImage.ownerId) \(rvImage.ownerModelType.rawValue)\n--------------------")
                         rvImage.fullName = userProfile.fullName
                     }
                     if let domain = RVCoreInfo.sharedInstance.domain { rvImage.domainId = domain.localId}

@@ -32,6 +32,13 @@ class RVCoreInfo: NSObject {
     var userId: String? = nil
     var userProfile: RVUserProfile? = nil
     var domain: RVDomain? = nil
+    var domainId: String? {
+        get {
+            if let domain = self.domain { return domain.localId}
+            else { return nil }
+        }
+    }
+    var rootGroup: RVGroup? = nil
     var specialCode = "NotValid"
     var navigationBarColor: UIColor { get {return UIColor(colorLiteralRed: 64/256, green: 128/256, blue: 255/256, alpha: 1.0)}}
     
@@ -132,12 +139,23 @@ class RVCoreInfo: NSObject {
                         self.domain = domain
                         self.userProfile = profile
                         self.username = username
+                        RVGroup.getRootGroup(callback: { (group , error) in
+                            if let error = error {
+                                error.append(message: "In \(self.classForCoder).completeLogin, error getting Root Group")
+                            } else if let group = group {
+                                print("Have root group \(group.localId)" )
+                                self.rootGroup = group
+                            } else {
+                                print("In \(self.classForCoder).completeLogin, no error, but no root group")
+                            }
+                        })
                         callback(true, nil)
                         return
                     } else {
                         callback(false, nil)
                     }
                 })
+
                 return
             } else {
                 print("In \(self.classForCoder).getUserInfo(), no error but no profile")
