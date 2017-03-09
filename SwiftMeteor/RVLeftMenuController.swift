@@ -31,7 +31,8 @@ class RVLeftMenuController: RVBaseViewController {
         [MenuKeys.name: "Logout", MenuKeys.displayText: "Logout"],
         [MenuKeys.name: "ClearUsers", MenuKeys.displayText: "ClearUsers"],
         [MenuKeys.name: "Group", MenuKeys.displayText: "Group"],
-        [MenuKeys.name: "RootGroup", MenuKeys.displayText: "RootGroup"]
+        [MenuKeys.name: "RootGroup", MenuKeys.displayText: "RootGroup"],
+        [MenuKeys.name: "Version3", MenuKeys.displayText: "Version3"]
 
     ]
     override func viewDidLoad() {
@@ -184,7 +185,10 @@ extension RVLeftMenuController {
                             print("In \(self.classForCoder).RootGroup, no error but no root Group")
                         }
                     })
-                
+                } else if string == "Version3" {
+                    print("In \(self.classForCoder).Version3")
+                    self.deck.centerViewController = self.deck.instantiateController(controller: .Version3)
+                    self.deck.toggleSide(side: .center)
                 } else {
 
                     print("In \(self.classForCoder).didSelectRowAt \(indexPath.row), \(string) not handled")

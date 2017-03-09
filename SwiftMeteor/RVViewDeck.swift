@@ -15,6 +15,7 @@ class RVViewDeck: NSObject {
         case WatchGroupList = "WatchGroupList"
         case UserList = "UserList"
         case TransactionList = "TransactionList"
+        case Version3 = "Main3"
         var storyBoard: String {
             switch(self) {
             case .Profile:
@@ -25,6 +26,8 @@ class RVViewDeck: NSObject {
                 return "UserList"
             case .TransactionList:
                 return "TransactionList"
+            case .Version3:
+                return "Main3"
             }
         }
     }
@@ -45,6 +48,7 @@ class RVViewDeck: NSObject {
         }
     }
     func instantiateController(controller: RVViewDeck.Controllers) -> UIViewController {
+       // print("")
         return UIStoryboard(name: controller.storyBoard, bundle: nil).instantiateViewController(withIdentifier: controller.rawValue)
     }
     var instanceType: String { get { return String(describing: type(of: self)) } }
