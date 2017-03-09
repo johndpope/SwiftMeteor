@@ -27,6 +27,7 @@ PODS:
   - SDWebImage (3.8.2):
     - SDWebImage/Core (= 3.8.2)
   - SDWebImage/Core (3.8.2)
+  - SeaseAssist (0.0.40)
   - SlackTextViewController (1.9.5)
   - SwiftDDP (0.4.1):
     - CryptoSwift (~> 0.6.6)
@@ -55,6 +56,7 @@ DEPENDENCIES:
   - GooglePlaces
   - LoremIpsum
   - SDWebImage (~> 3.8)
+  - SeaseAssist
   - SlackTextViewController
   - SwiftDDP (~> 0.4.0)
   - SwiftSoup
@@ -78,6 +80,7 @@ SPEC CHECKSUMS:
   GooglePlaces: 35636d86e5020cba3856eb988c09a5491de0a65a
   LoremIpsum: 9029c55d36501b2ee0b05cc9ecda11d3a0479160
   SDWebImage: 098e97e6176540799c27e804c96653ee0833d13c
+  SeaseAssist: c352abeb67053588a75d9bc2af9571308742ccf1
   SlackTextViewController: fbcdadbb8090673f604484ff5b6eb8d77baed42a
   SwiftDDP: 63bcefd72c4793bf8d86004862a1adca88eb3bc9
   SwiftSoup: ad2b920e7900a9c057dc7ec899e3423ddec59cb7
@@ -87,6 +90,6 @@ SPEC CHECKSUMS:
   ViewDeck: 942d90dd23c9f97cc8038be352255378167edcca
   XCGLogger: 38063ea89b4c8b23232d18efd2e12eb0005f3ea4
 
-PODFILE CHECKSUM: 29122a90c184f1681f6d3a7f0d13501d32d28f98
+PODFILE CHECKSUM: 5412bb83f1807c5c19c88d1195d1d26aba58fdb6
 
 COCOAPODS: 1.1.1

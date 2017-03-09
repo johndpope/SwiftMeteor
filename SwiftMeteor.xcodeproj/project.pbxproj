@@ -119,6 +119,7 @@
 		28A232971E333E4C00489EB3 /* RVVisibility.swift in Sources */ = {isa = PBXBuildFile; fileRef = 28A232961E333E4C00489EB3 /* RVVisibility.swift */; };
 		28A2A2D91E393719002AA1A8 /* JNW.png in Resources */ = {isa = PBXBuildFile; fileRef = 28A2A2D81E393719002AA1A8 /* JNW.png */; };
 		28A2A2DD1E3945A0002AA1A8 /* RVCamera.swift in Sources */ = {isa = PBXBuildFile; fileRef = 28A2A2DC1E3945A0002AA1A8 /* RVCamera.swift */; };
+		28A6FAA51E70F7BE00A646D2 /* Main3.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 28A6FAA41E70F7BE00A646D2 /* Main3.storyboard */; };
 		28A72D211E592B83005AB9AA /* RVMemberViewController2.swift in Sources */ = {isa = PBXBuildFile; fileRef = 28A72D201E592B83005AB9AA /* RVMemberViewController2.swift */; };
 		28A93E571E5AAC2200EFE7D9 /* RVAbstractMeteorCollection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 28A93E561E5AAC2200EFE7D9 /* RVAbstractMeteorCollection.swift */; };
 		28B0CF9F1E3BF3FE000C74DC /* RVWatchGroupCreateEditController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 28B0CF9E1E3BF3FE000C74DC /* RVWatchGroupCreateEditController.swift */; };
@@ -299,6 +300,7 @@
 		28A232961E333E4C00489EB3 /* RVVisibility.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RVVisibility.swift; sourceTree = "<group>"; };
 		28A2A2D81E393719002AA1A8 /* JNW.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = JNW.png; sourceTree = "<group>"; };
 		28A2A2DC1E3945A0002AA1A8 /* RVCamera.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RVCamera.swift; sourceTree = "<group>"; };
+		28A6FAA41E70F7BE00A646D2 /* Main3.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = Main3.storyboard; sourceTree = "<group>"; };
 		28A72D201E592B83005AB9AA /* RVMemberViewController2.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RVMemberViewController2.swift; sourceTree = "<group>"; };
 		28A93E561E5AAC2200EFE7D9 /* RVAbstractMeteorCollection.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RVAbstractMeteorCollection.swift; sourceTree = "<group>"; };
 		28B0CF9E1E3BF3FE000C74DC /* RVWatchGroupCreateEditController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RVWatchGroupCreateEditController.swift; sourceTree = "<group>"; };
@@ -386,6 +388,7 @@
 		2806BAE91E6BCB25005CA637 /* Version3 */ = {
 			isa = PBXGroup;
 			children = (
+				28A6FAA31E70F7AE00A646D2 /* Main */,
 				2806BAFB1E6D059C005CA637 /* Collections */,
 				2806BAFA1E6D0553005CA637 /* Transaction */,
 				2806BAF91E6D0546005CA637 /* Base Classes */,
@@ -662,6 +665,14 @@
 				289A45FA1E483FB3001BBB29 /* RVUserTableViewCell.swift */,
 			);
 			name = UserList;
+			sourceTree = "<group>";
+		};
+		28A6FAA31E70F7AE00A646D2 /* Main */ = {
+			isa = PBXGroup;
+			children = (
+				28A6FAA41E70F7BE00A646D2 /* Main3.storyboard */,
+			);
+			name = Main;
 			sourceTree = "<group>";
 		};
 		28B0CF9D1E3BF3E3000C74DC /* WatchGroupCreateEditScene */ = {
@@ -973,6 +984,7 @@
 				2857BFFD1E57AB9F00865FDC /* Images.xcassets in Resources */,
 				289A45F11E47A775001BBB29 /* UserList.storyboard in Resources */,
 				2894BA901E3DA76D008AD39C /* RVWatchGroupView.xib in Resources */,
+				28A6FAA51E70F7BE00A646D2 /* Main3.storyboard in Resources */,
 				28F838BC1E43CB5F0002E052 /* LoginScene.storyboard in Resources */,
 				28A2A2D91E393719002AA1A8 /* JNW.png in Resources */,
 				2836E6151E407828009CA7EB /* MyCell.xib in Resources */,

@@ -26,6 +26,7 @@ target 'SwiftMeteor' do
   pod 'Font-Awesome-Swift', '~> 1.6.1'
   pod 'SwiftSoup'
   pod 'SlackTextViewController'
+  pod 'SeaseAssist'
 
 
   #target 'SwiftMeteorTests' do
