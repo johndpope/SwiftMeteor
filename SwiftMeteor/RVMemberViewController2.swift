@@ -152,7 +152,7 @@ extension RVMemberViewController2 {
                     } else if let actualMessage = actualMessage {
                         print("In \(self.classForCoder), have actual Message \(actualMessage.localId!), \(actualMessage.createdAt!) \(actualMessage.parentId!) \(actualMessage.parentModelType)")
                         let indexPath = IndexPath(row: 0, section: 0)
-                        let rowAnimation: UITableViewRowAnimation = self.isInverted ? .bottom : .top
+                        //let rowAnimation: UITableViewRowAnimation = self.isInverted ? .bottom : .top
                         let scrollPosition: UITableViewScrollPosition = self.isInverted ? .bottom : .top
                         
                         if self.manager.numberOfItems(section: 0) > 0 {

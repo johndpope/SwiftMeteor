@@ -21,6 +21,13 @@
                         <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
+                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="vQN-Ax-L9j" userLabel="searchControllerContainerView">
+                                <rect key="frame" x="0.0" y="64" width="375" height="30"/>
+                                <color key="backgroundColor" red="1" green="0.34957892039999999" blue="0.26400056659999999" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="30" id="BPq-qB-Z1r"/>
+                                </constraints>
+                            </view>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="qy1-6I-58H" userLabel="TopOuterView">
                                 <rect key="frame" x="0.0" y="64" width="375" height="80"/>
                                 <subviews>
@@ -63,19 +70,38 @@
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                         <constraints>
+                            <constraint firstItem="vQN-Ax-L9j" firstAttribute="leading" secondItem="Wh0-5y-SMa" secondAttribute="leading" id="F99-wv-ofv"/>
                             <constraint firstItem="qy1-6I-58H" firstAttribute="top" secondItem="Ofp-Fe-aan" secondAttribute="bottom" id="JVk-rs-MIK"/>
                             <constraint firstAttribute="trailing" secondItem="qy1-6I-58H" secondAttribute="trailing" id="VhW-Qs-Paw"/>
                             <constraint firstItem="qy1-6I-58H" firstAttribute="leading" secondItem="Wh0-5y-SMa" secondAttribute="leading" id="pBy-KH-DWq"/>
+                            <constraint firstAttribute="trailing" secondItem="vQN-Ax-L9j" secondAttribute="trailing" id="qkW-8w-ALq"/>
+                            <constraint firstItem="vQN-Ax-L9j" firstAttribute="top" secondItem="Ofp-Fe-aan" secondAttribute="bottom" id="vXg-BD-Ehm"/>
                         </constraints>
                     </view>
                     <navigationItem key="navigationItem" title="Rendevuers" id="aPm-CR-8Ra">
                         <barButtonItem key="leftBarButtonItem" title="Menu" id="noS-4S-NFp">
                             <color key="tintColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                            <connections>
+                                <action selector="menuButtonTouched:" destination="Dgb-Ki-dbf" id="96Q-ue-fdQ"/>
+                            </connections>
                         </barButtonItem>
                         <barButtonItem key="rightBarButtonItem" systemItem="search" id="oFb-pF-2si">
                             <color key="tintColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                            <connections>
+                                <action selector="searchButtonTouched:" destination="Dgb-Ki-dbf" id="4Ji-SO-cQY"/>
+                            </connections>
                         </barButtonItem>
                     </navigationItem>
+                    <connections>
+                        <outlet property="TopBottomHeightConstraint" destination="azV-ZS-LHx" id="Nuy-AI-fD9"/>
+                        <outlet property="TopBottomView" destination="Kr5-PE-k2v" id="lCm-Fp-kev"/>
+                        <outlet property="TopMiddleHeightConstraint" destination="g9F-BX-pNY" id="P5k-7X-dlX"/>
+                        <outlet property="TopMiddleView" destination="QyD-cX-8Qo" id="6Lc-CM-xKE"/>
+                        <outlet property="TopOuterView" destination="qy1-6I-58H" id="EjZ-5P-5Em"/>
+                        <outlet property="TopTopHeightConstraint" destination="Ulj-6C-Wwc" id="MMl-vl-cPs"/>
+                        <outlet property="TopTopView" destination="5Uu-tN-2SC" id="cvc-Et-Meb"/>
+                        <outlet property="searchControllerContainerView" destination="vQN-Ax-L9j" id="SYp-xZ-ymy"/>
+                    </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="Td8-n4-JLF" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
@@ -85,11 +111,17 @@
         <scene sceneID="WLf-aV-bJG">
             <objects>
                 <navigationController automaticallyAdjustsScrollViewInsets="NO" id="5N4-n8-RkS" sceneMemberID="viewController">
+                    <tabBarItem key="tabBarItem" systemItem="contacts" id="sS7-0Z-dAC"/>
                     <toolbarItems/>
+                    <simulatedTabBarMetrics key="simulatedBottomBarMetrics"/>
                     <navigationBar key="navigationBar" contentMode="scaleToFill" misplaced="YES" barStyle="black" id="GKU-9x-1gd">
                         <rect key="frame" x="0.0" y="0.0" width="375" height="44"/>
                         <autoresizingMask key="autoresizingMask"/>
                         <color key="barTintColor" red="0.25098039220000001" green="0.50196078430000002" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                        <textAttributes key="titleTextAttributes">
+                            <color key="textColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                            <color key="textShadowColor" white="0.0" alpha="1" colorSpace="calibratedWhite"/>
+                        </textAttributes>
                     </navigationBar>
                     <nil name="viewControllers"/>
                     <connections>
