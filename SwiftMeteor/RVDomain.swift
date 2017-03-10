@@ -9,6 +9,7 @@
 import Foundation
 import SwiftDDP
 enum RVDomainName: String {
+    case Rendevu = "Rendevu"
     case PortolaValley = "PortolaValley"
     case unknown = "unknown"
 }

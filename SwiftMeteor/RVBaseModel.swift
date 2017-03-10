@@ -677,6 +677,7 @@ class RVBaseModel: MeteorDocument {
         get { return getString(key: .domainId) }
         set {updateString(key: .domainId, value: newValue, setDirties: true) }
     }
+
     func setDomainId() { self.domainId = RVCoreInfo.sharedInstance.domainId }
     func getAppDomainId()-> String? { return RVCoreInfo.sharedInstance.domainId }
     func setParent(parent:RVBaseModel) {
@@ -810,6 +811,7 @@ extension RVBaseModel {
         transaction.domainId = self.domainId
         transaction.entityId = self.localId
         transaction.entityModelType = self.modelType
+        transaction.entityTitle = self.title
         transaction.readState = .unread
         return transaction
     }

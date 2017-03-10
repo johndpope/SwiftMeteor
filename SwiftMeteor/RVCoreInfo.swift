@@ -11,7 +11,7 @@ import SwiftDDP
 
 class RVCoreInfo: NSObject {
     static let sharedInstance: RVCoreInfo = { return RVCoreInfo() }()
-    
+    let domainName = RVDomainName.Rendevu
     
     var username: String? = nil
     var defaultState: RVBaseAppState {
@@ -193,8 +193,8 @@ class RVCoreInfo: NSObject {
     }
     func getDomain(callback: @escaping(_ profile: RVDomain? , _ error: RVError?)-> Void) {
         let domain = RVDomain()
-        domain.domainName = RVDomainName.PortolaValley
-        domain.title = "Portola Valley WatchGroup"
+        domain.domainName = self.domainName
+        domain.title = self.domainName.rawValue
         domain.findOrCreate(callback: { (domain , error ) in
             if let error = error {
                 error.append(message: "In \(self.classForCoder).getUserProfile, got error")
@@ -202,6 +202,7 @@ class RVCoreInfo: NSObject {
                 return
             } else if let domain = domain {
                 self.domain = domain
+                print("In \(self.classForCoder).getDomain have domain: \(domain.modelType.rawValue), \(domain.title!)")
                 callback(domain, nil)
             } else {
                 print("In \(self.classForCoder).getUserProfile, no error but no domain")

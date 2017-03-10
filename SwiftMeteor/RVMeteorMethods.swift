@@ -86,20 +86,20 @@ enum RVMeteorMethods: String {
     case privateChatSpecialLookup = "privateChat.specialLookup"
     
     // Transaction
-    case transactionBulkQuery = "transaction.bulkQuery"
-    case transactionCreate = "transaction.create"
-    case transactionUpdate = "transaction.update"
-    case transactionFindById = "transaction.findById"
-    case transactionDelete = "transaction.delete"
-    case transactionDeleteAll = "transaction.deleteAll"
+    case TransactionCreate      = "Transactions.create"
+    case TransactionRead        = "Transactions.read"
+    case TransactionUpdate      = "Transactions.update"
+    case TransactionDelete      = "Transactions.delete"
+    case TransactionList        = "Transactions.list"
+    case TransactionDeleteAll   = "Transactions.deleteAll"
     
     // Group
-    case GroupCreate    = "Group.create"
-    case GroupRead      = "Group.read"
-    case GroupUpdate    = "Group.update"
-    case GroupDelete    = "Group.delete"
-    case GroupList      = "Group.list"
-    case GroupRoot      = "Group.root"
-    case GroupDeleteAll = "Group.deleteAll"
+    case GroupCreate    = "Groups.create"
+    case GroupRead      = "Groups.read"
+    case GroupUpdate    = "Groups.update"
+    case GroupDelete    = "Groups.delete"
+    case GroupList      = "Groups.list"
+    case GroupRoot      = "Groups.root"
+    case GroupDeleteAll = "Groups.deleteAll"
     
 }

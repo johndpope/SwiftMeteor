@@ -109,6 +109,14 @@ class RVUserProfile: RVBaseModel {
             updateArray(key: .watchGroupIds, value: newValue as [AnyObject], setDirties: true)
         }
     }
+    var adminCodeZero: String? {
+        get { return getString(key: .adminCodeZero) }
+        set { updateString(key: .adminCodeZero, value: newValue, setDirties: true) }
+    }
+    var adminCodeOne: String? {
+        get { return getString(key: .adminCodeOne) }
+        set { updateString(key: .adminCodeOne, value: newValue, setDirties: true) }
+    }
     var lastLogin: Date? {
         get {
             if let dateDictionary = getDictionary(key: .lastLogin) as? [String : Double] {

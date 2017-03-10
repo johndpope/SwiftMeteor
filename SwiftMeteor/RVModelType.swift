@@ -20,8 +20,8 @@ enum RVModelType: String  {
     case household = "household"
     case watchgroup = "watchGroup"
     case location = "location"
-    case domain = "domain"
+    case domain = "Domains"
     case privateChat = "privateChat"
-    case transaction = "Transaction"
-    case Group = "Group"
+    case transaction = "Transactions"
+    case Group = "Groups"
 }

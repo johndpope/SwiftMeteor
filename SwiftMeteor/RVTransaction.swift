@@ -17,12 +17,12 @@
 import Foundation
 class RVTransaction: RVBaseModel {
     override class func collectionType() -> RVModelType { return RVModelType.transaction }
-    override class var insertMethod: RVMeteorMethods { get { return RVMeteorMethods.transactionCreate } }
-    override class var updateMethod: RVMeteorMethods { get { return RVMeteorMethods.transactionUpdate } }
-    override class var deleteMethod: RVMeteorMethods { get { return RVMeteorMethods.transactionDelete } }
-    override class var findMethod: RVMeteorMethods { get { return RVMeteorMethods.transactionFindById}}
-    override class var deleteAllMethod: RVMeteorMethods { get { return RVMeteorMethods.transactionDeleteAll}}
-    override class var bulkQueryMethod: RVMeteorMethods { get { return RVMeteorMethods.transactionBulkQuery } }
+    override class var insertMethod: RVMeteorMethods { get { return RVMeteorMethods.TransactionCreate } }
+    override class var updateMethod: RVMeteorMethods { get { return RVMeteorMethods.TransactionUpdate } }
+    override class var deleteMethod: RVMeteorMethods { get { return RVMeteorMethods.TransactionDelete } }
+    override class var findMethod: RVMeteorMethods { get { return RVMeteorMethods.TransactionRead}}
+    override class var deleteAllMethod: RVMeteorMethods { get { return RVMeteorMethods.TransactionDeleteAll}}
+    override class var bulkQueryMethod: RVMeteorMethods { get { return RVMeteorMethods.TransactionList } }
     override class func createInstance(fields: [String : AnyObject])-> RVBaseModel { return RVTransaction(fields: fields) }
     override class func modelFromFields(fields: [String: AnyObject]) -> RVBaseModel { return RVTransaction(fields: fields) }
     override func initializeProperties() {
@@ -62,6 +62,10 @@ class RVTransaction: RVBaseModel {
             return .unknown
         }
         set { updateString(key: .entityModelType, value: newValue.rawValue, setDirties: true) }
+    }
+    var entityTitle: String? {
+        get { return getString(key: .entityTitle) }
+        set { updateString(key: .entityTitle, value: newValue, setDirties: true) }
     }
     var readState: RVReadState {
         get {
