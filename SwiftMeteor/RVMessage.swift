@@ -86,7 +86,7 @@ class RVMessage: RVBaseModel {
         case SuspiciousVehicle = "Supspicious Vehicle"
         case unknown = "Unknown"
     }
-    override class func collectionType() -> RVModelType { return RVModelType.message }
+    override class func collectionType() -> RVModelType { return RVModelType.Message }
     override class var insertMethod: RVMeteorMethods { get { return RVMeteorMethods.messageCreate } }
     override class var updateMethod: RVMeteorMethods { get { return RVMeteorMethods.messageUpdate } }
     override class var deleteMethod: RVMeteorMethods { get { return RVMeteorMethods.messageDelete } }

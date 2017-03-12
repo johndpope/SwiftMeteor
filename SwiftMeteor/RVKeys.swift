@@ -141,6 +141,9 @@ enum RVKeys: String {
     
     case metaQueryTerm  = "$meta"
     
+    // Group
+    case allSubgroupId = "allSubgroupId"
+    case allSubgroupModelType = "allSubgroupModelType"
     // Private Chat
     case userProfileID0 = "userProfileID0"
     case userProfileID1 = "userProfileID1"

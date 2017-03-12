@@ -171,6 +171,8 @@ extension RVMemberViewController2 {
                        // let _ = self.manager.item(indexPath: indexPath)
 
                         super.didPressRightButton(sender)
+                    } else {
+                        print("In \(self.classForCoder).didPressRightButton, no error but no message")
                     }
                 })
             

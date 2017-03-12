@@ -15,6 +15,7 @@ protocol RVDatasourceDelegate: class {
 
 class RVBaseDataSource {
     enum DatasourceType: String {
+        case top = "Top"
         case main = "Main"
         case filter = "Filter"
         case unknown = "Unknown"

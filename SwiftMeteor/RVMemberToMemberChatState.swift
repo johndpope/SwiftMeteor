@@ -77,9 +77,11 @@ class RVMemberToMemberChatState: RVBaseAppState {
             query.addAnd(term: .createdAt, value: RVEJSON.convertToEJSONDate(query.decadeAgo) as AnyObject, comparison: .gt)
             let (filters, projections) = query.query()
             let _ = RVCoreInfo.sharedInstance.messageCollection
-            self.subscriptionId = RVSwiftDDP.sharedInstance.subscribe(method: .messagesWQuery, params: [filters as AnyObject, projections as AnyObject]) {
+            /*
+            self.subscriptionId = RVSwiftDDP.sharedInstance.subscribe(method: , params: [filters as AnyObject, projections as AnyObject]) {
                 callback()
             }
+ */
         }
     }
 

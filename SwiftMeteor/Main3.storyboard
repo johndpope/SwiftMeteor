@@ -113,7 +113,7 @@
         <!--What's Happening-->
         <scene sceneID="4P1-D3-c1L">
             <objects>
-                <viewController id="BKJ-vp-IuZ" sceneMemberID="viewController">
+                <viewController id="BKJ-vp-IuZ" customClass="RVTransactionListViewController" customModule="SwiftMeteor" customModuleProvider="target" sceneMemberID="viewController">
                     <layoutGuides>
                         <viewControllerLayoutGuide type="top" id="76t-yQ-pIK"/>
                         <viewControllerLayoutGuide type="bottom" id="pbu-uP-eiZ"/>
@@ -122,27 +122,38 @@
                         <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="44" sectionHeaderHeight="28" sectionFooterHeight="28" translatesAutoresizingMaskIntoConstraints="NO" id="jMe-22-Zbl">
-                                <rect key="frame" x="0.0" y="0.0" width="375" height="618"/>
-                                <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
-                            </tableView>
+                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="dI2-JW-dga">
+                                <rect key="frame" x="0.0" y="64" width="375" height="30"/>
+                                <color key="backgroundColor" red="0.97500573079999997" green="0.94011389710000004" blue="0.68204833379999996" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="30" id="lwr-H1-PXa"/>
+                                </constraints>
+                            </view>
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                         <constraints>
-                            <constraint firstItem="pbu-uP-eiZ" firstAttribute="top" secondItem="jMe-22-Zbl" secondAttribute="bottom" id="LXn-AJ-MU2"/>
-                            <constraint firstItem="jMe-22-Zbl" firstAttribute="leading" secondItem="8s0-AV-vMa" secondAttribute="leading" id="RF5-hj-DjW"/>
-                            <constraint firstItem="jMe-22-Zbl" firstAttribute="top" secondItem="8s0-AV-vMa" secondAttribute="top" id="ROh-fZ-Ids"/>
-                            <constraint firstAttribute="trailing" secondItem="jMe-22-Zbl" secondAttribute="trailing" id="iSs-8O-nmz"/>
+                            <constraint firstItem="dI2-JW-dga" firstAttribute="leading" secondItem="8s0-AV-vMa" secondAttribute="leading" id="3CB-1G-blO"/>
+                            <constraint firstAttribute="trailing" secondItem="dI2-JW-dga" secondAttribute="trailing" id="BX2-VF-Ivh"/>
+                            <constraint firstItem="dI2-JW-dga" firstAttribute="top" secondItem="76t-yQ-pIK" secondAttribute="bottom" id="djw-Fq-W04"/>
                         </constraints>
                     </view>
                     <navigationItem key="navigationItem" title="What's Happening" id="68a-or-GcI">
                         <barButtonItem key="leftBarButtonItem" title="Menu" id="Fiu-gM-mEw">
                             <color key="tintColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                            <connections>
+                                <action selector="menuButtonTouched:" destination="BKJ-vp-IuZ" id="FXG-v7-O97"/>
+                            </connections>
                         </barButtonItem>
                         <barButtonItem key="rightBarButtonItem" systemItem="search" id="PGQ-Ah-Qun">
                             <color key="tintColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                            <connections>
+                                <action selector="searchButtonTouched:" destination="BKJ-vp-IuZ" id="YVr-cK-dhr"/>
+                            </connections>
                         </barButtonItem>
                     </navigationItem>
+                    <connections>
+                        <outlet property="searchControllerContainerView" destination="dI2-JW-dga" id="Ll0-CV-9xY"/>
+                    </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="c2v-5h-ocD" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
@@ -151,7 +162,7 @@
         <!--Main3-->
         <scene sceneID="LrU-cq-60E">
             <objects>
-                <tabBarController storyboardIdentifier="Main3" title="Main3" id="vSN-bl-hCe" sceneMemberID="viewController">
+                <tabBarController storyboardIdentifier="Main3" title="Main3" id="vSN-bl-hCe" customClass="RVMainTabBarController" customModule="SwiftMeteor" customModuleProvider="target" sceneMemberID="viewController">
                     <tabBar key="tabBar" contentMode="scaleToFill" id="mKI-Hs-LfV">
                         <rect key="frame" x="0.0" y="0.0" width="375" height="49"/>
                         <autoresizingMask key="autoresizingMask"/>

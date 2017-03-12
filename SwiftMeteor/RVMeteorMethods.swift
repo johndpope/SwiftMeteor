@@ -58,14 +58,12 @@ enum RVMeteorMethods: String {
     case watchGroupDeleteAll = "watchGroup.clear"
     
     // Message
-    case messageCreate = "message.create"
-    case messageUpdate = "message.update"
-    case messageFindById = "message.findById"
-    case messageBulkQuery = "message.bulkQuery"
-    case messageDelete = "message.delete"
-    case messageGroupDeleteAll = "message.clear"
-    case messagesWQuery = "messagesWQuery"
-    case messageSubscribe = "message.subscribe"
+    case messageCreate          = "Messages.create"
+    case messageFindById        = "Messages.read"
+    case messageUpdate          = "Messages.update"
+    case messageDelete          = "Messages.delete"
+    case messageBulkQuery       = "Messages.list"
+    case messageGroupDeleteAll  = "Messages.deleteAll"
     
     // Follow
     case followCreate = "follow.create"

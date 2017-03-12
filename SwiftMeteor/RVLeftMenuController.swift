@@ -64,7 +64,7 @@ extension RVLeftMenuController {
         transaction.handle = owner.handle
         transaction.domainId = owner.domainId
         transaction.entityId = "someMessageEntityId"
-        transaction.entityModelType = RVModelType.message
+        transaction.entityModelType = RVModelType.Message
         transaction.readState = .unread
         return transaction
     }

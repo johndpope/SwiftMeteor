@@ -124,3 +124,12 @@ extension String {
     }
 
 }
+extension String {
+    func padding(length: Int) -> String {
+        return self.padding(toLength: length, withPad: " ", startingAt: 0)
+    }
+    
+    func padding(length: Int, paddingString: String) -> String {
+        return self.padding(toLength: length, withPad: " ", startingAt: 0)
+    }
+}

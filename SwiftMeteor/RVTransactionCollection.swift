@@ -13,7 +13,7 @@ class RVTransactionCollection: RVBaseCollection {
     }
     override func populate(id: String, fields: NSDictionary) -> RVBaseModel {
         let transaction = RVTransaction(id: id , fields: fields)
-        print("In \(self.instanceType).populate, have transaction \(transaction.createdAt!) \(transaction.topParentId)")
+       // print("In \(self.instanceType).populate, have transaction \(transaction.createdAt!) TopParentId: \(transaction.topParentId)")
         return transaction
     }
 }

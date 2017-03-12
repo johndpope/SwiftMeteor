@@ -821,7 +821,12 @@ extension RVBaseModel {
             callback(nil, RVError(message: "In \(self.classForCoder).create, no loggedInUser"))
             return
         }
-        self.setDomainId()
+        if let domainID = RVCoreInfo2.shared.domainId { self.domainId = domainID }
+        else {
+            callback(nil, RVError(message: "In \(self.classForCoder).create, no domainId"))
+            return
+        }
+        //self.setDomainId()
         var dirties = [String: AnyObject]()
         var unsets = [String: AnyObject]()
         getDirtiesAndUnsets(topField: "", dirties: &dirties , unsets: &unsets)
@@ -1151,4 +1156,16 @@ extension RVBaseModel {
     func formatDate(date: Date) -> String {
         return "\(date)"
     }
+    func printAllSubgroup() {
+        var output = "AllSubgroup {"
+        let id = self.localId != nil ? "id: \(self.localId!), " : "noId, "
+        output = output + id
+        let title = self.title != nil ? "title: \(self.title!), " : "no Title, "
+        output = output + title
+        let createdAt = self.createdAt != nil ? "createdAt: \(self.createdAt!), " : "no CreatedAt, "
+        output = output + createdAt
+        output = output + "}\n"
+        print(output)
+    }
+    
 }

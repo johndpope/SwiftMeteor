@@ -78,7 +78,11 @@ extension RVBaseSLKViewController: UISearchResultsUpdating {
                 tableView.tableHeaderView = searchController.searchBar
             }
         } else {
-            searchControllerContainerView.addSubview(searchController.searchBar)
+            if let containerView = self.searchControllerContainerView {
+                containerView.addSubview(searchController.searchBar)
+            } else {
+                print("In \(self.instanceType).configureSearchController, no searchControllerContainerView")
+            }
         }
     }
     func configureScopeBar() {
