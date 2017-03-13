@@ -716,6 +716,7 @@ extension RVBaseModel {
     }
     
     class func findOne(query: RVQuery, callback: @escaping(_ domain: RVBaseModel?, _ error: RVError?) -> Void) {
+        print("In \(self.classForCoder()).findOne, findOne method is: \(self.findOneMethod.rawValue)")
         let (filters, projection) = query.query()
         Meteor.call(findOneMethod.rawValue, params: [filters as AnyObject, projection as AnyObject]) { (result: Any?, error : DDPError?) in
             if let error = error {
@@ -832,7 +833,7 @@ extension RVBaseModel {
         getDirtiesAndUnsets(topField: "", dirties: &dirties , unsets: &unsets)
         let (tdirties, _) = createTransaction(title: "").returnDirtiesAndUnsets()
         if dirties.count <= 0 {print("In \(self.classForCoder).create, dirtiess count is erroneously zero")}
-        print("DIrties = \(dirties)")
+       // print("DIrties = \(dirties)")
         Meteor.call(type(of: self).insertMethod.rawValue, params: [dirties, tdirties]) {(result, error: DDPError?) in
             DispatchQueue.main.async {
                 if let error = error {
@@ -1158,12 +1159,15 @@ extension RVBaseModel {
     }
     func printAllSubgroup() {
         var output = "AllSubgroup {"
+        let domainId = self.domainId != nil ? "domainId: \(self.domainId!), " : "no DomainId"
+        output = output + domainId
         let id = self.localId != nil ? "id: \(self.localId!), " : "noId, "
         output = output + id
         let title = self.title != nil ? "title: \(self.title!), " : "no Title, "
         output = output + title
         let createdAt = self.createdAt != nil ? "createdAt: \(self.createdAt!), " : "no CreatedAt, "
         output = output + createdAt
+        output = output + "Special: \(self.special.rawValue), "
         output = output + "}\n"
         print(output)
     }

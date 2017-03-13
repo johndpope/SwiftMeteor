@@ -14,6 +14,7 @@ class RVGroup: RVBaseModel {
     override class var updateMethod: RVMeteorMethods { get { return RVMeteorMethods.GroupUpdate } }
     override class var deleteMethod: RVMeteorMethods { get { return RVMeteorMethods.GroupDelete } }
     override class var findMethod: RVMeteorMethods { get { return RVMeteorMethods.GroupRead}}
+    override class var findOneMethod: RVMeteorMethods { get { return RVMeteorMethods.GroupRead }}
     override class var deleteAllMethod: RVMeteorMethods { get { return RVMeteorMethods.GroupDeleteAll}}
     override class var bulkQueryMethod: RVMeteorMethods { get { return RVMeteorMethods.GroupList } }
     override class func createInstance(fields: [String : AnyObject])-> RVBaseModel { return RVGroup(fields: fields) }
@@ -103,26 +104,27 @@ extension RVGroup {
         }
     }
 override func create(callback: @escaping (RVBaseModel?, RVError?) -> Void) {
-        let allSubgroup = RVGroup()
-        allSubgroup.setParent(parent: self)
-        allSubgroup.title = self.title
-        if let owner = loggedInUser {
-            self.setOwner(owner: owner)
-            allSubgroup.setOwner(owner: owner)
-        }
-        else {
-            let error = RVError(message: "In \(self.classForCoder).create, no loggedInUser")
-            callback(nil, error)
-            return
-        }
-        if let domainId = RVCoreInfo2.shared.domainId {
-            self.domainId = domainId
-            allSubgroup.domainId = domainId
-        } else {
-            let error = RVError(message: "In \(self.classForCoder).create, no domainId")
-            callback(nil, error)
-            return
-        }
+    let allSubgroup = RVGroup()
+    allSubgroup.setParent(parent: self)
+    allSubgroup.title = self.title
+    allSubgroup.special = .all
+    if let owner = loggedInUser {
+        self.setOwner(owner: owner)
+        allSubgroup.setOwner(owner: owner)
+    }
+    else {
+        let error = RVError(message: "In \(self.classForCoder).create, no loggedInUser")
+        callback(nil, error)
+        return
+    }
+    if let domainId = RVCoreInfo2.shared.domainId {
+        self.domainId = domainId
+        allSubgroup.domainId = domainId
+    } else {
+        let error = RVError(message: "In \(self.classForCoder).create, no domainId")
+        callback(nil, error)
+        return
+    }
         self.setAllSubgroup(allSubgroup: allSubgroup)
         super.create { (topGroup, error) in
             if let error = error {

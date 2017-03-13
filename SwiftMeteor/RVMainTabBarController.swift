@@ -11,17 +11,27 @@ import UIKit
 class RVMainTabBarController: UITabBarController {
     override func viewDidLoad() {
         super.viewDidLoad()
-        RVCoreInfo2.shared.printCoreInfo()
-        let group = RVGroup()
-        group.title = "Dummy Group"
-        group.create { (group , error) in
-            if let error = error {
-                error.printError()
-            } else if let group = group {
-                group.printAllSubgroup()
-            } else {
-                print("In \(self.classForCoder), no error but no result")
-            }
-        }
+
+                RVCoreInfo2.shared.getDomainAndRoot { (error) in
+                    if let error = error {
+                        error.printError()
+                    } else {
+                        RVCoreInfo2.shared.printCoreInfo()
+                        let group = RVGroup()
+                        group.title = "Dummy Group"
+                        group.create { (group , error) in
+                            if let error = error {
+                                error.printError()
+                            } else if let group = group {
+                                group.printAllSubgroup()
+                            } else {
+                                print("In \(self.classForCoder), no error but no result")
+                            }
+                        }
+                    }
+                }
+
+
+
     }
 }
