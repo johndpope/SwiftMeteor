@@ -12,6 +12,9 @@ enum RVNotification: String {
     case userDidLogin = "RVUserDidLogin"
     case userDidLogout = "RVUserDidLogout"
     case collectionDidChange = "RVCollectionDidChange"
+    case connected = "Connected"
+    case StateUninstalled = "StateUninstalled"
+    case StateInstalled = "StateInstalled"
 }
 enum RVSwiftEvent: String {
     case userDidLogin = "RVUserDidLogin"
@@ -152,8 +155,10 @@ class RVSwiftDDP: NSObject {
      */
     func connect(callback: @escaping () -> Void ) {
         Meteor.connect(self.meteorURL) {
+            //print("In \(self.classForCoder).connect, connected -----------")
             self.connected = true
             callback()
+            NotificationCenter.default.post(name: NSNotification.Name(rawValue: RVNotification.connected.rawValue), object: nil, userInfo: nil)
         }
     }
     func logout(callback: @escaping(_ error: RVError?)-> Void) {
@@ -198,6 +203,7 @@ class RVSwiftDDP: NSObject {
         }
     }
     func connect(email: String, password: String) {
+        print("In \(self.classForCoder).connect using email and password ---------------")
         Meteor.connect(self.meteorURL, email: email, password: password)
     }
     func temporary() {
@@ -265,11 +271,19 @@ class RVSwiftDDP: NSObject {
         }
         NotificationCenter.default.post(name: NSNotification.Name(rawValue: RVNotification.collectionDidChange.rawValue), object: nil, userInfo: notification.userInfo)
     }
-
 }
 extension RVSwiftDDP: SwiftDDPDelegate {
     func ddpUserDidLogin(_ user:String) {
         print("In \(self.instanceType).ddpUserDidLogin(), User did login as user \(user)")
+        RVCoreInfo2.shared.completeLogin(username: user) { (error) in
+            if let error = error {
+                error.append(message: "In \(self.instanceType).ddpUserDidLogin, got error")
+                error.printError()
+                return
+            } else {
+                //print("In \(self.classForCoder).ddpUserDidLogin, success with RVCoreInfo2")
+            }
+        }
         RVCoreInfo.sharedInstance.completeLogin(username: user) { (success, error) in
             if let error = error {
                 error.append(message: "In \(self.classForCoder).ddpUserDidLogin user: \(user), got error")

@@ -13,7 +13,7 @@ protocol RVDatasourceDelegate: class {
     func exceededMaxArrayLengthWhileInFilterMode() -> Void
 }
 
-class RVBaseDataSource {
+class RVBaseDataSource: NSObject {
     enum DatasourceType: String {
         case top = "Top"
         case main = "Main"
@@ -43,7 +43,7 @@ class RVBaseDataSource {
     let operations = RVDSOperations()
     var animation: UITableViewRowAnimation = UITableViewRowAnimation.automatic
     var expandReturnRow: Int = 0
-    private var offset: Int = 0
+    var offset: Int = 0
     var datasourceType: DatasourceType = .unknown
     init(maxArraySize: Int = 130, filterMode: Bool = false) {
         let max = maxArraySize < 500 ? maxArraySize : 500

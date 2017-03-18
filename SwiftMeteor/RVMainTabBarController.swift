@@ -11,7 +11,7 @@ import UIKit
 class RVMainTabBarController: UITabBarController {
     override func viewDidLoad() {
         super.viewDidLoad()
-
+/*
                 RVCoreInfo2.shared.getDomainAndRoot { (error) in
                     if let error = error {
                         error.printError()
@@ -30,7 +30,7 @@ class RVMainTabBarController: UITabBarController {
                         }
                     }
                 }
-
+*/
 
 
     }

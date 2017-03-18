@@ -716,7 +716,7 @@ extension RVBaseModel {
     }
     
     class func findOne(query: RVQuery, callback: @escaping(_ domain: RVBaseModel?, _ error: RVError?) -> Void) {
-        print("In \(self.classForCoder()).findOne, findOne method is: \(self.findOneMethod.rawValue)")
+        //print("In \(self.classForCoder()).findOne, findOne method is: \(self.findOneMethod.rawValue)")
         let (filters, projection) = query.query()
         Meteor.call(findOneMethod.rawValue, params: [filters as AnyObject, projection as AnyObject]) { (result: Any?, error : DDPError?) in
             if let error = error {

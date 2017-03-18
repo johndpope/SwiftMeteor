@@ -17,6 +17,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -> Bool {
+
+        RVOperationQueue().test()
+        let _ = RVCoreInfo2.shared
         RVViewDeck.sharedInstance.initialize(appDelegate: self)
         UIDevice.current.beginGeneratingDeviceOrientationNotifications()
         UISearchBar.appearance().barTintColor = UIColor.candyGreen()
