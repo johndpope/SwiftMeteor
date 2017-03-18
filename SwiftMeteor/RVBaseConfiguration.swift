@@ -29,6 +29,7 @@ class RVBaseConfiguration {
     var bottomInTopAreaHeight:  CGFloat = 0.0
     var stack = [RVBaseModel]()
     var datasources =      [RVBaseDataSource]()
+    var navigationBarColor = UIColor.facebookBlue()
     typealias queryFunction = (_ params: [String: AnyObject]) -> (RVQuery)
     typealias QueryElement = [RVBaseDataSource.DatasourceType : queryFunction]
     var queryFunctions = QueryElement()
@@ -65,9 +66,9 @@ class RVBaseConfiguration {
 
 extension RVBaseConfiguration {
     func install(scrollView: UIScrollView?, callback: @escaping(RVError?) -> Void) {
-        print("In \(self.instanceType).install")
+      //  print("In \(self.instanceType).install")
         self.unwind {
-                    print("In \(self.instanceType).install; unwound")
+                //    print("In \(self.instanceType).install; unwound")
                         self.loaded = true
             self.createDatasources()
             self.manager = RVDSManager2(scrollView: scrollView)
@@ -75,20 +76,20 @@ extension RVBaseConfiguration {
             if let datasource = self.mainDatasource     { self.addSection(section: datasource) }
             if let datasource = self.filterDatasource   { self.addSection(section: datasource) }
 
-print("In \(self.instanceType).install; before TopDatasource")
+
             if let datasource = self.topDatasource {
-                                    print("In \(self.instanceType).install; haveTopDatasource")
+                                 //   print("In \(self.instanceType).install; haveTopDatasource")
                 if let queryFunction = self.queryFunctions[.top] {
                     let query = queryFunction([String: AnyObject]())
-                    print("In \(self.instanceType).install; haveTopDatasource Query")
+                   // print("In \(self.instanceType).install; haveTopDatasource Query")
                     self.manager.startDatasource(datasource: datasource , query: query, callback: { (error) in
-                        print("In \(self.instanceType).install;  returned from topDatasource start")
+                      //  print("In \(self.instanceType).install;  returned from topDatasource start")
                         if let error = error {
                             error.append(message: "In \(self.instanceType).unwind, got error starting TopDatasource")
                             callback(error)
                             return
                         } else {
-                            print("In \(self.instanceType)linstall, starting Main Datasource)")
+                           // print("In \(self.instanceType)linstall, starting Main Datasource)")
                             if let datasource = self.mainDatasource {
                                 if let queryFunction = self.queryFunctions[.main] {
                                     let query = queryFunction([String: AnyObject]())

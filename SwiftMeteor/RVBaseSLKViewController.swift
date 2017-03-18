@@ -60,7 +60,8 @@ class RVBaseSLKViewController: SLKTextViewController {
     }
 
     override func viewWillAppear(_ animated: Bool) {
-        print("In \(self.classForCoder).viewWillAppear .....................")
+      
+     //   self.navigationController?.navigationBar.titleTextAttributes = [NSForegroundColorAttributeName: UIColor.white]
         super.viewWillAppear(animated)
         if !configuration.loaded {
             configuration.manager.scrollView = self.tableView
@@ -70,27 +71,53 @@ class RVBaseSLKViewController: SLKTextViewController {
                         error.append(message: "In \(self.classForCoder).viewWillAppear, got install error")
                         error.printError()
                     } else {
-                        print("In \(self.classForCoder).viewWillAPpear, returned from install")
+                       // print("In \(self.classForCoder).viewWillAPpear, returned from install")
+                        self.configureNavBar()
                         self.putTopViewOnTop()
                         self.configureSearchController()
                     }
                 })
             })
         } else {
+            configureNavBar()
             putTopViewOnTop()
             configureSearchController()
         }
 
     }
 
-    
+    func configureNavBar() {
+        if let navController = self.navigationController {
+            //navController.navigationBar.barStyle = .black
+            // navController.navigationBar.isTranslucent = false
+            navController.navigationBar.barTintColor = configuration.navigationBarColor
+            self.title = configuration.navigationBarTitle
+            
+            navController.navigationBar.tintColor = UIColor.white
+            if let font = UIFont(name: "Avenir", size: 20) { // UIFont(font:"Kelvetica Nobis" size:20.0)
+                let shadow = NSShadow()
+                shadow.shadowOffset = CGSize(width: 2.0, height: 2.0)
+                shadow.shadowColor = UIColor.black
+                //
+                navController.navigationBar.titleTextAttributes = [ NSFontAttributeName: font, NSShadowAttributeName: shadow,  NSForegroundColorAttributeName: UIColor.white]
+            }
+            setNeedsStatusBarAppearanceUpdate()
+            
+            /* Also in advance, you can add these line to hide the text that comes up in back button in action bar when you navigate to another view within the navigation controller.
+             
+             [[UIBarButtonItem appearance]
+             setBackButtonTitlePositionAdjustment:UIOffsetMake(-1000, -1000)
+             forBarMetrics:UIBarMetricsDefault];
+             */
+        }
+    }
 }
 // UITableViewDatasource
 extension RVBaseSLKViewController {
     override func numberOfSections(in tableView: UITableView) -> Int {
         
         if tableView == self.tableView {
-            print("In \(self.classForCoder).numberOfSections \(configuration.manager.numberOfSections(scrollView: tableView))")
+            //print("In \(self.classForCoder).numberOfSections \(configuration.manager.numberOfSections(scrollView: tableView))")
             return configuration.manager.numberOfSections(scrollView: tableView)
         } else {
             // print("In \(self.classForCoder).numberOfSections not self tableView")
@@ -109,7 +136,7 @@ extension RVBaseSLKViewController {
         }
     }
     func primaryCellForRowAtIndexPath(tableView: UITableView, _ indexPath: IndexPath) -> RVTransactionTableViewCell {
-        print("IN \(self.classForCoder).messageCellForRowAtIndexPath")
+       // print("IN \(self.classForCoder).messageCellForRowAtIndexPath")
         let cell = tableView.dequeueReusableCell(withIdentifier: RVTransactionTableViewCell.identifier) as! RVTransactionTableViewCell
         
         if cell.gestureRecognizers?.count == nil {
@@ -198,7 +225,7 @@ extension RVBaseSLKViewController: UISearchResultsUpdating {
         searchController.delegate = self
         searchController.searchBar.delegate = self
         searchController.searchBar.autoresizingMask = [.flexibleWidth, .flexibleHeight]
-        searchController.searchBar.barTintColor = UIColor.blue
+        searchController.searchBar.barTintColor = UIColor.facebookBlue()
         searchController.dimsBackgroundDuringPresentation = false
         self.definesPresentationContext = true
         searchController.searchBar.removeFromSuperview()
