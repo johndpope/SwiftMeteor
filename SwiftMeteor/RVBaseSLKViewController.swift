@@ -19,15 +19,17 @@ class RVBaseSLKViewController: SLKTextViewController {
     @IBOutlet weak var TopMiddleHeightConstraint: NSLayoutConstraint!
     @IBOutlet weak var TopBottomHeightConstraint: NSLayoutConstraint!
     var pipWindow: UIWindow?
+    var commonInitDone: Bool = false
     var configuration: RVBaseConfiguration = RVBaseConfiguration()
     var stack = [RVBaseModel]()
+    var tableViewInsetAdditionalHeight: CGFloat = 0.0
     //var manager = RVDSManager2()
     let searchController = UISearchController(searchResultsController: nil)
     var searchScopes: [String] { get {return ["Elmer", "Fudd"]}}
     var installSearchControllerInTableView: Bool { get { return false }}
     var searchBarPlaceholder: String { get { return "Search..." }}
     
-    var dsScrollView: UIScrollView? {return tableView }
+    var dsScrollView: UIScrollView? {return self.tableView }
     var instanceType: String { get { return String(describing: type(of: self)) } }
     var deck: RVViewDeck { get { return RVViewDeck.sharedInstance }}
     
@@ -53,7 +55,18 @@ class RVBaseSLKViewController: SLKTextViewController {
             outerView.isHidden = false
         }
     }
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        self.commonInit()
+        if navigationController != nil {
+            let navBarHeight: CGFloat = 62.0
+            if let tableView = self.dsScrollView {
+                let inset = tableView.contentInset
+                tableView.contentInset = UIEdgeInsets(top: inset.top + navBarHeight, left: inset.left, bottom: inset.bottom, right: inset.right)
+            }
 
+        }
+    }
     override func viewWillAppear(_ animated: Bool) {
         self.configureSLK()
      //   self.navigationController?.navigationBar.titleTextAttributes = [NSForegroundColorAttributeName: UIColor.white]
@@ -67,7 +80,7 @@ class RVBaseSLKViewController: SLKTextViewController {
                         error.printError()
                     } else {
                        // print("In \(self.classForCoder).viewWillAPpear, returned from install")
-
+                        self.updateTableViewInsetHeight()
                         self.configureNavBar()
                         self.putTopViewOnTop()
                         self.configureSearchController()
@@ -75,13 +88,24 @@ class RVBaseSLKViewController: SLKTextViewController {
                 })
             })
         } else {
+            self.updateTableViewInsetHeight()
             configureNavBar()
             putTopViewOnTop()
             configureSearchController()
         }
 
     }
-
+    func updateTableViewInsetHeight() {
+        if let tableView = self.dsScrollView as? UITableView {
+            let height = totalTopHeight - tableViewInsetAdditionalHeight
+            tableViewInsetAdditionalHeight = totalTopHeight
+            let inset = tableView.contentInset
+            tableView.contentInset = UIEdgeInsets(top: inset.top + height, left: inset.left, bottom: inset.bottom, right: inset.right)
+            // print("in \(instanceType) topAreaHeight = \(topAreaHeight) height = \(height), original top was: \(inset.top) and is now \(tableView.contentInset.top), additionalHeight : \(tableViewInsetAdditionalHeight)")
+        } else {
+            print("In \(self.classForCoder).updateTableViewInsetHeight no tableView")
+        }
+    }
     func configureNavBar() {
         if let navController = self.navigationController {
             //navController.navigationBar.barStyle = .black
@@ -111,20 +135,8 @@ class RVBaseSLKViewController: SLKTextViewController {
 // SLK Configuration
 extension RVBaseSLKViewController {
     func configureSLK() {
-        // Register a SLKTextView subclass, if you need any special appearance and/or behavior customisation.
-        self.registerClass(forTextView: RVSlackMessageTextView.classForCoder())
-        
-        
-        if DEBUG_CUSTOM_TYPING_INDICATOR == true {
-            // Register a UIView subclass, conforming to SLKTypingIndicatorProtocol, to use a custom typing indicator view.
-            // self.registerClass(forTypingIndicatorView: RVSlackTypingIndicatorView.classForCoder())
-        }
-        
-        super.viewDidLoad()
-        
-        self.commonInit()
-        
-        
+
+
         // SLKTVC's configuration
         self.bounces = true
         self.shakeToClearEnabled = true
@@ -136,7 +148,7 @@ extension RVBaseSLKViewController {
         self.leftButton.tintColor = UIColor.gray
         
         self.rightButton.setTitle(NSLocalizedString("Send", comment: ""), for: UIControlState())
-        
+       // self.setTextInputbarHidden(false, animated: true)
         self.textInputbar.autoHideRightButton = true
         self.textInputbar.maxCharCount = 256
         self.textInputbar.counterStyle = .split
@@ -152,7 +164,7 @@ extension RVBaseSLKViewController {
         
 
         
-        self.autoCompletionView.register(RVMessageTableViewCell.classForCoder(), forCellReuseIdentifier: RVMessageTableViewCell.AutoCompletionCellIdentifier)
+
         self.registerPrefixes(forAutoCompletion: ["@",  "#", ":", "+:", "/"])
         
         self.textView.placeholder = "Message";
@@ -165,6 +177,15 @@ extension RVBaseSLKViewController {
         self.textView.registerMarkdownFormattingSymbol(">", withTitle: "Quote")
     }
     func commonInit() {
+        if commonInitDone { return }
+        commonInitDone = true
+        // Register a SLKTextView subclass, if you need any special appearance and/or behavior customisation.
+        self.registerClass(forTextView: RVSlackMessageTextView.classForCoder())
+        if DEBUG_CUSTOM_TYPING_INDICATOR == true {
+            // Register a UIView subclass, conforming to SLKTypingIndicatorProtocol, to use a custom typing indicator view.
+            // self.registerClass(forTypingIndicatorView: RVSlackTypingIndicatorView.classForCoder())
+        }
+        self.autoCompletionView.register(RVMessageTableViewCell.classForCoder(), forCellReuseIdentifier: RVMessageTableViewCell.AutoCompletionCellIdentifier)
         NotificationCenter.default.addObserver(self.tableView!, selector: #selector(UITableView.reloadData), name: NSNotification.Name.UIContentSizeCategoryDidChange, object: nil)
         NotificationCenter.default.addObserver(self,  selector: #selector(RVMemberViewController.textInputbarDidMove(_:)), name: NSNotification.Name.SLKTextInputbarDidMove, object: nil)
     }
