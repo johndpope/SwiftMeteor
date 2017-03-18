@@ -18,6 +18,7 @@ class RVBaseSLKViewController: SLKTextViewController {
     @IBOutlet weak var TopTopHeightConstraint: NSLayoutConstraint!
     @IBOutlet weak var TopMiddleHeightConstraint: NSLayoutConstraint!
     @IBOutlet weak var TopBottomHeightConstraint: NSLayoutConstraint!
+    var pipWindow: UIWindow?
     var configuration: RVBaseConfiguration = RVBaseConfiguration()
     var stack = [RVBaseModel]()
     //var manager = RVDSManager2()
@@ -30,13 +31,9 @@ class RVBaseSLKViewController: SLKTextViewController {
     var instanceType: String { get { return String(describing: type(of: self)) } }
     var deck: RVViewDeck { get { return RVViewDeck.sharedInstance }}
     
-        var searchResult: [String]? // for SLKTextViewController, not sure why
-    @IBAction func searchButtonTouched(_ sender: UIBarButtonItem) {
-        searchController.isActive = true
-    }
-    @IBAction func menuButtonTouched(_ sender: UIBarButtonItem) {
-        self.deck.toggleSide(side: .left)
-    }
+    var searchResult: [String]? // for SLKTextViewController, not sure why
+    @IBAction func searchButtonTouched(_ sender: UIBarButtonItem) { searchController.isActive = true }
+    @IBAction func menuButtonTouched(_ sender: UIBarButtonItem) { self.deck.toggleSide(side: .left) }
     var totalTopHeight: CGFloat {
         get {
             var height: CGFloat = 0.0
@@ -49,9 +46,7 @@ class RVBaseSLKViewController: SLKTextViewController {
     func changeConstraintConstant(constraint: NSLayoutConstraint?, newValue: CGFloat) {
         if let constraint = constraint { constraint.constant = newValue }
     }
-    func hideTopView() {
-        if let view = TopOuterView { view.isHidden = true }
-    }
+    func hideTopView() { if let view = TopOuterView { view.isHidden = true } }
     func putTopViewOnTop() {
         if let outerView = TopOuterView {
             self.view.bringSubview(toFront: outerView)
@@ -60,7 +55,7 @@ class RVBaseSLKViewController: SLKTextViewController {
     }
 
     override func viewWillAppear(_ animated: Bool) {
-      
+        self.configureSLK()
      //   self.navigationController?.navigationBar.titleTextAttributes = [NSForegroundColorAttributeName: UIColor.white]
         super.viewWillAppear(animated)
         if !configuration.loaded {
@@ -72,6 +67,7 @@ class RVBaseSLKViewController: SLKTextViewController {
                         error.printError()
                     } else {
                        // print("In \(self.classForCoder).viewWillAPpear, returned from install")
+
                         self.configureNavBar()
                         self.putTopViewOnTop()
                         self.configureSearchController()
@@ -112,6 +108,130 @@ class RVBaseSLKViewController: SLKTextViewController {
         }
     }
 }
+// SLK Configuration
+extension RVBaseSLKViewController {
+    func configureSLK() {
+        // Register a SLKTextView subclass, if you need any special appearance and/or behavior customisation.
+        self.registerClass(forTextView: RVSlackMessageTextView.classForCoder())
+        
+        
+        if DEBUG_CUSTOM_TYPING_INDICATOR == true {
+            // Register a UIView subclass, conforming to SLKTypingIndicatorProtocol, to use a custom typing indicator view.
+            // self.registerClass(forTypingIndicatorView: RVSlackTypingIndicatorView.classForCoder())
+        }
+        
+        super.viewDidLoad()
+        
+        self.commonInit()
+        
+        
+        // SLKTVC's configuration
+        self.bounces = true
+        self.shakeToClearEnabled = true
+        self.isKeyboardPanningEnabled = true
+        self.shouldScrollToBottomAfterKeyboardShows = false
+        self.isInverted = configuration.SLKIsInverted
+        
+        self.leftButton.setImage(UIImage(named: "icn_upload"), for: UIControlState())
+        self.leftButton.tintColor = UIColor.gray
+        
+        self.rightButton.setTitle(NSLocalizedString("Send", comment: ""), for: UIControlState())
+        
+        self.textInputbar.autoHideRightButton = true
+        self.textInputbar.maxCharCount = 256
+        self.textInputbar.counterStyle = .split
+        self.textInputbar.counterPosition = .top
+        
+        self.textInputbar.editorTitle.textColor = UIColor.darkGray
+        self.textInputbar.editorLeftButton.tintColor = UIColor(red: 0/255, green: 122/255, blue: 255/255, alpha: 1)
+        self.textInputbar.editorRightButton.tintColor = UIColor(red: 0/255, green: 122/255, blue: 255/255, alpha: 1)
+        
+        if DEBUG_CUSTOM_TYPING_INDICATOR == false {
+            self.typingIndicatorView!.canResignByTouch = true
+        }
+        
+
+        
+        self.autoCompletionView.register(RVMessageTableViewCell.classForCoder(), forCellReuseIdentifier: RVMessageTableViewCell.AutoCompletionCellIdentifier)
+        self.registerPrefixes(forAutoCompletion: ["@",  "#", ":", "+:", "/"])
+        
+        self.textView.placeholder = "Message";
+        
+        self.textView.registerMarkdownFormattingSymbol("*", withTitle: "Bold")
+        self.textView.registerMarkdownFormattingSymbol("_", withTitle: "Italics")
+        self.textView.registerMarkdownFormattingSymbol("~", withTitle: "Strike")
+        self.textView.registerMarkdownFormattingSymbol("`", withTitle: "Code")
+        self.textView.registerMarkdownFormattingSymbol("```", withTitle: "Preformatted")
+        self.textView.registerMarkdownFormattingSymbol(">", withTitle: "Quote")
+    }
+    func commonInit() {
+        NotificationCenter.default.addObserver(self.tableView!, selector: #selector(UITableView.reloadData), name: NSNotification.Name.UIContentSizeCategoryDidChange, object: nil)
+        NotificationCenter.default.addObserver(self,  selector: #selector(RVMemberViewController.textInputbarDidMove(_:)), name: NSNotification.Name.SLKTextInputbarDidMove, object: nil)
+    }
+    func textInputbarDidMove(_ note: Notification) {
+        guard let pipWindow = self.pipWindow else { return }
+        guard let userInfo = (note as NSNotification).userInfo else { return }
+        guard let value = userInfo["origin"] as? NSValue else { return }
+        var frame = pipWindow.frame
+        frame.origin.y = value.cgPointValue.y - 60.0
+        pipWindow.frame = frame
+    }
+}
+extension RVBaseSLKViewController: RVFirstViewHeaderCellDelegate {
+    func expandCollapseButtonTouched(view: RVFirstViewHeaderCell) -> Void {
+        let transaction = RVTransaction()
+        if let loggedInUser = RVCoreInfo2.shared.loggedInUserProfile {
+            transaction.targetUserProfileId = loggedInUser.localId
+            transaction.entityId = loggedInUser.localId
+            transaction.entityModelType = .userProfile
+            transaction.entityTitle = loggedInUser.fullName
+        }
+        transaction.transactionType = .added
+        transaction.create { (model, error) in
+            if let error = error {
+                error.printError()
+            } else if let transaction = model as? RVTransaction {
+                print("In \(self.instanceType).expandCollapse, created transaction \(transaction.localId) \(transaction.createdAt)")
+            } else {
+                 print("In \(self.instanceType).expandCollapse, no error, but no result ")
+            }
+        }
+
+
+        if let datasource = view.datasource {
+            datasource.toggle {}
+        } else {
+            print("In \(self.instanceType).expandCollapseButtonTOuched no datasource")
+        }
+    }
+}
+// UITableViewDelegate 
+
+extension RVBaseSLKViewController {
+    override func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
+      //  return 35.0
+        return 40.0
+    }
+    override func tableView(_ tableView: UITableView, willDisplayHeaderView view: UIView, forSection section: Int) {
+        if let headerCell = view as? RVFirstViewHeaderCell {
+            if section >= 0 && section < configuration.manager.sections.count {
+                let datasource = configuration.manager.sections[section]
+                headerCell.delegate = self
+                headerCell.configure(model: nil, datasource: datasource)
+                headerCell.transform = tableView.transform
+            }
+        }
+    }
+    override func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
+        if let headerCell = tableView.dequeueReusableHeaderFooterView(withIdentifier: RVFirstViewHeaderCell.identifier) as? RVFirstViewHeaderCell {
+            return headerCell
+        } else {
+            return nil
+        }
+    }
+}
+
+
 // UITableViewDatasource
 extension RVBaseSLKViewController {
     override func numberOfSections(in tableView: UITableView) -> Int {

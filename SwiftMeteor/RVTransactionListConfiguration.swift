@@ -13,6 +13,7 @@ class RVTransactionListConfiguration: RVBaseConfiguration {
         self.showSearch         = true
         self.showTopView        = true
         self.installRefresh     = false
+        self.SLKIsInverted      = false
         self.navigationBarTitle     = "Transactions"
         self.topInTopAreaHeight     = 0.0
         self.middleInTopAreaHeight  = 0.0
@@ -43,6 +44,9 @@ class RVTransactionListConfiguration: RVBaseConfiguration {
                     query.addAnd(term: .targetUserProfileId, value: loggedInUserProfileId as AnyObject, comparison: .eq)
                 }
                 query.addAnd(term: .createdAt, value: RVEJSON.convertToEJSONDate(Date()) as AnyObject, comparison: .lte)
+                query.removeAllSortTerms()
+                query.addSort(field: .createdAt, order: .descending)
+                query.addAnd(term: .createdAt, value: Date() as AnyObject, comparison: .lte)
                 return query
             }
             queryFunctions[.main] = mainQuery

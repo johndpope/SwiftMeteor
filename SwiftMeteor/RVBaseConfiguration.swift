@@ -30,6 +30,7 @@ class RVBaseConfiguration {
     var stack = [RVBaseModel]()
     var datasources =      [RVBaseDataSource]()
     var navigationBarColor = UIColor.facebookBlue()
+    var SLKIsInverted: Bool = true
     typealias queryFunction = (_ params: [String: AnyObject]) -> (RVQuery)
     typealias QueryElement = [RVBaseDataSource.DatasourceType : queryFunction]
     var queryFunctions = QueryElement()
