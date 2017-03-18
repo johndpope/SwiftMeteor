@@ -41,28 +41,31 @@ class RVAsyncOperation: Operation {
         super.init()
     }
     override func start() {
-          print("In \(self.classForCoder).start \(title) \(Date())")
+          //print("In \(self.classForCoder).start \(title) \(Date())")
         if isCancelled {
             isFinished = true
             return
         }
         isExecuting = true
         main()
-        func completeOperation() {
-            isFinished = true
-            isExecuting = false
-        }
-        operation(completeOperation: completeOperation)
+
+       // operation(completeOperation: completeOperation)
+    }
+    func completeOperation() {
+        isFinished = true
+        isExecuting = false
     }
     override func main() {
         print("In \(self.classForCoder).main \(title) \(Date())")
     }
+    /*
     func operation(completeOperation: @escaping() -> Void) {
         DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
             print("\(self.title). Invoked: \(self.invoked), Starting: \(Date())")
             completeOperation()
         }
     }
+ */
 }
 class RVOperationQueue: OperationQueue {
     override init() {

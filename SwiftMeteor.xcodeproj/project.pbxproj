@@ -26,6 +26,11 @@
 		280F56101E7111FC00B025D2 /* UserList2.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 280F560F1E7111FC00B025D2 /* UserList2.storyboard */; };
 		280F56121E71140C00B025D2 /* RVUserListController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 280F56111E71140C00B025D2 /* RVUserListController.swift */; };
 		280F56141E71152D00B025D2 /* RVBaseSLKViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 280F56131E71152D00B025D2 /* RVBaseSLKViewController.swift */; };
+		28114FF51E7CB6EC001F54E9 /* RVTransactionDatasource2.swift in Sources */ = {isa = PBXBuildFile; fileRef = 28114FF41E7CB6EC001F54E9 /* RVTransactionDatasource2.swift */; };
+		28114FF71E7CBB4A001F54E9 /* RVTransactionListConfiguration.swift in Sources */ = {isa = PBXBuildFile; fileRef = 28114FF61E7CBB4A001F54E9 /* RVTransactionListConfiguration.swift */; };
+		28114FF91E7DB303001F54E9 /* RVTransactionTableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 28114FF81E7DB303001F54E9 /* RVTransactionTableViewCell.xib */; };
+		28114FFB1E7DB44B001F54E9 /* RVTransactionTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 28114FFA1E7DB44B001F54E9 /* RVTransactionTableViewCell.swift */; };
+		28114FFD1E7DC33E001F54E9 /* RVBaseTopViewDatasource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 28114FFC1E7DC33E001F54E9 /* RVBaseTopViewDatasource.swift */; };
 		2813FAF41E20A385007E9428 /* RVTaskDatasource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2813FAF31E20A385007E9428 /* RVTaskDatasource.swift */; };
 		2813FAF61E20A9B8007E9428 /* RVTaskTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2813FAF51E20A9B8007E9428 /* RVTaskTableViewCell.swift */; };
 		2815FDF91E56C5EE00A7B829 /* RVMemberViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2815FDF81E56C5EE00A7B829 /* RVMemberViewController.swift */; };
@@ -223,6 +228,11 @@
 		280F560F1E7111FC00B025D2 /* UserList2.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = UserList2.storyboard; sourceTree = "<group>"; };
 		280F56111E71140C00B025D2 /* RVUserListController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RVUserListController.swift; sourceTree = "<group>"; };
 		280F56131E71152D00B025D2 /* RVBaseSLKViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RVBaseSLKViewController.swift; sourceTree = "<group>"; };
+		28114FF41E7CB6EC001F54E9 /* RVTransactionDatasource2.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RVTransactionDatasource2.swift; sourceTree = "<group>"; };
+		28114FF61E7CBB4A001F54E9 /* RVTransactionListConfiguration.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RVTransactionListConfiguration.swift; sourceTree = "<group>"; };
+		28114FF81E7DB303001F54E9 /* RVTransactionTableViewCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = RVTransactionTableViewCell.xib; sourceTree = "<group>"; };
+		28114FFA1E7DB44B001F54E9 /* RVTransactionTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RVTransactionTableViewCell.swift; sourceTree = "<group>"; };
+		28114FFC1E7DC33E001F54E9 /* RVBaseTopViewDatasource.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RVBaseTopViewDatasource.swift; sourceTree = "<group>"; };
 		2813FAF31E20A385007E9428 /* RVTaskDatasource.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RVTaskDatasource.swift; sourceTree = "<group>"; };
 		2813FAF51E20A9B8007E9428 /* RVTaskTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RVTaskTableViewCell.swift; sourceTree = "<group>"; };
 		2815FDF81E56C5EE00A7B829 /* RVMemberViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RVMemberViewController.swift; sourceTree = "<group>"; };
@@ -508,6 +518,10 @@
 			isa = PBXGroup;
 			children = (
 				281868F81E7358E500EF2B38 /* RVTransactionListViewController.swift */,
+				28114FF41E7CB6EC001F54E9 /* RVTransactionDatasource2.swift */,
+				28114FF61E7CBB4A001F54E9 /* RVTransactionListConfiguration.swift */,
+				28114FF81E7DB303001F54E9 /* RVTransactionTableViewCell.xib */,
+				28114FFA1E7DB44B001F54E9 /* RVTransactionTableViewCell.swift */,
 			);
 			name = Transaction3;
 			sourceTree = "<group>";
@@ -517,6 +531,7 @@
 			children = (
 				281868FD1E73A82300EF2B38 /* RVDSManager2.swift */,
 				286F7D9D1E7B57C4003759C4 /* RVBaseDatasource2.swift */,
+				28114FFC1E7DC33E001F54E9 /* RVBaseTopViewDatasource.swift */,
 			);
 			name = Datasource;
 			sourceTree = "<group>";
@@ -1073,6 +1088,7 @@
 				28F53E761DEB5F71009641F0 /* Assets.xcassets in Resources */,
 				2806BAEB1E6BCB43005CA637 /* TransactionList.storyboard in Resources */,
 				28F53E741DEB5F71009641F0 /* Main.storyboard in Resources */,
+				28114FF91E7DB303001F54E9 /* RVTransactionTableViewCell.xib in Resources */,
 				28C67C771E56CD5D00A7E92C /* RVMessageTableViewCell.xib in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -1170,6 +1186,7 @@
 				283460A71E46C3A90009D606 /* RVBaseBaseViewController.swift in Sources */,
 				287B74701E1C2EE900900864 /* RVFirstViewHeaderCell.swift in Sources */,
 				2802252E1E1C5C9500D5FB60 /* RVFirstHeaderContentView.swift in Sources */,
+				28114FFB1E7DB44B001F54E9 /* RVTransactionTableViewCell.swift in Sources */,
 				2850AFFF1E1B60130043FEB3 /* RVResultsTableController.swift in Sources */,
 				2816A5571E2BE66000B6804D /* RVRightNavigationController.swift in Sources */,
 				28EBBB831E255EEC0072B761 /* RVOperation.swift in Sources */,
@@ -1187,6 +1204,7 @@
 				28D534CD1DF3E9A50003DC11 /* RVActivityIndicator.swift in Sources */,
 				288961091DEDED2C00FC34DB /* RVAWSDirect.swift in Sources */,
 				283460991E46627C0009D606 /* RVMessageDatasource.swift in Sources */,
+				28114FF71E7CBB4A001F54E9 /* RVTransactionListConfiguration.swift in Sources */,
 				28DE2D9F1DFE713300EFEECB /* RVMeteorMethods.swift in Sources */,
 				284708701E58EE6C000BBCCE /* RVPrivateChat.swift in Sources */,
 				281869001E7478D500EF2B38 /* RVBaseConfiguration.swift in Sources */,
@@ -1207,6 +1225,7 @@
 				28E65DA51E1DB1D1004E82F5 /* RVBaseTableViewCell.swift in Sources */,
 				2806BAED1E6BCBFE005CA637 /* RVBaseViewController4.swift in Sources */,
 				28928CD51E18E226003538B8 /* RVDSOperation.swift in Sources */,
+				28114FFD1E7DC33E001F54E9 /* RVBaseTopViewDatasource.swift in Sources */,
 				2836E6171E407CC8009CA7EB /* NiceButton.swift in Sources */,
 				28C67C791E56CD7500A7E92C /* RVMessageTableViewCell.swift in Sources */,
 				28E525E31E5D5F9700B84EAB /* RVTransactionType.swift in Sources */,
@@ -1230,6 +1249,7 @@
 				289A45F51E47A8A9001BBB29 /* RVBaseViewController3.swift in Sources */,
 				28C198FA1E3AB4D400D62DB3 /* RVGMSAutocompleteViewController.swift in Sources */,
 				281868FE1E73A82300EF2B38 /* RVDSManager2.swift in Sources */,
+				28114FF51E7CB6EC001F54E9 /* RVTransactionDatasource2.swift in Sources */,
 				28D773401E30420200E8EDE0 /* RVBaseModel3.swift in Sources */,
 				2806BAFF1E6D3CE9005CA637 /* RVMessageCollection.swift in Sources */,
 				281868EE1E734A0D00EF2B38 /* RVCoreInfo2.swift in Sources */,

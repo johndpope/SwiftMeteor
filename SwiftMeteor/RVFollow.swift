@@ -45,7 +45,7 @@ class RVFollow: RVBaseModel {
     class func createWithComponents(following: RVBaseModel, callback: @escaping(_ follow: RVFollow?, _ error: RVError?) -> Void ) {
         let follow = RVFollow()
         if let user = follow.loggedInUser {
-            if let domain = follow.appDomain {
+            if let domain = RVBaseModel.appDomain {
                 follow.setOwner(owner: user)
                 follow.fullName = user.fullName
                 follow.handle = user.handle 

@@ -390,7 +390,7 @@ open class Meteor {
         */
         
         open override func documentWasAdded(_ collection:String, id:String, fields:NSDictionary?) {
-            print("In \(self.classForCoder).documentWasAdded \(collection)")
+            print("In \(self.classForCoder).documentWasAdded, Collection is: \(collection) with fields: \(fields)")
             if let meteorCollection = Meteor.collections[collection] {
                 meteorCollection.documentWasAdded(collection, id: id, fields: fields)
             }

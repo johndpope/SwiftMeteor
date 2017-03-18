@@ -18,7 +18,9 @@ class RVBaseSLKViewController: SLKTextViewController {
     @IBOutlet weak var TopTopHeightConstraint: NSLayoutConstraint!
     @IBOutlet weak var TopMiddleHeightConstraint: NSLayoutConstraint!
     @IBOutlet weak var TopBottomHeightConstraint: NSLayoutConstraint!
-    
+    var configuration: RVBaseConfiguration = RVBaseConfiguration()
+    var stack = [RVBaseModel]()
+    //var manager = RVDSManager2()
     let searchController = UISearchController(searchResultsController: nil)
     var searchScopes: [String] { get {return ["Elmer", "Fudd"]}}
     var installSearchControllerInTableView: Bool { get { return false }}
@@ -27,6 +29,8 @@ class RVBaseSLKViewController: SLKTextViewController {
     var dsScrollView: UIScrollView? {return tableView }
     var instanceType: String { get { return String(describing: type(of: self)) } }
     var deck: RVViewDeck { get { return RVViewDeck.sharedInstance }}
+    
+        var searchResult: [String]? // for SLKTextViewController, not sure why
     @IBAction func searchButtonTouched(_ sender: UIBarButtonItem) {
         searchController.isActive = true
     }
@@ -54,13 +58,138 @@ class RVBaseSLKViewController: SLKTextViewController {
             outerView.isHidden = false
         }
     }
-    override func viewDidLoad() {
-        putTopViewOnTop()
-        configureSearchController()
-        super.viewDidLoad()
+
+    override func viewWillAppear(_ animated: Bool) {
+        print("In \(self.classForCoder).viewWillAppear .....................")
+        super.viewWillAppear(animated)
+        if !configuration.loaded {
+            configuration.manager.scrollView = self.tableView
+            configuration.configure(stack: self.stack, callback: {
+                self.configuration.install(scrollView: self.tableView, callback: { (error) in
+                    if let error = error {
+                        error.append(message: "In \(self.classForCoder).viewWillAppear, got install error")
+                        error.printError()
+                    } else {
+                        print("In \(self.classForCoder).viewWillAPpear, returned from install")
+                        self.putTopViewOnTop()
+                        self.configureSearchController()
+                    }
+                })
+            })
+        } else {
+            putTopViewOnTop()
+            configureSearchController()
+        }
+
     }
 
     
+}
+// UITableViewDatasource
+extension RVBaseSLKViewController {
+    override func numberOfSections(in tableView: UITableView) -> Int {
+        
+        if tableView == self.tableView {
+            print("In \(self.classForCoder).numberOfSections \(configuration.manager.numberOfSections(scrollView: tableView))")
+            return configuration.manager.numberOfSections(scrollView: tableView)
+        } else {
+            // print("In \(self.classForCoder).numberOfSections not self tableView")
+            return 1
+        }
+        
+    }
+    override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        return configuration.manager.numberOfItems(section: section)
+    }
+    override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        if tableView == self.tableView {
+            return primaryCellForRowAtIndexPath(tableView: tableView, indexPath)
+        } else {
+            return self.autoCompletionCellForRowAtIndexPath(indexPath)
+        }
+    }
+    func primaryCellForRowAtIndexPath(tableView: UITableView, _ indexPath: IndexPath) -> RVTransactionTableViewCell {
+        print("IN \(self.classForCoder).messageCellForRowAtIndexPath")
+        let cell = tableView.dequeueReusableCell(withIdentifier: RVTransactionTableViewCell.identifier) as! RVTransactionTableViewCell
+        
+        if cell.gestureRecognizers?.count == nil {
+            let longPress = UILongPressGestureRecognizer(target: self, action: #selector(RVMemberViewController.didLongPressCell(_:)))
+            cell.addGestureRecognizer(longPress)
+        }
+        cell.item = configuration.manager.item(indexPath: indexPath)
+ 
+
+        
+        //        cell.titleLabel.text = message.username
+        //        cell.bodyLabel.text = message.text
+//        cell.messageContentLabel.text = message.text
+//        cell.titleLabel.text = message.username
+        cell.configureSubviews()
+      //  cell.indexPath = indexPath
+     //   cell.usedForMessage = true
+        
+        
+        
+        // Cells must inherit the table view's transform
+        // This is very important, since the main table view may be inverted
+        cell.transform = tableView.transform
+        
+        return cell
+    }
+    func autoCompletionCellForRowAtIndexPath(_ indexPath: IndexPath) -> RVMessageTableViewCell {
+        print("In \(self.classForCoder).autoCompletionCellForRow. Wondering why this is being called")
+        let cell = self.autoCompletionView.dequeueReusableCell(withIdentifier: RVMessageTableViewCell.AutoCompletionCellIdentifier) as! RVMessageTableViewCell
+        cell.indexPath = indexPath
+        cell.selectionStyle = .default
+        
+        guard let searchResult = self.searchResult else {
+            return cell
+        }
+        
+        guard let prefix = self.foundPrefix else {
+            return cell
+        }
+        
+        var text = searchResult[(indexPath as NSIndexPath).row]
+        
+        if prefix == "#" {
+            text = "# " + text
+        }
+        else if prefix == ":" || prefix == "+:" {
+            text = ":\(text):"
+        }
+        cell.titleLabel.text = text
+        
+        return cell
+    }
+    func didLongPressCell(_ gesture: UIGestureRecognizer) {
+        
+        guard let view = gesture.view else {
+            return
+        }
+        
+        if gesture.state != .began {
+            return
+        }
+        
+        if #available(iOS 8, *) {
+            let alertController = UIAlertController(title: nil, message: nil, preferredStyle: .actionSheet)
+            alertController.modalPresentationStyle = .popover
+            alertController.popoverPresentationController?.sourceView = view.superview
+            alertController.popoverPresentationController?.sourceRect = view.frame
+            
+            alertController.addAction(UIAlertAction(title: "Edit Message", style: .default, handler: { [unowned self] (action) -> Void in
+                //self.editCellMessage(gesture)
+            }))
+            
+            alertController.addAction(UIAlertAction(title: "Cancel", style: .cancel, handler: nil))
+            
+            self.navigationController?.present(alertController, animated: true, completion: nil)
+        }
+        else {
+            //self.editCellMessage(gesture)
+        }
+    }
 }
 extension RVBaseSLKViewController: UISearchResultsUpdating {
     

@@ -9,11 +9,19 @@
 import UIKit
 
 class RVTransactionListViewController: RVBaseSLKViewController {
-    
+
     override func viewDidLoad() {
         super.viewDidLoad()
-        RVTransactionCollection().subscribe {
-            print("In \(self.classForCoder).viewDidLoad subscribed to Transactions")
+        if let tableView = self.tableView {
+            tableView.separatorStyle = .singleLine
+            let nib = UINib(nibName: RVTransactionTableViewCell.identifier, bundle: nil)
+            tableView.register(nib, forCellReuseIdentifier: RVTransactionTableViewCell.identifier)
         }
+
+        self.configuration = RVTransactionListConfiguration()
+    //    RVTransactionCollection().subscribe {
+    //        print("In \(self.classForCoder).viewDidLoad subscribed to Transactions")
+      //  }
     }
+
 }

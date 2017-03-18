@@ -31,7 +31,13 @@ class RVBaseModel: MeteorDocument {
     var locationInitiallyNull = false
     var userProfile: RVUserProfile? = nil
     var loggedInUser: RVUserProfile? { get {return RVCoreInfo.sharedInstance.userProfile}}
-    var appDomain: RVDomain? { get { return RVCoreInfo.sharedInstance.domain }}
+    static var appDomain: RVDomain? { get { return RVCoreInfo.sharedInstance.domain }}
+    static var addDomainId: String? {
+        get {
+            if let appDomain = RVBaseModel.appDomain { return appDomain.localId }
+            return nil
+        }
+    }
 
     init() {
         let id = RVSwiftDDP.sharedInstance.getId()
@@ -968,6 +974,10 @@ extension RVBaseModel {
     }
 
     class func bulkQuery(query: RVQuery, callback: @escaping(_ items: [RVBaseModel]?, _ error: RVError?)-> Void) {
+        if let appDomainId = RVBaseModel.addDomainId {
+            query.addAnd(term: .domainId, value: appDomainId as AnyObject, comparison: .eq)
+        }
+
         let (filters, projection) = query.query()
        // print("In RVBaseModel.bulkQuery")
         Meteor.call(bulkQueryMethod.rawValue, params: [filters as AnyObject, projection as AnyObject]) { (result: Any?, error : DDPError?) in
