@@ -10,11 +10,12 @@ import Foundation
 
 class RVTransactionListConfiguration: RVBaseConfiguration {
     override func configureUI() {
-        self.showSearch         = true
-        self.showTopView        = true
-        self.installRefresh     = false
-        self.SLKIsInverted      = false
+        self.showSearch             = true
+        self.showTopView            = true
+        self.installRefresh         = false
+        self.SLKIsInverted          = false
         self.navigationBarTitle     = "Transactions"
+        self.showTextInputBar       = false
         self.topInTopAreaHeight     = 0.0
         self.middleInTopAreaHeight  = 0.0
         self.bottomInTopAreaHeight  = 0.0

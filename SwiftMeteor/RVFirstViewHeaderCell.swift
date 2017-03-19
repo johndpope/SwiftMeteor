@@ -13,6 +13,7 @@ protocol RVFirstViewHeaderCellDelegate: class {
 class RVFirstViewHeaderCell: UITableViewHeaderFooterView {
     static let identifier = "RVFirstViewHeaderCell"
     weak var datasource: RVBaseDataSource? = nil
+    var datasourceType: RVBaseDataSource.DatasourceType = .unknown
     var model: RVBaseModel? = nil {
         didSet {
             configureContentView()
@@ -44,7 +45,7 @@ class RVFirstViewHeaderCell: UITableViewHeaderFooterView {
         loadHeaderFromNib()
     }
     
-    func configure(model: RVBaseModel?, datasource: RVBaseDataSource) {
+    func configure(model: RVBaseModel?, datasource: RVBaseDataSource? = nil) {
         self.datasource = datasource
         self.model = model
         if let datasource = self.datasource {
@@ -57,6 +58,7 @@ class RVFirstViewHeaderCell: UITableViewHeaderFooterView {
         super.prepareForReuse()
         self.datasource = nil
         self.model = nil
+        self.datasourceType = .unknown
     }
     func loadHeaderFromNib() {
         let bundle = Bundle(for: RVFirstHeaderContentView.self)

@@ -148,38 +148,37 @@ extension RVBaseSLKViewController {
         self.isKeyboardPanningEnabled = true
         self.shouldScrollToBottomAfterKeyboardShows = false
         self.isInverted = configuration.SLKIsInverted
-        
-        self.leftButton.setImage(UIImage(named: "icn_upload"), for: UIControlState())
-        self.leftButton.tintColor = UIColor.gray
-        
-        self.rightButton.setTitle(NSLocalizedString("Send", comment: ""), for: UIControlState())
-       // self.setTextInputbarHidden(false, animated: true)
-        self.textInputbar.autoHideRightButton = true
-        self.textInputbar.maxCharCount = 256
-        self.textInputbar.counterStyle = .split
-        self.textInputbar.counterPosition = .top
-        
-        self.textInputbar.editorTitle.textColor = UIColor.darkGray
-        self.textInputbar.editorLeftButton.tintColor = UIColor(red: 0/255, green: 122/255, blue: 255/255, alpha: 1)
-        self.textInputbar.editorRightButton.tintColor = UIColor(red: 0/255, green: 122/255, blue: 255/255, alpha: 1)
-        
-        if DEBUG_CUSTOM_TYPING_INDICATOR == false {
-            self.typingIndicatorView!.canResignByTouch = true
+        if configuration.showTextInputBar {
+            self.leftButton.setImage(UIImage(named: "icn_upload"), for: UIControlState())
+            self.leftButton.tintColor = UIColor.gray
+            
+            self.rightButton.setTitle(NSLocalizedString("Send", comment: ""), for: UIControlState())
+            // self.setTextInputbarHidden(false, animated: true)
+            self.textInputbar.autoHideRightButton = true
+            self.textInputbar.maxCharCount = 256
+            self.textInputbar.counterStyle = .split
+            self.textInputbar.counterPosition = .top
+            
+            self.textInputbar.editorTitle.textColor = UIColor.darkGray
+            self.textInputbar.editorLeftButton.tintColor = UIColor(red: 0/255, green: 122/255, blue: 255/255, alpha: 1)
+            self.textInputbar.editorRightButton.tintColor = UIColor(red: 0/255, green: 122/255, blue: 255/255, alpha: 1)
+            
+            if DEBUG_CUSTOM_TYPING_INDICATOR == false {
+                self.typingIndicatorView!.canResignByTouch = true
+            }
+            self.registerPrefixes(forAutoCompletion: ["@",  "#", ":", "+:", "/"])
+            
+            self.textView.placeholder = "Message";
+            
+            self.textView.registerMarkdownFormattingSymbol("*", withTitle: "Bold")
+            self.textView.registerMarkdownFormattingSymbol("_", withTitle: "Italics")
+            self.textView.registerMarkdownFormattingSymbol("~", withTitle: "Strike")
+            self.textView.registerMarkdownFormattingSymbol("`", withTitle: "Code")
+            self.textView.registerMarkdownFormattingSymbol("```", withTitle: "Preformatted")
+            self.textView.registerMarkdownFormattingSymbol(">", withTitle: "Quote")
+        } else {
+            self.setTextInputbarHidden(true, animated: false)
         }
-        
-
-        
-
-        self.registerPrefixes(forAutoCompletion: ["@",  "#", ":", "+:", "/"])
-        
-        self.textView.placeholder = "Message";
-        
-        self.textView.registerMarkdownFormattingSymbol("*", withTitle: "Bold")
-        self.textView.registerMarkdownFormattingSymbol("_", withTitle: "Italics")
-        self.textView.registerMarkdownFormattingSymbol("~", withTitle: "Strike")
-        self.textView.registerMarkdownFormattingSymbol("`", withTitle: "Code")
-        self.textView.registerMarkdownFormattingSymbol("```", withTitle: "Preformatted")
-        self.textView.registerMarkdownFormattingSymbol(">", withTitle: "Quote")
     }
     func commonInit() {
         if commonInitDone { return }
@@ -205,33 +204,25 @@ extension RVBaseSLKViewController {
 }
 extension RVBaseSLKViewController: RVFirstViewHeaderCellDelegate {
     func expandCollapseButtonTouched(view: RVFirstViewHeaderCell) -> Void {
-
-
-
-        if let datasource = view.datasource {
-            configuration.manager.toggle(datasource: datasource, callback: {
-                
-            })
-            
-            //datasource.toggle {}
+        if let datasource = configuration.findDatasource(type: view.datasourceType) {
+            configuration.manager.toggle(datasource: datasource, callback: {})
         } else {
             print("In \(self.instanceType).expandCollapseButtonTOuched no datasource")
         }
     }
 }
-// UITableViewDelegate 
-
+// UITableViewDelegate
 extension RVBaseSLKViewController {
     override func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
-      //  return 35.0
-        return 40.0
+        return 35.0
     }
     override func tableView(_ tableView: UITableView, willDisplayHeaderView view: UIView, forSection section: Int) {
         if let headerCell = view as? RVFirstViewHeaderCell {
             if section >= 0 && section < configuration.manager.sections.count {
                 let datasource = configuration.manager.sections[section]
+                headerCell.datasourceType = datasource.datasourceType
                 headerCell.delegate = self
-                headerCell.configure(model: nil, datasource: datasource)
+                headerCell.configure(model: nil)
                 headerCell.transform = tableView.transform
             }
         }
@@ -686,6 +677,31 @@ extension RVBaseSLKViewController {
             return 0
         }
         return height * CGFloat(searchResult.count)
+    }
+    func simulateUserTyping(_ sender: AnyObject) {
+        
+        if !self.canShowTypingIndicator() { return }
+        /*
+         if DEBUG_CUSTOM_TYPING_INDICATOR == true {
+         guard let view = self.typingIndicatorProxyView as? RVSlackTypingIndicatorView else {
+         return
+         }
+         
+         let scale = UIScreen.main.scale
+         let imgSize = CGSize(width: RVSlackTypingIndicatorView.AvatarHeight*scale, height: RVSlackTypingIndicatorView.AvatarHeight*scale)
+         
+         // This will cause the typing indicator to show after a delay ¯\_(ツ)_/¯
+         LoremIpsum.asyncPlaceholderImage(with: imgSize, completion: { (image) -> Void in
+         guard let cgImage = image?.cgImage else {
+         return
+         }
+         let thumbnail = UIImage(cgImage: cgImage, scale: scale, orientation: .up)
+         view.presentIndicator(name: LoremIpsum.name(), image: thumbnail)
+         })
+         } else {
+         */
+        self.typingIndicatorView!.insertUsername("SomeUserName")
+        // }
     }
 }
 
