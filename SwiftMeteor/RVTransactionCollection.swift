@@ -9,7 +9,9 @@
 import Foundation
 class RVTransactionCollection: RVBaseCollection {
     init() {
-        super.init(name: .transaction)
+
+        super.init(collection: .transaction)
+        print("IN \(self.classForCoder).init ...........")
     }
     override func populate(id: String, fields: NSDictionary) -> RVBaseModel {
         let transaction = RVTransaction(id: id , fields: fields)

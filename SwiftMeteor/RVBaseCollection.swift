@@ -11,21 +11,23 @@ import SwiftDDP
 
 class RVBaseCollection: AbstractCollection {
     enum eventType: String {
-        case added = "added"
-        case changed = "changed"
-        case removed = "removed"
+        case added      = "added"
+        case changed    = "changed"
+        case removed    = "removed"
     }
-    var collectionName: RVModelType
+    var collection: RVModelType
     var query: RVQuery = RVQuery()
     var instanceType: String { get { return String(describing: type(of: self)) } }
     var elements = [RVBaseModel]()
     var subscriptionID: String? = nil
     var listeners = [String]()
-    init(name: RVModelType) {
-        self.collectionName = name
-        //checkIfSubscribed(meteorMethod: meteorMethod)
-        super.init(name: collectionName.rawValue)
-    }
+    public typealias basicCallback = () -> Void
+    init(collection: RVModelType) {
+        if let type = Meteor.collection(collection.rawValue) {
+            print("Warning. Collection of type: \(collection.rawValue) already subscribed, yet attempting to subscribe again \(type)")
+        }
+        self.collection = collection
+        super.init(name: collection.rawValue)    }
     /*
     func findRecord(id: String) -> RVBaseModel? {
         let elements = self.elements
@@ -99,9 +101,9 @@ class RVBaseCollection: AbstractCollection {
     }
 }
 extension RVBaseCollection {
-    func checkIfSubscribed(meteorMethod: RVMeteorMethods) {
-        if let type = Meteor.collection(meteorMethod.rawValue) {
-            print("Warning. Collection of type: \(meteorMethod.rawValue) already subscribed, yet attempting to subscribe again \(type)")
+    func checkIfSubscribed() {
+        if let type = Meteor.collection(collection.rawValue) {
+            print("Warning. Collection of type: \(collection.rawValue) already subscribed, yet attempting to subscribe again \(type)")
         }
     }
     /**
@@ -113,13 +115,13 @@ extension RVBaseCollection {
 
 
         let (filters, projections) = self.query.query()
-        self.subscriptionID = Meteor.subscribe(collectionName.rawValue, params: [filters as AnyObject, projections as AnyObject])
+        self.subscriptionID = Meteor.subscribe(collection.rawValue, params: [filters as AnyObject, projections as AnyObject])
         return self.subscriptionID!
     }
     func subscribe(callback: @escaping()-> Void) -> String {
 
         let (filters, projections) = self.query.query()
-        self.subscriptionID = Meteor.subscribe(collectionName.rawValue, params: [filters as AnyObject, projections as AnyObject], callback: callback)
+        self.subscriptionID = Meteor.subscribe(collection.rawValue, params: [filters as AnyObject, projections as AnyObject], callback: callback)
         return self.subscriptionID!
     }
 
@@ -134,7 +136,7 @@ extension RVBaseCollection {
 
         self.query = query
         let (filters, projection) = query.query()
-        self.subscriptionID = Meteor.subscribe(collectionName.rawValue, params: [filters as AnyObject, projection as AnyObject])
+        self.subscriptionID = Meteor.subscribe(collection.rawValue, params: [filters as AnyObject, projection as AnyObject])
         return self.subscriptionID!
     }
     
@@ -147,10 +149,11 @@ extension RVBaseCollection {
      - parameter params:     An object containing method arguments, if any.
      - parameter callback:   The closure to be executed when the server sends a 'ready' message.
      */
-    func subscribe(subscription: RVMeteorMethods, query:RVQuery, callback: DDPCallback?) -> String {
+    func subscribe(query:RVQuery, callback: @escaping () -> ()) -> String {
+        print("---------- IN \(self.classForCoder).subscribe(query....")
         self.query = query
         let (filters, projection) = query.query()
-        self.subscriptionID = Meteor.subscribe(collectionName.rawValue, params: [filters as AnyObject, projection as AnyObject], callback: callback)
+        self.subscriptionID = Meteor.subscribe(collection.rawValue, params: [filters as AnyObject, projection as AnyObject], callback: callback)
         return self.subscriptionID!
     }
     
@@ -160,40 +163,32 @@ extension RVBaseCollection {
      - parameter name:       The name of the subscription.
      
      */
-    func unsubscribe(callback: @escaping () -> Void) -> [String] {
+    func unsubscribeAll(callback: @escaping () -> Void) -> [String] {
         self.subscriptionID = nil
         print("In \(self.classForCoder).unsubscribe ")
-        return Meteor.unsubscribe(collectionName.rawValue, callback: callback)
+        return Meteor.unsubscribe(collection.rawValue, callback: callback)
     }
     
     /**
      Sends an unsubscribe request to the server using a subscription id. This allows fine-grained control of subscriptions. For example, you can unsubscribe to specific combinations of subscriptions and subscription parameters.
      - parameter id: An id string returned from a subscription request
      */
-    func unsubscribeViaID() {
+    func unsubscribeSelf(callback: @escaping () -> Void)  {
         if let id = self.subscriptionID {
-            Meteor.unsubscribe(withId: id)
             self.subscriptionID = nil
+            return Meteor.unsubscribe(withId: id , callback: callback)
+        } else {
+            callback()
         }
     }
-    
     /**
      Sends an unsubscribe request to the server using a subscription id. This allows fine-grained control of subscriptions. For example, you can unsubscribe to specific combinations of subscriptions and subscription parameters. If a callback is passed, the callback asynchronously
      runs when the unsubscribe transaction is complete.
      - parameter id: An id string returned from a subscription request
      - parameter callback:   The closure to be executed when the method has been executed
      */
-    /*
-    func unsubscribe(callback: DDPCallback?) {
-        if let id = self.subscriptionID {
-            self.subscriptionID = nil
-            return Meteor.unsubscribe(withId: id, callback: callback)
-        } else {
-            if let callback = callback {
-                callback()
-            }
-        }
-        
+    func unsubscribe(id: String, callback: @escaping() -> Void ) {
+        return Meteor.unsubscribe(withId: id, callback: callback)
     }
- */
+    
 }

@@ -14,6 +14,6 @@ class RVTaskCollection: RVBaseCollection {
         return RVTask(id: id, fields: fields)
     }
     init() {
-        super.init(name: RVModelType.task)
+        super.init(collection: RVModelType.task)
     }
 }

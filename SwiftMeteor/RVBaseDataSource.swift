@@ -20,7 +20,41 @@ class RVBaseDataSource: NSObject {
         case filter = "Filter"
         case unknown = "Unknown"
     }
-    var subscriptionId: String? = nil
+    private var _subscription: RVBaseCollection? = nil
+    private var internalSubscription: RVBaseCollection? {
+        get {
+            if let subscription = self._subscription { return subscription}
+            print("IN \(self.classForCoder).internalSubscription")
+            self._subscription = self.subscription
+            return self._subscription
+        }
+    }
+    func subscribe(callback: @escaping(RVError?) -> Void) {
+        print("In \(self.classForCoder).subscribe...")
+        if let query = self.subscriptionQuery() {
+            self.unsubscribe {
+                print("In \(self.classForCoder).subscribe... after Unsubscribe")
+                if let subscription = self.internalSubscription {
+                    let _ = subscription.subscribe(query: query, callback: {
+                        callback(nil)
+                    })
+                } else {
+                    callback(nil)
+                }
+            }
+        } else {
+            print("IN \(self.classForCoder).subscribe, no query")
+            let error = RVError(message: "IN \(self.classForCoder).subscribe, no query")
+            callback(error)
+        }
+
+    }
+
+    func unsubscribe(callback: @escaping () -> Void) {
+        if let current = self._subscription { current.unsubscribeSelf { callback() } }
+        else { callback() }
+    }
+    var subscription: RVBaseCollection? { get { return nil } }
     var delegate: RVDatasourceDelegate? = nil
     var instanceType: String { get { return String(describing: type(of: self)) } }
     var filterMode: Bool = false
@@ -94,6 +128,79 @@ class RVBaseDataSource: NSObject {
     func bulkQuery(query: RVQuery, callback: @escaping (_ models: [RVBaseModel]?, _ error: RVError?) -> Void) {
         print("In \(self.instanceType).bulkQuery base class. Need to override")
         RVTask.bulkQuery(query: query, callback: callback)
+    }
+    func subscriptionQuery() -> RVQuery? {
+        if let sourceQuery = self.baseQuery {
+            let query = sourceQuery.duplicate().updateQuery(front: true)
+            if let candidate = self.array.first {
+                var index = 0
+                for sort in query.sortTerms {
+                    if index == 0 {
+                        switch (sort.field) {
+                        case .createdAt:
+                            if let candidateCreatedAt = candidate.createdAt {
+                                if let queryTerm = query.findAndTerm(term: sort.field) {
+                                    queryTerm.value = EJSON.convertToEJSONDate(candidateCreatedAt) as AnyObject
+                                }
+                            }
+                        case .commentLowercase:
+                            if let candidateComment = candidate.comment {
+                                if let queryTerm = query.findAndTerm(term: sort.field) {
+                                    queryTerm.value = candidateComment.lowercased() as AnyObject
+                                }
+                            }
+                        case .handleLowercase, .handle:
+                            if let handle = candidate.handle {
+                                if let queryTerm = query.findAndTerm(term: sort.field) {
+                                    queryTerm.value = handle.lowercased() as AnyObject
+                                }
+                            }
+                        case .title:
+                            if let title = candidate.title {
+                                if let queryTerm = query.findAndTerm(term: sort.field) {
+                                    queryTerm.value = title.lowercased() as AnyObject
+                                }
+                            }
+                        case .fullName:
+                            if let fullName = candidate.fullName {
+                                if let queryTerm = query.findAndTerm(term: sort.field) {
+                                    queryTerm.value = fullName.lowercased() as AnyObject
+                                }
+                            }
+                        default:
+                            print("in \(self.instanceType).queryForFront, term \(sort.field.rawValue) not implemented")
+                        }
+                    }
+                    index = index +  1
+                }
+            } else {
+                var index = 0
+                for sort in query.sortTerms {
+                    if index == 0 {
+                        switch (sort.field) {
+                        case .createdAt:
+
+                                if let queryTerm = query.findAndTerm(term: sort.field) {
+                                    queryTerm.value = EJSON.convertToEJSONDate(query.decadeAgo) as AnyObject
+                                }
+                        case .handleLowercase, .title, .fullName, .commentLowercase:
+
+                                if let queryTerm = query.findAndTerm(term: sort.field) {
+                                    queryTerm.value = "a" as AnyObject
+                                }
+
+                        default:
+                            print("in \(self.instanceType).queryForFront, term \(sort.field.rawValue) not implemented")
+                        }
+                    }
+                    index = index +  1
+                }
+            }
+            return query
+        } else {
+            print("In \(self.classForCoder).subscriptionQuery, no query")
+            return nil
+        }
     }
     func queryForFront(operation: RVDSOperation, callback: @escaping(_ error: RVError?) -> Void) {
         //print("In \(self.instanceType).queryForFront---------")
@@ -444,7 +551,9 @@ class RVBaseDataSource: NSObject {
             if mappedIndex >= 0 {
                 if mappedIndex < self.array.count {
                     if location > (self.virtualCount - self.backBuffer) {
-                        inBackZone(location: location)
+                        inBackZone(location: location, callback: { (error) in
+                            
+                        })
                     } else if location < (self.frontBuffer + self.offset) {
                         inFrontZone(location: location)
                     }
@@ -560,7 +669,7 @@ class RVBaseDataSource: NSObject {
         }
     }
  
-    func inBackZone(location: Int) {
+    func inBackZone(location: Int, callback: @escaping(RVError?) -> Void ) {
       //  print("In \(self.instanceType).inBackZone. location = \(location), offset = \(self.offset), array count = \(self.array.count)")
         if Date().timeIntervalSince1970 - self.backTime < minimumInterval { return }
         if backTimer { return }
@@ -592,17 +701,31 @@ class RVBaseDataSource: NSObject {
                             self.queryForBack(callback: { (error) in
                                 if let error = error {
                                     error.printError()
+                                    error.append(message: "In \(self.classForCoder).inBackZone, got error")
+                                    callback(error)
+                                } else {
+                                    callback(nil)
+                                    return
                                 }
                             })
+                            return
                         }
                     }
+                    self.backTimer = false
+                    callback(nil)
+                    return
+                } else {
+                    self.backTimer = false
+                    callback(nil)
                 }
-                self.backTimer = false
+                
             })
+            return
            // print("In \(self.instanceType).inBackZone. location = \(location), offset = \(self.offset), array count = \(self.array.count)\n --- Set Back Operation active")
         } else {
          //   print("Back operation active")
             backTimer = false
+            callback(nil)
         }
     }
     func removeBack(operation: RVDSOperation) {
@@ -961,12 +1084,24 @@ class RVBaseDataSource: NSObject {
         }
     }
     func start(query: RVQuery, callback: @escaping (_ error: RVError?)-> Void) {
-       // print("In \(self.instanceType).start")
+        print("In \(self.instanceType).start")
         reset {
-
             self.baseQuery = query
-            self.inBackZone(location: 0)
-            callback(nil)
+            self.inBackZone(location: 0, callback: { (error) in
+                if let error = error {
+                    error.append(message: "In \(self.classForCoder).start, got error")
+                    callback(error)
+                } else {
+                    //callback(nil)
+                    Timer.scheduledTimer(withTimeInterval: 0.5, repeats: false, block: { (timer: Timer) in
+                        self.subscribe(callback: { (error) in })
+                    })
+                    callback(error)
+                }
+            })
+            /*
+
+ */
         }
     }
     func stop(callback: @escaping(_ error: RVError?) -> Void) {
@@ -1068,8 +1203,6 @@ class RVBaseDataSource: NSObject {
         callback()
     }
     deinit {
-        if let id = self.subscriptionId {
-            RVSwiftDDP.sharedInstance.unsubscribe(subscriptionId: id, callback: { })
-        }
+        if let subscription = self.subscription { subscription.unsubscribeSelf { } }
     }
 }

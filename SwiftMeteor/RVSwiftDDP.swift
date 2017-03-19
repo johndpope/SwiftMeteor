@@ -111,8 +111,8 @@ class RVSwiftDDP: NSObject {
         }
     }
     /* Returns ID of the Subscription */
-    func subscribe(method: RVMeteorMethods, params: [Any]?, callback: @escaping() -> Void) -> String {
-        return Meteor.subscribe(method.rawValue, params: params, callback: callback)
+    func subscribe(collectionName: RVModelType, params: [Any]?, callback: @escaping() -> Void) -> String {
+        return Meteor.subscribe(collectionName.rawValue, params: params, callback: callback)
     }
     func unsubscribe(collectionName: String, callback: @escaping() -> Void ) -> [String] {
         return Meteor.unsubscribe(collectionName, callback: callback)
@@ -297,6 +297,8 @@ extension RVSwiftDDP: SwiftDDPDelegate {
                 print("IN \(self.classForCoder) about to subscribe")
                 self.messages = RVMessageCollection2()
                 self.messages.query = RVQuery()
+                Meteor.unsubscribe(withId: RVModelType.transaction.rawValue)
+                /*
                 self.transactions = RVTransactionCollection()
                 let query = RVQuery()
                 query.addAnd(term: .topParentId, value: "88" as AnyObject, comparison: .eq)
@@ -305,6 +307,7 @@ extension RVSwiftDDP: SwiftDDPDelegate {
                     print("In \(self.classForCoder).ddpUserDidLogin")
                 }
                 print("In \(self.classForCoder), transaction id = \(id)")
+ */
             } else {
                 print("In \(self.classForCoder).ddpUserDidLogin, no error but failure")
             }

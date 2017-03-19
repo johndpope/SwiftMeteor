@@ -17,6 +17,7 @@ class RVBaseDatasource2: RVBaseDataSource {
             return virtualCount
         }
     }
+
 }
 
 class RVQueryForFrontOperation: RVAsyncOperation {

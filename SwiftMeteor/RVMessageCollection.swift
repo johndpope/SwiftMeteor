@@ -9,7 +9,7 @@
 import Foundation
 class RVMessageCollection2: RVBaseCollection {
     init() {
-        super.init(name: .Message)
+        super.init(collection: .Message)
     }
     override func populate(id: String, fields: NSDictionary) -> RVBaseModel {
         let transaction = RVMessage(id: id , fields: fields)
