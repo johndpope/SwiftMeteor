@@ -96,7 +96,7 @@ class RVBaseDataSource: NSObject {
         RVTask.bulkQuery(query: query, callback: callback)
     }
     func queryForFront(operation: RVDSOperation, callback: @escaping(_ error: RVError?) -> Void) {
-        print("In \(self.instanceType).queryForFront---------")
+        //print("In \(self.instanceType).queryForFront---------")
         if filterMode { return }
         if let query = self.baseQuery {
             if query.inSearchMode {
@@ -273,7 +273,7 @@ class RVBaseDataSource: NSObject {
         }
     }
     func queryForBack(callback: @escaping(_ error: RVError?) -> Void) {
-        print("In \(self.instanceType).queryForBack---------")
+       // print("In \(self.instanceType).queryForBack---------")
         if filterMode {
             if self.array.count >= self.maximumArrayLength {
                 if let delegate = self.delegate {

@@ -11,6 +11,7 @@ class RVBaseTopViewDatasource: RVBaseDatasource2 {
     var FakeAnEntry: Bool = true
     override func basicQuery() -> RVQuery {
         let query = RVQuery()
+        query.addSort(field: .createdAt, order: .ascending)
         query.limit = 70
         return query
     }

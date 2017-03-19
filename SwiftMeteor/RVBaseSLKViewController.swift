@@ -24,15 +24,20 @@ class RVBaseSLKViewController: SLKTextViewController {
     var stack = [RVBaseModel]()
     var tableViewInsetAdditionalHeight: CGFloat = 0.0
     //var manager = RVDSManager2()
+    var searchOperation: RVOperation = RVOperation(active: false)
     let searchController = UISearchController(searchResultsController: nil)
-    var searchScopes: [String] { get {return ["Elmer", "Fudd"]}}
+    var searchScopes: [[String: RVKeys]] { get {return [[RVKeys.title.rawValue: RVKeys.title], [RVKeys.fullName.rawValue: RVKeys.fullName]]}}
     var installSearchControllerInTableView: Bool { get { return false }}
     var searchBarPlaceholder: String { get { return "Search..." }}
     
     var dsScrollView: UIScrollView? {return self.tableView }
     var instanceType: String { get { return String(describing: type(of: self)) } }
     var deck: RVViewDeck { get { return RVViewDeck.sharedInstance }}
-    
+        var users: Array = ["Allen", "Anna", "Alicia", "Arnold", "Armando", "Antonio", "Brad", "Catalaya", "Christoph", "Emerson", "Eric", "Everyone", "Steve"]
+        var commands: Array = ["msg", "call", "text", "skype", "kick", "invite"]
+    var channels: Array = ["General", "Random", "iOS", "Bugs", "Sports", "Android", "UI", "SSB"]
+    var emojis: Array = ["-1", "m", "man", "machine", "block-a", "block-b", "bowtie", "boar", "boat", "book", "bookmark", "neckbeard", "metal", "fu", "feelsgood"]
+    var setupSLKDatasource: Bool = true
     var searchResult: [String]? // for SLKTextViewController, not sure why
     @IBAction func searchButtonTouched(_ sender: UIBarButtonItem) { searchController.isActive = true }
     @IBAction func menuButtonTouched(_ sender: UIBarButtonItem) { self.deck.toggleSide(side: .left) }
@@ -200,27 +205,15 @@ extension RVBaseSLKViewController {
 }
 extension RVBaseSLKViewController: RVFirstViewHeaderCellDelegate {
     func expandCollapseButtonTouched(view: RVFirstViewHeaderCell) -> Void {
-        let transaction = RVTransaction()
-        if let loggedInUser = RVCoreInfo2.shared.loggedInUserProfile {
-            transaction.targetUserProfileId = loggedInUser.localId
-            transaction.entityId = loggedInUser.localId
-            transaction.entityModelType = .userProfile
-            transaction.entityTitle = loggedInUser.fullName
-        }
-        transaction.transactionType = .added
-        transaction.create { (model, error) in
-            if let error = error {
-                error.printError()
-            } else if let transaction = model as? RVTransaction {
-                print("In \(self.instanceType).expandCollapse, created transaction \(transaction.localId) \(transaction.createdAt)")
-            } else {
-                 print("In \(self.instanceType).expandCollapse, no error, but no result ")
-            }
-        }
+
 
 
         if let datasource = view.datasource {
-            datasource.toggle {}
+            configuration.manager.toggle(datasource: datasource, callback: {
+                
+            })
+            
+            //datasource.toggle {}
         } else {
             print("In \(self.instanceType).expandCollapseButtonTOuched no datasource")
         }
@@ -383,7 +376,13 @@ extension RVBaseSLKViewController: UISearchResultsUpdating {
         }
     }
     func configureScopeBar() {
-        searchController.searchBar.scopeButtonTitles = self.searchScopes
+        var scopeTitles = [String]()
+        for scope in self.searchScopes {
+            if let (title, _) = scope.first {
+                scopeTitles.append(title)
+            }
+        }
+        searchController.searchBar.scopeButtonTitles = scopeTitles
         searchController.searchBar.selectedScopeButtonIndex = 0
         searchController.searchBar.showsSearchResultsButton = false
         searchController.searchBar.placeholder = self.searchBarPlaceholder
@@ -391,6 +390,45 @@ extension RVBaseSLKViewController: UISearchResultsUpdating {
     // Called when the search bar's text or scope has changed or when the search bar becomes first responder.
     public func updateSearchResults(for searchController: UISearchController) {
         print("In \(instanceType).updateSearchResults, active: \(searchController.isActive)")
+        processSearchEvent(searchController: searchController)
+    }
+    func processSearchEvent(searchController: UISearchController) {
+        let searchBar = searchController.searchBar
+        let searchText = searchBar.text != nil ? searchBar.text! : ""
+        var searchKey = RVKeys.title
+        if searchBar.selectedScopeButtonIndex < searchScopes.count {
+            let scope = searchScopes[searchBar.selectedScopeButtonIndex]
+            if let (title, key) = scope.first {
+                searchKey = key
+                searchBar.placeholder = "Search by \(title)"
+            } else {
+                searchBar.placeholder = "Search"
+            }
+        } else {
+           searchBar.placeholder = "Search"
+        }
+        var operation = self.searchOperation
+        if operation.active {
+            operation = replaceOperation(operation: operation, operationName: searchText)
+        } else {
+            if operation.cancelled {
+                operation = RVOperation(active: true, name: searchText)
+                self.searchOperation = operation
+            }
+        }
+        performSearch(searchText: searchText, field: searchKey)
+    }
+    func performSearch(searchText: String, field: RVKeys) {
+        
+    }
+    func replaceOperation(operation: RVOperation, operationName: String = "") -> RVOperation {
+        if operation.sameOperation(operation: self.searchOperation) {
+            operation.cancelled = true
+            self.searchOperation = RVOperation(active: false, name: operationName)
+            operation.active = false
+            return self.searchOperation
+        }
+        return operation
     }
 }
 extension RVBaseSLKViewController: UISearchControllerDelegate {
@@ -430,3 +468,229 @@ extension RVBaseSLKViewController: UISearchBarDelegate {
         searchBar.text = ""
     }
 }
+
+
+extension RVBaseSLKViewController {
+    // MARK: - Overriden Methods
+    
+    override func ignoreTextInputbarAdjustment() -> Bool { return super.ignoreTextInputbarAdjustment() }
+    
+    override func forceTextInputbarAdjustment(for responder: UIResponder!) -> Bool {
+        if #available(iOS 8.0, *) {
+            guard let _ = responder as? UIAlertController else {
+                // On iOS 9, returning YES helps keeping the input view visible when the keyboard if presented from another app when using multi-tasking on iPad.
+                return UIDevice.current.userInterfaceIdiom == .pad
+            }
+            return true
+        }
+        else { return UIDevice.current.userInterfaceIdiom == .pad }
+    }
+    
+    // Notifies the view controller that the keyboard changed status.
+    override func didChangeKeyboardStatus(_ status: SLKKeyboardStatus) {
+        switch status {
+        case .willShow:
+            print("Will Show Keyboard")
+        case .didShow:
+            print("Did Show Keyboard")
+        case .willHide:
+            print("Will Hide Keyboard")
+        case .didHide:
+            print("Did Hide Keyboard")
+        }
+    }
+    
+    // Notifies the view controller that the text will update.
+    override func textWillUpdate() { super.textWillUpdate() }
+    
+    // Notifies the view controller that the text did update.
+    override func textDidUpdate(_ animated: Bool) { super.textDidUpdate(animated) }
+    
+    // Notifies the view controller when the left button's action has been triggered, manually.
+    override func didPressLeftButton(_ sender: Any!) {
+        super.didPressLeftButton(sender)
+        self.dismissKeyboard(true)
+        print("IN \(self.classForCoder).needToImplement show camera")
+      //  self.showCameraMenu()
+    }
+    func createTransaction(text: String, callback: @escaping()-> Void) {
+        let transaction = RVTransaction()
+        if let loggedInUser = RVCoreInfo2.shared.loggedInUserProfile {
+            transaction.targetUserProfileId = loggedInUser.localId
+            transaction.entityId = loggedInUser.localId
+            transaction.entityModelType = .userProfile
+            transaction.entityTitle = loggedInUser.fullName
+        }
+        transaction.title = "Elmo"
+        transaction.transactionType = .updated
+        transaction.create { (model, error) in
+            if let error = error {
+                error.printError()
+            } else if let transaction = model as? RVTransaction {
+                print("In \(self.instanceType).expandCollapse, created transaction \(transaction.localId) \(transaction.createdAt)")
+            } else {
+                print("In \(self.instanceType).expandCollapse, no error, but no result ")
+            }
+    callback()
+        }
+    }
+    // Notifies the view controller when the right button's action has been triggered, manually or by using the keyboard return key.
+    override func didPressRightButton(_ sender: Any!) {
+        
+        if !setupSLKDatasource {
+            super.didPressRightButton(sender)
+            return
+        }
+        print("In \(self.classForCoder).didPressRightBUtton. should not be here")
+        // This little trick validates any pending auto-correction or auto-spelling just after hitting the 'Send' button
+        self.textView.refreshFirstResponder()
+
+        self.createTransaction(text: self.textView.text) { 
+            let indexPath = IndexPath(row: 0, section: 0)
+            let rowAnimation: UITableViewRowAnimation = self.isInverted ? .bottom : .top
+            let scrollPosition: UITableViewScrollPosition = self.isInverted ? .bottom : .top
+            
+            //        self.tableView.beginUpdates()
+            //        self.messages.insert(message, at: 0)
+            //        self.tableView.insertRows(at: [indexPath], with: rowAnimation)
+            //        self.tableView.endUpdates()
+            
+            self.tableView?.scrollToRow(at: indexPath, at: scrollPosition, animated: true)
+            
+            // Fixes the cell from blinking (because of the transform, when using translucent cells)
+            // See https://github.com/slackhq/SlackTextViewController/issues/94#issuecomment-69929927
+         //   self.tableView?.reloadRows(at: [indexPath], with: .automatic)
+        }
+        super.didPressRightButton(sender)
+    }
+    
+    override func didPressArrowKey(_ keyCommand: UIKeyCommand?) {
+        
+        guard let keyCommand = keyCommand else { return }
+        
+        if keyCommand.input == UIKeyInputUpArrow && self.textView.text.characters.count == 0 {
+//            self.editLastMessage(nil)
+        }
+        else {
+            super.didPressArrowKey(keyCommand)
+        }
+    }
+    
+    override func keyForTextCaching() -> String? {
+        
+        return Bundle.main.bundleIdentifier
+    }
+    
+    // Notifies the view controller when the user has pasted a media (image, video, etc) inside of the text view.
+    override func didPasteMediaContent(_ userInfo: [AnyHashable: Any]) {
+        
+        super.didPasteMediaContent(userInfo)
+        
+        let mediaType = (userInfo[SLKTextViewPastedItemMediaType] as? NSNumber)?.intValue
+        let contentType = userInfo[SLKTextViewPastedItemContentType]
+        let data = userInfo[SLKTextViewPastedItemData]
+        
+        print("didPasteMediaContent : \(contentType) (type = \(mediaType) | data : \(data))")
+    }
+    
+    // Notifies the view controller when a user did shake the device to undo the typed text
+    override func willRequestUndo() {
+        super.willRequestUndo()
+    }
+    
+    // Notifies the view controller when tapped on the right "Accept" button for commiting the edited text
+    override func didCommitTextEditing(_ sender: Any) {
+        
+//        self.editingMessage.text = self.textView.text
+ //       self.tableView.reloadData()
+        
+        super.didCommitTextEditing(sender)
+    }
+    
+    // Notifies the view controller when tapped on the left "Cancel" button
+    override func didCancelTextEditing(_ sender: Any) { super.didCancelTextEditing(sender) }
+    
+    override func canPressRightButton() -> Bool {
+        return super.canPressRightButton()
+    }
+    
+    override func canShowTypingIndicator() -> Bool {
+        
+        if DEBUG_CUSTOM_TYPING_INDICATOR == true {
+            return true
+        }
+        else {
+            return super.canShowTypingIndicator()
+        }
+    }
+    
+    override func shouldProcessText(forAutoCompletion text: String) -> Bool {
+        return true
+    }
+    
+    override func didChangeAutoCompletionPrefix(_ prefix: String, andWord word: String) {
+        
+        var array:Array<String> = []
+        let wordPredicate = NSPredicate(format: "self BEGINSWITH[c] %@", word);
+        
+        self.searchResult = nil
+    
+        if prefix == "@" {
+            if word.characters.count > 0 {
+                array = self.users.filter { wordPredicate.evaluate(with: $0) };
+            }
+            else {
+                array = self.users
+            }
+        }
+        else if prefix == "#" {
+            
+            if word.characters.count > 0 {
+                array = self.channels.filter { wordPredicate.evaluate(with: $0) };
+            }
+            else {
+                array = self.channels
+            }
+        }
+        else if (prefix == ":" || prefix == "+:") && word.characters.count > 0 {
+            array = self.emojis.filter { wordPredicate.evaluate(with: $0) };
+        }
+        else if prefix == "/" && self.foundPrefixRange.location == 0 {
+            if word.characters.count > 0 {
+                array = self.commands.filter { wordPredicate.evaluate(with: $0) };
+            }
+            else {
+                array = self.commands
+            }
+        }
+        
+        var show = false
+        
+        if array.count > 0 {
+            let sortedArray = array.sorted { $0.localizedCaseInsensitiveCompare($1) == ComparisonResult.orderedAscending }
+            self.searchResult = sortedArray
+            show = sortedArray.count > 0
+        }
+        
+        self.showAutoCompletionView(show)
+    }
+    
+    override func heightForAutoCompletionView() -> CGFloat {
+        
+        guard let searchResult = self.searchResult else {
+            return 0
+        }
+        
+        let cellHeight = self.autoCompletionView.delegate?.tableView!(self.autoCompletionView, heightForRowAt: IndexPath(row: 0, section: 0))
+        guard let height = cellHeight else {
+            return 0
+        }
+        return height * CGFloat(searchResult.count)
+    }
+}
+
+
+
+
+
+

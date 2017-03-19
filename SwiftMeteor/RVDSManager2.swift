@@ -35,6 +35,13 @@ class RVDSManager2: RVDSManager {
         let operation = RVManagerStopDatasourceOperation(title: datasource.datasourceType.rawValue, manager: self , datasource: datasource, callback: callback)
         self.queue.addOperation(operation)
     }
+    func toggle(datasource: RVBaseDataSource, callback: @escaping() -> Void) {
+        if datasource.collapsed {
+            self.expandDatasource(datasource: datasource, callback: callback)
+        } else {
+            self.collapseDatasource(datasource: datasource, callback: callback)
+        }
+    }
 }
 class RVManagerCollapseOperation: RVManagerExpandOperation {
     override func actualOperation(datasource: RVBaseDataSource, completeOperation: @escaping() -> Void) {

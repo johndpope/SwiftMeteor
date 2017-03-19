@@ -250,7 +250,7 @@ extension RVLoginViewController: UITextFieldDelegate {
         }
     }
     func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
-        // print("In \(self.classForCoder).shouldChangeCharacters \(string.characters.count)")
+      //  print("In \(self.classForCoder).shouldChangeCharacters \(string.characters.count)")
         self.hideLoginFailure()
         let emailField = (self.emailTextField != nil) && textField == emailTextField
         let passwordField = (self.passwordTextField != nil) && textField == self.passwordTextField
@@ -287,6 +287,7 @@ extension RVLoginViewController: UITextFieldDelegate {
                     }
                 } else if passwordField {
                     if candidate.validPassword() {
+                      //  print("IN \(self.classForCoder).shouldChange, have password \(candidate), ")
                         showHidePasswordMessage(message: "", show: false)
                         if let state = self.loginRegisterState {
                             if state == "Login" {
@@ -294,6 +295,8 @@ extension RVLoginViewController: UITextFieldDelegate {
                             } else {
                                 showRegisterButton()
                             }
+                        } else {
+                            print("In \(self.classForCoder).shouldChange... state is not loginRegisterState")
                         }
                         return true
                     } else {
@@ -305,6 +308,7 @@ extension RVLoginViewController: UITextFieldDelegate {
                 }
             }
         } else if string == " " {
+            print("IN \(self.classForCoder).shouldChange, have string \(string), ")
             if emailField {
                 if text.validEmail() {
                     //lookup(email: text)
@@ -320,6 +324,7 @@ extension RVLoginViewController: UITextFieldDelegate {
             } else if passwordField {
                 if text.validPassword() {
                     showHidePasswordMessage(message: "", show: false)
+               //     print("IN \(self.classForCoder).shouldChange, have password \(text), ")
                     if let state = self.loginRegisterState {
                         if state == "Login" {
                             showLoginButton()
@@ -351,13 +356,19 @@ extension RVLoginViewController: UITextFieldDelegate {
                 }
             } else if passwordField {
                 if combined.validPassword() {
+               //      print("IN \(self.classForCoder).shouldChange, have password with count == 1 \(text), string: \(string)")
                     showHidePasswordMessage(message: "", show: false)
                     if let state = self.loginRegisterState {
+                 //       print("In \(self.classForCoder).shouldChange state have loginRegisterState")
                         if state == "Login" {
+                      //       print("In \(self.classForCoder).shouldChange state have loginRegisterState showing LoginButton")
                             showLoginButton()
                         } else {
+                     //       print("In \(self.classForCoder).shouldChange state have loginRegisterState showing RegisterButton")
                             showRegisterButton()
                         }
+                    } else {
+                        print("In \(self.classForCoder).shouldChange state is not loginRegisterState")
                     }
                     return true
                 } else {

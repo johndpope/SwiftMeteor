@@ -18,7 +18,7 @@ class RVTransactionListConfiguration: RVBaseConfiguration {
         self.topInTopAreaHeight     = 0.0
         self.middleInTopAreaHeight  = 0.0
         self.bottomInTopAreaHeight  = 0.0
-        self.scopes = [[String: RVKeys]]()
+        self.scopes = [[RVKeys.title.rawValue: RVKeys.title], [RVKeys.fullName.rawValue: RVKeys.fullName]]
     }
     override func createDatasources() {
         let topViewDatasource = RVBaseTopViewDatasource()

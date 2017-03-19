@@ -17,5 +17,8 @@ class RVBaseBaseViewController: UIViewController {
     var listeners = [RVListener]()
     var userProfile: RVUserProfile? { get { return RVCoreInfo.sharedInstance.userProfile }}
     func hideView(view: UIView?) { if let view = view { view.isHidden = true } }
-    func showView(view: UIView?) { if let view = view { view.isHidden = false} }
+    func showView(view: UIView?) {
+        if let view = view { view.isHidden = false}
+        else {print("In \(self.classForCoder).showView, view doesn't exist") }
+    }
 }
