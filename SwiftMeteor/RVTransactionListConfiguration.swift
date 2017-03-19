@@ -15,7 +15,7 @@ class RVTransactionListConfiguration: RVBaseConfiguration {
         self.installRefresh         = false
         self.SLKIsInverted          = false
         self.navigationBarTitle     = "Transactions"
-        self.showTextInputBar       = false
+        self.showTextInputBar       = true
         self.topInTopAreaHeight     = 0.0
         self.middleInTopAreaHeight  = 0.0
         self.bottomInTopAreaHeight  = 0.0
@@ -64,29 +64,23 @@ class RVTransactionListConfiguration: RVBaseConfiguration {
                 if let top = self.stack.last {
                     query.addAnd(term: .parentId, value: top.localId as AnyObject, comparison: .eq)
                 }
-                if let rawSortField = params[RVBaseConfiguration.sortField] as? String {
-                    if let sortField = RVKeys(rawValue: rawSortField) {
-                        switch(sortField) {
-                        case .fullName:
-                            if let text = params[RVBaseConfiguration.textField] as? String {
-                                query.fixedTerm = RVQueryItem(term: .fullName, value: text.lowercased() as AnyObject, comparison: .regex)
-                            } else {
-                                query.fixedTerm = RVQueryItem(term: .fullName, value: "a" as AnyObject, comparison: .regex)
-                            }
-                            query.addSort(field: .fullName, order: .ascending)
-                        case .createdAt:
-                            query.fixedTerm = RVQueryItem(term: .createdAt, value: RVEJSON.convertToEJSONDate(Date()) as AnyObject, comparison: .lte)
-                            query.addSort(field: .createdAt, order: .ascending)
-                        default:
-                            print("In \(self.instanceType).configure, \(RVBaseConfiguration.sortField) \(rawSortField), not implemented")
+                if let sortField = params[RVFilterTerms.Keys.sortField.rawValue] as? RVKeys  {
+                    switch(sortField) {
+
+                    case .fullName, .title:
+                        if let text = params[RVFilterTerms.Keys.value.rawValue] as? String {
+                            query.fixedTerm = RVQueryItem(term: sortField, value: text.lowercased() as AnyObject, comparison: .regex)
+                        } else {
+                            query.fixedTerm = RVQueryItem(term: sortField, value: "a" as AnyObject, comparison: .regex)
                         }
-                    } else {
-                        print("In \(self.instanceType).configure, invalid \(RVBaseConfiguration.sortField) \(rawSortField)")
+                        query.addSort(field: sortField, order: .ascending)
+                    case .createdAt:
+                        query.fixedTerm = RVQueryItem(term: .createdAt, value: RVEJSON.convertToEJSONDate(Date()) as AnyObject, comparison: .lte)
+                        query.addSort(field: .createdAt, order: .ascending)
+                    default:
+                        print("In \(self.instanceType).configure, \(RVBaseConfiguration.sortField) \(sortField.rawValue), not implemented")
                     }
-                } else {
-                    print("In \(self.instanceType).configure, no \(RVBaseConfiguration.sortField) provided")
-                }
-                
+                }                
                 return query
             }
             queryFunctions[.filter] = filterQuery

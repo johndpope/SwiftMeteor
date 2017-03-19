@@ -381,7 +381,22 @@ extension RVBaseSLKViewController: UISearchResultsUpdating {
     // Called when the search bar's text or scope has changed or when the search bar becomes first responder.
     public func updateSearchResults(for searchController: UISearchController) {
         print("In \(instanceType).updateSearchResults, active: \(searchController.isActive)")
-        processSearchEvent(searchController: searchController)
+        if searchController.isActive {
+            processSearchEvent(searchController: searchController)
+        } else {
+            //searchController.searchBar.text = ""
+            endSearch()
+        }
+    }
+    func endSearch() {
+        if let datasource = configuration.findDatasource(type: .filter) {
+            configuration.manager.resetDatasource(datasource: datasource, callback: { (error) in })
+        }
+        if let datasource = self.configuration.findDatasource(type: .main) {
+            self.configuration.manager.expandDatasource(datasource: datasource, callback: { }) }
+        if let datasource = self.configuration.findDatasource(type: .top) {
+            self.configuration.manager.expandDatasource(datasource: datasource, callback: { }) }
+        
     }
     func processSearchEvent(searchController: UISearchController) {
         let searchBar = searchController.searchBar
@@ -409,8 +424,38 @@ extension RVBaseSLKViewController: UISearchResultsUpdating {
         }
         performSearch(searchText: searchText, field: searchKey)
     }
-    func performSearch(searchText: String, field: RVKeys) {
-        
+    func performSearch(searchText: String, field: RVKeys, order: RVSortOrder = .ascending) {
+
+        if let datasource = self.configuration.findDatasource(type: .main) {
+            self.configuration.manager.collapseDatasource(datasource: datasource, callback: {
+                
+            })
+        }
+        if let datasource = self.configuration.findDatasource(type: .top) {
+            self.configuration.manager.collapseDatasource(datasource: datasource, callback: { }) }
+        let filterTerms = RVFilterTerms(sortField: field, value: searchText as AnyObject, order: order)
+        if let datasource = configuration.findDatasource(type: .filter) {
+
+            configuration.manager.resetDatasource(datasource: datasource, callback: { (error) in
+                self.configuration.manager.expandDatasource(datasource: datasource, callback: {
+
+                    if let queryFunction = self.configuration.queryFunctions[.filter] {
+                        let query = queryFunction(filterTerms.params)
+                        self.configuration.manager.startDatasource(datasource: datasource, query: query, callback: { (error) in
+                            if let error = error {
+                                error.append(message: "In \(self.classForCoder).performSearch got error")
+                                error.printError()
+                            } else {
+      
+                            }
+                        })
+                        
+                    }
+                })
+            })
+        } else {
+            print("In \(self.classForCoder).processSearch, did not find Filter Datasource")
+        }
     }
     func replaceOperation(operation: RVOperation, operationName: String = "") -> RVOperation {
         if operation.sameOperation(operation: self.searchOperation) {
@@ -512,7 +557,7 @@ extension RVBaseSLKViewController {
             transaction.entityModelType = .userProfile
             transaction.entityTitle = loggedInUser.fullName
         }
-        transaction.title = "Elmo"
+        transaction.title = text
         transaction.transactionType = .updated
         transaction.create { (model, error) in
             if let error = error {

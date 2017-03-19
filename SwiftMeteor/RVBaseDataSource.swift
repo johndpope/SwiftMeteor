@@ -937,11 +937,15 @@ class RVBaseDataSource: NSObject {
                         let indexSet = IndexSet(integer: manager.section(datasource: self))
                         tableView.reloadSections(indexSet, with: self.animation)
                         tableView.endUpdates()
+                    } else if !self.collapseOrExpandOperationActive && self.collapsed {
+                        self.array = [RVBaseModel]()
+                        self.offset = 0
                     }
                     callback()
                 }
             } else if let _ = self.scrollView as? UICollectionView {
-                
+                print("In \(self.instanceType).reset, UICollectionView Not Implemented")
+                callback()
             } else {
                 self.flushOperations()
                 DispatchQueue.main.async {

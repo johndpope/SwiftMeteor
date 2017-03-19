@@ -42,6 +42,10 @@ class RVDSManager2: RVDSManager {
             self.collapseDatasource(datasource: datasource, callback: callback)
         }
     }
+    func resetDatasource(datasource: RVBaseDataSource, callback: @escaping (RVError?) -> Void ) {
+        let operation = RVManagerResetDatasourceOperation(title: "Reset Datasource", datasource: datasource, callback: callback)
+        self.queue.addOperation(operation)
+    }
 }
 class RVManagerCollapseOperation: RVManagerExpandOperation {
     override func actualOperation(datasource: RVBaseDataSource, completeOperation: @escaping() -> Void) {
@@ -202,6 +206,30 @@ class RVManagerStartDatasourceOperation: RVAsyncOperation {
             completeOperation()
         }
 
+    }
+}
+class RVManagerResetDatasourceOperation: RVAsyncOperation {
+    var datasource: RVBaseDataSource
+    var callback: (RVError?) -> Void
+    init(title: String, datasource: RVBaseDataSource, callback: @escaping(RVError?) -> Void ) {
+        self.datasource = datasource
+        self.callback = callback
+        super.init(title: title)
+    }
+    override func main() {
+        
+        if self.isCancelled {
+            self.callback(nil)
+            completeOperation()
+            return
+        } else {
+            
+            self.datasource.reset {
+                
+                self.callback(nil)
+                self.completeOperation()
+            }
+        }
     }
 }
 class RVManagerStopDatasourceOperation: RVManagerStartDatasourceOperation {
