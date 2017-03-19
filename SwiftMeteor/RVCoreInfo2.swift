@@ -36,6 +36,12 @@ class RVCoreInfo2 {
             self._loggedInUserProfile = newValue
         }
     }
+    var loggedInUserProfileId: String? {
+        get {
+            if let profile = self.loggedInUserProfile { return profile.localId}
+            return nil
+        }
+    }
     var navigationBarColor: UIColor { get { return core.navigationBarColor }}
     var loggedInSuccess: Bool = false
     var username: String? = nil

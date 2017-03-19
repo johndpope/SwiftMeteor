@@ -20,18 +20,23 @@ class RVTransactionListConfiguration: RVBaseConfiguration {
         self.bottomInTopAreaHeight  = 0.0
         self.scopes = [[RVKeys.title.rawValue: RVKeys.title], [RVKeys.fullName.rawValue: RVKeys.fullName]]
     }
-    override func createDatasources() {
+    override func instantiateTopDatasource() -> RVBaseDataSource? {
         let topViewDatasource = RVBaseTopViewDatasource()
         topViewDatasource.datasourceType = .top
-        self.topDatasource = topViewDatasource
-        
+        return topViewDatasource
+    }
+    override func instantiateMainDatasource() -> RVBaseDataSource? {
         let mainDatasource = RVTransactionDatasource2()
         mainDatasource.datasourceType = .main
-        self.mainDatasource = mainDatasource
+        
+        return mainDatasource
+    }
+    override func instantiateFilterDatasource() -> RVBaseDataSource? {
         let filterDatasource = RVTransactionDatasource2(maxArraySize: RVBaseConfiguration.DefaultFilterSize, filterMode: true)
         filterDatasource.datasourceType = .filter
-        self.filterDatasource = filterDatasource
+        return filterDatasource
     }
+
     override func createQueries() {
         queryFunctions[.top] = {(params) in return RVQuery() } // dummy value
         if let datasource = self.mainDatasource {

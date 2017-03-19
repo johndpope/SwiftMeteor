@@ -17,9 +17,30 @@ class RVBaseConfiguration {
     var navigationBarTitle: String = "Replace"
     var manager =           RVDSManager2()
     var subscriptionId:     String? = nil
-    var topDatasource:      RVBaseDataSource? = nil
-    var mainDatasource:     RVBaseDataSource? = nil
-    var filterDatasource:   RVBaseDataSource? = nil
+    fileprivate var _top: RVBaseDataSource? = nil
+    fileprivate var _main: RVBaseDataSource? = nil
+    fileprivate var _filter: RVBaseDataSource? = nil
+    var topDatasource:      RVBaseDataSource? {
+        get {
+            if let ds = _top { return ds }
+            _top = instantiateTopDatasource()
+            return _top
+        }
+    }
+    var mainDatasource:     RVBaseDataSource? {
+        get {
+            if let ds = _main { return ds }
+            _main = instantiateMainDatasource()
+            return _main
+        }
+    }
+    var filterDatasource:   RVBaseDataSource? {
+        get {
+            if let ds = _filter { return ds }
+            _filter = instantiateFilterDatasource()
+            return _filter
+        }
+    }
     var showSearch:         Bool = false
     var showTopView:        Bool = false
     var installRefresh:     Bool = false
@@ -28,7 +49,7 @@ class RVBaseConfiguration {
     var middleInTopAreaHeight:  CGFloat = 0.0
     var bottomInTopAreaHeight:  CGFloat = 0.0
     var stack = [RVBaseModel]()
-    var datasources =      [RVBaseDataSource]()
+    //var datasources =      [RVBaseDataSource]()
     var navigationBarColor = UIColor.facebookBlue()
     var SLKIsInverted: Bool = true
     typealias queryFunction = (_ params: [String: AnyObject]) -> (RVQuery)
@@ -37,31 +58,35 @@ class RVBaseConfiguration {
     var installSearchController:    Bool   = true
     var installRefreshControl:      Bool   = true
     var loggedInUserProfile:        RVUserProfile?  { get { return RVCoreInfo2.shared.loggedInUserProfile }}
-    var loggedInUserProfileId:      String? {
-        get {
-            if let profile = self.loggedInUserProfile { return profile.localId }
-            return nil
-        }
-    }
+    var loggedInUserProfileId:      String?         { get { return RVCoreInfo2.shared.loggedInUserProfileId }}
     var domain:                     RVDomain?       { get { return RVCoreInfo2.shared.domain }}
     var domainId:                   String?         { get { return RVCoreInfo2.shared.domainId }}
     func configure(stack: [RVBaseModel], callback: @escaping () -> Void) {
         self.stack = stack
         configureUI()
-        createDatasources()
         createQueries()
         callback()
     }
     func configureUI() {
         print("In \(self.instanceType).configureUI needs to be overridden")
     }
-    func createDatasources() {
-        print("In \(self.instanceType).createDatasources needs to be overridden")
-    }
     func createQueries() {
         print("In \(self.instanceType).createQueries needs to be overridden")
     }
-    
+    func instantiateTopDatasource() -> RVBaseDataSource? {
+        return nil
+    }
+    func instantiateMainDatasource() -> RVBaseDataSource? {
+        return nil
+    }
+    func instantiateFilterDatasource() -> RVBaseDataSource? {
+        return nil
+    }
+    func nullOutDatasources() {
+        _top        = nil
+        _main       = nil
+        _filter     = nil
+    }
 
 }
 
@@ -71,7 +96,6 @@ extension RVBaseConfiguration {
         self.unwind {
                 //    print("In \(self.instanceType).install; unwound")
                         self.loaded = true
-            self.createDatasources()
             self.manager = RVDSManager2(scrollView: scrollView)
             if let datasource = self.topDatasource      { self.addSection(section: datasource) }
             if let datasource = self.mainDatasource     { self.addSection(section: datasource) }
@@ -133,17 +157,32 @@ extension RVBaseConfiguration {
     }
     func addSection(section: RVBaseDataSource) {
         self.manager.addSection(section: section)
-        self.datasources.append(section)
+        //self.datasources.append(section)
     }
     func unwind(callback: @escaping() -> Void ) {
         manager.removeAllSections {
-            self.datasources = [RVBaseDataSource]()
+            self.nullOutDatasources()
             self.loaded = false
             callback()
         }
     }
+    /*
     func findDatasource(candidate: RVBaseDataSource) -> RVBaseDataSource? {
         for datasource in datasources { if datasource === candidate { return datasource } }
         return nil
+    }
+ */
+    func findDatasource(type: RVBaseDataSource.DatasourceType ) -> RVBaseDataSource? {
+        switch(type) {
+        case .top:
+            return _top
+        case .main:
+            return _main
+        case .filter:
+            return _filter
+        default:
+            print("In \(self.instanceType).findDatasource, unaddressed type: \(type.rawValue)")
+            return nil
+        }
     }
 }
