@@ -67,7 +67,9 @@ class RVViewDeck: NSObject {
         get { return deckController.centerViewController }
         set { deckController.centerViewController = newValue}
     }
-
+    func changeState(newState: RVNewBaseState, callback: @escaping() -> Void) {
+        callback()
+    }
     func initialize(appDelegate: AppDelegate) {
         RVCoreInfo.sharedInstance.appState = RVLoggedoutState()
         let window = UIWindow(frame: UIScreen.main.bounds)

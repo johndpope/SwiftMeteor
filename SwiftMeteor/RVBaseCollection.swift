@@ -69,6 +69,7 @@ class RVBaseCollection: AbstractCollection {
        print("\(self.classForCoder).documentWasAdded for collection: \(collection), id: \(id)")
         if let fields = fields {
             let document = populate(id: id, fields: fields)
+            RVTransactionBroadcast.shared.documentWasAdded(document: document)
             var copy = self.elements.map { $0 }
             copy.append(document)
             self.elements = copy

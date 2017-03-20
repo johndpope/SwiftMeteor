@@ -9,7 +9,7 @@
 import UIKit
 
 class RVCoreInfo2 {
-    
+    var newAppState: RVNewBaseState = RVNewBaseState(appState: .defaultState)
     var instanceType: String { get { return String(describing: type(of: self)) } }
     static let shared: RVCoreInfo2 = {
         return RVCoreInfo2()
