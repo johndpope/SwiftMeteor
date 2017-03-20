@@ -43,7 +43,7 @@
                                         </constraints>
                                         <nil key="textColor"/>
                                         <fontDescription key="fontDescription" type="system" pointSize="19"/>
-                                        <textInputTraits key="textInputTraits" keyboardType="emailAddress"/>
+                                        <textInputTraits key="textInputTraits" spellCheckingType="no" keyboardType="emailAddress"/>
                                         <connections>
                                             <outlet property="delegate" destination="kUN-vo-280" id="qVr-NL-iyy"/>
                                         </connections>
@@ -146,15 +146,13 @@
                                 </constraints>
                             </view>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="7YG-Or-Erm" userLabel="RegisterButtonView">
-                                <rect key="frame" x="0.0" y="420" width="375" height="80"/>
+                                <rect key="frame" x="0.0" y="300" width="375" height="80"/>
                                 <subviews>
                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="wuR-Ta-bMQ">
                                         <rect key="frame" x="40" y="12" width="294" height="56"/>
                                         <color key="backgroundColor" red="0.50196081400000003" green="1" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
                                         <constraints>
-                                            <constraint firstAttribute="height" relation="greaterThanOrEqual" constant="56" id="DH4-B2-xhW"/>
                                             <constraint firstAttribute="height" constant="56" id="aSY-kA-Lhk"/>
-                                            <constraint firstAttribute="width" relation="greaterThanOrEqual" constant="294" id="emP-oB-YBa"/>
                                             <constraint firstAttribute="width" constant="294" id="xuo-6s-acw"/>
                                         </constraints>
                                         <fontDescription key="fontDescription" type="boldSystem" pointSize="20"/>
@@ -175,10 +173,10 @@
                                 </constraints>
                             </view>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="K7S-gO-smj" userLabel="LoginFailureView">
-                                <rect key="frame" x="0.0" y="500" width="375" height="87"/>
+                                <rect key="frame" x="0.0" y="380" width="375" height="207"/>
                                 <subviews>
                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Login Failure :-(" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="KlA-5s-I0Z">
-                                        <rect key="frame" x="128" y="33" width="119" height="21"/>
+                                        <rect key="frame" x="128" y="93" width="119" height="21"/>
                                         <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                         <color key="textColor" red="1" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
                                         <nil key="highlightedColor"/>
@@ -206,7 +204,7 @@
                             <constraint firstAttribute="trailing" secondItem="Qgx-Va-ePB" secondAttribute="trailing" id="ciC-Qg-Ta6"/>
                             <constraint firstItem="ZKX-tO-t6f" firstAttribute="top" secondItem="Qgx-Va-ePB" secondAttribute="bottom" id="g1e-Cl-UD0"/>
                             <constraint firstItem="Qgx-Va-ePB" firstAttribute="leading" secondItem="i1T-Nb-KWp" secondAttribute="leading" id="huA-CG-axa"/>
-                            <constraint firstItem="7YG-Or-Erm" firstAttribute="top" secondItem="AMV-cK-ddM" secondAttribute="bottom" id="lUx-Is-olq"/>
+                            <constraint firstItem="7YG-Or-Erm" firstAttribute="top" secondItem="AMV-cK-ddM" secondAttribute="bottom" constant="-120" id="lUx-Is-olq"/>
                             <constraint firstItem="AMV-cK-ddM" firstAttribute="leading" secondItem="i1T-Nb-KWp" secondAttribute="leading" id="o1b-rP-Pfr"/>
                             <constraint firstItem="K7S-gO-smj" firstAttribute="top" secondItem="7YG-Or-Erm" secondAttribute="bottom" id="qKt-ps-e56"/>
                             <constraint firstItem="Qgx-Va-ePB" firstAttribute="top" secondItem="8gp-P2-0Rg" secondAttribute="bottom" id="ql8-bf-kiZ"/>
@@ -240,10 +238,10 @@
             <objects>
                 <navigationController storyboardIdentifier="LoginNavigationController" automaticallyAdjustsScrollViewInsets="NO" id="sLf-NG-Nky" sceneMemberID="viewController">
                     <toolbarItems/>
-                    <navigationBar key="navigationBar" contentMode="scaleToFill" misplaced="YES" barStyle="black" id="0DL-SE-W8Z">
+                    <navigationBar key="navigationBar" contentMode="scaleToFill" barStyle="black" id="0DL-SE-W8Z">
                         <rect key="frame" x="0.0" y="0.0" width="375" height="44"/>
                         <autoresizingMask key="autoresizingMask"/>
-                        <color key="barTintColor" red="0.20392156859999999" green="0.7843137255" blue="0.44705882349999998" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                        <color key="barTintColor" red="0.0" green="0.47843137250000001" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                     </navigationBar>
                     <nil name="viewControllers"/>
                     <connections>

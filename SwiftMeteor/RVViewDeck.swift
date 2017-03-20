@@ -67,7 +67,7 @@ class RVViewDeck: NSObject {
         get { return deckController.centerViewController }
         set { deckController.centerViewController = newValue}
     }
-    func changeState(newState: RVNewBaseState, callback: @escaping() -> Void) {
+    func changeState(newState: RVBaseAppState4, callback: @escaping() -> Void) {
         callback()
     }
     func initialize(appDelegate: AppDelegate) {

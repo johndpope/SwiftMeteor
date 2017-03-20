@@ -162,7 +162,7 @@
         <!--Main3-->
         <scene sceneID="LrU-cq-60E">
             <objects>
-                <tabBarController storyboardIdentifier="Main3" title="Main3" id="vSN-bl-hCe" customClass="RVMainTabBarController" customModule="SwiftMeteor" customModuleProvider="target" sceneMemberID="viewController">
+                <tabBarController storyboardIdentifier="RVMainTabBarController" title="Main3" id="vSN-bl-hCe" customClass="RVMainTabBarController" customModule="SwiftMeteor" customModuleProvider="target" sceneMemberID="viewController">
                     <tabBar key="tabBar" contentMode="scaleToFill" id="mKI-Hs-LfV">
                         <rect key="frame" x="0.0" y="0.0" width="375" height="49"/>
                         <autoresizingMask key="autoresizingMask"/>

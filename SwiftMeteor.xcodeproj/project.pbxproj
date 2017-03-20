@@ -157,8 +157,17 @@
 		28D534CD1DF3E9A50003DC11 /* RVActivityIndicator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 28D534CC1DF3E9A50003DC11 /* RVActivityIndicator.swift */; };
 		28D534CF1DF3EAC20003DC11 /* RVDownloadTask.swift in Sources */ = {isa = PBXBuildFile; fileRef = 28D534CE1DF3EAC20003DC11 /* RVDownloadTask.swift */; };
 		28D7371E1E7F51880096E0A3 /* RVTransactionBroadcast.swift in Sources */ = {isa = PBXBuildFile; fileRef = 28D7371D1E7F51880096E0A3 /* RVTransactionBroadcast.swift */; };
-		28D737211E7F5B870096E0A3 /* RVNewState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 28D737201E7F5B870096E0A3 /* RVNewState.swift */; };
-		28D737231E7F5BD20096E0A3 /* RVDispatcher.swift in Sources */ = {isa = PBXBuildFile; fileRef = 28D737221E7F5BD20096E0A3 /* RVDispatcher.swift */; };
+		28D737211E7F5B870096E0A3 /* RVBaseAppState4.swift in Sources */ = {isa = PBXBuildFile; fileRef = 28D737201E7F5B870096E0A3 /* RVBaseAppState4.swift */; };
+		28D737231E7F5BD20096E0A3 /* RVStateDispatcher4.swift in Sources */ = {isa = PBXBuildFile; fileRef = 28D737221E7F5BD20096E0A3 /* RVStateDispatcher4.swift */; };
+		28D737271E7F6A720096E0A3 /* RVMainTabBarViewController4.swift in Sources */ = {isa = PBXBuildFile; fileRef = 28D737261E7F6A720096E0A3 /* RVMainTabBarViewController4.swift */; };
+		28D737291E7F6BD30096E0A3 /* RVAppStateChangeProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 28D737281E7F6BD30096E0A3 /* RVAppStateChangeProtocol.swift */; };
+		28D7372B1E7F6E000096E0A3 /* RVViewDeck4.swift in Sources */ = {isa = PBXBuildFile; fileRef = 28D7372A1E7F6E000096E0A3 /* RVViewDeck4.swift */; };
+		28D7372D1E7F7A2E0096E0A3 /* Main4.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 28D7372C1E7F7A2E0096E0A3 /* Main4.storyboard */; };
+		28D7372F1E7F7BB90096E0A3 /* RVLeftMenuNavController4.swift in Sources */ = {isa = PBXBuildFile; fileRef = 28D7372E1E7F7BB90096E0A3 /* RVLeftMenuNavController4.swift */; };
+		28D737311E7F7EEF0096E0A3 /* RVBaseVIewController44.swift in Sources */ = {isa = PBXBuildFile; fileRef = 28D737301E7F7EEF0096E0A3 /* RVBaseVIewController44.swift */; };
+		28D737331E7F7F4A0096E0A3 /* RVLeftMenuViewController4.swift in Sources */ = {isa = PBXBuildFile; fileRef = 28D737321E7F7F4A0096E0A3 /* RVLeftMenuViewController4.swift */; };
+		28D737351E7F92120096E0A3 /* RVControllerIdentifier.swift in Sources */ = {isa = PBXBuildFile; fileRef = 28D737341E7F92120096E0A3 /* RVControllerIdentifier.swift */; };
+		28D737371E7FA0860096E0A3 /* RVLeftMenuTableViewCell4.swift in Sources */ = {isa = PBXBuildFile; fileRef = 28D737361E7FA0860096E0A3 /* RVLeftMenuTableViewCell4.swift */; };
 		28D773401E30420200E8EDE0 /* RVBaseModel3.swift in Sources */ = {isa = PBXBuildFile; fileRef = 28D7733F1E30420200E8EDE0 /* RVBaseModel3.swift */; };
 		28DE2D971DFE47E900EFEECB /* RVTask.swift in Sources */ = {isa = PBXBuildFile; fileRef = 28DE2D961DFE47E900EFEECB /* RVTask.swift */; };
 		28DE2D991DFE481900EFEECB /* RVBaseModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 28DE2D981DFE481900EFEECB /* RVBaseModel.swift */; };
@@ -363,8 +372,17 @@
 		28D534CC1DF3E9A50003DC11 /* RVActivityIndicator.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RVActivityIndicator.swift; sourceTree = "<group>"; };
 		28D534CE1DF3EAC20003DC11 /* RVDownloadTask.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RVDownloadTask.swift; sourceTree = "<group>"; };
 		28D7371D1E7F51880096E0A3 /* RVTransactionBroadcast.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RVTransactionBroadcast.swift; sourceTree = "<group>"; };
-		28D737201E7F5B870096E0A3 /* RVNewState.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RVNewState.swift; sourceTree = "<group>"; };
-		28D737221E7F5BD20096E0A3 /* RVDispatcher.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RVDispatcher.swift; sourceTree = "<group>"; };
+		28D737201E7F5B870096E0A3 /* RVBaseAppState4.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RVBaseAppState4.swift; sourceTree = "<group>"; };
+		28D737221E7F5BD20096E0A3 /* RVStateDispatcher4.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RVStateDispatcher4.swift; sourceTree = "<group>"; };
+		28D737261E7F6A720096E0A3 /* RVMainTabBarViewController4.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RVMainTabBarViewController4.swift; sourceTree = "<group>"; };
+		28D737281E7F6BD30096E0A3 /* RVAppStateChangeProtocol.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RVAppStateChangeProtocol.swift; sourceTree = "<group>"; };
+		28D7372A1E7F6E000096E0A3 /* RVViewDeck4.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RVViewDeck4.swift; sourceTree = "<group>"; };
+		28D7372C1E7F7A2E0096E0A3 /* Main4.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = Main4.storyboard; sourceTree = "<group>"; };
+		28D7372E1E7F7BB90096E0A3 /* RVLeftMenuNavController4.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RVLeftMenuNavController4.swift; sourceTree = "<group>"; };
+		28D737301E7F7EEF0096E0A3 /* RVBaseVIewController44.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RVBaseVIewController44.swift; sourceTree = "<group>"; };
+		28D737321E7F7F4A0096E0A3 /* RVLeftMenuViewController4.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RVLeftMenuViewController4.swift; sourceTree = "<group>"; };
+		28D737341E7F92120096E0A3 /* RVControllerIdentifier.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RVControllerIdentifier.swift; sourceTree = "<group>"; };
+		28D737361E7FA0860096E0A3 /* RVLeftMenuTableViewCell4.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RVLeftMenuTableViewCell4.swift; sourceTree = "<group>"; };
 		28D7733F1E30420200E8EDE0 /* RVBaseModel3.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RVBaseModel3.swift; sourceTree = "<group>"; };
 		28DE2D961DFE47E900EFEECB /* RVTask.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RVTask.swift; sourceTree = "<group>"; };
 		28DE2D981DFE481900EFEECB /* RVBaseModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RVBaseModel.swift; sourceTree = "<group>"; };
@@ -438,7 +456,6 @@
 		2806BAE91E6BCB25005CA637 /* Version3 */ = {
 			isa = PBXGroup;
 			children = (
-				28D7371F1E7F5B740096E0A3 /* NewState */,
 				281868FC1E73A81400EF2B38 /* Datasource */,
 				281868EC1E7349FA00EF2B38 /* CoreInfo */,
 				280F560E1E7111DF00B025D2 /* UserList */,
@@ -801,10 +818,35 @@
 		28D7371F1E7F5B740096E0A3 /* NewState */ = {
 			isa = PBXGroup;
 			children = (
-				28D737201E7F5B870096E0A3 /* RVNewState.swift */,
-				28D737221E7F5BD20096E0A3 /* RVDispatcher.swift */,
+				28D737201E7F5B870096E0A3 /* RVBaseAppState4.swift */,
+				28D737221E7F5BD20096E0A3 /* RVStateDispatcher4.swift */,
 			);
 			name = NewState;
+			sourceTree = "<group>";
+		};
+		28D737241E7F6A100096E0A3 /* Version4 */ = {
+			isa = PBXGroup;
+			children = (
+				28D737251E7F6A1F0096E0A3 /* Main */,
+				28D7371F1E7F5B740096E0A3 /* NewState */,
+			);
+			name = Version4;
+			sourceTree = "<group>";
+		};
+		28D737251E7F6A1F0096E0A3 /* Main */ = {
+			isa = PBXGroup;
+			children = (
+				28D737261E7F6A720096E0A3 /* RVMainTabBarViewController4.swift */,
+				28D737281E7F6BD30096E0A3 /* RVAppStateChangeProtocol.swift */,
+				28D7372A1E7F6E000096E0A3 /* RVViewDeck4.swift */,
+				28D7372C1E7F7A2E0096E0A3 /* Main4.storyboard */,
+				28D7372E1E7F7BB90096E0A3 /* RVLeftMenuNavController4.swift */,
+				28D737301E7F7EEF0096E0A3 /* RVBaseVIewController44.swift */,
+				28D737321E7F7F4A0096E0A3 /* RVLeftMenuViewController4.swift */,
+				28D737341E7F92120096E0A3 /* RVControllerIdentifier.swift */,
+				28D737361E7FA0860096E0A3 /* RVLeftMenuTableViewCell4.swift */,
+			);
+			name = Main;
 			sourceTree = "<group>";
 		};
 		28DE2D951DFE47C900EFEECB /* Models */ = {
@@ -891,6 +933,7 @@
 		28F53E6B1DEB5F71009641F0 /* SwiftMeteor */ = {
 			isa = PBXGroup;
 			children = (
+				28D737241E7F6A100096E0A3 /* Version4 */,
 				2806BAE91E6BCB25005CA637 /* Version3 */,
 				283460A21E469BB40009D606 /* Version2 */,
 				283460971E46625C0009D606 /* Messages */,
@@ -1101,6 +1144,7 @@
 				2894BA901E3DA76D008AD39C /* RVWatchGroupView.xib in Resources */,
 				28A6FAA51E70F7BE00A646D2 /* Main3.storyboard in Resources */,
 				28F838BC1E43CB5F0002E052 /* LoginScene.storyboard in Resources */,
+				28D7372D1E7F7A2E0096E0A3 /* Main4.storyboard in Resources */,
 				280F56101E7111FC00B025D2 /* UserList2.storyboard in Resources */,
 				28A2A2D91E393719002AA1A8 /* JNW.png in Resources */,
 				2836E6151E407828009CA7EB /* MyCell.xib in Resources */,
@@ -1183,11 +1227,15 @@
 			buildActionMask = 2147483647;
 			files = (
 				289A45FD1E484173001BBB29 /* RVUserDatasource.swift in Sources */,
+				28D737291E7F6BD30096E0A3 /* RVAppStateChangeProtocol.swift in Sources */,
 				286CA32F1E3285B300B081B8 /* RVSetting.swift in Sources */,
 				2870CCD11DECD81F005C6FB5 /* AWSUserFileManager.swift in Sources */,
 				28E65DA11E1DB166004E82F5 /* RVLeftMenuController.swift in Sources */,
 				281868F41E73519D00EF2B38 /* RVMainTabBarController.swift in Sources */,
+				28D737331E7F7F4A0096E0A3 /* RVLeftMenuViewController4.swift in Sources */,
 				2836E6131E407436009CA7EB /* MyCell.swift in Sources */,
+				28D737311E7F7EEF0096E0A3 /* RVBaseVIewController44.swift in Sources */,
+				28D737371E7FA0860096E0A3 /* RVLeftMenuTableViewCell4.swift in Sources */,
 				28F5C0B01E32B5D00012E52A /* RVHousehold.swift in Sources */,
 				284E84A21DFD30F600A9F33A /* RVAWS.swift in Sources */,
 				28F5C0B21E32BA610012E52A /* RVWatchGroup.swift in Sources */,
@@ -1195,6 +1243,7 @@
 				28257A3D1E71E1D8008EB4D0 /* RVAdminCode.swift in Sources */,
 				28DE2D991DFE481900EFEECB /* RVBaseModel.swift in Sources */,
 				2815FDF91E56C5EE00A7B829 /* RVMemberViewController.swift in Sources */,
+				28D7372B1E7F6E000096E0A3 /* RVViewDeck4.swift in Sources */,
 				28F53E711DEB5F71009641F0 /* SecondViewController.swift in Sources */,
 				2806BAFD1E6D05B6005CA637 /* RVTransactionAppState.swift in Sources */,
 				284708751E58F314000BBCCE /* RVEJSON.swift in Sources */,
@@ -1229,6 +1278,7 @@
 				28DE2D9F1DFE713300EFEECB /* RVMeteorMethods.swift in Sources */,
 				284708701E58EE6C000BBCCE /* RVPrivateChat.swift in Sources */,
 				281869001E7478D500EF2B38 /* RVBaseConfiguration.swift in Sources */,
+				28D7372F1E7F7BB90096E0A3 /* RVLeftMenuNavController4.swift in Sources */,
 				284FBAD41DEC142B00446C86 /* RVMainTabViewController.swift in Sources */,
 				2806BAF81E6D03F2005CA637 /* RVBaseAppState2.swift in Sources */,
 				28F5C0B41E32BBD00012E52A /* RVClientRole.swift in Sources */,
@@ -1326,7 +1376,7 @@
 				283460961E4661830009D606 /* RVMessageListState.swift in Sources */,
 				285C608C1E70B440003270AA /* RVServerDBActions.swift in Sources */,
 				286CA31B1E327A3B00B081B8 /* RVGooglePlace.swift in Sources */,
-				28D737231E7F5BD20096E0A3 /* RVDispatcher.swift in Sources */,
+				28D737231E7F5BD20096E0A3 /* RVStateDispatcher4.swift in Sources */,
 				28DE2D9D1DFE68C300EFEECB /* RVImage.swift in Sources */,
 				28A93E571E5AAC2200EFE7D9 /* RVAbstractMeteorCollection.swift in Sources */,
 				28D534CF1DF3EAC20003DC11 /* RVDownloadTask.swift in Sources */,
@@ -1335,13 +1385,15 @@
 				2894BA951E3DB546008AD39C /* RVWatchGroupInfoState.swift in Sources */,
 				284FBAD71DEC161000446C86 /* UIColor+Extension.swift in Sources */,
 				28DE2D971DFE47E900EFEECB /* RVTask.swift in Sources */,
+				28D737351E7F92120096E0A3 /* RVControllerIdentifier.swift in Sources */,
 				28E65DA71E1DB4E5004E82F5 /* RVLeftMenuNavController.swift in Sources */,
 				284708731E58EF93000BBCCE /* RVMemberToMemberChatState.swift in Sources */,
-				28D737211E7F5B870096E0A3 /* RVNewState.swift in Sources */,
+				28D737211E7F5B870096E0A3 /* RVBaseAppState4.swift in Sources */,
 				2857C0011E57B70600865FDC /* RVSlackMessageTextView.swift in Sources */,
 				286CA3271E327C9700B081B8 /* RVAPIKeys.swift in Sources */,
 				280DE6E81DEF43380031C352 /* RVS3Protocol.swift in Sources */,
 				280F56121E71140C00B025D2 /* RVUserListController.swift in Sources */,
+				28D737271E7F6A720096E0A3 /* RVMainTabBarViewController4.swift in Sources */,
 				286CA31D1E327B5E00B081B8 /* RVGeosearch.swift in Sources */,
 				28447A6C1E3BAE80001DD9DA /* RVLeftControllerState.swift in Sources */,
 				289A45FB1E483FB3001BBB29 /* RVUserTableViewCell.swift in Sources */,

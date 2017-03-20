@@ -9,6 +9,7 @@
 import UIKit
 
 class RVMainTabBarController: UITabBarController {
+    static let identifier = "RVMainTabBarController"
     override func viewDidLoad() {
         super.viewDidLoad()
 /*

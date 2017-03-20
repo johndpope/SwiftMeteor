@@ -342,7 +342,7 @@ extension DDPClient {
     @discardableResult public func loginWithToken(_ callback: DDPMethodCallback?) -> Bool {
         if let token = userData.string(forKey: DDP_TOKEN),
             let tokenDate = userData.object(forKey: DDP_TOKEN_EXPIRES) as? Date {
-                print("Found token & token expires \(token), \(tokenDate)")
+                //print("Found token & token expires \(token), \(tokenDate)")
                 if (tokenDate.compare(Date()) == ComparisonResult.orderedDescending) {
                     let params = ["resume":token] as NSDictionary
                     login(params, callback:callback)

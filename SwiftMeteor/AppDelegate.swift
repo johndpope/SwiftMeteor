@@ -17,14 +17,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -> Bool {
-
-        RVOperationQueue().test()
         let _ = RVCoreInfo2.shared
-        RVViewDeck.sharedInstance.initialize(appDelegate: self)
-        UIDevice.current.beginGeneratingDeviceOrientationNotifications()
-        UISearchBar.appearance().barTintColor = UIColor.candyGreen()
-        UISearchBar.appearance().tintColor = UIColor.white
-        UITextField.appearance(whenContainedInInstancesOf: [UISearchBar.self]).tintColor = UIColor.candyGreen()
+       // RVViewDeck.sharedInstance.initialize(appDelegate: self)
+        RVViewDeck4.shared.initialize(appDelegate: self)
         return true
     }
 

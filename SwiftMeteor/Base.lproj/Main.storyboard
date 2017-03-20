@@ -1293,14 +1293,14 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <view contentMode="scaleToFill" restorationIdentifier="TopVIew" translatesAutoresizingMaskIntoConstraints="NO" id="S5l-dG-Rn8" userLabel="TopView">
-                                <rect key="frame" x="0.0" y="20" width="375" height="60"/>
+                                <rect key="frame" x="0.0" y="64" width="375" height="60"/>
                                 <color key="backgroundColor" red="0.7019608021" green="0.7019608021" blue="0.7019608021" alpha="1" colorSpace="calibratedRGB"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="60" id="9WW-8x-JSH"/>
                                 </constraints>
                             </view>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="nSX-LP-sqW" userLabel="MessageView">
-                                <rect key="frame" x="0.0" y="80" width="375" height="405"/>
+                                <rect key="frame" x="0.0" y="124" width="375" height="405"/>
                                 <subviews>
                                     <textView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="Zd1-0I-XDf">
                                         <rect key="frame" x="8" y="44" width="359" height="90"/>
@@ -1389,19 +1389,20 @@
                                     <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="BOS-NL-IG3" userLabel="ImageCenteringView">
                                         <rect key="frame" x="8" y="235" width="249" height="170"/>
                                         <subviews>
-                                            <imageView userInteractionEnabled="NO" contentMode="scaleAspectFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" ambiguous="YES" misplaced="YES" translatesAutoresizingMaskIntoConstraints="NO" id="lPt-sX-Ao7">
+                                            <imageView userInteractionEnabled="NO" contentMode="scaleAspectFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="lPt-sX-Ao7">
                                                 <rect key="frame" x="8" y="4" width="233" height="162"/>
                                             </imageView>
                                         </subviews>
                                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                         <constraints>
-                                            <constraint firstAttribute="trailing" relation="greaterThanOrEqual" secondItem="lPt-sX-Ao7" secondAttribute="trailing" constant="8" id="DxM-yH-Qqk"/>
+                                            <constraint firstAttribute="trailing" secondItem="lPt-sX-Ao7" secondAttribute="trailing" constant="8" id="DxM-yH-Qqk"/>
                                             <constraint firstAttribute="bottom" relation="greaterThanOrEqual" secondItem="lPt-sX-Ao7" secondAttribute="bottom" constant="4" id="LSh-bX-Huk"/>
                                             <constraint firstAttribute="height" constant="170" id="Msv-27-4oH"/>
                                             <constraint firstItem="lPt-sX-Ao7" firstAttribute="top" relation="greaterThanOrEqual" secondItem="BOS-NL-IG3" secondAttribute="top" constant="4" id="WXU-t1-JRz"/>
                                             <constraint firstItem="lPt-sX-Ao7" firstAttribute="centerY" secondItem="BOS-NL-IG3" secondAttribute="centerY" id="aMl-YC-WRV"/>
+                                            <constraint firstItem="lPt-sX-Ao7" firstAttribute="top" secondItem="BOS-NL-IG3" secondAttribute="top" constant="4" id="dAV-s3-BRJ"/>
                                             <constraint firstItem="lPt-sX-Ao7" firstAttribute="centerX" secondItem="BOS-NL-IG3" secondAttribute="centerX" id="utK-Ft-OPb"/>
-                                            <constraint firstItem="lPt-sX-Ao7" firstAttribute="leading" relation="greaterThanOrEqual" secondItem="BOS-NL-IG3" secondAttribute="leading" constant="8" id="v1s-6q-Ldm"/>
+                                            <constraint firstItem="lPt-sX-Ao7" firstAttribute="leading" secondItem="BOS-NL-IG3" secondAttribute="leading" constant="8" id="v1s-6q-Ldm"/>
                                         </constraints>
                                     </view>
                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="cze-n6-Dl0">
@@ -1567,7 +1568,7 @@
                     <toolbarItems/>
                     <simulatedStatusBarMetrics key="simulatedStatusBarMetrics" statusBarStyle="lightContent"/>
                     <simulatedNavigationBarMetrics key="simulatedTopBarMetrics" translucent="NO"/>
-                    <navigationBar key="navigationBar" contentMode="scaleToFill" barStyle="black" translucent="NO" id="jfi-wf-cGW">
+                    <navigationBar key="navigationBar" contentMode="scaleToFill" misplaced="YES" barStyle="black" translucent="NO" id="jfi-wf-cGW">
                         <rect key="frame" x="0.0" y="0.0" width="375" height="44"/>
                         <autoresizingMask key="autoresizingMask"/>
                         <color key="barTintColor" red="0.20392156859999999" green="0.7843137255" blue="0.44705882349999998" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
@@ -1586,7 +1587,7 @@
             <objects>
                 <navigationController storyboardIdentifier="RVRightNavigationController" automaticallyAdjustsScrollViewInsets="NO" id="rJl-HZ-iAi" customClass="RVRightNavigationController" customModule="SwiftMeteor" customModuleProvider="target" sceneMemberID="viewController">
                     <toolbarItems/>
-                    <navigationBar key="navigationBar" contentMode="scaleToFill" barStyle="black" id="o8p-Wg-Hmm">
+                    <navigationBar key="navigationBar" contentMode="scaleToFill" misplaced="YES" barStyle="black" id="o8p-Wg-Hmm">
                         <rect key="frame" x="0.0" y="0.0" width="375" height="44"/>
                         <autoresizingMask key="autoresizingMask"/>
                         <color key="barTintColor" red="0.20392156859999999" green="0.7843137255" blue="0.44705882349999998" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
@@ -1631,7 +1632,7 @@
             <objects>
                 <navigationController storyboardIdentifier="WatchGroupCreateEditNavController" automaticallyAdjustsScrollViewInsets="NO" id="syz-ag-EeW" sceneMemberID="viewController">
                     <toolbarItems/>
-                    <navigationBar key="navigationBar" contentMode="scaleToFill" barStyle="black" id="Axq-AT-WeH">
+                    <navigationBar key="navigationBar" contentMode="scaleToFill" misplaced="YES" barStyle="black" id="Axq-AT-WeH">
                         <rect key="frame" x="0.0" y="0.0" width="375" height="44"/>
                         <autoresizingMask key="autoresizingMask"/>
                         <color key="barTintColor" red="0.20392156859999999" green="0.7843137255" blue="0.44705882349999998" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
@@ -1670,6 +1671,6 @@
         <image name="second" width="30" height="30"/>
     </resources>
     <inferredMetricsTieBreakers>
-        <segue reference="otv-c3-iKG"/>
+        <segue reference="0wr-MJ-PdP"/>
     </inferredMetricsTieBreakers>
 </document>

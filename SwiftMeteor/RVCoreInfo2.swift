@@ -9,18 +9,18 @@
 import UIKit
 
 class RVCoreInfo2 {
-    var newAppState: RVNewBaseState = RVNewBaseState(appState: .loggedOut) {
+    var currentAppState: RVBaseAppState4 = RVBaseAppState4(appState: .loggedOut) {
         didSet { _priorAppState = oldValue }
     }
-    private var _priorAppState: RVNewBaseState = RVNewBaseState(appState: .defaultState)
-    var priorAppState: RVNewBaseState  {
+    private var _priorAppState: RVBaseAppState4 = RVBaseAppState4(appState: .defaultState)
+    var priorAppState: RVBaseAppState4  {
         get { return _priorAppState }
     }
     var instanceType: String { get { return String(describing: type(of: self)) } }
     static let shared: RVCoreInfo2 = {
         return RVCoreInfo2()
     }()
-    let core = RVCoreInfo.sharedInstance
+
     //var domain: RVDomain? { get { return core.domain } }
     var domain: RVDomain? = nil
     var domainId: String? {
@@ -31,7 +31,7 @@ class RVCoreInfo2 {
     }
     var domainName: RVDomainName { get {return RVDomainName.Rendevu }}
     var rootGroup: RVGroup? = nil
-//    var rootGroup: RVGroup? { get { return core.rootGroup }}
+
     private var _loggedInUserProfile: RVUserProfile? = nil
     var loggedInUserProfile: RVUserProfile? {
         get {
@@ -48,7 +48,8 @@ class RVCoreInfo2 {
             return nil
         }
     }
-    var navigationBarColor: UIColor { get { return core.navigationBarColor }}
+    var navigationBarColor: UIColor { get {return UIColor(colorLiteralRed: 64/256, green: 128/256, blue: 255/256, alpha: 1.0)}}
+
     var loggedInSuccess: Bool = false
     var username: String? = nil
     var appState: RVBaseAppState2 = RVLoggedOutState2()
@@ -65,8 +66,13 @@ class RVCoreInfo2 {
         NotificationCenter.default.addObserver(self, selector: #selector(RVCoreInfo2.userLoggedIn(notification:)), name: NSNotification.Name(rawValue: RVNotification.userDidLogin.rawValue), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(RVCoreInfo2.userLoggedOut(notification:)), name: NSNotification.Name(rawValue: RVNotification.userDidLogout.rawValue), object: nil)
     }
+    func logoutModels() {
+        self.loggedInUserProfile = nil
+        self.rootGroup = nil
+        self.loggedInSuccess = false
+    }
     @objc func connected(notification: NSNotification) {
-        print("In \(self.instanceType).connected")
+        //print("In \(self.instanceType).connected")
         self.getDomain2 { (error) in
             if let error = error { error.printError() }
             else {print("In \(self.instanceType).connected, have domain: \(self.domain!.localId) \(self.domain!.domainName.rawValue)") }
@@ -117,6 +123,9 @@ class RVCoreInfo2 {
         rootGroupString = rootGroupString + "\n"
         print("------- \(self.instanceType) ---------------- CoreInfo:\n\(domainString)\(userProfileString)\(username)\(rootGroupString)AppState:       \(self.appState.state2.rawValue)\n------------------------------------")
     }
+    func changeToLoggedInState() {
+        
+    }
     func completeLogin(username: String, callback: @escaping(_ error: RVError?) -> Void) {
         loggedInSuccess = false
         RVUserProfile.getOrCreateUsersUserProfile(callback: { (profile, error) in
@@ -131,7 +140,8 @@ class RVCoreInfo2 {
             } else if let profile = profile {
                 self.loggedInUserProfile = profile
                 self.username = username
-                print("In \(self.instanceType).completeLogin, have profile \(profile.localId!), \(username)")
+                print("In \(self.instanceType).completeLogin, have profile \(profile.localId!), username: \(username)")
+                RVStateDispatcher4.shared.changeState(newState: RVBaseAppState4(appState: .transactionList))
                 self.getRootGroup(callback: { (error) in
                     if let error = error {
                         self.rootGroup = nil
@@ -395,7 +405,7 @@ class RVCoreInfo2Logger: Operation {
                 error.append(message: "In \(self.classForCoder).getDomainAndRoot")
                 callback(error)
                 return
-            } else if let domain = domain {
+            } else if let _ = domain {
                //self.domain = domain
             } else {
                 error?.append(message: "In \(self.classForCoder).getDomainAndRoot")

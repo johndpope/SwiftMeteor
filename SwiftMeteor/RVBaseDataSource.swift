@@ -30,10 +30,10 @@ class RVBaseDataSource: NSObject {
         }
     }
     func subscribe(callback: @escaping(RVError?) -> Void) {
-        print("In \(self.classForCoder).subscribe...")
+       // print("In \(self.classForCoder).subscribe...")
         if let query = self.subscriptionQuery() {
             self.unsubscribe {
-                print("In \(self.classForCoder).subscribe... after Unsubscribe")
+                //print("In \(self.classForCoder).subscribe... after Unsubscribe")
                 if let subscription = self.internalSubscription {
                     let _ = subscription.subscribe(query: query, callback: {
                         callback(nil)

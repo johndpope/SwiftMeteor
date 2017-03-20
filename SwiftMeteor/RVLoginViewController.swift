@@ -35,6 +35,7 @@ class RVLoginViewController: RVBaseBaseViewController {
                                         self.hideButtons()
                                         self.hideView(view: self.passwordView)
                                         self.loginRegisterState = nil
+                                        RVStateDispatcher4.shared.changeState(newState: RVBaseAppState4(appState: .transactionList))
                                     }
                                     if operation.identifier == self.operation.identifier {
                                         self.operation = RVOperation(active: false)
@@ -440,8 +441,10 @@ extension RVLoginViewController: UITextFieldDelegate {
         RVSwiftDDP.sharedInstance.loginWithPassword(email: email.lowercased(), password: password, completionHandler: { (result , error) in
             if let error = error {
                 if !operation.cancelled && operation.identifier == self.operation.identifier {
+                    print("IN \(self.classForCoder).lookup, with error")
                     if let original = error.sourceError as? DDPError{
                         if let reason = original.reason {
+                            print("In \(self.classForCoder).lookup, reason is: \(reason)")
                             if reason == "User not found" {
                                // print("In \(self.classForCoder).lookup for email \(email), User Not Found")
                                 self.showRegisterButton()
@@ -468,7 +471,7 @@ extension RVLoginViewController: UITextFieldDelegate {
                 }
             } else {
                 // will get this if already logged in (and regardless of what is sent as email and password)
-                print("In \(self.classForCoder).lookup, did not error, but supposed to get one. Email is: \(email) and password is: \(password)")
+                print("In \(self.classForCoder).lookup, did not get error, but supposed to get one. Email is: \(email) and password is: \(password)")
             }
         })
     }

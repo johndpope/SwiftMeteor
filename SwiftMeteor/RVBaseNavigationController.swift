@@ -16,9 +16,9 @@ class RVBaseNavigationController: UINavigationController {
     }
     func setupNavigationController() {
         self.navigationBar.barStyle = UIBarStyle.black
-        self.navigationBar.barTintColor = UIColor.candyGreen()
-        UISearchBar.appearance().barTintColor = UIColor.candyGreen()
+        self.navigationBar.barTintColor = UIColor.facebookBlue()
+        UISearchBar.appearance().barTintColor = UIColor.facebookBlue()
         UISearchBar.appearance().tintColor = UIColor.white
-        UITextField.appearance(whenContainedInInstancesOf: [UISearchBar.self]).tintColor = UIColor.candyGreen()
+        UITextField.appearance(whenContainedInInstancesOf: [UISearchBar.self]).tintColor = UIColor.facebookBlue()
     }
 }

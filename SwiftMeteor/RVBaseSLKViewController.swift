@@ -32,7 +32,7 @@ class RVBaseSLKViewController: SLKTextViewController {
     
     var dsScrollView: UIScrollView? {return self.tableView }
     var instanceType: String { get { return String(describing: type(of: self)) } }
-    var deck: RVViewDeck { get { return RVViewDeck.sharedInstance }}
+    var deck: RVViewDeck { get { return RVViewDeck4.shared }}
         var users: Array = ["Allen", "Anna", "Alicia", "Arnold", "Armando", "Antonio", "Brad", "Catalaya", "Christoph", "Emerson", "Eric", "Everyone", "Steve"]
         var commands: Array = ["msg", "call", "text", "skype", "kick", "invite"]
     var channels: Array = ["General", "Random", "iOS", "Bugs", "Sports", "Android", "UI", "SSB"]
@@ -40,7 +40,9 @@ class RVBaseSLKViewController: SLKTextViewController {
     var setupSLKDatasource: Bool = true
     var searchResult: [String]? // for SLKTextViewController, not sure why
     @IBAction func searchButtonTouched(_ sender: UIBarButtonItem) { searchController.isActive = true }
-    @IBAction func menuButtonTouched(_ sender: UIBarButtonItem) { self.deck.toggleSide(side: .left) }
+    @IBAction func menuButtonTouched(_ sender: UIBarButtonItem) {
+        RVStateDispatcher4.shared.changeState(newState: RVBaseAppState4(appState: .leftMenu))
+    }
     var totalTopHeight: CGFloat {
         get {
             var height: CGFloat = 0.0
@@ -332,6 +334,7 @@ extension RVBaseSLKViewController {
             
             alertController.addAction(UIAlertAction(title: "Edit Message", style: .default, handler: { [unowned self] (action) -> Void in
                 //self.editCellMessage(gesture)
+                print("In \(self.classForCoder).didLongPressCell action \(self)")
             }))
             
             alertController.addAction(UIAlertAction(title: "Cancel", style: .cancel, handler: nil))
@@ -583,7 +586,7 @@ extension RVBaseSLKViewController {
 
         self.createTransaction(text: self.textView.text) { 
             let indexPath = IndexPath(row: 0, section: 0)
-            let rowAnimation: UITableViewRowAnimation = self.isInverted ? .bottom : .top
+            //let rowAnimation: UITableViewRowAnimation = self.isInverted ? .bottom : .top
             let scrollPosition: UITableViewScrollPosition = self.isInverted ? .bottom : .top
             
             //        self.tableView.beginUpdates()
