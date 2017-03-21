@@ -24,14 +24,14 @@ class RVBaseDataSource: NSObject {
     private var internalSubscription: RVBaseCollection? {
         get {
             if let subscription = self._subscription { return subscription}
-            print("IN \(self.classForCoder).internalSubscription")
+           // print("IN \(self.classForCoder).internalSubscription")
             self._subscription = self.subscription
             return self._subscription
         }
     }
     func subscribe(callback: @escaping(RVError?) -> Void) {
         if filterMode { return }
-       // print("In \(self.classForCoder).subscribe...")
+        //print("In \(self.classForCoder).subscribe... for datasourceType \(datasourceType).")
         if let query = self.subscriptionQuery() {
             self.unsubscribe {
                 //print("In \(self.classForCoder).subscribe... after Unsubscribe")
@@ -65,7 +65,7 @@ class RVBaseDataSource: NSObject {
     var frontTimer: Bool = false
     var frontTime: TimeInterval = 1483767600
     var backTime: TimeInterval = 1483767600
-    let minimumInterval: TimeInterval = 0.5
+    let minimumInterval: TimeInterval = 0.3
     var backTimer: Bool = false
     var array = [RVBaseModel]()
     var baseQuery: RVQuery? = nil
@@ -100,7 +100,7 @@ class RVBaseDataSource: NSObject {
         }
     }
     func basicQuery() -> RVQuery {
-        print("In \(self.instanceType).basicQuery, in base class. Need to override")
+     //   print("In \(self.instanceType).basicQuery, in base class. Need to override")
         let query = RVQuery()
         query.limit = 70
         //        query.sortOrder = .descending
@@ -127,7 +127,7 @@ class RVBaseDataSource: NSObject {
         }
     }
     func bulkQuery(query: RVQuery, callback: @escaping (_ models: [RVBaseModel]?, _ error: RVError?) -> Void) {
-        print("In \(self.instanceType).bulkQuery base class. Need to override")
+   //     print("In \(self.instanceType).bulkQuery base class. Need to override")
         RVTask.bulkQuery(query: query, callback: callback)
     }
     func subscriptionQuery() -> RVQuery? {
@@ -477,6 +477,7 @@ class RVBaseDataSource: NSObject {
                         let rvError = RVError(message: "In \(self.instanceType).queryForBack, no last item")
                         operation.cancelled = true
                         self.replaceBackOperation(operation: operation)
+                        self.backTimer = false
                         callback(rvError)
                         return
                     }
@@ -498,6 +499,7 @@ class RVBaseDataSource: NSObject {
                 error.append(message: "In \(self.instanceType).queryForBackHelper, got error")
                 operation.cancelled = true
                 self.replaceBackOperation(operation: operation)
+                self.backTimer = false
                 callback(error)
             } else if let models = models {
                 var index = 0
@@ -508,11 +510,14 @@ class RVBaseDataSource: NSObject {
                 if self.operations.findOperation(operationName: .backOperation).identifier == operation.identifier {
                     self.appendAtBack(operation: operation, items: models)
                 }
+                self.backTimer = false
                 callback(nil)
             } else {
                 print("In \(self.instanceType).queryForBackHelper, no error but no results")
                 operation.cancelled = true
                 self.replaceBackOperation(operation: operation)
+                self.backTimer = false
+                callback(nil)
             }
         }
         /*
@@ -672,12 +677,21 @@ class RVBaseDataSource: NSObject {
  
     func inBackZone(location: Int, callback: @escaping(RVError?) -> Void ) {
       //  print("In \(self.instanceType).inBackZone. location = \(location), offset = \(self.offset), array count = \(self.array.count)")
-        if Date().timeIntervalSince1970 - self.backTime < minimumInterval { return }
-        if backTimer { return }
+        if Date().timeIntervalSince1970 - self.backTime < minimumInterval {
+         //   print("In \(self.classForCoder).inBackZone failed minimums")
+            callback(nil)
+            return
+        }
+        if backTimer {
+        //    print("In \(self.classForCoder).inBackZone, backTImer is true")
+            callback(nil)
+            return
+        }
+    //    print("In \(self.classForCoder).inBackZone, proceeding")
         backTimer = true
         let frontOperation = self.operations.findOperation(operationName: .frontOperation)
         if frontOperation.active {
-            print("In \(self.instanceType).inBackZone, cancelling Front Operation ----------------------------- ")
+       //     print("In \(self.instanceType).inBackZone, cancelling Front Operation ----------------------------- ")
             frontOperation.cancelled = true
             self.operations.addOperation(operation: RVDSOperation(name: .frontOperation))
         }
@@ -695,10 +709,10 @@ class RVBaseDataSource: NSObject {
                             lastVisibleRow = lastVisiblePath.row
                         }
                     }
-                //    print("In \(self.instanceType).inBackZone, lastVisibleRow is \(lastVisibleRow), \(self.scrollViewCount) \(self.backBuffer)")
+          //          print("In \(self.instanceType).inBackZone, lastVisibleRow is \(lastVisibleRow), \(self.scrollViewCount) \(self.backBuffer)")
                     if lastVisibleRow > self.scrollViewCount - self.backBuffer {
                         if operation.identifier == self.operations.findOperation(operationName: .backOperation).identifier {
-                            //print("About to call queryForBack. LastVisibleRow is: \(lastVisibleRow) arraycount is: \(self.array.count)")
+                        //    print("About to call queryForBack. LastVisibleRow is: \(lastVisibleRow) arraycount is: \(self.array.count)")
                             self.queryForBack(callback: { (error) in
                                 if let error = error {
                                     error.printError()
@@ -711,11 +725,14 @@ class RVBaseDataSource: NSObject {
                             })
                             return
                         }
+                    } else {
+              //          print("In \(self.classForCoder).inBackZone, failed count test")
                     }
                     self.backTimer = false
                     callback(nil)
                     return
                 } else {
+                    print("In \(self.classForCoder).inBackZone, no TableView)")
                     self.backTimer = false
                     callback(nil)
                 }
@@ -1051,6 +1068,7 @@ class RVBaseDataSource: NSObject {
     func reset(callback: @escaping () -> Void) {
         if let manager = self.manager {
             if let tableView = self.scrollView as? UITableView {
+              //  print("In \(self.classForCoder).rest have tableView")
                 self.flushOperations()
                 // Give a break to allow pending operations to terminate
                 DispatchQueue.main.async {
@@ -1067,10 +1085,12 @@ class RVBaseDataSource: NSObject {
                     }
                     callback()
                 }
+                return
             } else if let _ = self.scrollView as? UICollectionView {
                 print("In \(self.instanceType).reset, UICollectionView Not Implemented")
                 callback()
             } else {
+                print("In \(self.classForCoder).reset, no TableView")
                 self.flushOperations()
                 DispatchQueue.main.async {
                     self.array = [RVBaseModel]()
@@ -1085,10 +1105,12 @@ class RVBaseDataSource: NSObject {
         }
     }
     func start(query: RVQuery, callback: @escaping (_ error: RVError?)-> Void) {
-        print("In \(self.instanceType).start")
+       // print("In \(self.instanceType).start")
         reset {
+           // print("In \(self.classForCoder).start returned from reset")
             self.baseQuery = query
             self.inBackZone(location: 0, callback: { (error) in
+               // print("In \(self.classForCoder).start inBackZone")
                 if let error = error {
                     error.append(message: "In \(self.classForCoder).start, got error")
                     callback(error)

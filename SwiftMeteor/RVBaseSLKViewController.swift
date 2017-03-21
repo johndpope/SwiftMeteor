@@ -8,7 +8,7 @@
 
 import UIKit
 import SlackTextViewController
-
+// NSNotification.Name(RVNotification.AppStateChanged.rawValue)
 class RVBaseSLKViewController: SLKTextViewController {
     @IBOutlet weak var searchControllerContainerView: UIView!
     @IBOutlet weak var TopOuterView: UIView!
@@ -21,7 +21,17 @@ class RVBaseSLKViewController: SLKTextViewController {
     var pipWindow: UIWindow?
     var commonInitDone: Bool = false
     var configuration: RVBaseConfiguration = RVBaseConfiguration()
-    var stack = [RVBaseModel]()
+    var stack = [RVBaseModel]() { didSet { _priorStack = oldValue } }
+    private var _priorStack = [RVBaseModel]()
+    var sameStack: Bool {
+        get {
+            if stack.count == _priorStack.count {
+                if stack.count == 0 { return true }
+                for i in 0..<stack.count { if stack[i] != _priorStack[i] { return false } }
+                return true
+            } else { return false }
+        }
+    }
     var tableViewInsetAdditionalHeight: CGFloat = 0.0
     //var manager = RVDSManager2()
     var searchOperation: RVOperation = RVOperation(active: false)
@@ -29,6 +39,9 @@ class RVBaseSLKViewController: SLKTextViewController {
     var searchScopes: [[String: RVKeys]] { get {return [[RVKeys.title.rawValue: RVKeys.title], [RVKeys.fullName.rawValue: RVKeys.fullName]]}}
     var installSearchControllerInTableView: Bool { get { return false }}
     var searchBarPlaceholder: String { get { return "Search..." }}
+    var coreInfo: RVCoreInfo2 { get {return RVCoreInfo2.shared }}
+
+
     
     var dsScrollView: UIScrollView? {return self.tableView }
     var instanceType: String { get { return String(describing: type(of: self)) } }
@@ -75,11 +88,24 @@ class RVBaseSLKViewController: SLKTextViewController {
 
         }
     }
-    override func viewWillAppear(_ animated: Bool) {
-        self.configureSLK()
-     //   self.navigationController?.navigationBar.titleTextAttributes = [NSForegroundColorAttributeName: UIColor.white]
-        super.viewWillAppear(animated)
+    func freshenState(completion: @escaping(RVError?) -> Void) {
+        print("In \(self.classForCoder).implementState differentState: \(coreInfo.differentTopState)")
+        if coreInfo.differentTopState {
+            configuration.manager.removeAllSections {
+                self.configuration.loaded = false
+                completion(nil)
+            }
+        } else if !sameStack {
+            configuration.manager.removeAllSections {
+                self.configuration.loaded = false
+                completion(nil)
+            }
+        } else { completion(nil) }
+    }
+    func runConfiguration() {
         if !configuration.loaded {
+            print("IN \(self.instanceType).viewWillAppear past loaded")
+            configuration.loaded = true
             configuration.manager.scrollView = self.tableView
             configuration.configure(stack: self.stack, callback: {
                 self.configuration.install(scrollView: self.tableView, callback: { (error) in
@@ -87,7 +113,7 @@ class RVBaseSLKViewController: SLKTextViewController {
                         error.append(message: "In \(self.classForCoder).viewWillAppear, got install error")
                         error.printError()
                     } else {
-                       // print("In \(self.classForCoder).viewWillAPpear, returned from install")
+                        // print("In \(self.classForCoder).viewWillAPpear, returned from install")
                         self.updateTableViewInsetHeight()
                         self.configureNavBar()
                         self.putTopViewOnTop()
@@ -101,7 +127,15 @@ class RVBaseSLKViewController: SLKTextViewController {
             putTopViewOnTop()
             configureSearchController()
         }
-
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        self.configureSLK()
+     //   self.navigationController?.navigationBar.titleTextAttributes = [NSForegroundColorAttributeName: UIColor.white]
+        super.viewWillAppear(animated)
+        freshenState { (nil) in
+            self.runConfiguration()
+        }
     }
     func updateTableViewInsetHeight() {
         if let tableView = self.dsScrollView as? UITableView {
@@ -194,7 +228,17 @@ extension RVBaseSLKViewController {
         }
         self.autoCompletionView.register(RVMessageTableViewCell.classForCoder(), forCellReuseIdentifier: RVMessageTableViewCell.AutoCompletionCellIdentifier)
         NotificationCenter.default.addObserver(self.tableView!, selector: #selector(UITableView.reloadData), name: NSNotification.Name.UIContentSizeCategoryDidChange, object: nil)
-        NotificationCenter.default.addObserver(self,  selector: #selector(RVMemberViewController.textInputbarDidMove(_:)), name: NSNotification.Name.SLKTextInputbarDidMove, object: nil)
+        NotificationCenter.default.addObserver(self,  selector: #selector(RVBaseSLKViewController.textInputbarDidMove(_:)), name: NSNotification.Name.SLKTextInputbarDidMove, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(RVBaseSLKViewController.stateDidChange(_:)), name: NSNotification.Name(RVNotification.AppStateChanged.rawValue), object: nil)
+    }
+    func stateDidChange(_ notification: NSNotification) {
+        print("In \(self.instanceType).stateDidChange")
+        if let userInfo = notification.userInfo as? [String:AnyObject] {
+            if let appState = userInfo["newAppState"] as? RVBaseAppState4 {
+                print("and appState is \(appState.appState)")
+            }
+        }
+        
     }
     func textInputbarDidMove(_ note: Notification) {
         guard let pipWindow = self.pipWindow else { return }
@@ -393,6 +437,7 @@ extension RVBaseSLKViewController: UISearchResultsUpdating {
         }
     }
     func endSearch() {
+        print("In \(self.classForCoder).endSearch()")
         if let datasource = configuration.findDatasource(type: .filter) {
             configuration.manager.resetDatasource(datasource: datasource, callback: { (error) in })
         }
@@ -428,39 +473,28 @@ extension RVBaseSLKViewController: UISearchResultsUpdating {
         }
         performSearch(searchText: searchText, field: searchKey)
     }
-    func performSearch(searchText: String, field: RVKeys, order: RVSortOrder = .ascending) {
 
+    func performSearch(searchText: String, field: RVKeys, order: RVSortOrder = .ascending) {
+        print("IN \(self.classForCoder).performSearch ")
         if let datasource = self.configuration.findDatasource(type: .main) {
             self.configuration.manager.collapseDatasource(datasource: datasource, callback: {
-                
+              //  print("In \(self.classForCoder).performSearch return from collapsing main")
             })
         }
         if let datasource = self.configuration.findDatasource(type: .top) {
-            self.configuration.manager.collapseDatasource(datasource: datasource, callback: { }) }
-        let filterTerms = RVFilterTerms(sortField: field, value: searchText as AnyObject, order: order)
-        if let datasource = configuration.findDatasource(type: .filter) {
-
-            configuration.manager.resetDatasource(datasource: datasource, callback: { (error) in
-                self.configuration.manager.expandDatasource(datasource: datasource, callback: {
-
-                    if let queryFunction = self.configuration.queryFunctions[.filter] {
-                        let query = queryFunction(filterTerms.params)
-                        self.configuration.manager.startDatasource(datasource: datasource, query: query, callback: { (error) in
-                            if let error = error {
-                                error.append(message: "In \(self.classForCoder).performSearch got error")
-                                error.printError()
-                            } else {
-      
-                            }
-                        })
-                        
-                    }
-                })
+            self.configuration.manager.collapseDatasource(datasource: datasource, callback: {
+              //  print("In \(self.classForCoder).performSearch return from collapsing top")
             })
-        } else {
-            print("In \(self.classForCoder).processSearch, did not find Filter Datasource")
+        }
+        let filterTerms = RVFilterTerms(sortField: field, value: searchText as AnyObject, order: order)
+      //  print("In \(self.instanceType).performSearch fitler is: \(filterTerms.params)")
+        configuration.performSearch(scrollView: self.dsScrollView, searchParams: filterTerms.params) { (error ) in
+            if let error = error {
+                error.printError()
+            }
         }
     }
+
     func replaceOperation(operation: RVOperation, operationName: String = "") -> RVOperation {
         if operation.sameOperation(operation: self.searchOperation) {
             operation.cancelled = true

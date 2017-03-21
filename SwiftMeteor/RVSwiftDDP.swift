@@ -15,6 +15,7 @@ enum RVNotification: String {
     case connected = "Connected"
     case StateUninstalled = "StateUninstalled"
     case StateInstalled = "StateInstalled"
+    case AppStateChanged = "AppStateChanged"
 }
 enum RVSwiftEvent: String {
     case userDidLogin = "RVUserDidLogin"

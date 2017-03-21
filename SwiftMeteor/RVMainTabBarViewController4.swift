@@ -14,6 +14,7 @@ class RVMainTabBarViewController4: UITabBarController {
     var priorAppState: RVBaseAppState4   { get { return coreInfo.priorAppState }}
     var myCurrentAppState: RVBaseAppState4 = RVBaseAppState4(appState: .defaultState)
     var instanceType: String { get { return String(describing: type(of: self)) } }
+    var deck: RVViewDeck4 { get { return RVViewDeck4.shared }}
     var priorTabIndex: Int = 0
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -36,12 +37,17 @@ extension RVMainTabBarViewController4: UITabBarControllerDelegate {
     func tabBarController(_ tabBarController: UITabBarController, didSelect viewController: UIViewController) {
         if self.priorTabIndex == self.selectedIndex { return }
         self.priorTabIndex = self.selectedIndex
-        if let navController = viewController as? UINavigationController {
-            if let top = navController.topViewController {
-                print("In \(self.instanceType).didSelect \(top)")
-            }
-        } else {
-            print("In \(self.instanceType).didSelect, controller is not a NavController")
+        if self.selectedIndex == 0 {
+            print("In \(self.classForCoder).didSelect, changing to transactionList")
+            deck.changeIntraState(currentState: coreInfo.currentAppState, newIntraState: .transactionList, callback: {
+                print("In \(self.classForCoder).didSelect return from changeIntraState \(self.coreInfo.currentAppState.appState)")
+            })
+        } else if self.selectedIndex == 1 {
+                        print("In \(self.classForCoder).didSelect, changing to groupList")
+            deck.changeIntraState(currentState: coreInfo.currentAppState, newIntraState: .groupList, callback: {
+                print("In \(self.classForCoder).didSelect return from changeIntraState \(self.coreInfo.currentAppState.appState)")
+            })
         }
+
     }
 }

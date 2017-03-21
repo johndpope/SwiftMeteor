@@ -92,6 +92,32 @@ class RVBaseConfiguration {
 }
 
 extension RVBaseConfiguration {
+    func performSearch(scrollView: UIScrollView?, searchParams: [String: AnyObject], callback: @escaping(RVError?) -> Void) {
+        if let filterDatasource = self.filterDatasource {
+
+                    if let queryFunction = self.queryFunctions[.filter] {
+                        let query = queryFunction(searchParams)
+                        self.manager.startDatasource(datasource: filterDatasource, query: query, callback: { (error) in
+                            DispatchQueue.main.async {
+                                if let error = error {
+                                    error.append(message: "In \(self.instanceType).performSearch, got error")
+                                    callback(error)
+                                    return
+                                } else {
+                                    callback(nil)
+                                }
+                            }
+
+                        })
+                        return
+                    } else {
+                        print("In \(self.instanceType).performSearch no Filter Query Function.............")
+                        callback(nil)
+                    }
+                }
+    
+
+    }
     func install(scrollView: UIScrollView?, callback: @escaping(RVError?) -> Void) {
       //  print("In \(self.instanceType).install")
         self.unwind {

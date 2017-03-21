@@ -1,16 +1,13 @@
 //
-//  RVTransactionListViewController.swift
+//  RVGroupListController.swift
 //  SwiftMeteor
 //
-//  Created by Neil Weintraut on 3/10/17.
+//  Created by Neil Weintraut on 3/21/17.
 //  Copyright © 2017 Neil Weintraut. All rights reserved.
 //
 
 import UIKit
-
-class RVTransactionListViewController: RVBaseSLKViewController {
-
-
+class RVGroupListController: RVBaseSLKViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         if let tableView = self.tableView {
@@ -22,5 +19,4 @@ class RVTransactionListViewController: RVBaseSLKViewController {
         self.configuration = RVTransactionListConfiguration()
         configuration.configure(stack: self.stack) { }
     }
-
 }

@@ -10,7 +10,10 @@ import UIKit
 
 class RVCoreInfo2 {
     var currentAppState: RVBaseAppState4 = RVBaseAppState4(appState: .loggedOut) {
-        didSet { _priorAppState = oldValue }
+        didSet {
+           // print("........... In \(self.instanceType).currentAppState oldValue = \(oldValue.appState), new value = \(currentAppState.appState)")
+            _priorAppState = oldValue
+        }
     }
     private var _priorAppState: RVBaseAppState4 = RVBaseAppState4(appState: .defaultState)
     var priorAppState: RVBaseAppState4  {
@@ -27,6 +30,12 @@ class RVCoreInfo2 {
         get {
             if let domain = self.domain { return domain.localId}
             return nil
+        }
+    }
+    var differentTopState: Bool {
+        get {
+            print("In \(self.instanceType).differentTopState: Prior: \(priorAppState.appState), current: \(currentAppState.appState)")
+            return !(priorAppState == currentAppState)
         }
     }
     var domainName: RVDomainName { get {return RVDomainName.Rendevu }}

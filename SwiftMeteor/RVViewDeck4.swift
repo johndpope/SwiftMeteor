@@ -59,19 +59,22 @@ class RVViewDeck4: RVViewDeck {
                 self.toggleSide(side: .center)
             }
         }
-
+        finishup(newState: newState, callback: callback)
+    }
+    func finishup(newState: RVBaseAppState4, callback: @escaping() -> Void) {
+        NotificationCenter.default.post(name: NSNotification.Name(RVNotification.AppStateChanged.rawValue), object: self, userInfo: ["newAppState": newState])
         callback()
     }
     func changeIntraState(currentState: RVBaseAppState4, newIntraState: RVAppState4, callback: @escaping () -> Void) {
         //print("In \(self.instanceType).changeState, with newState \(newState.appState.rawValue)")
         if core.currentAppState == currentState {
-            core.currentAppState.appState = newIntraState
+            core.currentAppState = currentState
             print("In \(self.classForCoder).changeIntraState from \(core.currentAppState.appState.rawValue) to \(newIntraState.rawValue)")
-            callback()
+            core.currentAppState.appState = newIntraState
         } else {
             print("In \(self.classForCoder), inconsistent change. Actually current state is \(core.currentAppState.appState.rawValue), whereas incoming current State is: \(currentState.appState.rawValue) and trying to go to: \(newIntraState.rawValue)")
-            callback()
         }
+        finishup(newState: core.currentAppState, callback: callback)
     }
     
     

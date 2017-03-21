@@ -49,6 +49,7 @@ class RVDSManager2: RVDSManager {
 }
 class RVManagerCollapseOperation: RVManagerExpandOperation {
     override func actualOperation(datasource: RVBaseDataSource, completeOperation: @escaping() -> Void) {
+        //print("In \(self.classForCoder).actualOperation )")
         if self.isCancelled {
             self.callback()
             completeOperation()
@@ -225,7 +226,7 @@ class RVManagerResetDatasourceOperation: RVAsyncOperation {
         } else {
             
             self.datasource.reset {
-                
+               // print("IN \(self.classForCoder).main return from reset")
                 self.callback(nil)
                 self.completeOperation()
             }
