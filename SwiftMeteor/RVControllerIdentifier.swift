@@ -21,7 +21,8 @@ class RVControllers {
     init() {
         controllers[.leftMenu]          = RVControllerIdentifier(storyboard: "Main4",       identifier: RVLeftMenuNavController4.identifier)
         controllers[.loggedOut]         = RVControllerIdentifier(storyboard: "LoginScene",  identifier: "LoginNavigationController")
-        controllers[.transactionList]   = RVControllerIdentifier(storyboard: "Main3",       identifier: RVMainTabBarController.identifier)
+//        controllers[.transactionList]   = RVControllerIdentifier(storyboard: "Main3",       identifier: RVMainTabBarController.identifier)
+        controllers[.transactionList]   = RVControllerIdentifier(storyboard: "Main4",       identifier: RVMainTabBarViewController4.identifier)
     }
     func getController(appState: RVAppState4) -> UIViewController {
         if let identifier = controllers[appState] {

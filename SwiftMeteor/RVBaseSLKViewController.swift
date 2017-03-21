@@ -67,6 +67,7 @@ class RVBaseSLKViewController: SLKTextViewController {
         self.commonInit()
         if navigationController != nil {
             let navBarHeight: CGFloat = 62.0
+//            let navBarHeight: CGFloat = 0.0
             if let tableView = self.dsScrollView {
                 let inset = tableView.contentInset
                 tableView.contentInset = UIEdgeInsets(top: inset.top + navBarHeight, left: inset.left, bottom: inset.bottom, right: inset.right)

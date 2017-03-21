@@ -62,6 +62,17 @@ class RVViewDeck4: RVViewDeck {
 
         callback()
     }
+    func changeIntraState(currentState: RVBaseAppState4, newIntraState: RVAppState4, callback: @escaping () -> Void) {
+        //print("In \(self.instanceType).changeState, with newState \(newState.appState.rawValue)")
+        if core.currentAppState == currentState {
+            core.currentAppState.appState = newIntraState
+            print("In \(self.classForCoder).changeIntraState from \(core.currentAppState.appState.rawValue) to \(newIntraState.rawValue)")
+            callback()
+        } else {
+            print("In \(self.classForCoder), inconsistent change. Actually current state is \(core.currentAppState.appState.rawValue), whereas incoming current State is: \(currentState.appState.rawValue) and trying to go to: \(newIntraState.rawValue)")
+            callback()
+        }
+    }
     
     
     override func openSide(side: IIViewDeckSide, animated: Bool = true) { self.deckController.open(side, animated: animated) }

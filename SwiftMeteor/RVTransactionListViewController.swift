@@ -10,6 +10,9 @@ import UIKit
 
 class RVTransactionListViewController: RVBaseSLKViewController {
 
+
+
+
     override func viewDidLoad() {
         super.viewDidLoad()
 

@@ -16,6 +16,9 @@ class RVStateDispatcher4 {
     func changeState(newState: RVBaseAppState4) {
         queue.addOperation(RVChangeStateOperation(newState: newState))
     }
+    func changeIntraState(currentState: RVBaseAppState4, newIntraState: RVAppState4) {
+        queue.addOperation(RVIntraStateChangeOperation(currentState: currentState, newIntraState: newIntraState))
+    }
 }
 
 class RVChangeStateOperation: RVAsyncOperation {
@@ -29,6 +32,24 @@ class RVChangeStateOperation: RVAsyncOperation {
     override func main() {
         DispatchQueue.main.async {
              self.deck.changeState(newState: self.newState) {  self.completeOperation() }
+        }
+    }
+}
+class RVIntraStateChangeOperation: RVAsyncOperation {
+    private var currentState: RVBaseAppState4
+    private var newIntraState: RVAppState4
+    private var deck: RVViewDeck4 { get { return RVViewDeck4.shared }}
+    
+    init(currentState: RVBaseAppState4, newIntraState: RVAppState4 ) {
+        self.currentState = currentState
+        self.newIntraState = newIntraState
+        super.init(title: "Intrastate Change from \(currentState.appState.rawValue) to \(newIntraState.rawValue)")
+    }
+    override func main() {
+        DispatchQueue.main.async {
+            self.deck.changeIntraState(currentState: self.currentState, newIntraState: self.newIntraState, callback: {
+                self.completeOperation()
+            })
         }
     }
 }

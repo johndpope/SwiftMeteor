@@ -30,6 +30,7 @@ class RVBaseDataSource: NSObject {
         }
     }
     func subscribe(callback: @escaping(RVError?) -> Void) {
+        if filterMode { return }
        // print("In \(self.classForCoder).subscribe...")
         if let query = self.subscriptionQuery() {
             self.unsubscribe {
@@ -1093,7 +1094,7 @@ class RVBaseDataSource: NSObject {
                     callback(error)
                 } else {
                     //callback(nil)
-                    Timer.scheduledTimer(withTimeInterval: 0.5, repeats: false, block: { (timer: Timer) in
+                    Timer.scheduledTimer(withTimeInterval: 1.5, repeats: false, block: { (timer: Timer) in
                         self.subscribe(callback: { (error) in })
                     })
                     callback(error)

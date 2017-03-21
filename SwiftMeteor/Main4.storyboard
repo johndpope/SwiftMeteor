@@ -78,7 +78,7 @@
             </objects>
             <point key="canvasLocation" x="901.60000000000002" y="214.54272863568218"/>
         </scene>
-        <!--View Controller-->
+        <!--Groups-->
         <scene sceneID="xHV-le-vv8">
             <objects>
                 <viewController id="8tZ-lT-UhN" sceneMemberID="viewController">
@@ -91,16 +91,16 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                     </view>
-                    <navigationItem key="navigationItem" id="G53-Up-duj"/>
+                    <navigationItem key="navigationItem" title="Groups" id="G53-Up-duj"/>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="Oyj-Vq-o7O" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="2468" y="1539.5802098950526"/>
         </scene>
-        <!--View Controller-->
+        <!--Transactions-->
         <scene sceneID="WHn-jU-PXp">
             <objects>
-                <viewController id="717-sJ-fje" sceneMemberID="viewController">
+                <viewController id="717-sJ-fje" customClass="RVTransactionListViewController" customModule="SwiftMeteor" customModuleProvider="target" sceneMemberID="viewController">
                     <layoutGuides>
                         <viewControllerLayoutGuide type="top" id="sn9-rC-5Wl"/>
                         <viewControllerLayoutGuide type="bottom" id="dYp-Ec-Pvq"/>
@@ -108,9 +108,39 @@
                     <view key="view" contentMode="scaleToFill" id="bfL-DU-uIw">
                         <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="WBx-bh-Xy2">
+                                <rect key="frame" x="0.0" y="64" width="375" height="50"/>
+                                <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="50" id="ZzL-2Q-T5G"/>
+                                </constraints>
+                            </view>
+                        </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                        <constraints>
+                            <constraint firstAttribute="trailing" secondItem="WBx-bh-Xy2" secondAttribute="trailing" id="KSr-nl-H1L"/>
+                            <constraint firstItem="WBx-bh-Xy2" firstAttribute="leading" secondItem="bfL-DU-uIw" secondAttribute="leading" id="bS7-st-5vR"/>
+                            <constraint firstItem="WBx-bh-Xy2" firstAttribute="top" secondItem="sn9-rC-5Wl" secondAttribute="bottom" id="qUX-cj-LZk"/>
+                        </constraints>
                     </view>
-                    <navigationItem key="navigationItem" id="BZ4-nY-Y9A"/>
+                    <navigationItem key="navigationItem" title="Transactions" id="BZ4-nY-Y9A">
+                        <barButtonItem key="leftBarButtonItem" title="Menu" id="37v-Hk-AJ8">
+                            <color key="tintColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                            <connections>
+                                <action selector="menuButtonTouched:" destination="717-sJ-fje" id="tPI-JA-goM"/>
+                            </connections>
+                        </barButtonItem>
+                        <barButtonItem key="rightBarButtonItem" systemItem="search" id="MTP-vz-mVB">
+                            <color key="tintColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                            <connections>
+                                <action selector="searchButtonTouched:" destination="717-sJ-fje" id="bm2-fN-OA8"/>
+                            </connections>
+                        </barButtonItem>
+                    </navigationItem>
+                    <connections>
+                        <outlet property="searchControllerContainerView" destination="WBx-bh-Xy2" id="i6R-bb-IrG"/>
+                    </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="nKK-Zl-KPa" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
@@ -124,6 +154,8 @@
                         <rect key="frame" x="0.0" y="0.0" width="375" height="49"/>
                         <autoresizingMask key="autoresizingMask"/>
                         <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
+                        <color key="barTintColor" red="0.0" green="0.47843137250000001" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                        <color key="selectedImageTintColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                     </tabBar>
                     <connections>
                         <segue destination="Zmf-yw-eDm" kind="relationship" relationship="viewControllers" id="E7D-bm-rCD"/>
@@ -159,9 +191,10 @@
                 <navigationController automaticallyAdjustsScrollViewInsets="NO" id="Zmf-yw-eDm" sceneMemberID="viewController">
                     <tabBarItem key="tabBarItem" title="Item 1" id="nll-YK-8M8"/>
                     <toolbarItems/>
-                    <navigationBar key="navigationBar" contentMode="scaleToFill" misplaced="YES" id="E2S-eh-M76">
+                    <navigationBar key="navigationBar" contentMode="scaleToFill" misplaced="YES" barStyle="black" id="E2S-eh-M76">
                         <rect key="frame" x="0.0" y="0.0" width="375" height="44"/>
                         <autoresizingMask key="autoresizingMask"/>
+                        <color key="barTintColor" red="0.0" green="0.47843137250000001" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                     </navigationBar>
                     <nil name="viewControllers"/>
                     <connections>
@@ -172,15 +205,16 @@
             </objects>
             <point key="canvasLocation" x="1528.8" y="809.14542728635683"/>
         </scene>
-        <!--Item 2-->
+        <!--Navigation Controller-->
         <scene sceneID="k5n-wy-Kk6">
             <objects>
                 <navigationController automaticallyAdjustsScrollViewInsets="NO" id="6ux-Oa-Eqw" sceneMemberID="viewController">
-                    <tabBarItem key="tabBarItem" title="Item 2" id="TaU-MI-TFT"/>
+                    <tabBarItem key="tabBarItem" badgeValue="3" systemItem="featured" id="TaU-MI-TFT"/>
                     <toolbarItems/>
-                    <navigationBar key="navigationBar" contentMode="scaleToFill" misplaced="YES" id="2Oh-Bk-l3j">
+                    <navigationBar key="navigationBar" contentMode="scaleToFill" misplaced="YES" barStyle="black" id="2Oh-Bk-l3j">
                         <rect key="frame" x="0.0" y="0.0" width="375" height="44"/>
                         <autoresizingMask key="autoresizingMask"/>
+                        <color key="barTintColor" red="0.0" green="0.47843137250000001" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                     </navigationBar>
                     <nil name="viewControllers"/>
                     <connections>

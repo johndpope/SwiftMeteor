@@ -30,8 +30,8 @@ class RVBaseModel: MeteorDocument {
     var imageUpdated = false
     var locationInitiallyNull = false
     var userProfile: RVUserProfile? = nil
-    var loggedInUser: RVUserProfile? { get {return RVCoreInfo.sharedInstance.userProfile}}
-    static var appDomain: RVDomain? { get { return RVCoreInfo.sharedInstance.domain }}
+    var loggedInUser: RVUserProfile? { get {return RVCoreInfo2.shared.loggedInUserProfile}}
+    static var appDomain: RVDomain? { get { return RVCoreInfo2.shared.domain }}
     static var addDomainId: String? {
         get {
             if let appDomain = RVBaseModel.appDomain { return appDomain.localId }
