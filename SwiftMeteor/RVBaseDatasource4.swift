@@ -18,6 +18,9 @@ class RVBaseDatasource4: RVBaseDataSource {
     var backOperationActive: Bool = false
     var frontOperationActive: Bool = false
     var maxArraySize: Int = 300
+    // var collapsed: Bool = false
+    // var offset: Int = 0
+    // var datasourceType: RVBaseDataSource.DatasourceType
     func retrieve(query: RVQuery, callback: @escaping RVCallback) {
         print("In RVBaseDatasource4.retrieve, need to override")
         RVBaseModel.bulkQuery(query: query, callback: callback as! ([RVBaseModel]?, RVError?) -> Void)
@@ -25,6 +28,13 @@ class RVBaseDatasource4: RVBaseDataSource {
 }
 
 extension RVBaseDatasource4 {
+    var numberOfItems: Int { get { return virtualCount } }
+    override var virtualCount: Int {
+        get {
+            if self.collapsed { return 0 }
+            return self.items.count + self.offset
+        }
+    }
     func item(index: Int) -> RVBaseModel? {
         if index < 0 {
             print("In \(self.classForCoder).item, got negative index \(index)")
@@ -294,14 +304,14 @@ class RVBackLoadOperation: RVAsyncOperation {
             } else if let tableView = self.scrollView as? UITableView {
                 tableView.beginUpdates()
                 let indexPaths = self.innerCleanupBack()
-                if indexPaths.count > 0 { tableView.deleteRows(at: indexPaths, with: self.datasource.rowAnimation) }
+                if (indexPaths.count > 0) && (!self.datasource.collapsed) { tableView.deleteRows(at: indexPaths, with: self.datasource.rowAnimation) }
                 tableView.endUpdates()
                 callback(models, nil)
                 return
             } else if let collectionView = self.scrollView as? UICollectionView {
                 collectionView.performBatchUpdates({
                     let indexPaths = self.innerCleanupBack()
-                    if indexPaths.count > 0 { collectionView.deleteItems(at: indexPaths) }
+                    if (indexPaths.count > 0 ) && (!self.datasource.collapsed) { collectionView.deleteItems(at: indexPaths) }
                 }, completion: { (success) in
                     callback(models, nil)
                     return
@@ -339,9 +349,8 @@ class RVBackLoadOperation: RVAsyncOperation {
                 tableView.beginUpdates()
                 if self.referenceMatch {
                    let indexPaths = self.backHandler(models: models)
-                    tableView.insertRows(at: indexPaths, with: self.datasource.rowAnimation)
+                    if  (!self.datasource.collapsed)  { tableView.insertRows(at: indexPaths, with: self.datasource.rowAnimation) }
                 }
-
                 tableView.endUpdates()
                 callback(models, nil)
                 return
@@ -350,7 +359,7 @@ class RVBackLoadOperation: RVAsyncOperation {
                     if !self.isCancelled {
                         if self.referenceMatch {
                             let indexPaths = self.backHandler(models: models)
-                            collectionView.insertItems(at: indexPaths)
+                            if  (!self.datasource.collapsed)  { collectionView.insertItems(at: indexPaths) }
                         }
                     }
                 }, completion: { (success) in
