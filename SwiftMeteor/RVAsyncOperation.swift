@@ -8,7 +8,8 @@
 
 import Foundation
 class RVAsyncOperation: Operation {
-    var instanceType: String { get { return String(describing: type(of: self)) } }
+    var instanceType: String = { return String(describing: type(of: self)) }()
+    //var instanceType: String { get { return String(describing: type(of: self)) } }
     private(set) var error: Error? = nil
     var title: String = "No Title"
     private var _executing: Bool = false
@@ -58,6 +59,7 @@ class RVAsyncOperation: Operation {
     override func main() {
         print("In \(self.classForCoder).main \(title) \(Date())")
     }
+    
     /*
     func operation(completeOperation: @escaping() -> Void) {
         DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {

@@ -973,7 +973,7 @@ extension RVBaseModel {
 
     }
 
-    class func bulkQuery(query: RVQuery, callback: @escaping(_ items: [RVBaseModel]?, _ error: RVError?)-> Void) {
+    class func bulkQuery(query: RVQuery, callback: @escaping(_ items: [RVBaseModel], _ error: RVError?)-> Void) {
         if let appDomainId = RVBaseModel.addDomainId {
             query.addAnd(term: .domainId, value: appDomainId as AnyObject, comparison: .eq)
         }
@@ -985,7 +985,7 @@ extension RVBaseModel {
             DispatchQueue.main.async {
                 if let error = error {
                     let rvError = RVError(message: "In RVBaseModel.bulkQuery, got Meteor Error", sourceError: error)
-                    callback(nil , rvError)
+                    callback([RVBaseModel]() , rvError)
                     return
                 } else if let items = result as? [[String: AnyObject]] {
                     var models = [RVBaseModel]()
@@ -996,10 +996,10 @@ extension RVBaseModel {
                     return
                 } else if let results = result {
                     print("In RVBaseModel.bulkQuery, no error, but results are: \n\(results)")
-                    callback(nil, nil)
+                    callback([RVBaseModel](), nil)
                 } else {
                     print("In RVBaseModel.bulkQuery, no error but no results")
-                    callback(nil, nil)
+                    callback([RVBaseModel](), nil)
                 }
             }
         }

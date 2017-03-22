@@ -69,7 +69,7 @@ class RVSeed {
             if let error = error {
                 error.append(message: "In RVSeed.clear, got error")
                 error.printError()
-            } else if let models = models {
+            } else  {
                 print("In RVSeed.clear, got [\(models.count)] result")
                 for model in models {
                     if let task = model as? RVTask {
@@ -82,8 +82,6 @@ class RVSeed {
                         print("In RVSeed.clear, model is not a RVTask")
                     }
                 }
-            } else {
-                print("In RVSeed.clear, no error but no models")
             }
         }
     }
@@ -140,7 +138,7 @@ class RVSeed {
                 error.append(message: "Error in RVSeed.createRoot")
                 callback(nil, error)
                 return
-            } else if let models = models  {
+            } else  {
                 if let model = models.first as? RVTask {
                 RVCoreInfo.sharedInstance.rootTask = model
                     print("Root Model Found")
@@ -165,7 +163,7 @@ class RVSeed {
                                 if let error = error {
                                     callback(nil , error)
                                     return
-                                } else if let models = models {
+                                } else  {
                                     if let task = models.first as? RVTask {
                                         callback(task, nil)
                                         RVCoreInfo.sharedInstance.rootTask = task
@@ -173,17 +171,11 @@ class RVSeed {
                                         print("In RVSeed.createTaskRoot, createdTask but on retrieve, no error, have models array does not have a RVTask object")
                                         callback(nil, nil)
                                     }
-                                } else {
-                                    print("In RVSeed.createTaskRoot, createdTask but on retrieve, no error nor a task object")
-                                    callback(nil, nil)
                                 }
                             })
                         }
                     })
                 }
-            } else {
-                print("In \(String(describing: type(of: self))).createRoot no error but no results array")
-                callback(nil, nil)
             }
         })
 
