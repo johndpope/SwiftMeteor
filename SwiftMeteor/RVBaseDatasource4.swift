@@ -7,29 +7,54 @@
 //
 
 import UIKit
+typealias RVCallback = ([RVBaseModel], RVError?) -> Void
+typealias DSOperation = () -> Void
 
-class RVBaseDatasource4: RVBaseDataSource {
-    typealias RVCallback = ([RVBaseModel], RVError?) -> Void
-    typealias DSOperation = () -> Void
+enum RVExpandCollapseOperationType {
+    case collapseOnly
+    case expandOnly
+    case collapseAndZero
+    case collapseZeroAndExpand
+    case toggle
+}
+class RVBaseDatasource4: NSObject {
+    enum DatasourceType: String {
+        case top        = "Top"
+        case main       = "Main"
+        case filter     = "Filter"
+        case unknown    = "Unknown"
+    }
+    var instanceType: String { get { return String(describing: type(of: self)) } }
+    let identifier = NSDate().timeIntervalSince1970
+
     fileprivate let queue = RVOperationQueue()
     var rowAnimation: UITableViewRowAnimation = UITableViewRowAnimation.automatic
     var items = [RVBaseModel]()
-    var section: Int { get { return 0 }}
+    var section: Int { get { return manager.sectionIndex(datasource: self) }}
     var backOperationActive: Bool = false
     var frontOperationActive: Bool = false
     var maxArraySize: Int = 300
-    // var collapsed: Bool = false
-    // var offset: Int = 0
-    // var datasourceType: RVBaseDataSource.DatasourceType
+    var collapsed: Bool = false
+    var offset: Int = 0
+    var datasourceType: DatasourceType = .unknown
+    var manager: RVDSManager4
+
     func retrieve(query: RVQuery, callback: @escaping RVCallback) {
         print("In RVBaseDatasource4.retrieve, need to override")
         RVBaseModel.bulkQuery(query: query, callback: callback as! ([RVBaseModel]?, RVError?) -> Void)
     }
+    init(manager: RVDSManager4, datasourceType: DatasourceType, maxSize: Int) {
+        self.manager = manager
+        self.datasourceType = datasourceType
+        self.maxArraySize = ((maxSize < 500) && (maxSize > 50)) ? maxSize : 500
+        super.init()
+    }
+
 }
 
 extension RVBaseDatasource4 {
     var numberOfItems: Int { get { return virtualCount } }
-    override var virtualCount: Int {
+    var virtualCount: Int {
         get {
             if self.collapsed { return 0 }
             return self.items.count + self.offset
@@ -37,17 +62,17 @@ extension RVBaseDatasource4 {
     }
     func item(index: Int) -> RVBaseModel? {
         if index < 0 {
-            print("In \(self.classForCoder).item, got negative index \(index)")
+            print("In \(self.instanceType).item, got negative index \(index)")
             return nil
         }
         let physicalIndex = index - offset
         if physicalIndex < 0 {
-            print("In \(self.classForCoder).item got physical index less than 0 \(physicalIndex). Offset is \(offset)")
+            print("In \(self.instanceType).item got physical index less than 0 \(physicalIndex). Offset is \(offset)")
             return nil
         } else if physicalIndex < items.count {
             return items[physicalIndex]
         } else {
-            print("In \(self.classForCoder).item physicalIndex of \(physicalIndex) exceeds array size \(items.count). Offset is \(self.offset)")
+            print("In \(self.instanceType).item physicalIndex of \(physicalIndex) exceeds array size \(items.count). Offset is \(self.offset)")
             return nil
         }
     }
@@ -88,6 +113,16 @@ extension RVBaseDatasource4 {
     func restart(scrollView: UIScrollView?, callback: RVCallback) {
         
     }
+    func expand(scrollView: UIScrollView?, callback: @escaping RVCallback) {
+        self.queue.addOperation(RVExpandCollapseOperation(datasource: self, scrollView: scrollView, operationType: .expandOnly, callback: callback))
+    }
+    func collapse(scrollView: UIScrollView?, callback: @escaping RVCallback) {
+        self.queue.addOperation(RVExpandCollapseOperation(datasource: self, scrollView: scrollView, operationType: .collapseOnly, callback: callback))
+    }
+    func toggle(scrollView: UIScrollView?, callback: @escaping RVCallback) {
+        self.queue.addOperation(RVExpandCollapseOperation(datasource: self, scrollView: scrollView, operationType: .toggle, callback: callback))
+    }
+    
 }
 class RVFrontLoadOperation: RVBackLoadOperation {
 
@@ -98,15 +133,13 @@ class RVExpandCollapseOperation: RVAsyncOperation {
     var datasource: RVBaseDatasource4
     weak var scrollView: UIScrollView?
     var callback: RVCallback
-    var collapse: Bool
-    var empty: Bool
+    var operationType: RVExpandCollapseOperationType
     var emptyModels = [RVBaseModel]()
-    init(datasource: RVBaseDatasource4, scrollView: UIScrollView?, collapse: Bool, empty: Bool, callback: @escaping RVCallback) {
+    init(datasource: RVBaseDatasource4, scrollView: UIScrollView?, operationType: RVExpandCollapseOperationType, callback: @escaping RVCallback) {
         self.datasource     = datasource
         self.scrollView     = scrollView
         self.callback       = callback
-        self.collapse       = collapse
-        self.empty          = empty
+        self.operationType  = operationType
         super.init(title: "RVExpandCollapseOperation")
     }
     func handleCollapse() -> [IndexPath] {
@@ -114,17 +147,20 @@ class RVExpandCollapseOperation: RVAsyncOperation {
         let section = self.datasource.section
         let lastItem = self.datasource.offset + self.datasource.items.count
         if lastItem > 0 { for row in 0..<lastItem { indexPaths.append(IndexPath(row: row, section: section)) } }
-        if self.empty { self.datasource.items = [RVBaseModel]() }
+        if (self.operationType == .collapseAndZero) || (self.operationType == .collapseZeroAndExpand ){ self.datasource.items = [RVBaseModel]() }
         self.datasource.collapsed = true
         return indexPaths
     }
     override func main() {
+        var operationType = self.operationType
+        if operationType == .toggle { operationType = (self.datasource.collapsed) ? .expandOnly : .collapseOnly }
         if self.isCancelled {
             self.finishUp(models: self.emptyModels, error: nil)
             return
-        } else if collapse {
+        } else if (operationType != .expandOnly) {
             if self.datasource.collapsed {
-                if self.empty { self.datasource.items = [RVBaseModel]() }
+                if (operationType == .collapseAndZero) || (operationType == .collapseZeroAndExpand) { self.datasource.items = [RVBaseModel]() }
+                if (operationType == .collapseZeroAndExpand) { self.datasource.collapsed = false }
                 self.finishUp(models: self.emptyModels, error: nil)
                 return
             } else {
@@ -147,8 +183,8 @@ class RVExpandCollapseOperation: RVAsyncOperation {
                     })
                     return
                 } else if self.scrollView == nil {
-                    self.datasource.collapsed = true
-                    if self.empty { self.datasource.items = [RVBaseModel]() }
+                    if (operationType == .collapseAndZero) || (operationType == .collapseZeroAndExpand) { self.datasource.items = [RVBaseModel]() }
+                    self.datasource.collapsed = (operationType == .collapseZeroAndExpand) ? false : true
                 } else {
                     let error = RVError(message: "In \(self.classForCoder).main, erroneous scrollVIew \(self.scrollView)")
                     self.finishUp(models: self.emptyModels, error: error)
