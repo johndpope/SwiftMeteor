@@ -108,7 +108,7 @@ override func create(callback: @escaping (RVBaseModel?, RVError?) -> Void) {
     allSubgroup.setParent(parent: self)
     allSubgroup.title = self.title
     allSubgroup.special = .all
-    if let owner = loggedInUser {
+    if let owner = RVBaseModel.loggedInUser {
         self.setOwner(owner: owner)
         allSubgroup.setOwner(owner: owner)
     }

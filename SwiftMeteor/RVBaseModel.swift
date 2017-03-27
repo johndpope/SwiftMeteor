@@ -30,8 +30,20 @@ class RVBaseModel: MeteorDocument {
     var imageUpdated = false
     var locationInitiallyNull = false
     var userProfile: RVUserProfile? = nil
-    var loggedInUser: RVUserProfile? { get {return RVCoreInfo2.shared.loggedInUserProfile}}
+    static var loggedInUser: RVUserProfile? { get {return RVCoreInfo2.shared.loggedInUserProfile}}
+    static var loggedInUserId: String? {
+        get {
+            if let loggedInUser = RVBaseModel.loggedInUser { return loggedInUser.localId }
+            return nil
+        }
+    }
     static var appDomain: RVDomain? { get { return RVCoreInfo2.shared.domain }}
+    static var appDomainId: String? {
+        get {
+            if let appDomain = RVBaseModel.appDomain { return appDomain.localId }
+            return nil
+        }
+    }
     static var addDomainId: String? {
         get {
             if let appDomain = RVBaseModel.appDomain { return appDomain.localId }
@@ -63,6 +75,24 @@ class RVBaseModel: MeteorDocument {
             self.setOwner(owner: profile)
         }
         checkEmbeddeds()
+    }
+    var basicQuery: (RVQuery, RVError?) {
+        get {
+            let query = RVQuery()
+            var error: RVError? = nil
+            query.addAnd(term: .modelType, value: self.modelType.rawValue as AnyObject, comparison: .eq)
+            if let loggedInUserId = RVTransaction.loggedInUserId {
+                query.addAnd(term: .ownerId, value: loggedInUserId as AnyObject, comparison: .eq)
+            } else {
+                error = RVError(message: "In \(self.classForCoder).basicQuery, no loggedInUserId")
+            }
+            if let domainId = RVTransaction.appDomainId {
+                query.addAnd(term: .domainId, value: domainId as AnyObject, comparison: .eq)
+            } else {
+                error = RVError(message: "In \(self.classForCoder).basicQuery, no domainId")
+            }
+            return (query, error)
+        }
     }
     func checkEmbeddeds() {
      //   if objects[RVKeys.image.rawValue] == nil {imageInitiallyNull = true}
@@ -449,7 +479,7 @@ class RVBaseModel: MeteorDocument {
         }
     }
     func setLoggedInUserAsOwner() {
-        if let userProfile = loggedInUser {
+        if let userProfile = RVBaseModel.loggedInUser {
             self.setOwner(owner: userProfile)
         }
     }
@@ -823,7 +853,7 @@ extension RVBaseModel {
         return transaction
     }
     func create(callback: @escaping (_ model: RVBaseModel?, _ error: RVError?) -> Void ) {
-        if let loggedInUser = self.loggedInUser { self.setOwner(owner: loggedInUser) }
+        if let loggedInUser = RVBaseModel.loggedInUser { self.setOwner(owner: loggedInUser) }
         else {
             callback(nil, RVError(message: "In \(self.classForCoder).create, no loggedInUser"))
             return

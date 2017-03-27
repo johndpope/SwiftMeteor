@@ -38,7 +38,10 @@ class RVBaseDatasource4: NSObject {
     var offset: Int = 0
     var datasourceType: DatasourceType = .unknown
     var manager: RVDSManager4
-
+    var model: RVBaseModel { return RVBaseModel() }
+    var dynamicAndTerms = [RVQueryItem]()
+    var sortTerms = [RVSortTerm]()
+    var dynamicFixedTerms = [RVQueryItem]()
     func retrieve(query: RVQuery, callback: @escaping RVCallback) {
         print("In RVBaseDatasource4.retrieve, need to override")
         RVBaseModel.bulkQuery(query: query, callback: callback as! ([RVBaseModel]?, RVError?) -> Void)
@@ -49,10 +52,74 @@ class RVBaseDatasource4: NSObject {
         self.maxArraySize = ((maxSize < 500) && (maxSize > 50)) ? maxSize : 500
         super.init()
     }
+    func baseQuery() -> (RVQuery, RVError?) {
+        let (query, error) = model.basicQuery
+        if let error = error { error.append(message: "In \(self.instanceType).baseQuery(), got error") }
+        else {
+            for term in self.dynamicAndTerms { query.addAnd(term: term.term, value: term.value, comparison: term.comparison) }
+            for sortTerm in self.sortTerms { query.addSort(sortTerm: sortTerm) }
+            for fixedTerm in self.dynamicFixedTerms { query.fixedTerm = fixedTerm}
+        }
+        return (query, error)
+    }
 
 }
 
 extension RVBaseDatasource4 {
+    func updateSortTerm(query: RVQuery, front: Bool = false, candidate: RVBaseModel? = nil) -> RVQuery {
+        if (query.sortTerms.count == 0) || (query.sortTerms.count > 1) {
+            print("In \(self.classForCoder).updateSortTerms, erroneous number of sort Tersm: \(query.sortTerms)")
+        }
+        if let sortTerm = query.sortTerms.first {
+            let firstString: AnyObject = "" as AnyObject
+            let lastString: AnyObject = "ZZZZZZZZZZZZZZZZZ" as AnyObject
+            var comparison = (sortTerm.order == .ascending) ?  RVComparison.gte : RVComparison.lte
+
+            var sortString: AnyObject = lastString
+            if sortTerm.order == .ascending { sortString = firstString}
+            if front {
+                comparison = (sortTerm.order == .descending) ?  RVComparison.gte : RVComparison.lte
+                sortString = (sortTerm.order == .descending) ? firstString : lastString
+            }
+            var sortDate: Date = Date()
+            if sortTerm.order == .ascending { sortDate = query.decadeAgo }
+            if front { sortDate = (sortTerm.order == .descending) ? query.decadeAgo : Date() }
+            
+            var sortField: RVKeys = .createdAt
+            var finalValue: AnyObject = "" as AnyObject
+            switch (sortTerm.field) {
+            case .createdAt:
+                if let candidate = candidate { if let date = candidate.createdAt { sortDate = date} }
+                finalValue = sortDate as AnyObject
+                sortField = .createdAt
+            case .updatedAt:
+                if let candidate = candidate { if let date = candidate.updatedAt { sortDate = date} }
+                finalValue = sortDate as AnyObject
+                sortField = .updatedAt
+            case .commentLowercase, .comment:
+                if let candidate = candidate { if let string = candidate.comment { sortString = string.lowercased() as AnyObject } }
+                finalValue = sortString as AnyObject
+                sortField = .commentLowercase
+            case .handleLowercase, .handle:
+                if let candidate = candidate { if let string = candidate.handleLowercase { sortString = string.lowercased() as AnyObject } }
+                finalValue = sortString as AnyObject
+                sortField = .handleLowercase
+            case .title:
+                if let candidate = candidate { if let string = candidate.title { sortString = string.lowercased() as AnyObject } }
+                finalValue = sortString as AnyObject
+                sortField = .title
+            case .fullName:
+                if let candidate = candidate { if let string = candidate.fullName { sortString = string.lowercased() as AnyObject } }
+                finalValue = sortString as AnyObject
+                sortField = .fullName
+            default:
+                print("In \(self.classForCoder).updateSortTerms, term: \(sortTerm.field.rawValue) not handled")
+            }
+            if let queryTerm = query.findAndTerm(term: sortTerm.field) { queryTerm.value =  finalValue}
+            else { query.addAnd(term: sortField, value: finalValue, comparison: comparison) }
+        }
+        return query
+    }
     var numberOfItems: Int { get { return virtualCount } }
     var virtualCount: Int {
         get {
@@ -148,7 +215,7 @@ class RVExpandCollapseOperation: RVAsyncOperation {
         let lastItem = self.datasource.offset + self.datasource.items.count
         if lastItem > 0 { for row in 0..<lastItem { indexPaths.append(IndexPath(row: row, section: section)) } }
         if (self.operationType == .collapseAndZero) || (self.operationType == .collapseZeroAndExpand ){ self.datasource.items = [RVBaseModel]() }
-        self.datasource.collapsed = true
+        self.datasource.collapsed = (operationType == .collapseZeroAndExpand) ? false : true
         return indexPaths
     }
     override func main() {
@@ -169,9 +236,10 @@ class RVExpandCollapseOperation: RVAsyncOperation {
                     if !self.isCancelled {
                         let indexPaths = self.handleCollapse()
                         if indexPaths.count > 0 { tableView.deleteRows(at: indexPaths, with: self.datasource.rowAnimation) }
+                        
                         tableView.endUpdates()
-                        self.finishUp(models: self.emptyModels, error: nil)
                     }
+                    self.finishUp(models: self.emptyModels, error: nil)
                     return
                 } else if let collectionView = self.scrollView as? UICollectionView {
                     collectionView.performBatchUpdates({

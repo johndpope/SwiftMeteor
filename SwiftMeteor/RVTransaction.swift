@@ -30,6 +30,24 @@ class RVTransaction: RVBaseModel {
         self.readState = .unread
         self.archived = false
     }
+    override var basicQuery: (RVQuery, RVError?) {
+        get {
+            let query = RVQuery()
+            var error: RVError? = nil
+            query.addAnd(term: .modelType, value: RVModelType.transaction.rawValue as AnyObject, comparison: .eq)
+            if let loggedInUserId = RVTransaction.loggedInUserId {
+                query.addAnd(term: .targetUserProfileId, value: loggedInUserId as AnyObject, comparison: .eq)
+            } else {
+                error = RVError(message: "In \(self.classForCoder).basicQuery, no loggedInUserId")
+            }
+            if let domainId = RVTransaction.appDomainId {
+                query.addAnd(term: .domainId, value: domainId as AnyObject, comparison: .eq)
+            } else {
+                error = RVError(message: "In \(self.classForCoder).basicQuery, no domainId")
+            }
+            return (query, error)
+        }
+    }
     var payload: [String: AnyObject] {
         get {
             if let payload = getDictionary(key: .payload) { return payload }
