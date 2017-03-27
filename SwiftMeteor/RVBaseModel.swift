@@ -198,7 +198,7 @@ class RVBaseModel: MeteorDocument {
             if let deleted = getBool(key: .deleted) { return deleted}
             return false
         }
-        set { updateBool(key: .deleted)}
+        set { updateBool(key: .deleted, value: newValue, setDirties: true)}
     }
     var title: String? {
         get { return getString(key: RVKeys.title) }

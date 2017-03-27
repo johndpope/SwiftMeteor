@@ -54,6 +54,18 @@ class RVBaseConfiguration {
     var SLKIsInverted: Bool = true
     var showTextInputBar: Bool = true
     typealias queryFunction = (_ params: [String: AnyObject]) -> (RVQuery)
+    typealias queryFunction4 = (_ dynamicAnds: [RVQueryItem], _ matches: RVQueryItem?) -> RVQuery
+    func dynamicQuery(_ dynamicAnds: [RVQueryItem], _ match: RVQueryItem? = nil, _ sortTerms: [RVSortTerm] = [RVSortTerm()]) -> (RVQuery, RVError?){
+        let (query, error) = RVTransaction.basicQuery
+        if let error = error {
+            error.append(message: "In \(self.instanceType).dynamicQuery, got error")
+        } else {
+            for and in dynamicAnds  { query.addAnd(term: and.term, value: and.value, comparison: and.comparison) }
+            if let match = match    { query.fixedTerm = match }
+            for sort in sortTerms   { query.addSort(sortTerm: sort) }
+        }
+        return (query, error)
+    }
     typealias QueryElement = [RVBaseDataSource.DatasourceType : queryFunction]
     var queryFunctions = QueryElement()
     var installSearchController:    Bool   = true

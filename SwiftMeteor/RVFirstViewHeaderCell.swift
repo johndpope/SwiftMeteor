@@ -13,6 +13,7 @@ protocol RVFirstViewHeaderCellDelegate: class {
 class RVFirstViewHeaderCell: UITableViewHeaderFooterView {
     static let identifier = "RVFirstViewHeaderCell"
     weak var datasource: RVBaseDataSource? = nil
+    weak var datasource4: RVBaseDatasource4? = nil
     var datasourceType: RVBaseDataSource.DatasourceType = .unknown
     var model: RVBaseModel? = nil {
         didSet {

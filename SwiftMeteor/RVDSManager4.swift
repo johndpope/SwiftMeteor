@@ -23,6 +23,11 @@ class RVDSManager4 {
         }
         return -1
     }
+    func datasourceInSection(section: Int) -> RVBaseDatasource4? {
+        if (section < 0) || (section >= self.sections.count) { return nil }
+        return self.sections[section]
+    }
+    
     var numberOfSections: Int { return sections.count }
     func numberOfItems(section: Int) -> Int {
         if (section >= 0) || (section < sections.count) {
@@ -65,6 +70,7 @@ class RVDSManager4 {
         }
     }
     func toggle(datasource: RVBaseDatasource4, callback: @escaping RVCallback) {
+        print("In \(self.instanceType).toggle -------------------------------------- ")
         if self.sectionIndex(datasource: datasource) < 0 {
             let error = RVError(message: "In \(self.instanceType).toggle, datasource is not installed as a section \(datasource)")
             callback([RVBaseModel](), error)
@@ -74,11 +80,11 @@ class RVDSManager4 {
         }
     }
     func appendSections(datasources: [RVBaseDatasource4], callback: @escaping RVCallback) {
-        self.queue.addOperation(RVManagerAppendSections4(datasources: datasources, callback: callback))
+        self.queue.addOperation(RVManagerAppendSections4(manager: self, datasources: datasources, callback: callback))
     }
-    func reStart(datasource: RVBaseDatasource4, callback: @escaping RVCallback) {
-         print("In \(self.instanceType).reStart, need to implement")
 
+    func restart(datasource: RVBaseDatasource4, query: RVQuery, callback: @escaping RVCallback) {
+        datasource.restart(scrollView: self.scrollView, query: query, callback: callback)
     }
 
 }
@@ -192,9 +198,10 @@ class RVManagerAppendSections4: RVAsyncOperation {
     var datasources: [RVBaseDatasource4]
     var callback: RVCallback
     let emptyResponse = [RVBaseModel]()
-    init(title: String = "Add Sections", datasources: [RVBaseDatasource4], callback: @escaping RVCallback) {
+    init(title: String = "Add Sections", manager: RVDSManager4, datasources: [RVBaseDatasource4], callback: @escaping RVCallback) {
         self.callback = callback
         self.datasources = datasources
+        self.manager = manager
         super.init(title: title)
     }
     func completeCancel() {
@@ -210,12 +217,14 @@ class RVManagerAppendSections4: RVAsyncOperation {
             if let tableView = manager.scrollView  as? UITableView {
                 DispatchQueue.main.async {
                     if !self.isCancelled {
+                        print("In \(self.classForCoder).main, have TableView, notCancelled")
                         tableView.beginUpdates()
                         var indexes = [Int]()
                         for datasource in self.datasources {
                             indexes.append(manager.sections.count)
                             manager.sections.append(datasource)
                         }
+                        print("In \(self.classForCoder).main number of sections = \(manager.sections.count)")
                         tableView.insertSections(IndexSet(indexes), with: manager.rowAnimation)
                         tableView.endUpdates()
                     }
@@ -352,9 +361,12 @@ class RVManagerExpandCollapseOperation4: RVAsyncOperation {
                 }
                 return
             case .toggle:
+                print("In \(self.instanceType).actualOperation, toggle number of datasources \(datasources.count)")
+                self.count = datasources.count
                 for datasource in datasources {
                     let scrollView = (manager.sectionIndex(datasource: datasource) < 0) ? nil : manager.scrollView
                     datasource.toggle(scrollView: scrollView, callback: { (models, error) in
+                        print("In \(self.instanceType).actualOperation, toggle count \(self.count)  $$$$$$$$$$$$$$$$$")
                         self.count = self.count - 1
                         if let error = error {
                             error.append(message: "In \(self.instanceType).actualOperation toggle, got error")

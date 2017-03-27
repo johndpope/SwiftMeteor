@@ -58,6 +58,7 @@ class RVAsyncOperation: Operation {
     }
     override func main() {
         print("In \(self.classForCoder).main \(title) \(Date())")
+        completeOperation()
     }
     
     /*

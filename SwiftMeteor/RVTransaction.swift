@@ -30,11 +30,12 @@ class RVTransaction: RVBaseModel {
         self.readState = .unread
         self.archived = false
     }
-    override var basicQuery: (RVQuery, RVError?) {
+    class var basicQuery: (RVQuery, RVError?) {
         get {
             let query = RVQuery()
             var error: RVError? = nil
             query.addAnd(term: .modelType, value: RVModelType.transaction.rawValue as AnyObject, comparison: .eq)
+           query.addAnd(term: .deleted, value: false as AnyObject, comparison: .eq)
             if let loggedInUserId = RVTransaction.loggedInUserId {
                 query.addAnd(term: .targetUserProfileId, value: loggedInUserId as AnyObject, comparison: .eq)
             } else {

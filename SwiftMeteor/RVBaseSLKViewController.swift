@@ -10,6 +10,7 @@ import UIKit
 import SlackTextViewController
 // NSNotification.Name(RVNotification.AppStateChanged.rawValue)
 class RVBaseSLKViewController: SLKTextViewController {
+    var version4: Bool = false
     @IBOutlet weak var searchControllerContainerView: UIView!
     @IBOutlet weak var TopOuterView: UIView!
     @IBOutlet weak var TopTopView: UIView!
@@ -171,6 +172,26 @@ class RVBaseSLKViewController: SLKTextViewController {
              setBackButtonTitlePositionAdjustment:UIOffsetMake(-1000, -1000)
              forBarMetrics:UIBarMetricsDefault];
              */
+        }
+    }
+    func performSearch(searchText: String, field: RVKeys, order: RVSortOrder = .ascending) {
+        print("IN \(self.classForCoder).performSearch ")
+        if let datasource = self.configuration.findDatasource(type: .main) {
+            self.configuration.manager.collapseDatasource(datasource: datasource, callback: {
+                //  print("In \(self.classForCoder).performSearch return from collapsing main")
+            })
+        }
+        if let datasource = self.configuration.findDatasource(type: .top) {
+            self.configuration.manager.collapseDatasource(datasource: datasource, callback: {
+                //  print("In \(self.classForCoder).performSearch return from collapsing top")
+            })
+        }
+        let filterTerms = RVFilterTerms(sortField: field, value: searchText as AnyObject, order: order)
+        //  print("In \(self.instanceType).performSearch fitler is: \(filterTerms.params)")
+        configuration.performSearch(scrollView: self.dsScrollView, searchParams: filterTerms.params) { (error ) in
+            if let error = error {
+                error.printError()
+            }
         }
     }
 }
@@ -474,26 +495,7 @@ extension RVBaseSLKViewController: UISearchResultsUpdating {
         performSearch(searchText: searchText, field: searchKey)
     }
 
-    func performSearch(searchText: String, field: RVKeys, order: RVSortOrder = .ascending) {
-        print("IN \(self.classForCoder).performSearch ")
-        if let datasource = self.configuration.findDatasource(type: .main) {
-            self.configuration.manager.collapseDatasource(datasource: datasource, callback: {
-              //  print("In \(self.classForCoder).performSearch return from collapsing main")
-            })
-        }
-        if let datasource = self.configuration.findDatasource(type: .top) {
-            self.configuration.manager.collapseDatasource(datasource: datasource, callback: {
-              //  print("In \(self.classForCoder).performSearch return from collapsing top")
-            })
-        }
-        let filterTerms = RVFilterTerms(sortField: field, value: searchText as AnyObject, order: order)
-      //  print("In \(self.instanceType).performSearch fitler is: \(filterTerms.params)")
-        configuration.performSearch(scrollView: self.dsScrollView, searchParams: filterTerms.params) { (error ) in
-            if let error = error {
-                error.printError()
-            }
-        }
-    }
+
 
     func replaceOperation(operation: RVOperation, operationName: String = "") -> RVOperation {
         if operation.sameOperation(operation: self.searchOperation) {

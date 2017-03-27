@@ -15,6 +15,7 @@ enum RVExpandCollapseOperationType {
     case expandOnly
     case collapseAndZero
     case collapseZeroAndExpand
+    case collapseZeroExpandAndLoad
     case toggle
 }
 class RVBaseDatasource4: NSObject {
@@ -26,7 +27,7 @@ class RVBaseDatasource4: NSObject {
     }
     var instanceType: String { get { return String(describing: type(of: self)) } }
     let identifier = NSDate().timeIntervalSince1970
-
+    var baseQuery: RVQuery? = nil
     fileprivate let queue = RVOperationQueue()
     var rowAnimation: UITableViewRowAnimation = UITableViewRowAnimation.automatic
     var items = [RVBaseModel]()
@@ -52,6 +53,7 @@ class RVBaseDatasource4: NSObject {
         self.maxArraySize = ((maxSize < 500) && (maxSize > 50)) ? maxSize : 500
         super.init()
     }
+    /*
     func baseQuery() -> (RVQuery, RVError?) {
         let (query, error) = model.basicQuery
         if let error = error { error.append(message: "In \(self.instanceType).baseQuery(), got error") }
@@ -62,6 +64,7 @@ class RVBaseDatasource4: NSObject {
         }
         return (query, error)
     }
+ */
 
 }
 
@@ -161,24 +164,25 @@ extension RVBaseDatasource4 {
         }
     }
     func backQuery(backItem: RVBaseModel?) -> (RVQuery?, RVError?) {
-        return (RVQuery(), nil)
+        print("In \(self.classForCoder).backQuery, needs work")
+        return (self.baseQuery, nil)
     }
     func frontQuery() -> (RVQuery?, RVError?) {
         return (RVQuery(), nil)
     }
-    func backLoad(datasource: RVBaseDatasource4, scrollView: UIScrollView?, filterTerms: RVFilterTerms?, callback: @escaping RVCallback) {
+    func backLoad(datasource: RVBaseDatasource4, scrollView: UIScrollView?, callback: @escaping RVCallback) {
         if backOperationActive {
             callback([RVBaseModel](), nil)
             return
         } else {
-            queue.addOperation(RVBackLoadOperation(datasource: datasource , scrollView: scrollView, filterTerms: filterTerms, callback: callback) )
+            queue.addOperation(RVBackLoadOperation(datasource: datasource , scrollView: scrollView, callback: callback) )
         }
     }
     func frontLoad(scrollView: UIScrollView?, callback: RVCallback) {
         
     }
-    func restart(scrollView: UIScrollView?, callback: RVCallback) {
-        
+    func restart(scrollView: UIScrollView?, query: RVQuery, callback: @escaping RVCallback) {
+        self.queue.addOperation(RVExpandCollapseOperation(datasource: self, scrollView: scrollView, operationType: .collapseZeroExpandAndLoad, query: query, callback: callback))
     }
     func expand(scrollView: UIScrollView?, callback: @escaping RVCallback) {
         self.queue.addOperation(RVExpandCollapseOperation(datasource: self, scrollView: scrollView, operationType: .expandOnly, callback: callback))
@@ -195,28 +199,35 @@ class RVFrontLoadOperation: RVBackLoadOperation {
 
     
 }
-class RVExpandCollapseOperation: RVAsyncOperation {
+class RVExpandCollapseOperation: RVBackLoadOperation {
     typealias RVCallback = ([RVBaseModel], RVError?) -> Void
-    var datasource: RVBaseDatasource4
-    weak var scrollView: UIScrollView?
-    var callback: RVCallback
+
     var operationType: RVExpandCollapseOperationType
+    var query: RVQuery
     var emptyModels = [RVBaseModel]()
-    init(datasource: RVBaseDatasource4, scrollView: UIScrollView?, operationType: RVExpandCollapseOperationType, callback: @escaping RVCallback) {
-        self.datasource     = datasource
-        self.scrollView     = scrollView
-        self.callback       = callback
+    init(datasource: RVBaseDatasource4, scrollView: UIScrollView?, operationType: RVExpandCollapseOperationType, query: RVQuery = RVQuery(), callback: @escaping RVCallback) {
         self.operationType  = operationType
-        super.init(title: "RVExpandCollapseOperation")
+        self.query = query
+        super.init(title: "RVExpandCollapseOperation", datasource: datasource, scrollView: scrollView, callback: callback)
     }
     func handleCollapse() -> [IndexPath] {
         var indexPaths = [IndexPath]()
         let section = self.datasource.section
         let lastItem = self.datasource.offset + self.datasource.items.count
         if lastItem > 0 { for row in 0..<lastItem { indexPaths.append(IndexPath(row: row, section: section)) } }
-        if (self.operationType == .collapseAndZero) || (self.operationType == .collapseZeroAndExpand ){ self.datasource.items = [RVBaseModel]() }
-        self.datasource.collapsed = (operationType == .collapseZeroAndExpand) ? false : true
+        if (self.operationType == .collapseAndZero) || (self.operationType == .collapseZeroAndExpand ) || (self.operationType == .collapseZeroExpandAndLoad){
+            self.datasource.items = [RVBaseModel]()
+            self.datasource.offset = 0
+        }
+        if (operationType == .collapseZeroAndExpand) || (operationType == .collapseZeroExpandAndLoad) {
+            self.datasource.collapsed = false
+        } else {
+            self.datasource.collapsed = true
+        }
         return indexPaths
+    }
+    func getToLoad() {
+        self.datasource.baseQuery = self.query
     }
     override func main() {
         var operationType = self.operationType
@@ -226,68 +237,104 @@ class RVExpandCollapseOperation: RVAsyncOperation {
             return
         } else if (operationType != .expandOnly) {
             if self.datasource.collapsed {
-                if (operationType == .collapseAndZero) || (operationType == .collapseZeroAndExpand) { self.datasource.items = [RVBaseModel]() }
-                if (operationType == .collapseZeroAndExpand) { self.datasource.collapsed = false }
+                if (operationType == .collapseAndZero) || (operationType == .collapseZeroAndExpand) || (operationType == .collapseZeroExpandAndLoad) {
+                    self.datasource.items = [RVBaseModel]()
+                    self.datasource.offset = 0
+                }
+                if (operationType == .collapseZeroAndExpand) || (operationType == .collapseZeroExpandAndLoad) { self.datasource.collapsed = false }
                 self.finishUp(models: self.emptyModels, error: nil)
                 return
             } else {
-                if let tableView = self.scrollView as? UITableView {
-                    tableView.beginUpdates()
-                    if !self.isCancelled {
-                        let indexPaths = self.handleCollapse()
-                        if indexPaths.count > 0 { tableView.deleteRows(at: indexPaths, with: self.datasource.rowAnimation) }
-                        
-                        tableView.endUpdates()
-                    }
-                    self.finishUp(models: self.emptyModels, error: nil)
-                    return
-                } else if let collectionView = self.scrollView as? UICollectionView {
-                    collectionView.performBatchUpdates({
-                        if self.isCancelled { return }
-                        let indexPaths = self.handleCollapse()
-                        if indexPaths.count > 0 { collectionView.deleteItems(at: indexPaths) }
-                    }, completion: { (success) in
+                DispatchQueue.main.async {
+                    if self.isCancelled {
                         self.finishUp(models: self.emptyModels, error: nil)
-                    })
-                    return
-                } else if self.scrollView == nil {
-                    if (operationType == .collapseAndZero) || (operationType == .collapseZeroAndExpand) { self.datasource.items = [RVBaseModel]() }
-                    self.datasource.collapsed = (operationType == .collapseZeroAndExpand) ? false : true
-                } else {
-                    let error = RVError(message: "In \(self.classForCoder).main, erroneous scrollVIew \(self.scrollView)")
-                    self.finishUp(models: self.emptyModels, error: error)
-                    return
+                        return
+                    } else {
+                        if let tableView = self.scrollView as? UITableView {
+                            tableView.beginUpdates()
+                            if !self.isCancelled {
+                                let indexPaths = self.handleCollapse()
+                                if indexPaths.count > 0 { tableView.deleteRows(at: indexPaths, with: self.datasource.rowAnimation) }
+                                tableView.endUpdates()
+                            }
+                            if (operationType == .collapseZeroExpandAndLoad) {
+                                print("In \(self.classForCoder).main, about to do InnerMain, collapsed = \(self.datasource.collapsed)")
+                                self.datasource.baseQuery = self.query
+                                self.InnerMain()
+                            } else {
+                                self.finishUp(models: self.emptyModels, error: nil)
+                            }
+                            return
+                        } else if let collectionView = self.scrollView as? UICollectionView {
+                            collectionView.performBatchUpdates({
+                                if self.isCancelled { return }
+                                let indexPaths = self.handleCollapse()
+                                if indexPaths.count > 0 { collectionView.deleteItems(at: indexPaths) }
+                            }, completion: { (success) in
+                                if (operationType == .collapseZeroExpandAndLoad) {
+                                    self.datasource.baseQuery = self.query
+                                    self.InnerMain()
+                                } else {
+                                    self.finishUp(models: self.emptyModels, error: nil)
+                                }
+                            })
+                            return
+                        } else if self.scrollView == nil {
+                            if (operationType == .collapseAndZero) || (operationType == .collapseZeroAndExpand) || (self.operationType == .collapseZeroExpandAndLoad) {
+                                self.datasource.items = [RVBaseModel]()
+                                self.datasource.offset = 0
+                            }
+                            if (operationType == .collapseZeroAndExpand) || (operationType == .collapseZeroExpandAndLoad) {
+                                self.datasource.collapsed = false
+                            } else {
+                                self.datasource.collapsed = true
+                            }
+                            if (operationType == .collapseZeroExpandAndLoad) {
+                                self.InnerMain()
+                            } else {
+                                self.finishUp(models: self.emptyModels, error: nil)
+                            }
+                            return
+                        } else {
+                            let error = RVError(message: "In \(self.classForCoder).main, erroneous scrollVIew \(self.scrollView)")
+                            self.finishUp(models: self.emptyModels, error: error)
+                            return
+                        }
+                    }
                 }
             }
         } else {
+            print("In \(self.classForCoder).main expand collapsed: \(datasource.collapsed)")
             if self.datasource.collapsed {
-                if let tableView = self.scrollView as? UITableView {
-                    tableView.beginUpdates()
-                    if !self.isCancelled {
-                        let indexPaths = self.handleExpand()
-                        tableView.insertRows(at: indexPaths, with: self.datasource.rowAnimation)
-                    }
-                    tableView.endUpdates()
-                    self.finishUp(models: self.datasource.items, error: nil)
-                    return
-                } else if let collectionView = self.scrollView as? UICollectionView {
-                    collectionView.performBatchUpdates({
+                DispatchQueue.main.async {
+                    if let tableView = self.scrollView as? UITableView {
+                        tableView.beginUpdates()
                         if !self.isCancelled {
                             let indexPaths = self.handleExpand()
-                            collectionView.insertItems(at: indexPaths)
+                            tableView.insertRows(at: indexPaths, with: self.datasource.rowAnimation)
                         }
-                    }, completion: { (success) in
+                        tableView.endUpdates()
                         self.finishUp(models: self.datasource.items, error: nil)
-                    })
-                    return
-                } else if self.scrollView != nil {
-                    let _ = handleExpand()
-                    self.finishUp(models: self.datasource.items, error: nil)
-                    return
-                } else {
-                    let error = RVError(message: "In \(self.classForCoder).main, invalid scrollView \(self.scrollView)")
-                    self.finishUp(models: self.datasource.items, error: error)
-                    return
+                        return
+                    } else if let collectionView = self.scrollView as? UICollectionView {
+                        collectionView.performBatchUpdates({
+                            if !self.isCancelled {
+                                let indexPaths = self.handleExpand()
+                                collectionView.insertItems(at: indexPaths)
+                            }
+                        }, completion: { (success) in
+                            self.finishUp(models: self.datasource.items, error: nil)
+                        })
+                        return
+                    } else if self.scrollView != nil {
+                        let _ = self.handleExpand()
+                        self.finishUp(models: self.datasource.items, error: nil)
+                        return
+                    } else {
+                        let error = RVError(message: "In \(self.classForCoder).main, invalid scrollView \(self.scrollView)")
+                        self.finishUp(models: self.datasource.items, error: error)
+                        return
+                    }
                 }
             } else {
                 self.finishUp(models: self.datasource.items, error: nil)
@@ -316,7 +363,6 @@ class RVBackLoadOperation: RVAsyncOperation {
     var datasource: RVBaseDatasource4
     weak var scrollView: UIScrollView?
     var callback: RVCallback
-    var filterTerms: RVFilterTerms?
     var reference: RVBaseModel? = nil
     var referenceMatch: Bool {
         get {
@@ -330,15 +376,17 @@ class RVBackLoadOperation: RVAsyncOperation {
             } else { return false }
         }
     }
-    init(datasource: RVBaseDatasource4, scrollView: UIScrollView?, filterTerms: RVFilterTerms?, callback: @escaping RVCallback) {
+    init(title: String = "RVBackLoadOperation", datasource: RVBaseDatasource4, scrollView: UIScrollView?, callback: @escaping RVCallback) {
         self.datasource     = datasource
         self.scrollView     = scrollView
         self.callback       = callback
-        self.filterTerms    = filterTerms
-        super.init(title: "RVBackLoadOperation")
+        super.init(title: title)
     }
-    
     override func main() {
+        InnerMain()
+    }
+    func InnerMain() {
+        print("In \(self.classForCoder).InnerMain")
         if self.isCancelled {
             finishUp(front: false, items: itemsPlug, error: nil)
             return
@@ -347,6 +395,7 @@ class RVBackLoadOperation: RVAsyncOperation {
             let (query, error) = datasource.backQuery(backItem: self.reference)
             if let query = query {
                 datasource.retrieve(query: query, callback: { (models, error) in
+                    print("In \(self.classForCoder).InnerMain, datasource.retrieve callback")
                     if self.isCancelled {
                         self.finishUp(front: false, items: models, error: error)
                         return
@@ -374,6 +423,8 @@ class RVBackLoadOperation: RVAsyncOperation {
                     }
                 })
             } else {
+                print("In \(self.classForCoder).InnerMain, no query")
+                let error = RVError(message: "In \(self.classForCoder).InnerMain, no query")
                 self.finishUp(front: false, items: itemsPlug , error: error)
             }
         }
@@ -441,9 +492,11 @@ class RVBackLoadOperation: RVAsyncOperation {
             indexPaths.append(IndexPath(row: virtualIndex + i, section: section))
         }
         self.datasource.items = clone
+        print("In \(self.classForCoder).backHandler, items count = \(self.datasource.items.count) collapsed: \(self.datasource.collapsed)")
         return indexPaths
     }
     func insertAtBack(models: [RVBaseModel], callback: @escaping RVCallback) {
+        print("In \(self.classForCoder).insertAtBack")
         DispatchQueue.main.async {
             if self.isCancelled {
                 callback(models, nil)
@@ -451,9 +504,13 @@ class RVBackLoadOperation: RVAsyncOperation {
             }
             if let tableView = self.scrollView as? UITableView {
                 tableView.beginUpdates()
+
                 if self.referenceMatch {
+                    print("In \(self.classForCoder).insertAtBack, tableView reference match")
                    let indexPaths = self.backHandler(models: models)
                     if  (!self.datasource.collapsed)  { tableView.insertRows(at: indexPaths, with: self.datasource.rowAnimation) }
+                } else {
+                    print("In \(self.classForCoder).insertAtBack, tableView no reference match")
                 }
                 tableView.endUpdates()
                 callback(models, nil)
