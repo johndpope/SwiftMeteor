@@ -73,7 +73,7 @@ class RVQueryForFrontOperation: RVAsyncOperation {
         return query
         
     }
-    override func main() {
+    override func asyncMain() {
         if self.isCancelled {
             callback(nil)
             completeOperation()

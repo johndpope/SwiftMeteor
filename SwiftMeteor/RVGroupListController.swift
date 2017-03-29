@@ -36,6 +36,8 @@ class RVGroupListController: RVTransactionListViewController {
             } else {
                 print("In \(self.instanceType).runConfiguration success")
                 let (query, error) = RVTransaction.basicQuery
+                query.addSort(field: .createdAt, order: .descending)
+                query.addAnd(term: .createdAt, value: Date() as AnyObject, comparison: .lte)
                 self.manager4.restart(datasource: datasource, query: query, callback: { (models, error) in
                     if let error = error {
                         error.append(message: "In \(self.classForCoder).runConfiguration, got error")

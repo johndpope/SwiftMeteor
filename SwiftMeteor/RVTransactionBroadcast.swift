@@ -28,11 +28,20 @@ class RVDocumentWasAddedOperation: RVAsyncOperation {
         self.model = model
         super.init(title: "Document Was Added: \(model.modelType.rawValue) id: \(model.localId) \(model.createdAt)")
     }
-    override func main() {
-        if let controller = UIViewController.top() {
-            choose(index: RVTransactionBroadcast.shared.count, controller: controller)
+    override func asyncMain() {
+        if self.isCancelled {
+            self.completeOperation()
+            return
         }
-
+        DispatchQueue.main.async {
+            if self.isCancelled {
+                self.completeOperation()
+                return
+            }
+            if let controller = UIViewController.top() {
+                self.choose(index: RVTransactionBroadcast.shared.count, controller: controller)
+            }
+        }
     }
     func choose(index: Int, controller: UIViewController) {
         let title = "\(self.model.modelType.rawValue)"

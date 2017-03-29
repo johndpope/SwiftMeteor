@@ -40,9 +40,9 @@ class RVBaseDatasource4: NSObject {
     var datasourceType: DatasourceType = .unknown
     var manager: RVDSManager4
     var model: RVBaseModel { return RVBaseModel() }
-    var dynamicAndTerms = [RVQueryItem]()
-    var sortTerms = [RVSortTerm]()
-    var dynamicFixedTerms = [RVQueryItem]()
+
+    fileprivate let backBuffer = 20
+    fileprivate let frontBuffer = 20
     func retrieve(query: RVQuery, callback: @escaping RVCallback) {
         print("In RVBaseDatasource4.retrieve, need to override")
         RVBaseModel.bulkQuery(query: query, callback: callback as! ([RVBaseModel]?, RVError?) -> Void)
@@ -65,13 +65,21 @@ class RVBaseDatasource4: NSObject {
         return (query, error)
     }
  */
-
+    func cancelAllOperations() { self.queue.cancelAllOperations()}
+    func unsubscribe() {
+        print("In \(self.classForCoder).unsubscribe Need to implement")
+    }
 }
 
 extension RVBaseDatasource4 {
     func updateSortTerm(query: RVQuery, front: Bool = false, candidate: RVBaseModel? = nil) -> RVQuery {
         if (query.sortTerms.count == 0) || (query.sortTerms.count > 1) {
             print("In \(self.classForCoder).updateSortTerms, erroneous number of sort Tersm: \(query.sortTerms)")
+        }
+        if let candidate = candidate {
+            print("In \(self.classForCoder).updateSortTerm, candidate \(candidate.title), \(candidate.createdAt)")
+        } else {
+            print("In \(self.classForCoder).updateSortTerm, no candidate")
         }
         if let sortTerm = query.sortTerms.first {
             let firstString: AnyObject = "" as AnyObject
@@ -118,6 +126,7 @@ extension RVBaseDatasource4 {
             default:
                 print("In \(self.classForCoder).updateSortTerms, term: \(sortTerm.field.rawValue) not handled")
             }
+            print("In \(self.classForCoder).updateSortTerm, finalValue is: \(finalValue), Comparison: \(comparison.rawValue), sortField: \(sortField.rawValue)")
             if let queryTerm = query.findAndTerm(term: sortTerm.field) { queryTerm.value =  finalValue}
             else { query.addAnd(term: sortField, value: finalValue, comparison: comparison) }
         }
@@ -130,19 +139,54 @@ extension RVBaseDatasource4 {
             return self.items.count + self.offset
         }
     }
-    func item(index: Int) -> RVBaseModel? {
+    func inFront(scrollView: UIScrollView?) {
+        DispatchQueue.main.async {
+            if self.frontOperationActive { return }
+        }
+    }
+    func inBack(scrollView: UIScrollView?) {
+        DispatchQueue.main.async {
+            if self.backOperationActive {
+               // print("In \(self.classForCoder).inBack, backOperationActive")
+                return
+            }
+            let operation = RVBackLoadOperation(datasource: self, scrollView: scrollView, callback: { (models, error) in
+                if let error = error {
+                    error.append(message: "In \(self.classForCoder).inBack, got error")
+                    error.printError()
+                } else {
+                    print("In \(self.classForCoder).inBack, success")
+                }
+            })
+            self.queue.addOperation(operation)
+        }
+    }
+    func item(index: Int, scrollView: UIScrollView?) -> RVBaseModel? {
         if index < 0 {
             print("In \(self.instanceType).item, got negative index \(index)")
+            return nil
+        } else if index >= self.virtualCount {
+            print("In \(self.instanceType).item, index \(index) greater than virtualCount: \(self.virtualCount)")
             return nil
         }
         let physicalIndex = index - offset
         if physicalIndex < 0 {
             print("In \(self.instanceType).item got physical index less than 0 \(physicalIndex). Offset is \(offset)")
+            print("In \(self.classForCoder).item calling inBack: index = \(index), count: \(items.count), offset: \(self.offset), backBuffer: \(self.backBuffer)")
+            inFront(scrollView: scrollView)
             return nil
         } else if physicalIndex < items.count {
+            if (physicalIndex + self.backBuffer) > items.count {
+                print("In \(self.classForCoder).item calling inBack:  index = \(index), count: \(items.count), offset: \(self.offset), backBuffer: \(self.backBuffer)")
+                inBack(scrollView: scrollView)
+            }
+            if physicalIndex < self.frontBuffer {
+                print("In \(self.classForCoder).item calling inFront: index = \(index), count: \(items.count), offset: \(self.offset), backBuffer: \(self.backBuffer)")
+                inFront(scrollView: scrollView)
+            }
             return items[physicalIndex]
         } else {
-            print("In \(self.instanceType).item physicalIndex of \(physicalIndex) exceeds array size \(items.count). Offset is \(self.offset)")
+            print("In \(self.instanceType).item physicalIndex of \(physicalIndex) exceeds or equals array size \(items.count). Offset is \(self.offset)")
             return nil
         }
     }
@@ -165,7 +209,7 @@ extension RVBaseDatasource4 {
     }
     func backQuery(backItem: RVBaseModel?) -> (RVQuery?, RVError?) {
         print("In \(self.classForCoder).backQuery, needs work")
-        return (self.baseQuery, nil)
+        return (self.baseQuery?.duplicate(), nil)
     }
     func frontQuery() -> (RVQuery?, RVError?) {
         return (RVQuery(), nil)
@@ -229,7 +273,7 @@ class RVExpandCollapseOperation: RVBackLoadOperation {
     func getToLoad() {
         self.datasource.baseQuery = self.query
     }
-    override func main() {
+    override func asyncMain() {
         var operationType = self.operationType
         if operationType == .toggle { operationType = (self.datasource.collapsed) ? .expandOnly : .collapseOnly }
         if self.isCancelled {
@@ -364,6 +408,7 @@ class RVBackLoadOperation: RVAsyncOperation {
     weak var scrollView: UIScrollView?
     var callback: RVCallback
     var reference: RVBaseModel? = nil
+    var front: Bool = false
     var referenceMatch: Bool {
         get {
             let current = self.datasource.backItem
@@ -382,52 +427,79 @@ class RVBackLoadOperation: RVAsyncOperation {
         self.callback       = callback
         super.init(title: title)
     }
-    override func main() {
+    override func asyncMain() {
         InnerMain()
     }
     func InnerMain() {
-        print("In \(self.classForCoder).InnerMain")
+        //print("In \(self.classForCoder).InnerMain")
+        
         if self.isCancelled {
-            finishUp(front: false, items: itemsPlug, error: nil)
+            finishUp(items: itemsPlug, error: nil)
             return
         } else {
             self.reference = datasource.backItem
             let (query, error) = datasource.backQuery(backItem: self.reference)
-            if let query = query {
+            if let error = error {
+                error.append(message: "In \(self.instanceType). got error generating query")
+            }
+            if var query = query {
+                 print("In \(self.classForCoder).InnerMain, haveQuery")
+                if self.front {
+                    if self.datasource.frontOperationActive {
+                        self.finishUp(items: self.itemsPlug, error: nil)
+                        return
+                    } else {
+                        self.datasource.frontOperationActive = true
+                    }
+                } else {
+                    if self.datasource.backOperationActive {
+                        self.finishUp(items: self.itemsPlug, error: nil)
+                        return
+                    } else {
+                        self.datasource.backOperationActive = true
+                    }
+                }
+                print("In \(self.classForCoder).InnerMain, about to do retrieve")
+                query = query.duplicate()
+                
+                let query = datasource.updateSortTerm(query: query, front: false, candidate: self.reference)
                 datasource.retrieve(query: query, callback: { (models, error) in
                     print("In \(self.classForCoder).InnerMain, datasource.retrieve callback")
                     if self.isCancelled {
-                        self.finishUp(front: false, items: models, error: error)
+                        self.finishUp(items: models, error: error)
                         return
                     } else if let error = error {
                         error.append(message: "In \(self.instanceType).main, got error doing retrieve")
-                        self.finishUp(front: false, items: models, error: error)
+                        self.finishUp(items: models, error: error)
                         return
                     } else if models.count > 0 {
-                        self.insertAtBack(models: models, callback: { (models, error) in
+                        self.insert(models: models, callback: { (models, error) in
                             if let error = error {
                                 error.append(message: "In \(self.instanceType).main, got error doing insertAtBack")
-                                self.finishUp(front: false, items: models, error: error)
+                                self.finishUp(items: models, error: error)
                                 return
                             } else {
                                 self.cleanupBack(models: models, callback: { (models, error) in
-                                    self.finishUp(front: false, items: models, error: nil)
+                                    self.finishUp(items: models, error: nil)
                                 })
                                 return
                             }
                         })
                         return
                     } else {
-                        self.finishUp(front: false, items: models, error: error)
+                        self.finishUp(items: models, error: error)
                         return
                     }
                 })
             } else {
                 print("In \(self.classForCoder).InnerMain, no query")
                 let error = RVError(message: "In \(self.classForCoder).InnerMain, no query")
-                self.finishUp(front: false, items: itemsPlug , error: error)
+                self.finishUp(items: itemsPlug , error: error)
             }
         }
+    }
+    deinit {
+        print("In \(self.classForCoder).deinit")
     }
     func innerCleanupBack() -> [IndexPath] {
         let maxSize = self.datasource.maxArraySize < 100 ? 100 : self.datasource.maxArraySize
@@ -495,54 +567,80 @@ class RVBackLoadOperation: RVAsyncOperation {
         print("In \(self.classForCoder).backHandler, items count = \(self.datasource.items.count) collapsed: \(self.datasource.collapsed)")
         return indexPaths
     }
-    func insertAtBack(models: [RVBaseModel], callback: @escaping RVCallback) {
+    func frontHandler(models: [RVBaseModel]) -> [IndexPath] {
+        print("In \(self.classForCoder).frontHandler")
+  //      let section = datasource.section
+  //      let virtualIndex = datasource.items.count + datasource.offset
+  //      var clone = datasource.cloneItems()
+        let indexPaths = [IndexPath]()
+        /*
+        for i in 0..<models.count {
+            clone.append(models[i])
+            indexPaths.append(IndexPath(row: virtualIndex + i, section: section))
+        }
+        self.datasource.items = clone
+        */
+        return indexPaths
+    }
+    func insert(models: [RVBaseModel], callback: @escaping RVCallback) {
         print("In \(self.classForCoder).insertAtBack")
         DispatchQueue.main.async {
             if self.isCancelled {
-                callback(models, nil)
+                self.finishUp(items: models, error: nil)
                 return
             }
             if let tableView = self.scrollView as? UITableView {
                 tableView.beginUpdates()
 
                 if self.referenceMatch {
+                    var indexPaths = [IndexPath]()
                     print("In \(self.classForCoder).insertAtBack, tableView reference match")
-                   let indexPaths = self.backHandler(models: models)
+                    if self.front { indexPaths = self.frontHandler(models: models) }
+                    else { indexPaths = self.backHandler(models: models) }
                     if  (!self.datasource.collapsed)  { tableView.insertRows(at: indexPaths, with: self.datasource.rowAnimation) }
                 } else {
                     print("In \(self.classForCoder).insertAtBack, tableView no reference match")
                 }
                 tableView.endUpdates()
-                callback(models, nil)
+                self.finishUp(items: models, error: nil)
                 return
             } else if let collectionView = self.scrollView as? UICollectionView {
                 collectionView.performBatchUpdates({
                     if !self.isCancelled {
                         if self.referenceMatch {
-                            let indexPaths = self.backHandler(models: models)
+                            var indexPaths = [IndexPath]()
+                            if self.front { indexPaths = self.frontHandler(models: models) }
+                            else { indexPaths = self.backHandler(models: models) }
                             if  (!self.datasource.collapsed)  { collectionView.insertItems(at: indexPaths) }
                         }
                     }
                 }, completion: { (success) in
-                    callback(models, nil)
+                    self.finishUp(items: models, error: nil)
                 })
                 return
             } else if self.scrollView == nil {
-                if self.referenceMatch { let _ = self.backHandler(models: models) }
-                callback(models, nil)
+                if self.referenceMatch {
+                    if self.front { let _ = self.frontHandler(models: models) }
+                    else { let _ = self.backHandler(models: models) }
+                }
+                self.finishUp(items: models, error: nil)
                 return
             } else {
                 let error = RVError(message: "In \(self.instanceType).insertABack, erroroneous scrollView \(self.scrollView)")
-                callback(models, error)
+                self.finishUp(items: models, error: error)
                 return
             }
         }
     }
-    func finishUp(front: Bool, items: [RVBaseModel], error: RVError?) {
+    func finishUp(items: [RVBaseModel], error: RVError?) {
         DispatchQueue.main.async {
+            print("In \(self.classForCoder).finishUp")
             self.callback(items, error)
-            if front { self.datasource.frontOperationActive = false }
-            else { self.datasource.backOperationActive = false }
+            if self.front { self.datasource.frontOperationActive = false }
+            else {
+               // print("In \(self.classForCoder).finishUp, setting backOperation to false")
+                self.datasource.backOperationActive = false
+            }
             self.completeOperation()
         }
     }

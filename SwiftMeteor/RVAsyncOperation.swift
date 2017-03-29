@@ -43,12 +43,14 @@ class RVAsyncOperation: Operation {
     }
     override func start() {
           //print("In \(self.classForCoder).start \(title) \(Date())")
+        /*
         if isCancelled {
             isFinished = true
             return
         }
+ */
         isExecuting = true
-        main()
+        asyncMain()
 
        // operation(completeOperation: completeOperation)
     }
@@ -56,8 +58,12 @@ class RVAsyncOperation: Operation {
         isFinished = true
         isExecuting = false
     }
+    func asyncMain() {
+        print("In \(self.classForCoder).asyncMain \(title) \(Date()).")
+        completeOperation()
+    }
     override func main() {
-        print("In \(self.classForCoder).main \(title) \(Date())")
+        print("In \(self.classForCoder).main \(title) \(Date()). Show Not Be Here")
         completeOperation()
     }
     

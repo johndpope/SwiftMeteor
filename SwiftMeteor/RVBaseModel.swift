@@ -1009,9 +1009,10 @@ extension RVBaseModel {
         }
 
         let (filters, projection) = query.query()
-       // print("In RVBaseModel.bulkQuery")
+        print("In RVBaseModel.bulkQuery")
+
         Meteor.call(bulkQueryMethod.rawValue, params: [filters as AnyObject, projection as AnyObject]) { (result: Any?, error : DDPError?) in
-         //           print("In RVBaseModel.bulkQuery has response \(error), \(result)")
+           // print("In RVBaseModel.bulkQuery has response \(error), \(result)")
             DispatchQueue.main.async {
                 if let error = error {
                     let rvError = RVError(message: "In RVBaseModel.bulkQuery, got Meteor Error", sourceError: error)

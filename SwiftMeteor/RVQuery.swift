@@ -45,7 +45,14 @@ enum RVGeoSpatial: String {
 }
 class RVQueryItem {
     var term: RVKeys = RVKeys._id
-    var value: AnyObject = "" as AnyObject
+    var _value: AnyObject = "" as AnyObject
+    var value: AnyObject {
+        get { return _value }
+        set {
+            if let date = newValue as? Date { _value = RVEJSON.convertToEJSONDate(date) as AnyObject }
+            else { _value = newValue }
+        }
+    }
     var comparison: RVComparison = .eq
     var regexOptions: String = "i"
     init(term: RVKeys = RVKeys._id, value: AnyObject = "" as AnyObject,  comparison: RVComparison = .eq, regexOptions: String = "i") {

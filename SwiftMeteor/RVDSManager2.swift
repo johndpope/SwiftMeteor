@@ -78,7 +78,7 @@ class RVManagerExpandOperation: RVAsyncOperation {
         self.datasource = datasource
         super.init(title: title)
     }
-    override func main() {
+    override func asyncMain() {
         if let manager = self.manager {
             if let datasource = self.datasource {
                 if self.isCancelled {
@@ -129,7 +129,7 @@ class RVManagerRemoveAllSectionsOperation: RVManagerStartDatasourceOperation {
     init(title: String, manager: RVDSManager2, callback: @escaping (RVError?) -> Void) {
         super.init(title: title, manager: manager, datasource: RVBaseDatasource2(), query: RVQuery() , callback: callback)
     }
-    override func main() {
+    override func asyncMain() {
         if let manager = manager {
             if let tableView = manager.scrollView as? UITableView {
                 if self.isCancelled {
@@ -181,7 +181,7 @@ class RVManagerStartDatasourceOperation: RVAsyncOperation {
         self.manager = manager
         super.init(title: title)
     }
-    override func main() {
+    override func asyncMain() {
         if let manager = manager {
             if self.isCancelled {
                 self.callback(nil)
@@ -217,7 +217,7 @@ class RVManagerResetDatasourceOperation: RVAsyncOperation {
         self.callback = callback
         super.init(title: title)
     }
-    override func main() {
+    override func asyncMain() {
         
         if self.isCancelled {
             self.callback(nil)
@@ -237,7 +237,7 @@ class RVManagerStopDatasourceOperation: RVManagerStartDatasourceOperation {
     init(title: String, manager: RVDSManager2, datasource: RVBaseDataSource, callback: @escaping(RVError?) -> Void ) {
         super.init(title: title, manager: manager, datasource: datasource , query: RVQuery() , callback: callback)
     }
-    override func main() {
+    override func asyncMain() {
         if let manager = manager {
             if self.isCancelled {
                 self.callback(nil)

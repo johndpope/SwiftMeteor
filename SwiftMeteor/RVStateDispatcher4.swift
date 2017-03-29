@@ -29,7 +29,7 @@ class RVChangeStateOperation: RVAsyncOperation {
         self.newState = newState
         super.init(title: "Change State to \(newState.appState.rawValue)")
     }
-    override func main() {
+    override func asyncMain() {
         DispatchQueue.main.async {
              self.deck.changeState(newState: self.newState) {  self.completeOperation() }
         }

@@ -40,7 +40,7 @@ class RVDSManager4 {
     func item(indexPath: IndexPath) ->  RVBaseModel? {
         let section = indexPath.section
         if (section < 0) || (section >= sections.count) { return nil }
-        return sections[section].item(index: indexPath.row)
+        return sections[section].item(index: indexPath.row, scrollView: self.scrollView)
     }
     func removeSections(datasources: [RVBaseDatasource4], callback: @escaping RVCallback) {
         self.queue.addOperation(RVManagerRemoveSections4(datasources: datasources , callback: callback))
@@ -84,6 +84,8 @@ class RVDSManager4 {
     }
 
     func restart(datasource: RVBaseDatasource4, query: RVQuery, callback: @escaping RVCallback) {
+        datasource.cancelAllOperations()
+        datasource.unsubscribe()
         datasource.restart(scrollView: self.scrollView, query: query, callback: callback)
     }
 
@@ -107,7 +109,7 @@ class RVManagerRemoveSections4: RVAsyncOperation {
         }
 
     }
-    override func main() {
+    override func asyncMain() {
         if ((datasources.count == 0) && (!self.all)) || self.isCancelled {
             self.completeIt(error: nil)
             return
@@ -208,7 +210,7 @@ class RVManagerAppendSections4: RVAsyncOperation {
         self.callback(emptyResponse, nil)
         self.completeOperation()
     }
-    override func main() {
+    override func asyncMain() {
         if (datasources.count == 0) || self.isCancelled {
             completeCancel()
             return
@@ -217,14 +219,14 @@ class RVManagerAppendSections4: RVAsyncOperation {
             if let tableView = manager.scrollView  as? UITableView {
                 DispatchQueue.main.async {
                     if !self.isCancelled {
-                        print("In \(self.classForCoder).main, have TableView, notCancelled")
+                       // print("In \(self.classForCoder).main, have TableView, notCancelled")
                         tableView.beginUpdates()
                         var indexes = [Int]()
                         for datasource in self.datasources {
                             indexes.append(manager.sections.count)
                             manager.sections.append(datasource)
                         }
-                        print("In \(self.classForCoder).main number of sections = \(manager.sections.count)")
+                   //     print("In \(self.classForCoder).main number of sections = \(manager.sections.count)")
                         tableView.insertSections(IndexSet(indexes), with: manager.rowAnimation)
                         tableView.endUpdates()
                     }
@@ -294,7 +296,7 @@ class RVManagerExpandCollapseOperation4: RVAsyncOperation {
         self.all = all
         super.init(title: title)
     }
-    override func main() {
+    override func asyncMain() {
         if (self.manager != nil) && ( (self.datasources.count > 0) || self.all ) {
             if self.isCancelled {
                 DispatchQueue.main.async {
