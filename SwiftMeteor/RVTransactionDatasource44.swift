@@ -9,8 +9,8 @@
 import Foundation
 class RVTransactionDatasource44: RVBaseDatasource4 {
     override func retrieve(query: RVQuery, callback: @escaping RVCallback) {
-        DispatchQueue.main.async {
-            print("In \(self.classForCoder).retrieve")
+
+            print("In \(self.classForCoder).retrieve --------------")
             RVTransaction.bulkQuery(query: query) { (models, error) in
                 print("In \(self.classForCoder).retrieve callback")
                 if let error = error {
@@ -21,7 +21,7 @@ class RVTransactionDatasource44: RVBaseDatasource4 {
                     callback(models, nil)
                 }
             }
-        }
+        
 
     }
 }

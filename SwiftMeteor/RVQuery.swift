@@ -375,6 +375,77 @@ class RVQuery {
             return false
         }
     }
+    
+    func updateQuery4(front: Bool, reference: RVBaseModel?) -> RVQuery {
+        for sortTerm in sortTerms {
+            if !updateSort(front: front, field: sortTerm.field){
+                print("In \(self.instanceType).updateQuery, no and term matching sort for field: \(sortTerm.field.rawValue)")
+            }
+            if front {
+                switch(sortTerm.order) {
+                case .ascending:
+                    sortTerm.order = .descending
+                case .descending:
+                    sortTerm.order = .ascending
+                }
+            }
+        }
+        if self.sortTerms.count == 0 {
+            print("In \(self.instanceType).updateQuery, no sort Terms :-(")
+        }
+        return self
+    }
+    
+    fileprivate func updateSort4(front: Bool, reference: RVBaseModel?, field: RVKeys) -> Bool {
+        // print("In RVQuery.updateSort, start of it")
+        if let andTerm = findAndTerm(term: field) {
+            if !front {
+                switch(andTerm.comparison) {
+                case .lt:
+                    if reference != nil { andTerm.comparison = .lt }
+                case .lte:
+                    if reference != nil { andTerm.comparison = .lt }
+                case .gt:
+                    if reference != nil { andTerm.comparison = .gt }
+                case .gte:
+                    if reference != nil { andTerm.comparison = .gt }
+                case .regex:
+                    andTerm.comparison = .regex
+                default:
+                    print("In \(self.instanceType).updateSort, inappropriate comparison of [\(andTerm.comparison.rawValue)] for field: \(field.rawValue)")
+                }
+            } else {
+                switch(andTerm.comparison) {
+                case .lt:
+                    if reference == nil { andTerm.comparison = .gte }
+                    else { andTerm.comparison = .gt }
+                case .lte:
+                    andTerm.comparison = .gt
+                case .gt:
+                    if reference == nil { andTerm.comparison = .lte }
+                    else { andTerm.comparison = .lt }
+                case .gte:
+                    andTerm.comparison = .lt
+                case .regex:
+                    andTerm.comparison = .regex
+                default:
+                    print("In \(self.instanceType).updateSort, inappropriate comparison of [\(andTerm.comparison.rawValue)] for field: \(field.rawValue)")
+                }
+            }
+            return true
+        } else {
+            //  print("IN RVQuery, updateSort, looking up fixedTerm for field \(field.rawValue)")
+            if let fixed = self.fixedTerm {
+                print("In RVQuery.updateSort, fixed term is \(fixed.term.rawValue) and field is \(field.rawValue)")
+                if fixed.term == field {
+                    return true
+                }
+            } else {
+                print("In RVQuery.updateSort, no fixed term")
+            }
+            return false
+        }
+    }
 }
 
 

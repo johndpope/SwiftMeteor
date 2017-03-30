@@ -36,7 +36,11 @@ class RVBaseDatasource4: NSObject {
     var frontOperationActive: Bool = false
     var maxArraySize: Int = 300
     var collapsed: Bool = false
-    fileprivate var offset: Int = 0
+    fileprivate var offset: Int = 0 {
+        willSet {
+            if newValue < 0 { print("In \(self.classForCoder) ERROR. attemtp to set Offset to a negative number \(newValue)") }
+        }
+    }
     var datasourceType: DatasourceType = .unknown
     var manager: RVDSManager4
     var model: RVBaseModel { return RVBaseModel() }
@@ -166,6 +170,7 @@ extension RVBaseDatasource4 {
         }
     }
     func inFront(scrollView: UIScrollView?) {
+        print("In \(self.classForCoder).inFront. ........................................... #######")
         if self.datasourceType == .filter { return }
         DispatchQueue.main.async {
             if self.frontOperationActive { return }
@@ -485,7 +490,7 @@ class RVLoadOperation: RVAsyncOperation {
                 error.append(message: "In \(self.instanceType). got error generating query")
             }
             if var query = query {
-                 print("In \(self.classForCoder).InnerMain, haveQuery")
+                 print("In \(self.classForCoder).InnerMain, for front: \(self.front) haveQuery frontOperationActive: \(self.datasource.frontOperationActive), backOperationActive: \(self.datasource.backOperationActive)")
                 if self.front {
                     if self.datasource.frontOperationActive {
                         self.finishUp(items: self.itemsPlug, error: nil)
@@ -501,10 +506,11 @@ class RVLoadOperation: RVAsyncOperation {
                         self.datasource.backOperationActive = true
                     }
                 }
-                print("In \(self.classForCoder).InnerMain, about to do retrieve")
+                print("In \(self.classForCoder).InnerMain, about to do retrieve. Front: \(self.front)")
                 query = query.duplicate()
                 
-                let query = datasource.updateSortTerm(query: query, front: self.front, candidate: self.reference)
+                var query = datasource.updateSortTerm(query: query, front: self.front, candidate: self.reference)
+                query = query.updateQuery4(front: self.front, reference: self.reference)
                 datasource.innerRetrieve(query: query, callback: { (models, error) in
                     print("In \(self.classForCoder).InnerMain, datasource.innerRetrieve callback")
                     if self.isCancelled {
@@ -541,36 +547,67 @@ class RVLoadOperation: RVAsyncOperation {
         }
     }
     deinit {
-        print("In \(self.classForCoder).deinit")
+        //print("In \(self.classForCoder).deinit")
     }
-    func innerCleanup() -> [IndexPath] {
-        let lastItemIndex = self.datasource.lastItemIndex
-        if lastItemIndex < self.datasource.maxArraySize / 2 {
-            return innerCleanupBack()
+    func insertFront(newModels: [RVBaseModel])-> [IndexPath] {
+        var indexPaths = [IndexPath]()
+        var clone = self.datasource.cloneItems()
+        let newCount = newModels.count
+        if self.datasource.offset > 0 {
+
+            if newCount <= datasource.offset {
+                for i in 0..<newCount { clone.insert(newModels[i], at: 0) }
+                self.datasource.items = clone
+                self.datasource.offset = self.datasource.offset - newCount
+                return indexPaths
+            } else {
+                for i in 0..<self.datasource.offset { clone.insert(newModels[i], at: 0) }
+                let section = self.datasource.section
+                for i in (self.datasource.offset)..<newCount {
+                    clone.insert(newModels[i], at: 0)
+                    indexPaths.append(IndexPath(item: 0, section: section))
+                }
+                self.datasource.offset = 0
+                return indexPaths
+            }
         } else {
-            return innerCleanupFront()
+            let section = self.datasource.section
+            for i in 0..<newCount {
+                clone.insert(newModels[i], at: 0)
+                indexPaths.append(IndexPath(item: 0, section: section))
+            }
+            self.datasource.offset = 0
+            return indexPaths
         }
     }
-    func innerCleanupFront() -> [IndexPath] {
-        var indexPaths = [IndexPath]()
-        return indexPaths
+    func innerCleanup() -> [IndexPath] {
+        if self.datasource.lastItemIndex < (self.datasource.virtualCount / 2) { return innerCleanup2(front: false) }
+        else { return innerCleanup2(front: true) }
     }
-    func innerCleanupBack() -> [IndexPath] {
-        let maxSize = self.datasource.maxArraySize < 100 ? 100 : self.datasource.maxArraySize
+
+    func innerCleanup2(front: Bool) -> [IndexPath] {
         var indexPaths = [IndexPath]()
-        if self.datasource.items.count <= maxSize {
-            return indexPaths
-        } else {
-            var clone = self.datasource.cloneItems()
-            let offset = self.datasource.offset
-            let arrayCount = clone.count
+        var clone = self.datasource.cloneItems()
+        let excess = clone.count - self.datasource.maxArraySize
+        if (excess <= 0) { return indexPaths }
+        else {
+            let virtualMax = self.datasource.virtualCount-1
             let section = self.datasource.section
-            for i in maxSize..<arrayCount {
-                clone.removeLast()
-                indexPaths.append(IndexPath(item: (offset + i), section: section))
+            let arrayCount = clone.count - 1
+            if !front {
+                for i in 0..<excess {
+                    indexPaths.append(IndexPath(item: virtualMax-i, section: section))
+                    clone.remove(at: arrayCount - i)
+                }
+                self.datasource.items = clone
+                return indexPaths
+            } else {
+                var slicedArray = [RVBaseModel]()
+                for i in excess..<clone.count { slicedArray.append(clone[i]) }
+                self.datasource.items = slicedArray
+                self.datasource.offset = self.datasource.offset + excess
+                return indexPaths
             }
-            self.datasource.items = clone
-            return indexPaths
         }
     }
     func cleanup(models: [RVBaseModel], callback: @escaping([RVBaseModel], RVError?)-> Void) {
@@ -698,11 +735,13 @@ class RVLoadOperation: RVAsyncOperation {
         DispatchQueue.main.async {
             //print("In \(self.classForCoder).finishUp")
             self.callback(items, error)
-            if self.front { self.datasource.frontOperationActive = false }
-            else {
-               // print("In \(self.classForCoder).finishUp, setting backOperation to false")
-                self.datasource.backOperationActive = false
-            }
+            Timer.scheduledTimer(withTimeInterval: 0.2, repeats: false , block: { (timer) in
+                if self.front { self.datasource.frontOperationActive = false }
+                else {
+                    // print("In \(self.classForCoder).finishUp, setting backOperation to false")
+                    self.datasource.backOperationActive = false
+                }
+            })
             self.completeOperation()
         }
     }

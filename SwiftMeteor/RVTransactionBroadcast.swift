@@ -45,7 +45,10 @@ class RVDocumentWasAddedOperation: RVAsyncOperation {
     }
     func choose(index: Int, controller: UIViewController) {
         let title = "\(self.model.modelType.rawValue)"
-        let message = "\(model.title!), \(model.createdAt)"
+        let messageTitle = model.title == nil ? "No Title" : model.title!
+        let createdAt = model.createdAt == nil ? "No created at" : (model.createdAt!).description
+        
+        let message = "\(messageTitle), \(createdAt)"
         let actions = ["OK", "Jump", "Other"]
         if index == 0 {
             UIAlertController.showAlert(withTitle: title , andMessage: message, from: controller)
