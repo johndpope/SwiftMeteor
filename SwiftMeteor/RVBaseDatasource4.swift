@@ -318,7 +318,7 @@ class RVExpandCollapseOperation: RVLoadOperation {
                                 tableView.endUpdates()
                             }
                             if (operationType == .collapseZeroExpandAndLoad) {
-                                print("In \(self.classForCoder).main, about to do InnerMain, collapsed = \(self.datasource.collapsed)")
+                               // print("In \(self.classForCoder).main, about to do InnerMain, collapsed = \(self.datasource.collapsed)")
                                 self.datasource.baseQuery = self.query
                                 self.InnerMain()
                             } else {
