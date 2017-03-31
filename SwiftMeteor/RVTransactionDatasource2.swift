@@ -15,7 +15,6 @@ class RVTransactionDatasource2: RVBaseDatasource2 {
     }
     override var subscription: RVBaseCollection? { get { return RVTransactionCollection() } }
     override func bulkQuery(query: RVQuery, callback: @escaping (_ models: [RVBaseModel]?, _ error: RVError?) -> Void) {
-        print("In \(self.classForCoder).bulkQuery ======================================================== ")
         RVTransaction.bulkQuery(query: query, callback: callback)
     }
 }

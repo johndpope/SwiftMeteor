@@ -18,6 +18,9 @@ enum RVExpandCollapseOperationType {
     case collapseZeroExpandAndLoad
     case toggle
 }
+protocol RVItemRetrieve: class {
+    var item: RVBaseModel? { get set }
+}
 class RVBaseDatasource4: NSObject {
     enum DatasourceType: String {
         case top        = "Top"
@@ -46,7 +49,7 @@ class RVBaseDatasource4: NSObject {
     var model: RVBaseModel { return RVBaseModel() }
     fileprivate var lastItemIndex: Int = 0
     fileprivate let TargetBackBufferSize: Int = 20
-    fileprivate let TargetFrontBufferSize: Int = 20
+    fileprivate let TargetFrontBufferSize: Int = 10
     fileprivate var backBufferSize: Int {
         get {
             if TargetBackBufferSize < (self.maxArraySize / 2) { return TargetBackBufferSize }
@@ -83,21 +86,17 @@ class RVBaseDatasource4: NSObject {
         self.maxArraySize = ((maxSize < 500) && (maxSize > 50)) ? maxSize : 500
         super.init()
     }
-    /*
-    func baseQuery() -> (RVQuery, RVError?) {
-        let (query, error) = model.basicQuery
-        if let error = error { error.append(message: "In \(self.instanceType).baseQuery(), got error") }
-        else {
-            for term in self.dynamicAndTerms { query.addAnd(term: term.term, value: term.value, comparison: term.comparison) }
-            for sortTerm in self.sortTerms { query.addSort(sortTerm: sortTerm) }
-            for fixedTerm in self.dynamicFixedTerms { query.fixedTerm = fixedTerm}
-        }
-        return (query, error)
-    }
- */
+
     func cancelAllOperations() { self.queue.cancelAllOperations()}
     func unsubscribe() {
         print("In \(self.classForCoder).unsubscribe Need to implement")
+    }
+    func subscribe() {
+        
+    }
+    deinit {
+        self.unsubscribe()
+        self.cancelAllOperations()
     }
 }
 
@@ -106,11 +105,13 @@ extension RVBaseDatasource4 {
         if (query.sortTerms.count == 0) || (query.sortTerms.count > 1) {
             print("In \(self.classForCoder).updateSortTerms, erroneous number of sort Tersm: \(query.sortTerms)")
         }
+        /*
         if let candidate = candidate {
             print("In \(self.classForCoder).updateSortTerm, candidate \(candidate.title), \(candidate.createdAt)")
         } else {
             print("In \(self.classForCoder).updateSortTerm, no candidate")
         }
+ */
         if let sortTerm = query.sortTerms.first {
             let firstString: AnyObject = "" as AnyObject
             let lastString: AnyObject = "ZZZZZZZZZZZZZZZZZ" as AnyObject
@@ -130,8 +131,13 @@ extension RVBaseDatasource4 {
             var finalValue: AnyObject = "" as AnyObject
             switch (sortTerm.field) {
             case .createdAt:
-                if let candidate = candidate { if let date = candidate.createdAt { sortDate = date} }
-                finalValue = sortDate as AnyObject
+                if let candidate = candidate { if let date = candidate.createdAt { finalValue = date as AnyObject} }
+                else if let andTerm = query.findAndTerm(term: .createdAt) {
+
+                    finalValue = andTerm.value as AnyObject
+                    print("In \(self.instanceType).updateSortTerm, setting date to \(finalValue)")
+                }
+                else { finalValue = sortDate as AnyObject }
                 sortField = .createdAt
             case .updatedAt:
                 if let candidate = candidate { if let date = candidate.updatedAt { sortDate = date} }
@@ -156,7 +162,7 @@ extension RVBaseDatasource4 {
             default:
                 print("In \(self.classForCoder).updateSortTerms, term: \(sortTerm.field.rawValue) not handled")
             }
-            print("In \(self.classForCoder).updateSortTerm, finalValue is: \(finalValue), Comparison: \(comparison.rawValue), sortField: \(sortField.rawValue)")
+            //print("In \(self.classForCoder).updateSortTerm, finalValue is: \(finalValue), Comparison: \(comparison.rawValue), sortField: \(sortField.rawValue)")
             if let queryTerm = query.findAndTerm(term: sortTerm.field) { queryTerm.value =  finalValue}
             else { query.addAnd(term: sortField, value: finalValue, comparison: comparison) }
         }
@@ -170,7 +176,7 @@ extension RVBaseDatasource4 {
         }
     }
     func inFront(scrollView: UIScrollView?) {
-        print("In \(self.classForCoder).inFront. ........................................... #######")
+        //print("In \(self.classForCoder).inFront. ........................................... #######")
         if self.datasourceType == .filter { return }
         DispatchQueue.main.async {
             if self.frontOperationActive { return }
@@ -179,7 +185,7 @@ extension RVBaseDatasource4 {
                     error.append(message: "In \(self.classForCoder).inFront, got error")
                     error.printError()
                 } else {
-                    print("In \(self.classForCoder).inFront, success")
+                    //print("In \(self.classForCoder).inFront, success")
                 }
             })
             self.queue.addOperation(operation)
@@ -202,8 +208,8 @@ extension RVBaseDatasource4 {
             self.queue.addOperation(operation)
         }
     }
-    func item(index: Int, scrollView: UIScrollView?) -> RVBaseModel? {
-        self.lastItemIndex = index
+    func item(index: Int, scrollView: UIScrollView?, updateLast: Bool = true) -> RVBaseModel? {
+        if updateLast { self.lastItemIndex = index }
         if index < 0 {
             print("In \(self.instanceType).item, got negative index \(index)")
             return nil
@@ -213,17 +219,17 @@ extension RVBaseDatasource4 {
         }
         let physicalIndex = index - offset
         if physicalIndex < 0 {
-            print("In \(self.instanceType).item got physical index less than 0 \(physicalIndex). Offset is \(offset)")
-            print("In \(self.classForCoder).item calling inBack: index = \(index), count: \(items.count), offset: \(self.offset), backBuffer: \(self.backBufferSize)")
+            //print("In \(self.instanceType).item got physical index less than 0 \(physicalIndex). Offset is \(offset)")
+            //print("In \(self.classForCoder).item calling inBack: index = \(index), count: \(items.count), offset: \(self.offset), backBuffer: \(self.backBufferSize)")
             inFront(scrollView: scrollView)
             return nil
         } else if physicalIndex < items.count {
             if (physicalIndex + self.backBufferSize) > items.count {
-                print("In \(self.classForCoder).item calling inBack:  index = \(index), count: \(items.count), offset: \(self.offset), backBuffer: \(self.backBufferSize)")
+                //print("In \(self.classForCoder).item calling inBack:  index = \(index), count: \(items.count), offset: \(self.offset), backBuffer: \(self.backBufferSize)")
                 inBack(scrollView: scrollView)
             }
             if physicalIndex < self.frontBufferSize {
-                print("In \(self.classForCoder).item calling inFront: index = \(index), count: \(items.count), offset: \(self.offset), backBuffer: \(self.backBufferSize)")
+               // print("In \(self.classForCoder).item calling inFront: index = \(index), count: \(items.count), offset: \(self.offset), backBuffer: \(self.backBufferSize)")
                 inFront(scrollView: scrollView)
             }
             return items[physicalIndex]
@@ -231,6 +237,9 @@ extension RVBaseDatasource4 {
             print("In \(self.instanceType).item physicalIndex of \(physicalIndex) exceeds or equals array size \(items.count). Offset is \(self.offset)")
             return nil
         }
+    }
+    func scroll(index: Int, scrollView: UIScrollView) {
+        let _ = self.item(index: index, scrollView: scrollView, updateLast: false)
     }
     func cloneItems() -> [RVBaseModel] {
         var clone = [RVBaseModel]()
@@ -249,27 +258,7 @@ extension RVBaseDatasource4 {
             else { return items[items.count - 1] }
         }
     }
-    func backQuery(backItem: RVBaseModel?) -> (RVQuery?, RVError?) {
-        print("In \(self.classForCoder).backQuery, needs work")
-        return (self.baseQuery?.duplicate(), nil)
-    }
-    func frontQuery() -> (RVQuery?, RVError?) {
-        return (RVQuery(), nil)
-    }
-    /*
-    func backLoad(datasource: RVBaseDatasource4, scrollView: UIScrollView?, callback: @escaping RVCallback) {
-        if backOperationActive {
-            callback([RVBaseModel](), nil)
-            return
-        } else {
-            queue.addOperation(RVLoadOperation(datasource: datasource , scrollView: scrollView, callback: callback) )
-        }
-    }
 
-    func frontLoad(scrollView: UIScrollView?, callback: RVCallback) {
-        
-    }
-    */
     func restart(scrollView: UIScrollView?, query: RVQuery, callback: @escaping RVCallback) {
         self.queue.addOperation(RVExpandCollapseOperation(datasource: self, scrollView: scrollView, operationType: .collapseZeroExpandAndLoad, query: query, callback: callback))
     }
@@ -282,7 +271,7 @@ extension RVBaseDatasource4 {
     func toggle(scrollView: UIScrollView?, callback: @escaping RVCallback) {
         self.queue.addOperation(RVExpandCollapseOperation(datasource: self, scrollView: scrollView, operationType: .toggle, callback: callback))
     }
-    
+
 }
 
 class RVExpandCollapseOperation: RVLoadOperation {
@@ -312,9 +301,7 @@ class RVExpandCollapseOperation: RVLoadOperation {
         }
         return indexPaths
     }
-    func getToLoad() {
-        self.datasource.baseQuery = self.query
-    }
+
     override func asyncMain() {
         var operationType = self.operationType
         if operationType == .toggle { operationType = (self.datasource.collapsed) ? .expandOnly : .collapseOnly }
@@ -453,7 +440,7 @@ class RVLoadOperation: RVAsyncOperation {
     var front: Bool
     var referenceMatch: Bool {
         get {
-            let current = self.datasource.backItem
+            let current = self.front ? self.datasource.frontItem : self.datasource.backItem
             if (reference == nil) && (current == nil) { return true }
             if let reference = self.reference {
                 if let current = current {
@@ -485,17 +472,15 @@ class RVLoadOperation: RVAsyncOperation {
                 finishUp(items: itemsPlug , error: nil)
                 return
             }
-            let (query, error) = datasource.backQuery(backItem: self.reference)
-            if let error = error {
-                error.append(message: "In \(self.instanceType). got error generating query")
-            }
-            if var query = query {
-                 print("In \(self.classForCoder).InnerMain, for front: \(self.front) haveQuery frontOperationActive: \(self.datasource.frontOperationActive), backOperationActive: \(self.datasource.backOperationActive)")
+            if var query = self.datasource.baseQuery {
+                query = query.duplicate()
+                 //print("In \(self.classForCoder).InnerMain, for front: \(self.front) haveQuery frontOperationActive: \(self.datasource.frontOperationActive), backOperationActive: \(self.datasource.backOperationActive)")
                 if self.front {
                     if self.datasource.frontOperationActive {
                         self.finishUp(items: self.itemsPlug, error: nil)
                         return
                     } else {
+                        self.datasource.unsubscribe()
                         self.datasource.frontOperationActive = true
                     }
                 } else {
@@ -506,13 +491,11 @@ class RVLoadOperation: RVAsyncOperation {
                         self.datasource.backOperationActive = true
                     }
                 }
-                print("In \(self.classForCoder).InnerMain, about to do retrieve. Front: \(self.front)")
-                query = query.duplicate()
-                
+                //print("In \(self.classForCoder).InnerMain, about to do retrieve. Front: \(self.front)")
                 var query = datasource.updateSortTerm(query: query, front: self.front, candidate: self.reference)
                 query = query.updateQuery4(front: self.front, reference: self.reference)
                 datasource.innerRetrieve(query: query, callback: { (models, error) in
-                    print("In \(self.classForCoder).InnerMain, datasource.innerRetrieve callback")
+                    //print("In \(self.classForCoder).InnerMain, datasource.innerRetrieve callback")
                     if self.isCancelled {
                         self.finishUp(items: models, error: error)
                         return
@@ -528,7 +511,9 @@ class RVLoadOperation: RVAsyncOperation {
                                 return
                             } else {
                                 self.cleanup(models: models, callback: { (models, error) in
-                                    self.finishUp(items: models, error: nil)
+                                    self.refreshViews {
+                                         self.finishUp(items: models, error: nil)
+                                    }
                                 })
                                 return
                             }
@@ -584,7 +569,52 @@ class RVLoadOperation: RVAsyncOperation {
         if self.datasource.lastItemIndex < (self.datasource.virtualCount / 2) { return innerCleanup2(front: false) }
         else { return innerCleanup2(front: true) }
     }
-
+    func refreshViews(callback: @escaping () -> Void) {
+        if self.isCancelled {
+            callback()
+            return
+        } else {
+            DispatchQueue.main.async {
+                if let tableView = self.scrollView as? UITableView {
+                    tableView.beginUpdates()
+                    if let visibleIndexPaths = tableView.indexPathsForVisibleRows {
+                        if visibleIndexPaths.count > 0 {
+                            for indexPath in visibleIndexPaths {
+                                if let cell = tableView.cellForRow(at: indexPath) as? RVItemRetrieve { cell.item = self.datasource.item(index: indexPath.row, scrollView: tableView) }
+                            }
+                            tableView.endUpdates()
+                            callback()
+                            return
+                        } else {
+                            tableView.endUpdates()
+                            callback()
+                            return
+                        }
+                    } else {
+                        tableView.endUpdates()
+                        callback()
+                        return
+                    }
+                } else if let collectionView = self.scrollView as? UICollectionView {
+                    collectionView.performBatchUpdates({
+                        let visibleIndexPaths = collectionView.indexPathsForVisibleItems
+                        if visibleIndexPaths.count > 0 {
+                            for indexPath in visibleIndexPaths {
+                                if let cell = collectionView.cellForItem(at: indexPath) as? RVItemRetrieve { cell.item = self.datasource.item(index: indexPath.item, scrollView: collectionView) }
+                            }
+                        }
+                    }, completion: { (success) in
+                        callback()
+                    })
+                    return
+                } else if self.scrollView == nil {
+                    callback()
+                } else {
+                    callback()
+                }
+            }
+        }
+    }
     func innerCleanup2(front: Bool) -> [IndexPath] {
         var indexPaths = [IndexPath]()
         var clone = self.datasource.cloneItems()
@@ -660,17 +690,14 @@ class RVLoadOperation: RVAsyncOperation {
     }
     func frontHandler(models: [RVBaseModel]) -> [IndexPath] {
         print("In \(self.classForCoder).frontHandler")
-  //      let section = datasource.section
-  //      let virtualIndex = datasource.items.count + datasource.offset
-  //      var clone = datasource.cloneItems()
-        let indexPaths = [IndexPath]()
-        /*
+        var clone = datasource.cloneItems()
+        let section = datasource.section
+        var indexPaths = [IndexPath]()
         for i in 0..<models.count {
-            clone.append(models[i])
-            indexPaths.append(IndexPath(row: virtualIndex + i, section: section))
+            clone.insert(models[i], at: 0)
+            indexPaths.append(IndexPath(row: i, section: section))
         }
         self.datasource.items = clone
-        */
         return indexPaths
     }
     func insert(models: [RVBaseModel], callback: @escaping RVCallback) {
@@ -688,20 +715,39 @@ class RVLoadOperation: RVAsyncOperation {
                     for i in 0..<room { sizedModels.append(models[i]) }
                 }
             } else { sizedModels = models }
+            var originalRow: Int = -1
+            var indexPathsCount: Int = 0
             if let tableView = self.scrollView as? UITableView {
                 tableView.beginUpdates()
-
+                if let indexPaths = tableView.indexPathsForVisibleRows { if let indexPath = indexPaths.last { originalRow = indexPath.row } }
+                
                 if self.referenceMatch {
                     var indexPaths = [IndexPath]()
                     print("In \(self.classForCoder).insert, tableView reference match")
                     if self.front { indexPaths = self.frontHandler(models: sizedModels) }
                     else { indexPaths = self.backHandler(models: sizedModels) }
-                    if  (!self.datasource.collapsed)  { tableView.insertRows(at: indexPaths, with: self.datasource.rowAnimation) }
+                    print("In \(self.classForCoder).insert numberOfIndexPaths = \(indexPaths.count)")
+                    if  (!self.datasource.collapsed)  {
+           
+                        tableView.insertRows(at: indexPaths, with: UITableViewRowAnimation.middle)
+                        indexPathsCount = indexPaths.count
+
+                    }
                 } else {
-                    print("In \(self.classForCoder).insert, tableView no reference match")
+                    print("In \(self.classForCoder).insert, tableView no reference match reference is \(self.reference) and ")
                 }
+                if self.front { self.datasource.subscribe() }
                 tableView.endUpdates()
-                callback(sizedModels, nil)
+                if (!self.datasource.collapsed) && (self.front) && (originalRow >= 0) && (indexPathsCount > 0) {
+                    Timer.scheduledTimer(withTimeInterval: 0.02, repeats: false, block: { (timer) in
+                        let indexPath = IndexPath(row: (originalRow + indexPathsCount), section: self.datasource.section)
+                        tableView.scrollToRow(at: indexPath, at: UITableViewScrollPosition.bottom, animated: false)
+                        callback(sizedModels, nil)
+                    })
+                } else {
+                    callback(sizedModels, nil)
+ 
+                }
                 return
             } else if let collectionView = self.scrollView as? UICollectionView {
                 collectionView.performBatchUpdates({
@@ -714,6 +760,7 @@ class RVLoadOperation: RVAsyncOperation {
                         }
                     }
                 }, completion: { (success) in
+                    if self.front { self.datasource.subscribe() }
                     callback(sizedModels, nil)
                 })
                 return
@@ -735,7 +782,7 @@ class RVLoadOperation: RVAsyncOperation {
         DispatchQueue.main.async {
             //print("In \(self.classForCoder).finishUp")
             self.callback(items, error)
-            Timer.scheduledTimer(withTimeInterval: 0.2, repeats: false , block: { (timer) in
+            Timer.scheduledTimer(withTimeInterval: 0.4, repeats: false , block: { (timer) in
                 if self.front { self.datasource.frontOperationActive = false }
                 else {
                     // print("In \(self.classForCoder).finishUp, setting backOperation to false")

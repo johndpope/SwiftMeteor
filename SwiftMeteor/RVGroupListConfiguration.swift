@@ -37,8 +37,15 @@ class RVGroupListConfiguration: RVBaseConfiguration {
         filterDatasource.datasourceType = .filter
         return filterDatasource
     }
-    
+    func date() -> Date {
+            let dateFormatter = DateFormatter()
+            let dateAsString = "2017-03-28 05:12"
+            dateFormatter.dateFormat = "yyyy-MM-dd HH:mm"
+            return dateFormatter.date(from: dateAsString)!
+        
+    }
     override func createQueries() {
+        print("In \(self.instanceType).createQueries")
         queryFunctions[.top] = {(params) in return RVQuery() } // dummy value
         if let datasource = self.mainDatasource {
             let mainQuery: queryFunction = {(params) in
@@ -49,10 +56,11 @@ class RVGroupListConfiguration: RVBaseConfiguration {
                 if let loggedInUserProfileId = self.loggedInUserProfileId {
                     query.addAnd(term: .targetUserProfileId, value: loggedInUserProfileId as AnyObject, comparison: .eq)
                 }
-                query.addAnd(term: .createdAt, value: RVEJSON.convertToEJSONDate(Date()) as AnyObject, comparison: .lte)
+             //   query.addAnd(term: .createdAt, value: RVEJSON.convertToEJSONDate(Date()) as AnyObject, comparison: .lte)
                 query.removeAllSortTerms()
                 query.addSort(field: .createdAt, order: .descending)
                 query.addAnd(term: .createdAt, value: Date() as AnyObject, comparison: .lte)
+                //query.addAnd(term: .createdAt, value: self.date() as AnyObject, comparison: .lte)
                 return query
             }
             queryFunctions[.main] = mainQuery

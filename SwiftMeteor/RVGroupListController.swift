@@ -27,6 +27,13 @@ class RVGroupListController: RVTransactionListViewController {
     override func freshenState(completion: @escaping (RVError?) -> Void) {
         completion(nil)
     }
+    func date() -> Date {
+        let dateFormatter = DateFormatter()
+        let dateAsString = "2017-03-27 17:09"
+        dateFormatter.dateFormat = "yyyy-MM-dd HH:mm"
+        return dateFormatter.date(from: dateAsString)!
+        
+    }
     override func runConfiguration() {
         print("In \(self.classForCoder).runConfiguration")
         let datasource = RVTransactionDatasource44(manager: self.manager4, datasourceType: .main, maxSize: 300)
@@ -34,10 +41,11 @@ class RVGroupListController: RVTransactionListViewController {
             if let error = error {
                 error.printError()
             } else {
-                print("In \(self.instanceType).runConfiguration success")
+                print("In \(self.instanceType).runConfiguration success adding section")
                 let (query, error) = RVTransaction.basicQuery
                 query.addSort(field: .createdAt, order: .descending)
-                query.addAnd(term: .createdAt, value: Date() as AnyObject, comparison: .lte)
+            //    query.addAnd(term: .createdAt, value: Date() as AnyObject, comparison: .lte)
+                                query.addAnd(term: .createdAt, value: self.date() as AnyObject, comparison: .lte)
                 self.manager4.restart(datasource: datasource, query: query, callback: { (models, error) in
                     if let error = error {
                         error.append(message: "In \(self.classForCoder).runConfiguration, got error")
@@ -88,6 +96,21 @@ class RVGroupListController: RVTransactionListViewController {
     
     override func endSearch() {
         
+    }
+
+    override func scrollViewDidScroll(_ scrollView: UIScrollView) {
+        if let tableView = scrollView as? UITableView {
+            if tableView == self.dsScrollView {
+                if let indexPaths = tableView.indexPathsForVisibleRows {
+                    if let first = indexPaths.first {
+                        self.manager4.scrolling(indexPath: first, scrollView: tableView)
+                    }
+                    if let last = indexPaths.last {
+                        self.manager4.scrolling(indexPath: last, scrollView: tableView)
+                    }
+                }
+            }
+        }
     }
     
 }

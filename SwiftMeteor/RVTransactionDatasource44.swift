@@ -9,15 +9,12 @@
 import Foundation
 class RVTransactionDatasource44: RVBaseDatasource4 {
     override func retrieve(query: RVQuery, callback: @escaping RVCallback) {
-
-            print("In \(self.classForCoder).retrieve --------------")
             RVTransaction.bulkQuery(query: query) { (models, error) in
-                print("In \(self.classForCoder).retrieve callback")
                 if let error = error {
                     error.append(message: "In \(self.classForCoder).retrieve, got Meteor Error")
                     callback([RVBaseModel](), error)
                 } else {
-                    print("In \(self.classForCoder).retrieve have \(models.count) models")
+                    print("In \(self.classForCoder).retrieve have \(models.count) models ----------------")
                     callback(models, nil)
                 }
             }

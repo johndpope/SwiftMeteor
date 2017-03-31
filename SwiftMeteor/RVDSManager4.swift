@@ -37,6 +37,11 @@ class RVDSManager4 {
             return 0
         }
     }
+    func scrolling(indexPath: IndexPath, scrollView: UIScrollView) {
+        let section = indexPath.section
+        if (section < 0) || (section >= sections.count) { return }
+        sections[section].scroll(index: indexPath.row, scrollView: scrollView)
+    }
     func item(indexPath: IndexPath) ->  RVBaseModel? {
         let section = indexPath.section
         if (section < 0) || (section >= sections.count) { return nil }
