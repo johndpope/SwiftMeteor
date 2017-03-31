@@ -28,6 +28,7 @@ class RVBaseDatasource4: NSObject {
         case filter     = "Filter"
         case unknown    = "Unknown"
     }
+    let LAST_SORT_STRING = "ZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZ"
     var instanceType: String { get { return String(describing: type(of: self)) } }
     let identifier = NSDate().timeIntervalSince1970
     var baseQuery: RVQuery? = nil
@@ -42,6 +43,7 @@ class RVBaseDatasource4: NSObject {
     fileprivate var offset: Int = 0 {
         willSet {
             if newValue < 0 { print("In \(self.classForCoder) ERROR. attemtp to set Offset to a negative number \(newValue)") }
+            //print("In \(self.classForCoder).offset setting to \(newValue) and arraysize is \(items.count)")
         }
     }
     var datasourceType: DatasourceType = .unknown
@@ -49,7 +51,7 @@ class RVBaseDatasource4: NSObject {
     var model: RVBaseModel { return RVBaseModel() }
     fileprivate var lastItemIndex: Int = 0
     fileprivate let TargetBackBufferSize: Int = 20
-    fileprivate let TargetFrontBufferSize: Int = 10
+    fileprivate let TargetFrontBufferSize: Int = 20
     fileprivate var backBufferSize: Int {
         get {
             if TargetBackBufferSize < (self.maxArraySize / 2) { return TargetBackBufferSize }
@@ -101,70 +103,55 @@ class RVBaseDatasource4: NSObject {
 }
 
 extension RVBaseDatasource4 {
+    func stripCandidate(candidate: RVBaseModel? ) -> [RVKeys : AnyObject] {
+        var strip = [RVKeys:AnyObject]()
+        if let candidate = candidate {
+            if let createdAt = candidate.createdAt { strip[.createdAt] = createdAt as AnyObject }
+            if let updatedAt = candidate.updatedAt { strip[.updatedAt] = updatedAt as AnyObject }
+            if let comment = candidate.comment {
+                strip[.comment] = comment as AnyObject
+                strip[.commentLowercase] = comment.lowercased() as AnyObject
+            }
+            if let handle = candidate.handle {
+                strip[.handle] = handle as AnyObject
+                strip[.handleLowercase] = handle.lowercased() as AnyObject
+            }
+            if let title = candidate.title { strip[.title] = title as AnyObject }
+            if let fullName = candidate.fullName { strip[.fullName] = fullName as AnyObject }
+        }
+        return strip
+    }
     func updateSortTerm(query: RVQuery, front: Bool = false, candidate: RVBaseModel? = nil) -> RVQuery {
         if (query.sortTerms.count == 0) || (query.sortTerms.count > 1) {
             print("In \(self.classForCoder).updateSortTerms, erroneous number of sort Tersm: \(query.sortTerms)")
         }
-        /*
-        if let candidate = candidate {
-            print("In \(self.classForCoder).updateSortTerm, candidate \(candidate.title), \(candidate.createdAt)")
-        } else {
-            print("In \(self.classForCoder).updateSortTerm, no candidate")
-        }
- */
         if let sortTerm = query.sortTerms.first {
             let firstString: AnyObject = "" as AnyObject
-            let lastString: AnyObject = "ZZZZZZZZZZZZZZZZZ" as AnyObject
+            let lastString: AnyObject = LAST_SORT_STRING as AnyObject
             var comparison = (sortTerm.order == .ascending) ?  RVComparison.gte : RVComparison.lte
-
-            var sortString: AnyObject = lastString
-            if sortTerm.order == .ascending { sortString = firstString}
+            var sortString: AnyObject = (sortTerm.order == .descending) ? lastString : firstString
             if front {
                 comparison = (sortTerm.order == .descending) ?  RVComparison.gt : RVComparison.lt
                 sortString = (sortTerm.order == .descending) ? firstString : lastString
             }
-            var sortDate: Date = Date()
-            if sortTerm.order == .ascending { sortDate = query.decadeAgo }
+            var sortDate: Date  = (sortTerm.order == .ascending)  ? query.decadeAgo : Date()
             if front { sortDate = (sortTerm.order == .descending) ? query.decadeAgo : Date() }
             
-            var sortField: RVKeys = .createdAt
-            var finalValue: AnyObject = "" as AnyObject
+            var finalValue: AnyObject = sortString as AnyObject
+            let strip = self.stripCandidate(candidate: candidate)
+            if let value = strip[sortTerm.field] { finalValue = value }
+            else if let andTerm = query.findAndTerm(term: sortTerm.field) { finalValue = andTerm.value as AnyObject }
             switch (sortTerm.field) {
-            case .createdAt:
-                if let candidate = candidate { if let date = candidate.createdAt { finalValue = date as AnyObject} }
-                else if let andTerm = query.findAndTerm(term: .createdAt) {
-
-                    finalValue = andTerm.value as AnyObject
-                    print("In \(self.instanceType).updateSortTerm, setting date to \(finalValue)")
-                }
-                else { finalValue = sortDate as AnyObject }
-                sortField = .createdAt
-            case .updatedAt:
-                if let candidate = candidate { if let date = candidate.updatedAt { sortDate = date} }
-                finalValue = sortDate as AnyObject
-                sortField = .updatedAt
-            case .commentLowercase, .comment:
-                if let candidate = candidate { if let string = candidate.comment { sortString = string.lowercased() as AnyObject } }
-                finalValue = sortString as AnyObject
-                sortField = .commentLowercase
-            case .handleLowercase, .handle:
-                if let candidate = candidate { if let string = candidate.handleLowercase { sortString = string.lowercased() as AnyObject } }
-                finalValue = sortString as AnyObject
-                sortField = .handleLowercase
-            case .title:
-                if let candidate = candidate { if let string = candidate.title { sortString = string.lowercased() as AnyObject } }
-                finalValue = sortString as AnyObject
-                sortField = .title
-            case .fullName:
-                if let candidate = candidate { if let string = candidate.fullName { sortString = string.lowercased() as AnyObject } }
-                finalValue = sortString as AnyObject
-                sortField = .fullName
+            case .createdAt, .updatedAt:
+                if (strip[sortTerm.field] == nil ) && (query.findAndTerm(term: sortTerm.field) == nil ) { finalValue = sortDate as AnyObject }
+            case .commentLowercase, .comment, .handleLowercase, .handle, .title, .fullName:
+                break
             default:
                 print("In \(self.classForCoder).updateSortTerms, term: \(sortTerm.field.rawValue) not handled")
             }
             //print("In \(self.classForCoder).updateSortTerm, finalValue is: \(finalValue), Comparison: \(comparison.rawValue), sortField: \(sortField.rawValue)")
             if let queryTerm = query.findAndTerm(term: sortTerm.field) { queryTerm.value =  finalValue}
-            else { query.addAnd(term: sortField, value: finalValue, comparison: comparison) }
+            else { query.addAnd(term: sortTerm.field, value: finalValue, comparison: comparison) }
         }
         return query
     }
@@ -202,7 +189,7 @@ extension RVBaseDatasource4 {
                     error.append(message: "In \(self.classForCoder).inBack, got error")
                     error.printError()
                 } else {
-                    print("In \(self.classForCoder).inBack, success")
+                    //print("In \(self.classForCoder).inBack, success")
                 }
             })
             self.queue.addOperation(operation)
@@ -534,37 +521,7 @@ class RVLoadOperation: RVAsyncOperation {
     deinit {
         //print("In \(self.classForCoder).deinit")
     }
-    func insertFront(newModels: [RVBaseModel])-> [IndexPath] {
-        var indexPaths = [IndexPath]()
-        var clone = self.datasource.cloneItems()
-        let newCount = newModels.count
-        if self.datasource.offset > 0 {
 
-            if newCount <= datasource.offset {
-                for i in 0..<newCount { clone.insert(newModels[i], at: 0) }
-                self.datasource.items = clone
-                self.datasource.offset = self.datasource.offset - newCount
-                return indexPaths
-            } else {
-                for i in 0..<self.datasource.offset { clone.insert(newModels[i], at: 0) }
-                let section = self.datasource.section
-                for i in (self.datasource.offset)..<newCount {
-                    clone.insert(newModels[i], at: 0)
-                    indexPaths.append(IndexPath(item: 0, section: section))
-                }
-                self.datasource.offset = 0
-                return indexPaths
-            }
-        } else {
-            let section = self.datasource.section
-            for i in 0..<newCount {
-                clone.insert(newModels[i], at: 0)
-                indexPaths.append(IndexPath(item: 0, section: section))
-            }
-            self.datasource.offset = 0
-            return indexPaths
-        }
-    }
     func innerCleanup() -> [IndexPath] {
         if self.datasource.lastItemIndex < (self.datasource.virtualCount / 2) { return innerCleanup2(front: false) }
         else { return innerCleanup2(front: true) }
@@ -685,23 +642,49 @@ class RVLoadOperation: RVAsyncOperation {
             indexPaths.append(IndexPath(row: virtualIndex + i, section: section))
         }
         self.datasource.items = clone
-        print("In \(self.classForCoder).backHandler, items count = \(self.datasource.items.count) collapsed: \(self.datasource.collapsed)")
+       // print("In \(self.classForCoder).backHandler, items count = \(self.datasource.items.count) collapsed: \(self.datasource.collapsed)")
         return indexPaths
     }
-    func frontHandler(models: [RVBaseModel]) -> [IndexPath] {
-        print("In \(self.classForCoder).frontHandler")
+    func frontHandler(newModels: [RVBaseModel]) -> [IndexPath] {
+        //print("In \(self.classForCoder).frontHandler")
         var clone = datasource.cloneItems()
         let section = datasource.section
         var indexPaths = [IndexPath]()
-        for i in 0..<models.count {
-            clone.insert(models[i], at: 0)
-            indexPaths.append(IndexPath(row: i, section: section))
+        let newCount = newModels.count
+        if self.datasource.offset > 0 {
+            print("In \(self.classForCoder).insertFront offset is \(self.datasource.offset) and newCount = \(newCount)")
+            if newCount <= datasource.offset {
+                for i in 0..<newCount { clone.insert(newModels[i], at: 0) }
+                self.datasource.items = clone
+                self.datasource.offset = self.datasource.offset - newCount
+                return indexPaths
+            } else {
+                for i in 0..<self.datasource.offset { clone.insert(newModels[i], at: 0) }
+                self.datasource.offset = 0
+                let section = self.datasource.section
+                for i in (self.datasource.offset)..<newCount {
+                    clone.insert(newModels[i], at: 0)
+                    indexPaths.append(IndexPath(item: i, section: section))
+                }
+                self.datasource.items = clone
+                return indexPaths
+            }
+        } else {
+            let section = self.datasource.section
+            for i in 0..<newCount {
+                clone.insert(newModels[i], at: 0)
+                indexPaths.append(IndexPath(item: i, section: section))
+            }
+            self.datasource.offset = 0
+            self.datasource.items = clone
+            return indexPaths
         }
-        self.datasource.items = clone
-        return indexPaths
     }
+    
+    
+    
     func insert(models: [RVBaseModel], callback: @escaping RVCallback) {
-        print("In \(self.classForCoder).insert")
+        //print("In \(self.classForCoder).insert")
         DispatchQueue.main.async {
             if self.isCancelled {
                 callback(models, nil)
@@ -720,18 +703,17 @@ class RVLoadOperation: RVAsyncOperation {
             if let tableView = self.scrollView as? UITableView {
                 tableView.beginUpdates()
                 if let indexPaths = tableView.indexPathsForVisibleRows { if let indexPath = indexPaths.last { originalRow = indexPath.row } }
-                
                 if self.referenceMatch {
+                    let point = CGPoint(x: 10, y: (tableView.bounds.origin.y + tableView.bounds.height))
+                    if let path = tableView.indexPathForRow(at: point) { originalRow = path.row }
                     var indexPaths = [IndexPath]()
-                    print("In \(self.classForCoder).insert, tableView reference match")
-                    if self.front { indexPaths = self.frontHandler(models: sizedModels) }
+                    //print("In \(self.classForCoder).insert, tableView reference match")
+                    if self.front { indexPaths = self.frontHandler(newModels: sizedModels) }
                     else { indexPaths = self.backHandler(models: sizedModels) }
-                    print("In \(self.classForCoder).insert numberOfIndexPaths = \(indexPaths.count)")
+                    //print("In \(self.classForCoder).insert numberOfIndexPaths = \(indexPaths.count)")
                     if  (!self.datasource.collapsed)  {
-           
                         tableView.insertRows(at: indexPaths, with: UITableViewRowAnimation.middle)
                         indexPathsCount = indexPaths.count
-
                     }
                 } else {
                     print("In \(self.classForCoder).insert, tableView no reference match reference is \(self.reference) and ")
@@ -754,7 +736,7 @@ class RVLoadOperation: RVAsyncOperation {
                     if !self.isCancelled {
                         if self.referenceMatch {
                             var indexPaths = [IndexPath]()
-                            if self.front { indexPaths = self.frontHandler(models: sizedModels) }
+                            if self.front { indexPaths = self.frontHandler(newModels: sizedModels) }
                             else { indexPaths = self.backHandler(models: sizedModels) }
                             if  (!self.datasource.collapsed)  { collectionView.insertItems(at: indexPaths) }
                         }
@@ -766,7 +748,7 @@ class RVLoadOperation: RVAsyncOperation {
                 return
             } else if self.scrollView == nil {
                 if self.referenceMatch {
-                    if self.front { let _ = self.frontHandler(models: sizedModels) }
+                    if self.front { let _ = self.frontHandler(newModels: sizedModels) }
                     else { let _ = self.backHandler(models: sizedModels) }
                 }
                 callback(sizedModels, nil)

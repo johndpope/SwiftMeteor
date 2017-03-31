@@ -29,14 +29,14 @@ class RVGroupListController: RVTransactionListViewController {
     }
     func date() -> Date {
         let dateFormatter = DateFormatter()
-        let dateAsString = "2017-03-27 17:09"
+        let dateAsString = "2017-03-27 20:09"
         dateFormatter.dateFormat = "yyyy-MM-dd HH:mm"
         return dateFormatter.date(from: dateAsString)!
         
     }
     override func runConfiguration() {
         print("In \(self.classForCoder).runConfiguration")
-        let datasource = RVTransactionDatasource44(manager: self.manager4, datasourceType: .main, maxSize: 300)
+        let datasource = RVTransactionDatasource44(manager: self.manager4, datasourceType: .main, maxSize: 100)
         manager4.appendSections(datasources: [datasource]) { (models, error) in
             if let error = error {
                 error.printError()
@@ -88,9 +88,10 @@ class RVGroupListController: RVTransactionListViewController {
             let longPress = UILongPressGestureRecognizer(target: self, action: #selector(RVMemberViewController.didLongPressCell(_:)))
             cell.addGestureRecognizer(longPress)
         }
-        cell.item = manager4.item(indexPath: indexPath)
         cell.transform = tableView.transform
-        cell.configureSubviews()
+        cell.item = manager4.item(indexPath: indexPath)
+
+        //cell.configureSubviews()
         return cell
     }
     

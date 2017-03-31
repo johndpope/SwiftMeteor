@@ -8,7 +8,7 @@
 
 import UIKit
 import SlackTextViewController
-class RVTransactionTableViewCell: RVBaseTableViewCell {
+class RVTransactionTableViewCell: RVBaseTableViewCell, RVItemRetrieve {
     
     var usedForMessage: Bool = true
     static let MinimumHeight: CGFloat = 60.0;
@@ -23,7 +23,11 @@ class RVTransactionTableViewCell: RVBaseTableViewCell {
     @IBOutlet weak var createdAtLabel: UILabel!
     @IBOutlet weak var authorImageView: UIImageView!
     var indexPath: IndexPath!
-    var item:RVBaseModel? = nil
+    var item:RVBaseModel? = nil {
+        didSet {
+            self.configureSubviews()
+        }
+    }
     
     
     override init(style: UITableViewCellStyle, reuseIdentifier: String?) {

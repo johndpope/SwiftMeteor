@@ -14,7 +14,7 @@ class RVTransactionDatasource44: RVBaseDatasource4 {
                     error.append(message: "In \(self.classForCoder).retrieve, got Meteor Error")
                     callback([RVBaseModel](), error)
                 } else {
-                    print("In \(self.classForCoder).retrieve have \(models.count) models ----------------")
+                    //print("In \(self.classForCoder).retrieve have \(models.count) models ----------------")
                     callback(models, nil)
                 }
             }
