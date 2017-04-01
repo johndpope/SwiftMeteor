@@ -100,9 +100,7 @@ class RVBaseDatasource4: NSObject {
             })
         }
     }
-    func receiveIncoming(sourceSubscription: RVSubscription, incomingModels: [RVBaseModel]) {
 
-    }
     func subscribe(scrollView: UIScrollView?, front: Bool) {
         if !self.subscriptionActive {
             //subscription.reference = self.items.first
@@ -119,10 +117,10 @@ class RVBaseDatasource4: NSObject {
             }
         }
     }
-    func receiveSubscriptionResponse(sourceSubscription: RVSubscription, incomingModels: [RVBaseModel]) {
+    func receiveSubscriptionResponse(sourceSubscription: RVSubscription, incomingModels: [RVBaseModel], responseType: RVSubcriptionResponseOperation.ResponseType) {
         if let subscription = self.subscription {
             if subscription.identifier == sourceSubscription.identifier {
-                let operation = RVSubcriptionResponseOperation(subscription: sourceSubscription, datasource: self, incomingModels: incomingModels, callback: { (models, error) in
+                let operation = RVSubcriptionResponseOperation(subscription: sourceSubscription, datasource: self, incomingModels: incomingModels, responseType: responseType, callback: { (models, error) in
                     if let error = error {
                         error.append(message: "In \(self.classForCoder).receiveSubscriptionResponse, got error from RVSubscriptionResponseOperation")
                         error.printError()
