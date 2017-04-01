@@ -38,8 +38,10 @@ class RVBaseDatasource4: NSObject {
     var section: Int { get { return manager.sectionIndex(datasource: self) }}
     var backOperationActive: Bool = false
     var frontOperationActive: Bool = false
+    var subscriptionActive: Bool = false
     var maxArraySize: Int = 300
     var collapsed: Bool = false
+    var subscription: RVSubscription? = nil
     fileprivate var offset: Int = 0 {
         willSet {
             if newValue < 0 { print("In \(self.classForCoder) ERROR. attemtp to set Offset to a negative number \(newValue)") }
@@ -91,9 +93,27 @@ class RVBaseDatasource4: NSObject {
 
     func cancelAllOperations() { self.queue.cancelAllOperations()}
     func unsubscribe() {
-        print("In \(self.classForCoder).unsubscribe Need to implement")
+        //print("In \(self.classForCoder).unsubscribe Need to implement")
+        if let subscription = self.subscription { subscription.unsubscribe() }
+        self.subscriptionActive = false
     }
-    func subscribe() {
+    func subscribe(scrollView: UIScrollView?, front: Bool) {
+        if !self.subscriptionActive {
+            //subscription.reference = self.items.first
+            if let subscription = self.subscription {
+                if (subscription.front && front) || (!subscription.front && !front) {
+                    let operation = RVLoadOperation(title: "Subscribe", datasource: self , scrollView: scrollView, front: front, subscriptionOperation: true, callback: { (models, error) in
+                        if let error = error {
+                            print("In \(self.classForCoder).subscribe, got error)")
+                            error.printError()
+                        }
+                    })
+                    self.queue.addOperation(operation)
+                }
+            }
+        }
+    }
+    func receivedSubscriptionResponse(models: [RVBaseModel]) {
         
     }
     deinit {
@@ -247,6 +267,8 @@ extension RVBaseDatasource4 {
     }
 
     func restart(scrollView: UIScrollView?, query: RVQuery, callback: @escaping RVCallback) {
+        self.unsubscribe()
+        self.cancelAllOperations()
         self.queue.addOperation(RVExpandCollapseOperation(datasource: self, scrollView: scrollView, operationType: .collapseZeroExpandAndLoad, query: query, callback: callback))
     }
     func expand(scrollView: UIScrollView?, callback: @escaping RVCallback) {
@@ -314,7 +336,7 @@ class RVExpandCollapseOperation: RVLoadOperation {
                             tableView.beginUpdates()
                             if !self.isCancelled {
                                 let indexPaths = self.handleCollapse()
-                                if indexPaths.count > 0 { tableView.deleteRows(at: indexPaths, with: self.datasource.rowAnimation) }
+                                if indexPaths.count > 0 { tableView.deleteRows(at: indexPaths, with: UITableViewRowAnimation.none) }
                                 tableView.endUpdates()
                             }
                             if (operationType == .collapseZeroExpandAndLoad) {
@@ -417,6 +439,52 @@ class RVExpandCollapseOperation: RVLoadOperation {
         }
     }
 }
+class RVSuscriptionResponseOperation: RVLoadOperation {
+    enum ResponseType {
+        case added
+        case updated
+        case deleted
+    }
+    var incomingModels: [RVBaseModel]
+    var responseType: ResponseType
+    init(title: String = "RVSubscriptionResponseOperation", datasource: RVBaseDatasource4, incomingModels: [RVBaseModel], responseType: ResponseType = .added, callback: @escaping RVCallback) {
+        self.incomingModels = incomingModels
+        self.responseType = responseType
+        var scrollView: UIScrollView? = nil
+        var front: Bool = true
+        let subscriptionOperation: Bool = true
+        if let subscription = datasource.subscription {
+            scrollView = subscription.scrollView
+            front = subscription.front
+        }
+        super.init(title: title, datasource: datasource, scrollView: scrollView, front: front, subscriptionOperation: subscriptionOperation, callback: callback)
+    }
+    override func asyncMain() {
+        if self.isCancelled {
+            self.finishUp(items: self.incomingModels, error: nil)
+            return
+        } else {
+            if self.responseType == .added {
+                self.insert(models: self.incomingModels, callback: { (models, error) in
+                    if let error = error {
+                        error.append(message: "In \(self.classForCoder).asyncMain, got error inserting incomingModels.\nFront: (self.front), subscriptionOperation: \(self.subscriptionOperation), responseType: \(self.responseType)\nIncomingModels: \(self.incomingModels)")
+                        self.finishUp(items: self.incomingModels, error: error)
+                        return
+                    } else {
+                        self.cleanup(models: self.incomingModels, callback: { (models, error) in
+                            self.refreshViews { self.finishUp(items: models, error: nil) }
+                        })
+                        return
+                    }
+                })
+            } else {
+                let error = RVError(message: "In \(self.classForCoder).asyncMain, responseType \(responseType) not handled")
+                self.finishUp(items: self.incomingModels, error: error)
+                return
+            }
+        }
+    }
+}
 class RVLoadOperation: RVAsyncOperation {
     typealias RVCallback = ([RVBaseModel], RVError?) -> Void
     let itemsPlug = [RVBaseModel]()
@@ -425,6 +493,7 @@ class RVLoadOperation: RVAsyncOperation {
     var callback: RVCallback
     var reference: RVBaseModel? = nil
     var front: Bool
+    var subscriptionOperation: Bool
     var referenceMatch: Bool {
         get {
             let current = self.front ? self.datasource.frontItem : self.datasource.backItem
@@ -437,37 +506,49 @@ class RVLoadOperation: RVAsyncOperation {
             } else { return false }
         }
     }
-    init(title: String = "RVLoadOperation", datasource: RVBaseDatasource4, scrollView: UIScrollView?, front: Bool = false, callback: @escaping RVCallback) {
-        self.datasource     = datasource
-        self.scrollView     = scrollView
-        self.callback       = callback
-        self.front          = front
-        super.init(title: "RVLoadOperation with front: \(front)")
+    init(title: String = "RVLoadOperation", datasource: RVBaseDatasource4, scrollView: UIScrollView?, front: Bool = false, subscriptionOperation: Bool = false, callback: @escaping RVCallback) {
+        self.datasource             = datasource
+        self.scrollView             = scrollView
+        self.callback               = callback
+        self.front                  = front
+        self.subscriptionOperation  = subscriptionOperation
+        super.init(title: "\(title) with front: \(front)")
     }
     override func asyncMain() {
         InnerMain()
     }
+    func unsubscribeByArea(front: Bool = true) {
+        if let subscription = self.datasource.subscription {
+            if subscription.front && front {
+                self.datasource.unsubscribe()
+            } else if !subscription.front && !front {
+                self.datasource.unsubscribe()
+            }
+        }
+    }
     func InnerMain() {
         //print("In \(self.classForCoder).InnerMain")
-        
         if self.isCancelled {
             finishUp(items: itemsPlug, error: nil)
             return
         } else {
-            self.reference = self.front ? datasource.frontItem : datasource.backItem
             if self.front && self.datasource.datasourceType == .filter {
+                finishUp(items: itemsPlug , error: nil)
+                return
+            } else if self.subscriptionOperation && self.datasource.datasourceType == .filter {
                 finishUp(items: itemsPlug , error: nil)
                 return
             }
             if var query = self.datasource.baseQuery {
-                query = query.duplicate()
                  //print("In \(self.classForCoder).InnerMain, for front: \(self.front) haveQuery frontOperationActive: \(self.datasource.frontOperationActive), backOperationActive: \(self.datasource.backOperationActive)")
                 if self.front {
-                    if self.datasource.frontOperationActive {
+                    if self.subscriptionOperation {
+                        // do nothing
+                    } else if self.datasource.frontOperationActive {
                         self.finishUp(items: self.itemsPlug, error: nil)
                         return
                     } else {
-                        self.datasource.unsubscribe()
+                        self.unsubscribeByArea(front: self.front)
                         self.datasource.frontOperationActive = true
                     }
                 } else {
@@ -475,42 +556,68 @@ class RVLoadOperation: RVAsyncOperation {
                         self.finishUp(items: self.itemsPlug, error: nil)
                         return
                     } else {
+                        self.unsubscribeByArea(front: self.front)
                         self.datasource.backOperationActive = true
                     }
                 }
                 //print("In \(self.classForCoder).InnerMain, about to do retrieve. Front: \(self.front)")
+                query = query.duplicate()
+                self.reference = self.front ? datasource.frontItem : datasource.backItem
                 var query = datasource.updateSortTerm(query: query, front: self.front, candidate: self.reference)
                 query = query.updateQuery4(front: self.front, reference: self.reference)
-                datasource.innerRetrieve(query: query, callback: { (models, error) in
-                    //print("In \(self.classForCoder).InnerMain, datasource.innerRetrieve callback")
-                    if self.isCancelled {
-                        self.finishUp(items: models, error: error)
-                        return
-                    } else if let error = error {
-                        error.append(message: "In \(self.instanceType).main, got error doing innerRetrieve")
-                        self.finishUp(items: models, error: error)
-                        return
-                    } else if models.count > 0 {
-                        self.insert(models: models, callback: { (models, error) in
-                            if let error = error {
-                                error.append(message: "In \(self.instanceType).main, got error doing insert")
-                                self.finishUp(items: models, error: error)
-                                return
-                            } else {
-                                self.cleanup(models: models, callback: { (models, error) in
-                                    self.refreshViews {
-                                         self.finishUp(items: models, error: nil)
-                                    }
-                                })
-                                return
+                if self.subscriptionOperation {
+                    if let subscription = self.datasource.subscription {
+                        if self.datasource.subscriptionActive {
+                            self.finishUp(items: itemsPlug, error: nil)
+                            return
+                        } else if subscription.active {
+                            let error = RVError(message: "In \(self.instanceType).InnerMain, attempting to subscribe to a collection0subscription that is already active")
+                            self.finishUp(items: itemsPlug, error: error)
+                            return
+                        } else {
+                            self.datasource.subscriptionActive = true
+                            DispatchQueue.main.async {
+                                subscription.subscribe(query: query, reference: self.reference , scrollView: self.scrollView, front: self.front)
+                                self.finishUp(items: self.itemsPlug, error: nil)
                             }
-                        })
-                        return
+                            return
+                        }
                     } else {
-                        self.finishUp(items: models, error: error)
+                        self.finishUp(items: itemsPlug, error: nil)
                         return
                     }
-                })
+                } else {
+                    datasource.innerRetrieve(query: query, callback: { (models, error) in
+                        //print("In \(self.classForCoder).InnerMain, datasource.innerRetrieve callback")
+                        if self.isCancelled {
+                            self.finishUp(items: models, error: error)
+                            return
+                        } else if let error = error {
+                            error.append(message: "In \(self.instanceType).main, got error doing innerRetrieve")
+                            self.finishUp(items: models, error: error)
+                            return
+                        } else if models.count > 0 {
+                            self.insert(models: models, callback: { (models, error) in
+                                if let error = error {
+                                    error.append(message: "In \(self.instanceType).main, got error doing insert")
+                                    self.finishUp(items: models, error: error)
+                                    return
+                                } else {
+                                    self.cleanup(models: models, callback: { (models, error) in
+                                        self.refreshViews {
+                                            self.finishUp(items: models, error: nil)
+                                        }
+                                    })
+                                    return
+                                }
+                            })
+                            return
+                        } else {
+                            self.finishUp(items: models, error: error)
+                            return
+                        }
+                    })
+                }
             } else {
                 print("In \(self.classForCoder).InnerMain, no query")
                 let error = RVError(message: "In \(self.classForCoder).InnerMain, no query")
@@ -648,7 +755,7 @@ class RVLoadOperation: RVAsyncOperation {
     func frontHandler(newModels: [RVBaseModel]) -> [IndexPath] {
         //print("In \(self.classForCoder).frontHandler")
         var clone = datasource.cloneItems()
-        let section = datasource.section
+ 
         var indexPaths = [IndexPath]()
         let newCount = newModels.count
         if self.datasource.offset > 0 {
@@ -717,8 +824,15 @@ class RVLoadOperation: RVAsyncOperation {
                     }
                 } else {
                     print("In \(self.classForCoder).insert, tableView no reference match reference is \(self.reference) and ")
+                    if self.subscriptionOperation {
+                        if let subscription = self.datasource.subscription {
+                            subscription.reference = self.front ? self.datasource.frontItem : self.datasource.backItem
+                        }
+                    }
                 }
-                if self.front { self.datasource.subscribe() }
+                if !self.subscriptionOperation {
+                    self.datasource.subscribe(scrollView: self.scrollView, front: self.front)
+                }
                 tableView.endUpdates()
                 if (!self.datasource.collapsed) && (self.front) && (originalRow >= 0) && (indexPathsCount > 0) {
                     Timer.scheduledTimer(withTimeInterval: 0.02, repeats: false, block: { (timer) in
@@ -742,7 +856,9 @@ class RVLoadOperation: RVAsyncOperation {
                         }
                     }
                 }, completion: { (success) in
-                    if self.front { self.datasource.subscribe() }
+                    if !self.subscriptionOperation {
+                        self.datasource.subscribe(scrollView: self.scrollView, front: self.front)
+                    }
                     callback(sizedModels, nil)
                 })
                 return
@@ -765,8 +881,8 @@ class RVLoadOperation: RVAsyncOperation {
             //print("In \(self.classForCoder).finishUp")
             self.callback(items, error)
             Timer.scheduledTimer(withTimeInterval: 0.4, repeats: false , block: { (timer) in
-                if self.front { self.datasource.frontOperationActive = false }
-                else {
+                if (self.front) && (!self.subscriptionOperation) { self.datasource.frontOperationActive = false }
+                else if (!self.front) && (!self.subscriptionOperation) {
                     // print("In \(self.classForCoder).finishUp, setting backOperation to false")
                     self.datasource.backOperationActive = false
                 }
