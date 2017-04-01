@@ -94,8 +94,14 @@ class RVBaseDatasource4: NSObject {
     func cancelAllOperations() { self.queue.cancelAllOperations()}
     func unsubscribe() {
         //print("In \(self.classForCoder).unsubscribe Need to implement")
-        if let subscription = self.subscription { subscription.unsubscribe() }
-        self.subscriptionActive = false
+        if let subscription = self.subscription {
+            subscription.unsubscribe(callback: {
+                self.subscriptionActive = false
+            })
+        }
+    }
+    func receiveIncoming(sourceSubscription: RVSubscription, incomingModels: [RVBaseModel]) {
+
     }
     func subscribe(scrollView: UIScrollView?, front: Bool) {
         if !self.subscriptionActive {
@@ -113,8 +119,24 @@ class RVBaseDatasource4: NSObject {
             }
         }
     }
-    func receivedSubscriptionResponse(models: [RVBaseModel]) {
-        
+    func receiveSubscriptionResponse(sourceSubscription: RVSubscription, incomingModels: [RVBaseModel]) {
+        if let subscription = self.subscription {
+            if subscription.identifier == sourceSubscription.identifier {
+                let operation = RVSubcriptionResponseOperation(subscription: sourceSubscription, datasource: self, incomingModels: incomingModels, callback: { (models, error) in
+                    if let error = error {
+                        error.append(message: "In \(self.classForCoder).receiveSubscriptionResponse, got error from RVSubscriptionResponseOperation")
+                        error.printError()
+                    } else {
+                        print("In \(self.classForCoder).receiveSupscriptionResponse got callback")
+                    }
+                })
+                self.queue.addOperation(operation)
+            } else {
+                print("In \(self.classForCoder).receivingIncoming, sourceSubscription doesn't match datasource subscription")
+            }
+        } else {
+            print("In \(self.classForCoder).receivingIncoming, datasource subscription is nil")
+        }
     }
     deinit {
         self.unsubscribe()
@@ -439,7 +461,7 @@ class RVExpandCollapseOperation: RVLoadOperation {
         }
     }
 }
-class RVSuscriptionResponseOperation: RVLoadOperation {
+class RVSubcriptionResponseOperation: RVLoadOperation {
     enum ResponseType {
         case added
         case updated
@@ -447,9 +469,11 @@ class RVSuscriptionResponseOperation: RVLoadOperation {
     }
     var incomingModels: [RVBaseModel]
     var responseType: ResponseType
-    init(title: String = "RVSubscriptionResponseOperation", datasource: RVBaseDatasource4, incomingModels: [RVBaseModel], responseType: ResponseType = .added, callback: @escaping RVCallback) {
+    var sourceSubscription: RVSubscription
+    init(title: String = "RVSubscriptionResponseOperation", subscription: RVSubscription, datasource: RVBaseDatasource4, incomingModels: [RVBaseModel], responseType: ResponseType = .added, callback: @escaping RVCallback) {
         self.incomingModels = incomingModels
         self.responseType = responseType
+        self.sourceSubscription = subscription
         var scrollView: UIScrollView? = nil
         var front: Bool = true
         let subscriptionOperation: Bool = true
@@ -463,7 +487,12 @@ class RVSuscriptionResponseOperation: RVLoadOperation {
         if self.isCancelled {
             self.finishUp(items: self.incomingModels, error: nil)
             return
-        } else {
+        } else if let subscription = self.datasource.subscription {
+            if subscription.identifier != self.sourceSubscription.identifier {
+                let error = RVError(message: "In \(self.instanceType).asyncMain, sourceSubscription different than original subscription")
+                self.finishUp(items: self.incomingModels, error: error)
+                return
+            }
             if self.responseType == .added {
                 self.insert(models: self.incomingModels, callback: { (models, error) in
                     if let error = error {
@@ -482,6 +511,10 @@ class RVSuscriptionResponseOperation: RVLoadOperation {
                 self.finishUp(items: self.incomingModels, error: error)
                 return
             }
+        } else {
+            let error = RVError(message: "In \(self.instanceType).asyncMain, subscription no longer exists in datasource")
+            self.finishUp(items: self.incomingModels, error: error)
+            return
         }
     }
 }
@@ -577,7 +610,7 @@ class RVLoadOperation: RVAsyncOperation {
                         } else {
                             self.datasource.subscriptionActive = true
                             DispatchQueue.main.async {
-                                subscription.subscribe(query: query, reference: self.reference , scrollView: self.scrollView, front: self.front)
+                                subscription.subscribe(datasource: self.datasource, query: query, reference: self.reference , scrollView: self.scrollView, front: self.front)
                                 self.finishUp(items: self.itemsPlug, error: nil)
                             }
                             return

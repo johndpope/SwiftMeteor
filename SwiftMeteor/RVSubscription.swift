@@ -11,8 +11,9 @@ protocol RVSubscription: class {
     var active: Bool { get }
     var showResponse: Bool { get }
     var front: Bool { get set }
+    var identifier: TimeInterval { get }
     weak var scrollView: UIScrollView? { get }
     var reference: RVBaseModel? { get set }
-    func subscribe(query: RVQuery, reference: RVBaseModel?, scrollView: UIScrollView?, front: Bool) -> Void
-    func unsubscribe() -> Void
+    func subscribe(datasource: RVBaseDatasource4, query: RVQuery, reference: RVBaseModel?, scrollView: UIScrollView?, front: Bool) -> Void
+    func unsubscribe(callback: @escaping ()-> Void) -> Void
 }
