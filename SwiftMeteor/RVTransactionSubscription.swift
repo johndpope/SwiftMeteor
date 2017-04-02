@@ -21,6 +21,10 @@ class RVTransactionSubscription: RVBaseCollection, RVSubscription {
         super.init(collection: .transaction)
     }
     func subscribe(datasource: RVBaseDatasource4, query: RVQuery, reference: RVBaseModel?, scrollView: UIScrollView? = nil, front: Bool = true) -> Void {
+        if self.active {
+            print("In \(self.classForCoder).subscribe, subscription was already active")
+        }
+        self._active = true
         self.query = query
         self.reference = reference
         self.scrollView = scrollView
