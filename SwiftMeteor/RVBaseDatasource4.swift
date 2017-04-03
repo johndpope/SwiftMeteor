@@ -853,18 +853,23 @@ class RVLoadOperation: RVAsyncOperation {
                 for i in 0..<self.datasource.offset { clone.insert(newModels[i], at: 0) }
                 self.datasource.offset = 0
                 let section = self.datasource.section
+                var rowIndex: Int = self.datasource.virtualCount
                 for i in (self.datasource.offset)..<newCount {
                     clone.insert(newModels[i], at: 0)
-                    indexPaths.append(IndexPath(item: i, section: section))
+                    indexPaths.append(IndexPath(item: rowIndex, section: section))
+                    rowIndex = rowIndex + 1
                 }
                 self.datasource.items = clone
                 return indexPaths
             }
         } else {
+            var rowIndex: Int = self.datasource.virtualCount
             let section = self.datasource.section
             for i in 0..<newCount {
                 clone.insert(newModels[i], at: 0)
-                indexPaths.append(IndexPath(item: i, section: section))
+            
+                indexPaths.append(IndexPath(item: rowIndex, section: section))
+                rowIndex = rowIndex + 1
             }
             self.datasource.offset = 0
             self.datasource.items = clone
@@ -932,7 +937,13 @@ class RVLoadOperation: RVAsyncOperation {
                     if (!self.datasource.collapsed) && (self.front) && (originalRow >= 0) && (indexPathsCount > 0) {
                         var indexPath = IndexPath(row: (originalRow + indexPathsCount), section: self.datasource.section)
                         if indexPath.row >= self.datasource.virtualCount { indexPath.row = self.datasource.virtualCount - 1 }
-                        tableView.scrollToRow(at: indexPath, at: UITableViewScrollPosition.bottom, animated: true)
+                        tableView.scrollToRow(at: indexPath, at: UITableViewScrollPosition.bottom, animated: false)
+                        if let indexPaths = tableView.indexPathsForVisibleRows {
+                            if indexPaths.count < 9 {
+                                tableView.reloadRows(at: indexPaths, with: UITableViewRowAnimation.bottom)
+                            }
+                        }
+                        
                         callback(sizedModels, nil)
                         return
                     } else {
