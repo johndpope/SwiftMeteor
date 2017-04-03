@@ -26,6 +26,7 @@ class RVBaseDatasource4: NSObject {
         case top        = "Top"
         case main       = "Main"
         case filter     = "Filter"
+        case subscribe  = "Subscribe"
         case unknown    = "Unknown"
     }
     let LAST_SORT_STRING = "ZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZ"
@@ -42,8 +43,7 @@ class RVBaseDatasource4: NSObject {
     var maxArraySize: Int = 300
     var collapsed: Bool = false
     var subscription: RVSubscription? = nil
-    var notificationPointer: NSObjectProtocol? = nil
-    var notificationName: Notification.Name? = nil
+    var notificationInstalled: Bool = false
     weak var scrollView: UIScrollView? {
         willSet {
             if (scrollView == nil) || (newValue == nil) { return }
@@ -103,24 +103,24 @@ class RVBaseDatasource4: NSObject {
     func cancelAllOperations() { self.queue.cancelAllOperations()}
     func unsubscribe(callback: @escaping () -> Void) {
         //print("In \(self.classForCoder).unsubscribe Need to implement")
-        if let pointer = self.notificationPointer {
-            if let name = self.notificationName {
-                NotificationCenter.default.removeObserver(pointer, name: name, object: nil)
-            }
-        }
-        if let subscription = self.subscription {
-            subscription.unsubscribe(callback: {
-                self.subscriptionActive = false
-                callback()
-            })
+            if let subscription = self.subscription {
+                NotificationCenter.default.removeObserver(self, name: subscription.notificationName, object: nil)
+                notificationInstalled = false
+                subscription.unsubscribe(callback: {
+                    self.subscriptionActive = false
+                    callback()
+                })
+            
+
         } else {
             self.subscriptionActive = false
             callback()
         }
     }
     func listenToSubscriptionNotification(subscription: RVSubscription) {
-        if notificationPointer == nil {
-            self.notificationName = subscription.notificationName
+        print("In \(self.classForCoder).listenToSubscription")
+        if !notificationInstalled {
+            notificationInstalled = true
             NotificationCenter.default.addObserver(self, selector: #selector(RVBaseDatasource4.receiveSubscriptionResponse(notification:)), name: subscription.notificationName, object: nil)
         }
     }

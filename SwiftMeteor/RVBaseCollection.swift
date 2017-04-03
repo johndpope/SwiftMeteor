@@ -180,12 +180,12 @@ print("In \(self.classForCoder).unc subscribe(query: RVQuery)")
      - parameter id: An id string returned from a subscription request
      */
     func unsubscribeSelf(callback: @escaping () -> Void)  {
-        print("In \(self.classForCoder).unsubscribeSelf")
+        print("In \(self.classForCoder).unsubscribeSelf with subscriptionID: \(self.subscriptionID)")
         if let id = self.subscriptionID {
             self.subscriptionID = nil
-            
-             print("In \(self.classForCoder).unsubscribeSelf subscriptionId \(id)")
-            return Meteor.unsubscribe(withId: id , callback: callback)
+            Meteor.unsubscribe(withId: id, callback: {
+               print("In \(self.classForCoder).unsubscribeSelf subscriptionId \(id) had ID and returned from unsubscribing")
+            })
         } else {
             callback()
         }

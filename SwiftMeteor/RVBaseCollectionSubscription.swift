@@ -44,20 +44,21 @@ class RVBaseCollectionSubscription: RVBaseCollection, RVSubscription {
                     models.append(populate(id: id, fields: fields))
                     
                 } else {
-                    print("In \(self.instanceType) #\(#line).finishUp collection \(collection) EventType:\(eventType) fields is nil, id is \(id) and subID = \(self.subscriptionID)")
                     if eventType == .removed { return }
+                    print("In \(self.instanceType) #\(#line).finishUp collection \(collection) EventType:\(eventType) fields is nil, id is \(id) and subID = \(self.subscriptionID)")
+                    //if eventType == .removed { return }
                 }
                 if queue.operationCount > self.MaxOperations {
                     print("In \(self.classForCoder).finishUp \(eventType), queCount > MaxOperations. Count is: \(queue.operationCount). Tossing Operation")
                 } else {
-                    print("In \(self.classForCoder).finishUp, collection: \(collection) eventType: \(eventType), id: \(id)")
+                   // print("In \(self.classForCoder).finishUp, collection: \(collection) eventType: \(eventType), id: \(id)")
                     queue.addOperation(RVModelSubscriptionBroadcast(subscription: self , models: models, eventType: eventType, id: id))
                 }
             } else {
                 print("In \(self.classForCoder).finishUp, collectionName sent: \(collection), not equal to collection \(self.collection.rawValue). id: \(id) and subID = \(self.subscriptionID)")
             }
         } else {
-            print("In \(self.classForCoder).finishUp for collection: \(collection) got eventType: \(eventType) for id \(id), when subscriptionID id nil")
+            //print("In \(self.classForCoder).finishUp for collection: \(collection) got eventType: \(eventType) for id \(id), when subscriptionID id nil")
         }
 
     }
@@ -106,7 +107,7 @@ class RVModelSubscriptionBroadcast: RVAsyncOperation {
                 }
                 if self.subscription.showResponse { self.showAnAlert(alertType: 0) }
                 let payload = RVPayload(subscription: self.subscription, eventType: self.eventType, models: self.models, operation: self)
-                print("In \(self.classForCoder).asyncMain posting notification \(self.subscription.notificationName) with id \(self.id)")
+                print("In \(self.classForCoder).asyncMain posting notification \(self.subscription.notificationName) with itemId \(self.id)")
                 NotificationCenter.default.post(name: self.subscription.notificationName, object: self , userInfo: [RVPayload.payloadInfoKey: payload])
                 DispatchQueue.main.async {
                     self.completeOperation()
