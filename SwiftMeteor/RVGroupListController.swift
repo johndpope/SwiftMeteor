@@ -37,6 +37,7 @@ class RVGroupListController: RVTransactionListViewController {
     override func runConfiguration() {
         print("In \(self.classForCoder).runConfiguration")
         let datasource = RVTransactionDatasource44(manager: self.manager4, datasourceType: .main, maxSize: 100)
+        datasource.subscription = RVTransactionSubscription(front: true , showResponse: false)
         manager4.appendSections(datasources: [datasource]) { (models, error) in
             if let error = error {
                 error.printError()

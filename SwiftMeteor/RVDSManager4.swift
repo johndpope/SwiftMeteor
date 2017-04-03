@@ -90,8 +90,9 @@ class RVDSManager4 {
 
     func restart(datasource: RVBaseDatasource4, query: RVQuery, callback: @escaping RVCallback) {
         datasource.cancelAllOperations()
-        datasource.unsubscribe()
-        datasource.restart(scrollView: self.scrollView, query: query, callback: callback)
+        datasource.unsubscribe {
+            datasource.restart(scrollView: self.scrollView, query: query, callback: callback)
+        }
     }
 
 }

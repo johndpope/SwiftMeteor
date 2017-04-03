@@ -31,26 +31,35 @@ class RVBaseCollectionSubscription: RVBaseCollection, RVSubscription {
     override public func documentWasRemoved(_ collection: String, id: String) {
         finishUp(collection: collection, id: id, fields: nil, cleared: nil, eventType: .removed)
     }
+
+
     func finishUp(collection: String, id: String, fields: NSDictionary?, cleared: [String]?, eventType: RVEventType) {
-        if self.collection.rawValue == collection {
-            var models = [RVBaseModel]()
-            if cleared != nil {
-                print("In \(self.classForCoder).finishUp, clearedArray is not null..... not implemented")
-            }
-            if let fields = fields {
-                models.append(populate(id: id, fields: fields))
-                
+        if self.subscriptionID != nil {
+            if self.collection.rawValue == collection {
+                var models = [RVBaseModel]()
+                if cleared != nil {
+                    print("In \(self.classForCoder).finishUp, clearedArray is not null..... not implemented")
+                }
+                if let fields = fields {
+                    models.append(populate(id: id, fields: fields))
+                    
+                } else {
+                    print("In \(self.instanceType) #\(#line).finishUp collection \(collection) EventType:\(eventType) fields is nil, id is \(id) and subID = \(self.subscriptionID)")
+                    if eventType == .removed { return }
+                }
+                if queue.operationCount > self.MaxOperations {
+                    print("In \(self.classForCoder).finishUp \(eventType), queCount > MaxOperations. Count is: \(queue.operationCount). Tossing Operation")
+                } else {
+                    print("In \(self.classForCoder).finishUp, collection: \(collection) eventType: \(eventType), id: \(id)")
+                    queue.addOperation(RVModelSubscriptionBroadcast(subscription: self , models: models, eventType: eventType, id: id))
+                }
             } else {
-                print("In \(#file) #\(#line).finishUp \(eventType) fields is nil")
-            }
-            if queue.operationCount > self.MaxOperations {
-                print("In \(self.classForCoder).finishUp \(eventType), queCount > MaxOperations. Count is: \(queue.operationCount). Tossing Operation")
-            } else {
-                queue.addOperation(RVModelSubscriptionBroadcast(subscription: self , models: models, eventType: eventType, id: id))
+                print("In \(self.classForCoder).finishUp, collectionName sent: \(collection), not equal to collection \(self.collection.rawValue). id: \(id) and subID = \(self.subscriptionID)")
             }
         } else {
-            print("In \(self.classForCoder).finishUp, collectionName sent: \(collection), not equal to collection \(self.collection.rawValue). id: \(id)")
+            print("In \(self.classForCoder).finishUp for collection: \(collection) got eventType: \(eventType) for id \(id), when subscriptionID id nil")
         }
+
     }
     fileprivate var _active: Bool = false
     var active: Bool { get { return _active } }
@@ -61,6 +70,7 @@ class RVBaseCollectionSubscription: RVBaseCollection, RVSubscription {
     var reference: RVBaseModel? = nil
     
     func subscribe(query: RVQuery, reference: RVBaseModel?, callback: @escaping() -> Void) -> Void {
+        print("In \(self.classForCoder).subscribe ..........")
         if self.active { print("In \(self.classForCoder).subscribe, subscription was already active") }
         self._active    = true
         self.reference  = reference
@@ -68,7 +78,10 @@ class RVBaseCollectionSubscription: RVBaseCollection, RVSubscription {
     }
     func unsubscribe(callback: @escaping ()-> Void) -> Void {
         self.queue.cancelAllOperations()
-        self.unsubscribeSelf { callback() }
+        self.unsubscribeSelf {
+            self._active = false
+            callback()
+        }
     }
     
 }
@@ -93,6 +106,7 @@ class RVModelSubscriptionBroadcast: RVAsyncOperation {
                 }
                 if self.subscription.showResponse { self.showAnAlert(alertType: 0) }
                 let payload = RVPayload(subscription: self.subscription, eventType: self.eventType, models: self.models, operation: self)
+                print("In \(self.classForCoder).asyncMain posting notification \(self.subscription.notificationName) with id \(self.id)")
                 NotificationCenter.default.post(name: self.subscription.notificationName, object: self , userInfo: [RVPayload.payloadInfoKey: payload])
                 DispatchQueue.main.async {
                     self.completeOperation()
@@ -104,6 +118,7 @@ class RVModelSubscriptionBroadcast: RVAsyncOperation {
         }
     }
     func showAnAlert(alertType: Int) {
+        if !subscription.showResponse { return }
         let index = alertType <= 3 ? alertType : 0
         let controller = UIViewController.top()
         var title = "Nothing"

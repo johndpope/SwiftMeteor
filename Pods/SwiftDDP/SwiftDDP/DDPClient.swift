@@ -59,6 +59,7 @@ open class DDPClient: NSObject {
         let queue = OperationQueue()
         queue.name = "DDP Background Data Queue"
         queue.qualityOfService = .background
+        queue.maxConcurrentOperationCount = 1 // Neil added this
         return queue
     }()
     
@@ -233,6 +234,8 @@ open class DDPClient: NSObject {
                 if let text = message as? String {
                     do { try self.ddpMessageHandler(DDPMessage(message: text)) }
                     catch { log.debug("Message handling error. Raw message: \(text)")}
+                } else {
+                    print("In \(self.classForCoder).connect socket.event.message message not a string")
                 }
             }
         }
@@ -313,6 +316,7 @@ open class DDPClient: NSObject {
             
             // Callbacks for managing subscriptions
         case .Ready: documentQueue.addOperation() {
+            //print("In \(self.classForCoder) .Ready \(message.subs)")
             if let subs = message.subs {
                 self.ready(subs)
             }
@@ -323,6 +327,7 @@ open class DDPClient: NSObject {
         case .Nosub: documentQueue.addOperation() {
             if let id = message.id {
                 self.nosub(id, error: message.error)
+                print("In \(self.classForCoder) .Nosub subscriptionId: \(id)")
             }
             }
             

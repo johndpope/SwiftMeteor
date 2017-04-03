@@ -101,6 +101,7 @@ class RVBaseCollection: AbstractCollection {
             self.publish(eventType: .removed, model: nil, id: id)
         }
     }
+
     deinit {
         self.unsubscribeSelf { }
     }
@@ -118,12 +119,13 @@ extension RVBaseCollection {
     */
     func subscribe() -> String {
 
-
+        print("In \(self.classForCoder).subscribe()")
         let (filters, projections) = self.query.query()
         self.subscriptionID = Meteor.subscribe(collection.rawValue, params: [filters as AnyObject, projections as AnyObject])
         return self.subscriptionID!
     }
     func subscribe(callback: @escaping()-> Void) -> String {
+        print("In \(self.classForCoder).subscribe(callback: @escaping()-> Void")
         let (filters, projections) = self.query.query()
         self.subscriptionID = Meteor.subscribe(collection.rawValue, params: [filters as AnyObject, projections as AnyObject], callback: callback)
         return self.subscriptionID!
@@ -137,7 +139,7 @@ extension RVBaseCollection {
      - parameter params:     An object containing method arguments, if any.
      */
     func subscribe(query: RVQuery) -> String {
-
+print("In \(self.classForCoder).unc subscribe(query: RVQuery)")
         self.query = query
         let (filters, projection) = query.query()
         self.subscriptionID = Meteor.subscribe(collection.rawValue, params: [filters as AnyObject, projection as AnyObject])
@@ -178,8 +180,11 @@ extension RVBaseCollection {
      - parameter id: An id string returned from a subscription request
      */
     func unsubscribeSelf(callback: @escaping () -> Void)  {
+        print("In \(self.classForCoder).unsubscribeSelf")
         if let id = self.subscriptionID {
             self.subscriptionID = nil
+            
+             print("In \(self.classForCoder).unsubscribeSelf subscriptionId \(id)")
             return Meteor.unsubscribe(withId: id , callback: callback)
         } else {
             callback()

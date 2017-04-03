@@ -26,9 +26,13 @@ class RVPayload {
     }
     func toString() -> String {
         var modelTitle = "None"
+        var localId = "None"
+        var created = "None"
         if let model = models.first {
             if let title = model.title { modelTitle = title}
+            if let id = model.localId { localId = id }
+            if let createdAt = model.createdAt { created = createdAt.description }
         }
-        return "Payload: \(self.eventType) modelCount: \(models.count), title: \(modelTitle)"
+        return "Payload: \(self.eventType) modelCount: \(models.count), title: \(modelTitle) \(localId) \(created)"
     }
 }
