@@ -42,6 +42,15 @@ class RVBaseDatasource4: NSObject {
     var maxArraySize: Int = 300
     var collapsed: Bool = false
     var subscription: RVSubscription? = nil
+    var notificationPointer: NSObjectProtocol? = nil
+    var notificationName: Notification.Name? = nil
+    weak var scrollView: UIScrollView? {
+        willSet {
+            if (scrollView == nil) || (newValue == nil) { return }
+            if let oldValue = scrollView { if let newValue = newValue { if oldValue == newValue { return }}}
+            print("In \(self.classForCoder).scrollValue oldValue and newValue are different \(scrollView), \(newValue)")
+        }
+    }
     fileprivate var offset: Int = 0 {
         willSet {
             if newValue < 0 { print("In \(self.classForCoder) ERROR. attemtp to set Offset to a negative number \(newValue)") }
@@ -94,18 +103,28 @@ class RVBaseDatasource4: NSObject {
     func cancelAllOperations() { self.queue.cancelAllOperations()}
     func unsubscribe() {
         //print("In \(self.classForCoder).unsubscribe Need to implement")
+        if let pointer = self.notificationPointer {
+            if let name = self.notificationName {
+                NotificationCenter.default.removeObserver(pointer, name: name, object: nil)
+            }
+        }
         if let subscription = self.subscription {
             subscription.unsubscribe(callback: {
                 self.subscriptionActive = false
             })
         }
     }
-
+    func listenToSubscriptionNotification(subscription: RVSubscription) {
+        if notificationPointer == nil {
+            self.notificationName = subscription.notificationName
+            NotificationCenter.default.addObserver(self, selector: #selector(RVBaseDatasource4.receiveSubscriptionResponse(notification:)), name: subscription.notificationName, object: nil)
+        }
+    }
     func subscribe(scrollView: UIScrollView?, front: Bool) {
         if !self.subscriptionActive {
             //subscription.reference = self.items.first
             if let subscription = self.subscription {
-                if (subscription.front && front) || (!subscription.front && !front) {
+                if (subscription.isFront && front) || (!subscription.isFront && !front) {
                     let operation = RVLoadOperation(title: "Subscribe", datasource: self , scrollView: scrollView, front: front, subscriptionOperation: true, callback: { (models, error) in
                         if let error = error {
                             print("In \(self.classForCoder).subscribe, got error)")
@@ -117,7 +136,20 @@ class RVBaseDatasource4: NSObject {
             }
         }
     }
-    func receiveSubscriptionResponse(sourceSubscription: RVSubscription, incomingModels: [RVBaseModel], responseType: RVSubcriptionResponseOperation.ResponseType) {
+    func receiveSubscriptionResponse(notification: NSNotification) {
+        if let userInfo = notification.userInfo {
+            if let payload = userInfo[RVPayload.payloadInfoKey] as? RVPayload {
+                print("In \(self.classForCoder).receiveSubscription have payload \(payload.toString())")
+                if let subscription = self.subscription {
+                    if subscription.identifier == payload.subscription.identifier {
+                        print("In \(self.classForCoder).receiveSubscription subscriptions match")
+                    }
+                }
+            }
+        }
+        
+    }
+    func receiveSubscriptionResponse(sourceSubscription: RVSubscription, incomingModels: [RVBaseModel], responseType: RVEventType) {
         if let subscription = self.subscription {
             if subscription.identifier == sourceSubscription.identifier {
                 let operation = RVSubcriptionResponseOperation(subscription: sourceSubscription, datasource: self, incomingModels: incomingModels, responseType: responseType, callback: { (models, error) in
@@ -338,6 +370,7 @@ class RVExpandCollapseOperation: RVLoadOperation {
             self.finishUp(models: self.emptyModels, error: nil)
             return
         } else if (operationType != .expandOnly) {
+            self.datasource.scrollView = self.scrollView
             if self.datasource.collapsed {
                 if (operationType == .collapseAndZero) || (operationType == .collapseZeroAndExpand) || (operationType == .collapseZeroExpandAndLoad) {
                     self.datasource.items = [RVBaseModel]()
@@ -407,6 +440,7 @@ class RVExpandCollapseOperation: RVLoadOperation {
             }
         } else {
             print("In \(self.classForCoder).main expand collapsed: \(datasource.collapsed)")
+            self.datasource.scrollView = self.scrollView
             if self.datasource.collapsed {
                 DispatchQueue.main.async {
                     if let tableView = self.scrollView as? UITableView {
@@ -460,15 +494,11 @@ class RVExpandCollapseOperation: RVLoadOperation {
     }
 }
 class RVSubcriptionResponseOperation: RVLoadOperation {
-    enum ResponseType {
-        case added
-        case updated
-        case deleted
-    }
+
     var incomingModels: [RVBaseModel]
-    var responseType: ResponseType
+    var responseType: RVEventType
     var sourceSubscription: RVSubscription
-    init(title: String = "RVSubscriptionResponseOperation", subscription: RVSubscription, datasource: RVBaseDatasource4, incomingModels: [RVBaseModel], responseType: ResponseType = .added, callback: @escaping RVCallback) {
+    init(title: String = "RVSubscriptionResponseOperation", subscription: RVSubscription, datasource: RVBaseDatasource4, incomingModels: [RVBaseModel], responseType: RVEventType = .added, callback: @escaping RVCallback) {
         self.incomingModels = incomingModels
         self.responseType = responseType
         self.sourceSubscription = subscription
@@ -476,8 +506,9 @@ class RVSubcriptionResponseOperation: RVLoadOperation {
         var front: Bool = true
         let subscriptionOperation: Bool = true
         if let subscription = datasource.subscription {
-            scrollView = subscription.scrollView
-            front = subscription.front
+           // scrollView = subscription.scrollView
+            // Neil
+            front = subscription.isFront
         }
         super.init(title: title, datasource: datasource, scrollView: scrollView, front: front, subscriptionOperation: subscriptionOperation, callback: callback)
     }
@@ -486,6 +517,7 @@ class RVSubcriptionResponseOperation: RVLoadOperation {
             self.finishUp(items: self.incomingModels, error: nil)
             return
         } else if let subscription = self.datasource.subscription {
+            self.scrollView = self.datasource.scrollView
             if subscription.identifier != self.sourceSubscription.identifier {
                 let error = RVError(message: "In \(self.instanceType).asyncMain, sourceSubscription different than original subscription")
                 self.finishUp(items: self.incomingModels, error: error)
@@ -550,9 +582,9 @@ class RVLoadOperation: RVAsyncOperation {
     }
     func unsubscribeByArea(front: Bool = true) {
         if let subscription = self.datasource.subscription {
-            if subscription.front && front {
+            if subscription.isFront && front {
                 self.datasource.unsubscribe()
-            } else if !subscription.front && !front {
+            } else if !subscription.isFront && !front {
                 self.datasource.unsubscribe()
             }
         }
@@ -563,11 +595,12 @@ class RVLoadOperation: RVAsyncOperation {
             finishUp(items: itemsPlug, error: nil)
             return
         } else {
-            if self.front && self.datasource.datasourceType == .filter {
+            self.datasource.scrollView = self.scrollView
+            if self.front && self.datasource.datasourceType == .filter && !self.subscriptionOperation {
                 finishUp(items: itemsPlug , error: nil)
                 return
             } else if self.subscriptionOperation && self.datasource.datasourceType == .filter {
-                finishUp(items: itemsPlug , error: nil)
+               // finishUp(items: itemsPlug , error: nil)
                 return
             }
             if var query = self.datasource.baseQuery {
@@ -608,8 +641,9 @@ class RVLoadOperation: RVAsyncOperation {
                         } else {
                             self.datasource.subscriptionActive = true
                             DispatchQueue.main.async {
-                                subscription.subscribe(datasource: self.datasource, query: query, reference: self.reference , scrollView: self.scrollView, front: self.front)
-                                self.finishUp(items: self.itemsPlug, error: nil)
+                                subscription.subscribe(query: query, reference: self.reference, callback: {
+                                    self.finishUp(items: self.itemsPlug, error: nil)
+                                })
                             }
                             return
                         }
@@ -839,42 +873,49 @@ class RVLoadOperation: RVAsyncOperation {
             var originalRow: Int = -1
             var indexPathsCount: Int = 0
             if let tableView = self.scrollView as? UITableView {
-                tableView.beginUpdates()
-                if let indexPaths = tableView.indexPathsForVisibleRows { if let indexPath = indexPaths.last { originalRow = indexPath.row } }
-                if self.referenceMatch {
-                    let point = CGPoint(x: 10, y: (tableView.bounds.origin.y + tableView.bounds.height))
-                    if let path = tableView.indexPathForRow(at: point) { originalRow = path.row }
-                    var indexPaths = [IndexPath]()
-                    //print("In \(self.classForCoder).insert, tableView reference match")
-                    if self.front { indexPaths = self.frontHandler(newModels: sizedModels) }
-                    else { indexPaths = self.backHandler(models: sizedModels) }
-                    //print("In \(self.classForCoder).insert numberOfIndexPaths = \(indexPaths.count)")
-                    if  (!self.datasource.collapsed)  {
-                        tableView.insertRows(at: indexPaths, with: UITableViewRowAnimation.middle)
-                        indexPathsCount = indexPaths.count
-                    }
-                } else {
-                    print("In \(self.classForCoder).insert, tableView no reference match reference is \(self.reference) and ")
-                    if self.subscriptionOperation {
-                        if let subscription = self.datasource.subscription {
-                            subscription.reference = self.front ? self.datasource.frontItem : self.datasource.backItem
+                let delay = (self.front && !self.datasource.collapsed)  ? 0.5 : 0.001
+                if (self.front && !self.datasource.collapsed){
+                    tableView.isScrollEnabled = false
+                    tableView.layer.removeAllAnimations()
+                }
+                Timer.scheduledTimer(withTimeInterval: delay, repeats: false, block: { (timer) in
+                    tableView.beginUpdates()
+                    if let indexPaths = tableView.indexPathsForVisibleRows { if let indexPath = indexPaths.last { originalRow = indexPath.row } }
+                    if self.referenceMatch {
+                        let point = CGPoint(x: 10, y: (tableView.bounds.origin.y + tableView.bounds.height))
+                        if let indexPath = tableView.indexPathForRow(at: point) { originalRow = indexPath.row }
+                        var indexPaths = [IndexPath]()
+                        //print("In \(self.classForCoder).insert, tableView reference match")
+                        if self.front { indexPaths = self.frontHandler(newModels: sizedModels) }
+                        else { indexPaths = self.backHandler(models: sizedModels) }
+                        //print("In \(self.classForCoder).insert numberOfIndexPaths = \(indexPaths.count)")
+                        if  (!self.datasource.collapsed)  {
+                            tableView.insertRows(at: indexPaths, with: UITableViewRowAnimation.middle)
+                            indexPathsCount = indexPaths.count
+                        }
+                    } else {
+                        print("In \(self.classForCoder).insert, tableView no reference match reference is \(self.reference) and ")
+                        if self.subscriptionOperation {
+                            if let subscription = self.datasource.subscription {
+                                subscription.reference = self.front ? self.datasource.frontItem : self.datasource.backItem
+                            }
                         }
                     }
-                }
-                if !self.subscriptionOperation {
-                    self.datasource.subscribe(scrollView: self.scrollView, front: self.front)
-                }
-                tableView.endUpdates()
-                if (!self.datasource.collapsed) && (self.front) && (originalRow >= 0) && (indexPathsCount > 0) {
-                    Timer.scheduledTimer(withTimeInterval: 0.02, repeats: false, block: { (timer) in
-                        let indexPath = IndexPath(row: (originalRow + indexPathsCount), section: self.datasource.section)
+                    if !self.subscriptionOperation {
+                        self.datasource.subscribe(scrollView: self.scrollView, front: self.front)
+                    }
+                    tableView.endUpdates()
+                    tableView.isScrollEnabled = true
+                    if (!self.datasource.collapsed) && (self.front) && (originalRow >= 0) && (indexPathsCount > 0) {
+                        var indexPath = IndexPath(row: (originalRow + indexPathsCount), section: self.datasource.section)
+                        if indexPath.row >= self.datasource.virtualCount { indexPath.row = self.datasource.virtualCount - 1 }
                         tableView.scrollToRow(at: indexPath, at: UITableViewScrollPosition.bottom, animated: false)
                         callback(sizedModels, nil)
-                    })
-                } else {
-                    callback(sizedModels, nil)
- 
-                }
+                        return
+                    } else {
+                        callback(sizedModels, nil)
+                    }
+                })
                 return
             } else if let collectionView = self.scrollView as? UICollectionView {
                 collectionView.performBatchUpdates({

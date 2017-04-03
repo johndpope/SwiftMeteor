@@ -15,6 +15,7 @@ class RVBaseCollection: AbstractCollection {
         case changed    = "changed"
         case removed    = "removed"
     }
+    var notificationName: Notification.Name { return Notification.Name("BaseSubscriptionNeedsToBeOverridden") }
     var collection: RVModelType
     var query: RVQuery = RVQuery()
     var instanceType: String { get { return String(describing: type(of: self)) } }
@@ -100,6 +101,9 @@ class RVBaseCollection: AbstractCollection {
             self.publish(eventType: .removed, model: nil, id: id)
         }
     }
+    deinit {
+        self.unsubscribeSelf { }
+    }
 }
 extension RVBaseCollection {
     func checkIfSubscribed() {
@@ -120,7 +124,6 @@ extension RVBaseCollection {
         return self.subscriptionID!
     }
     func subscribe(callback: @escaping()-> Void) -> String {
-
         let (filters, projections) = self.query.query()
         self.subscriptionID = Meteor.subscribe(collection.rawValue, params: [filters as AnyObject, projections as AnyObject], callback: callback)
         return self.subscriptionID!

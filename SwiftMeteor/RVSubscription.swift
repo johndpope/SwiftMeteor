@@ -8,12 +8,13 @@
 
 import UIKit
 protocol RVSubscription: class {
+    var notificationName: Notification.Name { get }
     var active: Bool { get }
+    var collection: RVModelType { get }
     var showResponse: Bool { get }
-    var front: Bool { get set }
+    var isFront: Bool { get }
     var identifier: TimeInterval { get }
-    weak var scrollView: UIScrollView? { get }
     var reference: RVBaseModel? { get set }
-    func subscribe(datasource: RVBaseDatasource4, query: RVQuery, reference: RVBaseModel?, scrollView: UIScrollView?, front: Bool) -> Void
+    func subscribe(query: RVQuery, reference: RVBaseModel?, callback: @escaping() -> Void) -> Void
     func unsubscribe(callback: @escaping ()-> Void) -> Void
 }

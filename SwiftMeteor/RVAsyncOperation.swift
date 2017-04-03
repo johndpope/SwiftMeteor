@@ -55,8 +55,10 @@ class RVAsyncOperation: Operation {
        // operation(completeOperation: completeOperation)
     }
     func completeOperation() {
-        isFinished = true
-        isExecuting = false
+        DispatchQueue.main.async {
+            self.isFinished = true
+            self.isExecuting = false
+        }
     }
     func asyncMain() {
         print("In \(self.classForCoder).asyncMain \(title) \(Date()).")
