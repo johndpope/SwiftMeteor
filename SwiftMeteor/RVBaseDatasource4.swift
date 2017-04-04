@@ -220,7 +220,7 @@ extension RVBaseDatasource4 {
         }
         if let sortTerm = query.sortTerms.first {
             let firstString: AnyObject = "" as AnyObject
-            let lastString: AnyObject = LAST_SORT_STRING as AnyObject
+            let lastString:  AnyObject = LAST_SORT_STRING as AnyObject
             var comparison = (sortTerm.order == .ascending) ?  RVComparison.gte : RVComparison.lte
             var sortString: AnyObject = (sortTerm.order == .descending) ? lastString : firstString
             if front {
@@ -236,7 +236,10 @@ extension RVBaseDatasource4 {
             else if let andTerm = query.findAndTerm(term: sortTerm.field) { finalValue = andTerm.value as AnyObject }
             switch (sortTerm.field) {
             case .createdAt, .updatedAt:
-                if (strip[sortTerm.field] == nil ) && (query.findAndTerm(term: sortTerm.field) == nil ) { finalValue = sortDate as AnyObject }
+                if let date = strip[sortTerm.field] { finalValue = date }
+                else if let andTerm = query.findAndTerm(term: sortTerm.field) { finalValue = andTerm.value as AnyObject }
+                else { finalValue = sortDate as AnyObject }
+             //   if (strip[sortTerm.field] == nil ) && (query.findAndTerm(term: sortTerm.field) == nil ) { finalValue = sortDate as AnyObject }
             case .commentLowercase, .comment, .handleLowercase, .handle, .title, .fullName:
                 break
             default:
@@ -297,20 +300,28 @@ extension RVBaseDatasource4 {
             print("In \(self.instanceType).item, index \(index) greater than virtualCount: \(self.virtualCount)")
             return nil
         }
+        var OKtoRetrieve: Bool = true
+        if self.subscription != nil {
+            if self.subscriptionActive {
+                if self.items.count >= self.maxArraySize {
+                    OKtoRetrieve = false
+                }
+            }
+        }
         let physicalIndex = index - offset
         if physicalIndex < 0 {
             //print("In \(self.instanceType).item got physical index less than 0 \(physicalIndex). Offset is \(offset)")
             //print("In \(self.classForCoder).item calling inBack: index = \(index), count: \(items.count), offset: \(self.offset), backBuffer: \(self.backBufferSize)")
-            inFront(scrollView: scrollView)
+            if OKtoRetrieve {inFront(scrollView: scrollView)}
             return nil
         } else if physicalIndex < items.count {
             if (physicalIndex + self.backBufferSize) > items.count {
                 //print("In \(self.classForCoder).item calling inBack:  index = \(index), count: \(items.count), offset: \(self.offset), backBuffer: \(self.backBufferSize)")
-                inBack(scrollView: scrollView)
+                if OKtoRetrieve {inBack(scrollView: scrollView) }
             }
             if physicalIndex < self.frontBufferSize {
                // print("In \(self.classForCoder).item calling inFront: index = \(index), count: \(items.count), offset: \(self.offset), backBuffer: \(self.backBufferSize)")
-                inFront(scrollView: scrollView)
+                if OKtoRetrieve { inFront(scrollView: scrollView) }
             }
             return items[physicalIndex]
         } else {
@@ -780,6 +791,12 @@ class RVLoadOperation: RVAsyncOperation {
     }
 
     func innerCleanup() -> [IndexPath] {
+        if let subscription = self.datasource.subscription {
+            if self.datasource.subscriptionActive {
+                if subscription.isFront { return innerCleanup2(front: false)}
+                else { return innerCleanup2(front: true) }
+            }
+        }
         if self.datasource.lastItemIndex < (self.datasource.virtualCount / 2) { return innerCleanup2(front: false) }
         else { return innerCleanup2(front: true) }
     }
@@ -919,7 +936,7 @@ class RVLoadOperation: RVAsyncOperation {
                 for i in 0..<self.datasource.offset { clone.insert(newModels[i], at: 0) }
                 self.datasource.offset = 0
                 let section = self.datasource.section
-                var rowIndex: Int = self.datasource.virtualCount
+                var rowIndex: Int = (self.subscriptionOperation != .response) ? self.datasource.virtualCount : 0
                 for i in (self.datasource.offset)..<newCount {
                     clone.insert(newModels[i], at: 0)
                     indexPaths.append(IndexPath(item: rowIndex, section: section))
@@ -929,11 +946,10 @@ class RVLoadOperation: RVAsyncOperation {
                 return indexPaths
             }
         } else {
-            var rowIndex: Int = self.datasource.virtualCount
+            var rowIndex: Int = (self.subscriptionOperation != .response) ? self.datasource.virtualCount : 0
             let section = self.datasource.section
             for i in 0..<newCount {
                 clone.insert(newModels[i], at: 0)
-            
                 indexPaths.append(IndexPath(item: rowIndex, section: section))
                 rowIndex = rowIndex + 1
             }
@@ -963,16 +979,16 @@ class RVLoadOperation: RVAsyncOperation {
             var originalRow: Int = -1
             var indexPathsCount: Int = 0
             if let tableView = self.scrollView as? UITableView {
-                var delay = (self.front && !self.datasource.collapsed)  ? 0.2 : 0.001
-                if self.subscriptionOperation == .response { delay = 0.001}
-                if (self.front && !self.datasource.collapsed){
+                let originalScrollEnabled = tableView.isScrollEnabled
+                let delay = ((self.front && !self.datasource.collapsed) && self.subscriptionOperation != .response )  ? 0.2 : 0.0001
+                if ((self.front && !self.datasource.collapsed) && self.subscriptionOperation != .response) {
                     tableView.isScrollEnabled = false
                     tableView.layer.removeAllAnimations()
                 }
                 Timer.scheduledTimer(withTimeInterval: delay, repeats: false, block: { (timer) in
                     tableView.beginUpdates()
                     if let indexPaths = tableView.indexPathsForVisibleRows { if let indexPath = indexPaths.last { originalRow = indexPath.row } }
-                    print("In \(self.classForCoder).insert, subscriptionOperation = \(self.subscriptionOperation)")
+                    // print("In \(self.classForCoder).insert, subscriptionOperation = \(self.subscriptionOperation)")
                     if (self.subscriptionOperation == .response) || self.referenceMatch {
                         let point = CGPoint(x: 10, y: (tableView.bounds.origin.y + tableView.bounds.height))
                         if let indexPath = tableView.indexPathForRow(at: point) { originalRow = indexPath.row }
@@ -1006,8 +1022,8 @@ class RVLoadOperation: RVAsyncOperation {
                      //   }
                     }
                     tableView.endUpdates()
-                    tableView.isScrollEnabled = true
-                    if (!self.datasource.collapsed) && (self.front) && (originalRow >= 0) && (indexPathsCount > 0) {
+                    tableView.isScrollEnabled = originalScrollEnabled
+                    if (!self.datasource.collapsed) && (self.front) && (originalRow >= 0) && (indexPathsCount > 0) && (self.subscriptionOperation != .response) {
                         var indexPath = IndexPath(row: (originalRow + indexPathsCount), section: self.datasource.section)
                         if indexPath.row >= self.datasource.virtualCount { indexPath.row = self.datasource.virtualCount - 1 }
                         tableView.scrollToRow(at: indexPath, at: UITableViewScrollPosition.bottom, animated: false)
@@ -1019,6 +1035,12 @@ class RVLoadOperation: RVAsyncOperation {
                         
                         callback(sizedModels, nil)
                         return
+                    } else if  (self.subscriptionOperation == .response) {
+                        if self.datasource.virtualCount > 0 {
+                            let indexPath = IndexPath(row: 0, section: self.datasource.section)
+                            tableView.scrollToRow(at: indexPath, at: .top, animated: false)
+                        }
+                        callback(sizedModels, nil)
                     } else {
                         callback(sizedModels, nil)
                     }

@@ -107,7 +107,7 @@ class RVModelSubscriptionBroadcast: RVAsyncOperation {
                 }
                 if self.subscription.showResponse { self.showAnAlert(alertType: 0) }
                 let payload = RVPayload(subscription: self.subscription, eventType: self.eventType, models: self.models, operation: self)
-                print("In \(self.classForCoder).asyncMain posting notification \(self.subscription.notificationName) with itemId \(self.id)")
+                //print("In \(self.classForCoder).asyncMain posting notification \(self.subscription.notificationName) with itemId \(self.id)")
                 NotificationCenter.default.post(name: self.subscription.notificationName, object: self , userInfo: [RVPayload.payloadInfoKey: payload])
                 DispatchQueue.main.async {
                     self.completeOperation()
