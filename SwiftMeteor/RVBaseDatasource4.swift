@@ -112,8 +112,6 @@ class RVBaseDatasource4: NSObject {
                     self.subscriptionActive = false
                     callback()
                 })
-            
-
         } else {
             self.subscriptionActive = false
             callback()
@@ -132,12 +130,20 @@ class RVBaseDatasource4: NSObject {
             if let subscription = self.subscription {
                 if (subscription.isFront && front) || (!subscription.isFront && !front) {
                     print("Neil check this \(self.classForCoder).subscribe, took out subscriptionOperation flag")
+                    let operation = RVSubscribeOperation(datasource: self, subscription: subscription, callback: { (models, error) in
+                        if let error = error {
+                            print("In \(self.classForCoder).subscribe, got error)")
+                            error.printError()
+                        }
+                    })
+                    /*
                     let operation = RVLoadOperation(title: "Subscribe", datasource: self , scrollView: scrollView, front: front, callback: { (models, error) in // NEIL
                         if let error = error {
                             print("In \(self.classForCoder).subscribe, got error)")
                             error.printError()
                         }
                     })
+ */
                     self.queue.addOperation(operation)
                 }
             }
@@ -155,6 +161,7 @@ class RVBaseDatasource4: NSObject {
                                 error.printError()
                             }
                         })
+                        self.queue.addOperation(operation)
                     }
                 }
             }
@@ -721,7 +728,8 @@ class RVLoadOperation: RVAsyncOperation {
                             return
                         }
                     } else {
-                        self.finishUp(items: itemsPlug, error: nil)
+                        let error = RVError(message: "In \(self.classForCoder).InnerMain, have subscribe operation but datasource does not have a subscription")
+                        self.finishUp(items: itemsPlug, error: error)
                         return
                     }
                 } else if self.subscriptionOperation == .response {
@@ -955,7 +963,8 @@ class RVLoadOperation: RVAsyncOperation {
             var originalRow: Int = -1
             var indexPathsCount: Int = 0
             if let tableView = self.scrollView as? UITableView {
-                let delay = (self.front && !self.datasource.collapsed)  ? 0.2 : 0.001
+                var delay = (self.front && !self.datasource.collapsed)  ? 0.2 : 0.001
+                if self.subscriptionOperation == .response { delay = 0.001}
                 if (self.front && !self.datasource.collapsed){
                     tableView.isScrollEnabled = false
                     tableView.layer.removeAllAnimations()
@@ -963,7 +972,8 @@ class RVLoadOperation: RVAsyncOperation {
                 Timer.scheduledTimer(withTimeInterval: delay, repeats: false, block: { (timer) in
                     tableView.beginUpdates()
                     if let indexPaths = tableView.indexPathsForVisibleRows { if let indexPath = indexPaths.last { originalRow = indexPath.row } }
-                    if self.referenceMatch {
+                    print("In \(self.classForCoder).insert, subscriptionOperation = \(self.subscriptionOperation)")
+                    if (self.subscriptionOperation == .response) || self.referenceMatch {
                         let point = CGPoint(x: 10, y: (tableView.bounds.origin.y + tableView.bounds.height))
                         if let indexPath = tableView.indexPathForRow(at: point) { originalRow = indexPath.row }
                         var indexPaths = [IndexPath]()
@@ -976,7 +986,7 @@ class RVLoadOperation: RVAsyncOperation {
                             indexPathsCount = indexPaths.count
                         }
                     } else {
-                        print("In \(self.classForCoder).insert, tableView no reference match reference is \(self.reference) and ")
+                        print("In \(self.classForCoder).insert, tableView no reference match reference is \(self.reference)")
                         /*
                         if self.subscriptionOperation {
                             if let subscription = self.datasource.subscription {
@@ -1017,7 +1027,7 @@ class RVLoadOperation: RVAsyncOperation {
             } else if let collectionView = self.scrollView as? UICollectionView {
                 collectionView.performBatchUpdates({
                     if !self.isCancelled {
-                        if self.referenceMatch {
+                        if (self.subscriptionOperation == .none) && self.referenceMatch {
                             var indexPaths = [IndexPath]()
                             if self.front { indexPaths = self.frontHandler(newModels: sizedModels) }
                             else { indexPaths = self.backHandler(models: sizedModels) }
@@ -1032,7 +1042,7 @@ class RVLoadOperation: RVAsyncOperation {
                 })
                 return
             } else if self.scrollView == nil {
-                if self.referenceMatch {
+                if (self.referenceMatch) && (self.subscriptionOperation == .none) {
                     if self.front { let _ = self.frontHandler(newModels: sizedModels) }
                     else { let _ = self.backHandler(models: sizedModels) }
                 }
