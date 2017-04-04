@@ -8,7 +8,7 @@
 
 import Foundation
 import SwiftDDP
-class RVGroup: RVBaseModel {
+class RVGroup: RVInterest {
     override class func collectionType() -> RVModelType { return RVModelType.Group }
     override class var insertMethod: RVMeteorMethods { get { return RVMeteorMethods.GroupCreate } }
     override class var updateMethod: RVMeteorMethods { get { return RVMeteorMethods.GroupUpdate } }
@@ -17,7 +17,7 @@ class RVGroup: RVBaseModel {
     override class var findOneMethod: RVMeteorMethods { get { return RVMeteorMethods.GroupRead }}
     override class var deleteAllMethod: RVMeteorMethods { get { return RVMeteorMethods.GroupDeleteAll}}
     override class var bulkQueryMethod: RVMeteorMethods { get { return RVMeteorMethods.GroupList } }
-    override class func createInstance(fields: [String : AnyObject])-> RVBaseModel { return RVGroup(fields: fields) }
+
     override class func modelFromFields(fields: [String: AnyObject]) -> RVBaseModel { return RVGroup(fields: fields) }
     fileprivate var allSubgroup: RVBaseModel? = nil
     var allSubgroupId: String? {

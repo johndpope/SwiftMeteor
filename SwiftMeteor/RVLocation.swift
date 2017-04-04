@@ -19,7 +19,7 @@ class RVGeocodeTerm {
         self.types = types
     }
 }
-class RVLocation: RVBaseModel {
+class RVLocation: RVInterest {
     enum GeocodeKeys: String {
         case formatted_address = "formatted_address"
         case address_components = "address_components"
@@ -31,7 +31,7 @@ class RVLocation: RVBaseModel {
 //    override class var deleteMethod: RVMeteorMethods { get { return RVMeteorMethods.DeleteTask } }
 //    override class var findMethod: RVMeteorMethods { get { return RVMeteorMethods.FindTask}}
 //    override class var bulkQueryMethod: RVMeteorMethods { get { return RVMeteorMethods.BulkTask } }
-    override class func createInstance(fields: [String : AnyObject])-> RVBaseModel { return RVLocation(fields: fields) }
+ 
     private var rawPlaces = [String: AnyObject]()
     private var gmsAddress: GMSAddress? = nil
     var gmsPlace: GMSPlace? = nil

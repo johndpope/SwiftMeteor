@@ -21,7 +21,7 @@ class RVDomain: RVBaseModel {
     override class var findMethod: RVMeteorMethods { get { return RVMeteorMethods.domainFindById}}
     override class var findOneMethod: RVMeteorMethods { get { return RVMeteorMethods.domainFindOne}}
     override class var bulkQueryMethod: RVMeteorMethods { get { return RVMeteorMethods.domainBulkQuery } }
-    override class func createInstance(fields: [String : AnyObject])-> RVBaseModel { return RVDomain(fields: fields) }
+
     var domainName: RVDomainName {
         get {
             if let rawValue = getString(key: .domainName) {

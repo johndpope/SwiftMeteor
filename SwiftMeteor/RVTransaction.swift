@@ -23,7 +23,7 @@ class RVTransaction: RVBaseModel {
     override class var findMethod: RVMeteorMethods { get { return RVMeteorMethods.TransactionRead}}
     override class var deleteAllMethod: RVMeteorMethods { get { return RVMeteorMethods.TransactionDeleteAll}}
     override class var bulkQueryMethod: RVMeteorMethods { get { return RVMeteorMethods.TransactionList } }
-    override class func createInstance(fields: [String : AnyObject])-> RVBaseModel { return RVTransaction(fields: fields) }
+
     override class func modelFromFields(fields: [String: AnyObject]) -> RVBaseModel { return RVTransaction(fields: fields) }
     override func initializeProperties() {
         super.initializeProperties()

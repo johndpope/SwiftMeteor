@@ -9,7 +9,7 @@
 import Foundation
 
 
-class RVPrivateChat: RVBaseModel {
+class RVPrivateChat: RVInterest {
     override class func collectionType() -> RVModelType { return RVModelType.privateChat }
     override class var insertMethod: RVMeteorMethods { get { return RVMeteorMethods.privateChatCreate } }
     override class var updateMethod: RVMeteorMethods { get { return RVMeteorMethods.privateChatUpdate } }
@@ -17,7 +17,7 @@ class RVPrivateChat: RVBaseModel {
     override class var findMethod: RVMeteorMethods { get { return RVMeteorMethods.privateChatFindById}}
     override class var deleteAllMethod: RVMeteorMethods { get { return RVMeteorMethods.privateChatDeleteAll}}
     override class var bulkQueryMethod: RVMeteorMethods { get { return RVMeteorMethods.privateChatBulkQuery } }
-    override class func createInstance(fields: [String : AnyObject])-> RVBaseModel { return RVPrivateChat(fields: fields) }
+
     override class func modelFromFields(fields: [String: AnyObject]) -> RVBaseModel { return RVPrivateChat(fields: fields) }
     var userProfileID0: String? {
         get { return getString(key: RVKeys.userProfileID0) }

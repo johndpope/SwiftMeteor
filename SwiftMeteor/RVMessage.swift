@@ -92,7 +92,7 @@ class RVMessage: RVBaseModel {
     override class var deleteMethod: RVMeteorMethods { get { return RVMeteorMethods.messageDelete } }
     override class var findMethod: RVMeteorMethods { get { return RVMeteorMethods.messageFindById}}
     override class var bulkQueryMethod: RVMeteorMethods { get { return RVMeteorMethods.messageBulkQuery } }
-    override class func createInstance(fields: [String : AnyObject])-> RVBaseModel { return RVMessage(fields: fields) }
+
     override class func modelFromFields(fields: [String: AnyObject]) -> RVBaseModel { return RVMessage(fields: fields) }
 
     override func initializeProperties() {

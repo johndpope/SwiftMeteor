@@ -8,14 +8,14 @@
 
 import UIKit
 import SwiftDDP
-class RVUserProfile: RVBaseModel {
+class RVUserProfile: RVInterest {
     override class func collectionType() -> RVModelType { return RVModelType.userProfile }
     override class var insertMethod: RVMeteorMethods { get { return RVMeteorMethods.userProfileCreate } }
     override class var updateMethod: RVMeteorMethods { get { return RVMeteorMethods.userProfileUpdateById } }
     override class var deleteMethod: RVMeteorMethods { get { return RVMeteorMethods.userProfileDelete } }
     override class var findMethod: RVMeteorMethods { get { return RVMeteorMethods.userProfileFind}}
     override class var bulkQueryMethod: RVMeteorMethods { get { return RVMeteorMethods.userProfileBulkQuery } }
-    override class func createInstance(fields: [String : AnyObject])-> RVBaseModel { return RVUserProfile(fields: fields) }
+
     override class func modelFromFields(fields: [String: AnyObject]) -> RVBaseModel { return RVUserProfile(fields: fields) }
     
     var firstName: String? {

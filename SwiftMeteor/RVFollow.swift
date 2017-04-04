@@ -15,7 +15,6 @@ class RVFollow: RVBaseModel {
     override class var deleteMethod: RVMeteorMethods { get { return RVMeteorMethods.followDelete } }
     override class var findMethod: RVMeteorMethods { get { return RVMeteorMethods.followFindById}}
     override class var bulkQueryMethod: RVMeteorMethods { get { return RVMeteorMethods.followBulkQuery } }
-    override class func createInstance(fields: [String : AnyObject])-> RVBaseModel { return RVFollow(fields: fields) }
     override class func modelFromFields(fields: [String: AnyObject]) -> RVBaseModel { return RVFollow(fields: fields) }
     
     override func initializeProperties() {

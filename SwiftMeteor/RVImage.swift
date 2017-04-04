@@ -72,10 +72,7 @@ class RVImage: RVBaseModel {
     override class var      updateMethod: RVMeteorMethods { get { return RVMeteorMethods.UpdateImage } }
     override class var      deleteMethod: RVMeteorMethods { get { return RVMeteorMethods.DeleteImage } }
     override class var      findMethod: RVMeteorMethods { get { return RVMeteorMethods.FindImage}}
-    override class func     createInstance(fields: [String : AnyObject])-> RVBaseModel {
-       // print("In RVImage.createInstance. \nFields are: \(fields)")
-        return RVImage(fields: fields)
-    }
+
 
     override class func modelFromFields(fields: [String: AnyObject]) -> RVBaseModel {
         return RVImage(fields: fields)

@@ -14,7 +14,7 @@ class RVSetting: RVBaseModel {
     //    override class var deleteMethod: RVMeteorMethods { get { return RVMeteorMethods.DeleteTask } }
     //    override class var findMethod: RVMeteorMethods { get { return RVMeteorMethods.FindTask}}
     //    override class var bulkQueryMethod: RVMeteorMethods { get { return RVMeteorMethods.BulkTask } }
-    override class func createInstance(fields: [String : AnyObject])-> RVBaseModel { return RVSetting(fields: fields) }
+
     
     var emailVerified: Bool {
         get {

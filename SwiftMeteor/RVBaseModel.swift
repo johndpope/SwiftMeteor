@@ -18,7 +18,7 @@ class RVBaseModel: MeteorDocument {
     class var findOneMethod: RVMeteorMethods { get { return RVMeteorMethods.domainFindOne}}
     class var bulkQueryMethod: RVMeteorMethods { get { return RVMeteorMethods.BulkTask } }
     class var findMethod: RVMeteorMethods { get { return RVMeteorMethods.FindBase}}
-    class func createInstance(fields: [String : AnyObject])-> RVBaseModel { return RVBaseModel(fields: fields) }
+//    class func createInstance(fields: [String : AnyObject])-> RVBaseModel { return RVBaseModel(fields: fields) }
     class func modelFromFields(fields: [String: AnyObject]) -> RVBaseModel { return RVBaseModel(fields: fields) }
     static var noID = "No_ID"
     var listeners = [String]()
@@ -743,7 +743,7 @@ extension RVBaseModel {
  
                  //   print("In RVBaseModel.retrieve.... Image is \(fields ["image"])")
                 
-                callback(createInstance(fields: fields), nil)
+                callback(modelFromFields(fields: fields), nil)
             } else {
                 print("In RVBaseModel.findInstance \(#line), no error but no result for id = \(id)")
                 callback(nil, nil)
@@ -760,7 +760,7 @@ extension RVBaseModel {
                 callback(nil, rvError)
                 return
             } else if let fields = result as? [String: AnyObject] {
-                callback(createInstance(fields: fields), nil)
+                callback(modelFromFields(fields: fields), nil)
                 return
             } else {
                 print("In \(classForCoder()).findOne, no error but no result")
@@ -877,7 +877,7 @@ extension RVBaseModel {
                     callback(nil, rvError)
                 } else if let result = result as? [String: AnyObject] {
                   //  print("In \(self.instanceType).created line \(#line) of RVBaseModel, successfully created \(self.localId)")
-                    callback(type(of: self).createInstance(fields: result),  nil)
+                    callback(type(of: self).modelFromFields(fields: result),  nil)
                 } else {
                     print("In \(self.instanceType).insert \(#line), no error but no casted result. id = \(self.localId). Result if any: \(result)")
                     callback(nil, nil)
@@ -991,7 +991,7 @@ extension RVBaseModel {
                         return
                     } else if let fields = result as? [String : AnyObject] {
                         // print("In \(self.instanceType).updateById result is \(result)\n------------------")
-                        callback(type(of: self).createInstance(fields: fields), nil)
+                        callback(type(of: self).modelFromFields(fields: fields), nil)
                         return
                     } else {
                         print("In \(self.instanceType).updateById \(#line), no error but no result. id = \(self.localId) \(result)")
