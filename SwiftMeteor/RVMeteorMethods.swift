@@ -9,6 +9,16 @@
 
 import Foundation
 
+enum RVCrud: String {
+    case create     = "create"
+    case read       = "read"
+    case update     = "udpate"
+    case delete     = "delete"
+    case deleteAll  = "deleteAll"
+    case list       = "list"
+    case unknown    = "unknown"
+}
+
 enum RVMeteorMethods: String {
     case QueryBase  = "base.query"
     case InsertBase = "base.insert"
@@ -99,5 +109,4 @@ enum RVMeteorMethods: String {
     case GroupList      = "Groups.list"
     case GroupRoot      = "Groups.root"
     case GroupDeleteAll = "Groups.deleteAll"
-    
 }
