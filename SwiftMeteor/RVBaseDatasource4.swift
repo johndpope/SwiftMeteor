@@ -89,6 +89,8 @@ class RVBaseDatasource4: NSObject {
             self.retrieve(query: query, callback: callback)
         }
     }
+    var subscriptionMaxCount: Int = 10
+    fileprivate var _subscriptionMaxCount: Int = 0
     func retrieve(query: RVQuery, callback: @escaping RVCallback) {
         print("In RVBaseDatasource4.retrieve, need to override")
         RVBaseModel.bulkQuery(query: query, callback: callback as! ([RVBaseModel]?, RVError?) -> Void)
@@ -129,7 +131,8 @@ class RVBaseDatasource4: NSObject {
             //subscription.reference = self.items.first
             if let subscription = self.subscription {
                 if (subscription.isFront && front) || (!subscription.isFront && !front) {
-                    let operation = RVLoadOperation(title: "Subscribe", datasource: self , scrollView: scrollView, front: front, subscriptionOperation: true, callback: { (models, error) in
+                    print("Neil check this \(self.classForCoder).subscribe, took out subscriptionOperation flag")
+                    let operation = RVLoadOperation(title: "Subscribe", datasource: self , scrollView: scrollView, front: front, callback: { (models, error) in // NEIL
                         if let error = error {
                             print("In \(self.classForCoder).subscribe, got error)")
                             error.printError()
@@ -147,12 +150,18 @@ class RVBaseDatasource4: NSObject {
                 if let subscription = self.subscription {
                     if subscription.identifier == payload.subscription.identifier {
                         //print("In \(self.classForCoder).receiveSubscription subscriptions match")
+                        let operation = RVSubcriptionResponseOperation(subscription: payload.subscription, datasource: self, incomingModels: payload.models, callback: { (models, error) in
+                            if let error = error {
+                                error.printError()
+                            }
+                        })
                     }
                 }
             }
         }
         
     }
+    /*
     func receiveSubscriptionResponse(sourceSubscription: RVSubscription, incomingModels: [RVBaseModel], responseType: RVEventType) {
         if let subscription = self.subscription {
             if subscription.identifier == sourceSubscription.identifier {
@@ -172,6 +181,7 @@ class RVBaseDatasource4: NSObject {
             print("In \(self.classForCoder).receivingIncoming, datasource subscription is nil")
         }
     }
+ */
     deinit {
         self.unsubscribe {}
         self.cancelAllOperations()
@@ -497,6 +507,12 @@ class RVExpandCollapseOperation: RVLoadOperation {
         }
     }
 }
+class RVSubscribeOperation: RVLoadOperation {
+    init(datasource: RVBaseDatasource4, subscription: RVSubscription, callback: @escaping RVCallback) {
+        super.init(title: "SubscriptionOperation", datasource: datasource, scrollView: datasource.scrollView, front: subscription.isFront, callback: callback)
+        self.subscriptionOperation = .subscribe
+    }
+}
 class RVSubcriptionResponseOperation: RVLoadOperation {
 
     var incomingModels: [RVBaseModel]
@@ -507,14 +523,14 @@ class RVSubcriptionResponseOperation: RVLoadOperation {
         self.responseType = responseType
         self.sourceSubscription = subscription
         let scrollView: UIScrollView? = datasource.scrollView
-        var front: Bool = true
-        let subscriptionOperation: Bool = true
+        var front: Bool = sourceSubscription.isFront
         if let subscription = datasource.subscription {
            // scrollView = subscription.scrollView
             // Neil
             front = subscription.isFront
         }
-        super.init(title: title, datasource: datasource, scrollView: scrollView, front: front, subscriptionOperation: subscriptionOperation, callback: callback)
+        super.init(title: title, datasource: datasource, scrollView: scrollView, front: front, callback: callback)
+        self.subscriptionOperation = .response
     }
     override func asyncMain() {
         if self.isCancelled {
@@ -553,16 +569,22 @@ class RVSubcriptionResponseOperation: RVLoadOperation {
     }
     func resubscribe(callback: @escaping () -> Void) {
         self.datasource.unsubscribe {
-            let operation = RVLoadOperation(title: "Resubscribe", datasource: self.datasource, scrollView: self.scrollView, front: self.front, subscriptionOperation: true, callback: { (models, error) in
+            let operation = RVLoadOperation(title: "Resubscribe", datasource: self.datasource, scrollView: self.scrollView, front: self.front, callback: { (models, error) in
                 if let error = error {
                     error.append(message: "In \(self.classForCoder).resubscribe got error")
                 }
                 self.finishUp(items: models, error: error)
             })
+            self.datasource.queue.addOperation(operation)
         }
     }
 }
 class RVLoadOperation: RVAsyncOperation {
+    enum SubscriptionOperation {
+        case none
+        case subscribe
+        case response
+    }
     typealias RVCallback = ([RVBaseModel], RVError?) -> Void
     let itemsPlug = [RVBaseModel]()
     var datasource: RVBaseDatasource4
@@ -570,7 +592,7 @@ class RVLoadOperation: RVAsyncOperation {
     var callback: RVCallback
     var reference: RVBaseModel? = nil
     var front: Bool
-    var subscriptionOperation: Bool
+    var subscriptionOperation: SubscriptionOperation = .none
     var referenceMatch: Bool {
         get {
             let current = self.front ? self.datasource.frontItem : self.datasource.backItem
@@ -583,24 +605,45 @@ class RVLoadOperation: RVAsyncOperation {
             } else { return false }
         }
     }
-    init(title: String = "RVLoadOperation", datasource: RVBaseDatasource4, scrollView: UIScrollView?, front: Bool = false, subscriptionOperation: Bool = false, callback: @escaping RVCallback) {
+    init(title: String = "RVLoadOperation", datasource: RVBaseDatasource4, scrollView: UIScrollView?, front: Bool = false, callback: @escaping RVCallback) {
         self.datasource             = datasource
         self.scrollView             = scrollView
         self.callback               = callback
         self.front                  = front
-        self.subscriptionOperation  = subscriptionOperation
         super.init(title: "\(title) with front: \(front)")
     }
     override func asyncMain() {
         InnerMain()
     }
-    func unsubscribeByArea(front: Bool = true) {
+    func unsubscribeByArea() {
         if let subscription = self.datasource.subscription {
-            if subscription.isFront && front {
+            if subscription.isFront && self.front {
                 self.datasource.unsubscribe{}
-            } else if !subscription.isFront && !front {
+            } else if !subscription.isFront && !self.front {
                 self.datasource.unsubscribe{}
             }
+        }
+    }
+    func subscriptionActive(front: Bool) -> Bool {
+        if let subscription = self.datasource.subscription {
+            if front && subscription.isFront { return subscription.active }
+            if !front && !subscription.isFront { return subscription.active }
+            return false
+        }
+        return false
+    }
+    func subscrtionArea(front: Bool) -> Bool {
+        if let subscription = self.datasource.subscription {
+            if front && subscription.isFront { return true }
+            if !front && !subscription.isFront { return true }
+            return false
+        } else { return false}
+    }
+    func initiateSubscription(subscription: RVSubscription, query: RVQuery, reference: RVBaseModel?, callback: @escaping () -> Void) {
+        self.datasource.subscriptionActive = true
+        DispatchQueue.main.async {
+            self.datasource.listenToSubscriptionNotification(subscription: subscription)
+            subscription.subscribe(query: query, reference: reference, callback: callback)
         }
     }
     func InnerMain() {
@@ -610,34 +653,46 @@ class RVLoadOperation: RVAsyncOperation {
             return
         } else {
             self.datasource.scrollView = self.scrollView
-            if self.front && (self.datasource.datasourceType == .filter) && !self.subscriptionOperation {
+            // Front loading is deactivated in .filter mode
+            if self.front && (self.datasource.datasourceType == .filter) && (self.subscriptionOperation == .none) {
                 finishUp(items: itemsPlug , error: nil)
                 return
-            } else if self.subscriptionOperation && self.datasource.datasourceType == .filter {
-               // finishUp(items: itemsPlug , error: nil)
-                return
+            } else if (self.subscriptionOperation != .none) && self.datasource.datasourceType == .filter {
+                let error = RVError(message: "In \(self.classForCoder).InnerMain \(#line), have Subscription Operation \(self.subscriptionOperation), but Database is in Filter mode")
+               finishUp(items: itemsPlug , error: error)
+               return
             }
             if var query = self.datasource.baseQuery {
                  //print("In \(self.classForCoder).InnerMain, for front: \(self.front) haveQuery frontOperationActive: \(self.datasource.frontOperationActive), backOperationActive: \(self.datasource.backOperationActive)")
-                if self.subscriptionOperation {
+                if self.subscriptionOperation != .none {
+                    // Neil believes that don't have to block anything when it's a subscription operation
+                    /*
                     if self.datasource.subscriptionActive {
                         self.finishUp(items: self.itemsPlug, error: nil)
                         return
                     }
+ */
                 } else if self.front {
+                    // Used for bulk queries. Avoids multiple bulk queries being issued
                     if self.datasource.frontOperationActive {
                         self.finishUp(items: self.itemsPlug, error: nil)
                         return
+                    } else if subscriptionActive(front: true) {
+                        self.finishUp(items: self.itemsPlug, error: nil)
+                        return
                     } else {
-                        self.unsubscribeByArea(front: self.front)
+                        self.unsubscribeByArea()
                         self.datasource.frontOperationActive = true
                     }
                 } else {
                     if self.datasource.backOperationActive {
                         self.finishUp(items: self.itemsPlug, error: nil)
                         return
+                    } else if subscriptionActive(front: false) {
+                        self.finishUp(items: self.itemsPlug, error: nil)
+                        return
                     } else {
-                        self.unsubscribeByArea(front: self.front)
+                        self.unsubscribeByArea()
                         self.datasource.backOperationActive = true
                     }
                 }
@@ -646,9 +701,13 @@ class RVLoadOperation: RVAsyncOperation {
                 self.reference = self.front ? datasource.frontItem : datasource.backItem
                 var query = datasource.updateSortTerm(query: query, front: self.front, candidate: self.reference)
                 query = query.updateQuery4(front: self.front, reference: self.reference)
-                if self.subscriptionOperation {
+                if self.isCancelled {
+                    finishUp(items: itemsPlug , error: nil)
+                    return
+                }
+                if self.subscriptionOperation == .subscribe {
                     if let subscription = self.datasource.subscription {
-                        if self.datasource.subscriptionActive || (subscription.isFront && self.datasource.offset != 0) {
+                        if self.datasource.subscriptionActive { // || (subscription.isFront && self.datasource.offset != 0) {
                             self.finishUp(items: itemsPlug, error: nil)
                             return
                         } else if subscription.active {
@@ -656,20 +715,19 @@ class RVLoadOperation: RVAsyncOperation {
                             self.finishUp(items: itemsPlug, error: error)
                             return
                         } else {
-                            self.datasource.subscriptionActive = true
-                            DispatchQueue.main.async {
-                                self.datasource.listenToSubscriptionNotification(subscription: subscription)
-                                
-                                subscription.subscribe(query: query, reference: self.reference, callback: {
-                                    self.finishUp(items: self.itemsPlug, error: nil)
-                                })
-                            }
+                            self.initiateSubscription(subscription: subscription, query: query, reference: reference, callback: {
+                                self.finishUp(items: self.itemsPlug, error: nil)
+                            })
                             return
                         }
                     } else {
                         self.finishUp(items: itemsPlug, error: nil)
                         return
                     }
+                } else if self.subscriptionOperation == .response {
+                    let error = RVError(message: "In \(self.classForCoder).InnerMain \(#line), erroneously have Response subscriptionOperation")
+                    self.finishUp(items: itemsPlug, error: error)
+                    return
                 } else {
                     datasource.innerRetrieve(query: query, callback: { (models, error) in
                         //print("In \(self.classForCoder).InnerMain, datasource.innerRetrieve callback")
@@ -927,10 +985,15 @@ class RVLoadOperation: RVAsyncOperation {
                         }
  */
                     }
-                    if !self.subscriptionOperation {
-                        if (self.front && self.datasource.offset == 0) || !self.front {
-                            self.datasource.subscribe(scrollView: self.scrollView, front: self.front)
-                        }
+                    if self.subscriptionOperation == .none {
+                        
+                      //  if (self.front && self.datasource.offset == 0) || !self.front {
+                            if let subscription = self.datasource.subscription {
+                                if !subscription.active {
+                                    self.datasource.subscribe(scrollView: self.scrollView, front: self.front)
+                                }
+                            }
+                     //   }
                     }
                     tableView.endUpdates()
                     tableView.isScrollEnabled = true
@@ -962,7 +1025,7 @@ class RVLoadOperation: RVAsyncOperation {
                         }
                     }
                 }, completion: { (success) in
-                    if !self.subscriptionOperation {
+                    if self.subscriptionOperation == .none {
                         self.datasource.subscribe(scrollView: self.scrollView, front: self.front)
                     }
                     callback(sizedModels, nil)
@@ -987,8 +1050,8 @@ class RVLoadOperation: RVAsyncOperation {
             //print("In \(self.classForCoder).finishUp")
             self.callback(items, error)
             Timer.scheduledTimer(withTimeInterval: 0.4, repeats: false , block: { (timer) in
-                if (self.front) && (!self.subscriptionOperation) { self.datasource.frontOperationActive = false }
-                else if (!self.front) && (!self.subscriptionOperation) {
+                if (self.front) && ( self.subscriptionOperation == .none) { self.datasource.frontOperationActive = false }
+                else if (!self.front) && (self.subscriptionOperation == .none) {
                     // print("In \(self.classForCoder).finishUp, setting backOperation to false")
                     self.datasource.backOperationActive = false
                 }
