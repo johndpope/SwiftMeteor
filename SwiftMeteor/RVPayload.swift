@@ -28,11 +28,15 @@ class RVPayload {
         var modelTitle = "None"
         var localId = "None"
         var created = "None"
+        var country = "None"
+        var everywhere = false
         if let model = models.first {
             if let title = model.title { modelTitle = title}
             if let id = model.localId { localId = id }
             if let createdAt = model.createdAt { created = createdAt.description }
+            country = model.searchCountry.rawValue
+            everywhere = model.everywhere
         }
-        return "Payload: \(self.eventType) modelCount: \(models.count), title: \(modelTitle) \(localId) \(created)"
+        return "Payload: \(self.eventType) modelCount: \(models.count), title: \(modelTitle) \(localId) \(created) \(country) \(everywhere)"
     }
 }

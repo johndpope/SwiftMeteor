@@ -29,6 +29,8 @@ enum RVKeys: String {
     case text           = "text"
     case adminCodeZero  = "adminCodeZero"
     case adminCodeOne   = "adminCodeOne"
+    case searchCountry  = "searchCountry"
+    case everywhere     = "everywhere"
  //   case parentField    = "parentField"
     case regularDescription  = "regularDescription"
    // case lowerCaseRegularDescription = "lowerCaseRegularDescription"

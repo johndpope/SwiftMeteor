@@ -9,6 +9,11 @@
 
 import Foundation
 
+
+class RVMeteorMethod {
+    static let Separator = "."
+    static let Prefix = ""
+}
 enum RVCrud: String {
     case create     = "create"
     case read       = "read"

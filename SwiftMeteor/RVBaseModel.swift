@@ -10,7 +10,10 @@ import UIKit
 import SwiftDDP
 
 class RVBaseModel: MeteorDocument {
+    class func modelFromFields(fields: [String: AnyObject]) -> RVBaseModel { return RVBaseModel(fields: fields) }
     class func collectionType() -> RVModelType { return RVModelType.baseModel }
+    func searchCountryForModel() -> RVCountry { return RVCountry.UnitedStates }
+    
     class var insertMethod: RVMeteorMethods { get { return RVMeteorMethods.InsertBase } }
     class var updateMethod: RVMeteorMethods { get { return RVMeteorMethods.UpdateBase } }
     class var deleteMethod: RVMeteorMethods { get { return RVMeteorMethods.DeleteBase } }
@@ -19,14 +22,14 @@ class RVBaseModel: MeteorDocument {
     class var bulkQueryMethod: RVMeteorMethods { get { return RVMeteorMethods.BulkTask } }
     class var findMethod: RVMeteorMethods { get { return RVMeteorMethods.FindBase}}
 //    class func createInstance(fields: [String : AnyObject])-> RVBaseModel { return RVBaseModel(fields: fields) }
-    class func modelFromFields(fields: [String: AnyObject]) -> RVBaseModel { return RVBaseModel(fields: fields) }
-    static var noID = "No_ID"
+
+    //static var noID = "No_ID"
     var listeners = [String]()
     var instanceType: String { get { return String(describing: type(of: self)) } }
     var initializing: Bool = true
     var objects = [String: AnyObject]()
     var dirties = [String: AnyObject]()
-    var unsets = [String: AnyObject]()
+    var unsets  = [String: AnyObject]()
     var imageUpdated = false
     var locationInitiallyNull = false
     var userProfile: RVUserProfile? = nil
@@ -66,10 +69,12 @@ class RVBaseModel: MeteorDocument {
         self.deleted = false
         self.special = .regular
         self.archived = false
-        if let domain = RVCoreInfo.sharedInstance.domain {
+        self.searchCountry = self.searchCountryForModel()
+        self.everywhere = false
+        if let domain = RVCoreInfo2.shared.domain {
             self.domainId = domain.localId
         } else {
-            if self.modelType != .domain { print("In \(instanceType).init, don't have domain") }
+            if self.modelType != .domain { print("In \(instanceType).init, don't have domain, model") }
         }
         if let profile = RVCoreInfo.sharedInstance.userProfile {
             self.setOwner(owner: profile)
@@ -608,6 +613,22 @@ class RVBaseModel: MeteorDocument {
         get { return getString(key: RVKeys.handleLowercase) }
         set { updateString(key: RVKeys.handleLowercase, value: newValue, setDirties: true)}
     }
+    var searchCountry: RVCountry {
+        get {
+            if let rawValue = getString(key: .searchCountry) {
+                if let country = RVCountry(rawValue: rawValue) { return country}
+            }
+            return RVCountry.Unknown
+        }
+        set { updateString(key: RVKeys.searchCountry, value: newValue.rawValue, setDirties: true) }
+    }
+    var everywhere: Bool {
+        get {
+            if let everywhere = getBool(key: .everywhere) { return everywhere }
+            return false
+        }
+        set { updateBool(key: .everywhere, value: newValue, setDirties: true)}
+    }
     var _location: RVLocation? = nil
     var location: RVLocation? {
         get {
@@ -735,7 +756,8 @@ class RVBaseModel: MeteorDocument {
 }
 extension RVBaseModel {
     class func retrieveInstance(id: String, callback: @escaping (_ item: RVBaseModel? , _ error: RVError?) -> Void) {
-        Meteor.call(findMethod.rawValue, params: [ id as AnyObject]) { (result: Any?, error: DDPError?) in
+        Meteor.call(meteorMethod(request: .read), params: [ id as AnyObject]) { (result: Any?, error: DDPError?) in
+     //   Meteor.call(findMethod.rawValue, params: [ id as AnyObject]) { (result: Any?, error: DDPError?) in
             if let error = error {
                 let rvError = RVError(message: "In \(classForCoder()).findInstance \(#line) got DDPError for id: \(id)", sourceError: error)
                 callback(nil, rvError)
@@ -754,7 +776,8 @@ extension RVBaseModel {
     class func findOne(query: RVQuery, callback: @escaping(_ domain: RVBaseModel?, _ error: RVError?) -> Void) {
         //print("In \(self.classForCoder()).findOne, findOne method is: \(self.findOneMethod.rawValue)")
         let (filters, projection) = query.query()
-        Meteor.call(findOneMethod.rawValue, params: [filters as AnyObject, projection as AnyObject]) { (result: Any?, error : DDPError?) in
+        Meteor.call(meteorMethod(request: .read), params: [filters as AnyObject, projection as AnyObject]) { (result: Any?, error : DDPError?) in
+        //Meteor.call(findOneMethod.rawValue, params: [filters as AnyObject, projection as AnyObject]) { (result: Any?, error : DDPError?) in
             if let error = error {
                 let rvError = RVError(message: "In \(classForCoder()).findOne, got error", sourceError: error, lineNumber: #line, fileName: "")
                 callback(nil, rvError)
@@ -870,7 +893,9 @@ extension RVBaseModel {
         let (tdirties, _) = createTransaction(title: "").returnDirtiesAndUnsets()
         if dirties.count <= 0 {print("In \(self.classForCoder).create, dirtiess count is erroneously zero")}
        // print("DIrties = \(dirties)")
-        Meteor.call(type(of: self).insertMethod.rawValue, params: [dirties, tdirties]) {(result, error: DDPError?) in
+        
+        Meteor.call(type(of: self).meteorMethod(request: .create), params: [dirties, tdirties]) {(result, error: DDPError?) in
+        // Meteor.call(type(of: self).insertMethod.rawValue, params: [dirties, tdirties]) {(result, error: DDPError?) in
             DispatchQueue.main.async {
                 if let error = error {
                     let rvError = RVError(message: "In \(self.instanceType).insert \(#line) got DDPError for id: \(self.localId)", sourceError: error)
@@ -983,7 +1008,7 @@ extension RVBaseModel {
         if (dirties.count < 1) && (unsets.count < 1) {
             callback(self, nil)
         } else {
-            Meteor.call(type(of: self).updateMethod.rawValue, params: [ self.localId as AnyObject, dirties as AnyObject, unsets as AnyObject]) { (result: Any? , error: DDPError?) in
+            Meteor.call(type(of: self).meteorMethod(request: .update), params: [ self.localId as AnyObject, dirties as AnyObject, unsets as AnyObject]) { (result: Any? , error: DDPError?) in
                 DispatchQueue.main.async {
                     if let error = error {
                         let rvError = RVError(message: "In \(self.instanceType).updateById \(#line) got DDPError for id: \(self.localId)", sourceError: error)
@@ -1002,7 +1027,9 @@ extension RVBaseModel {
         }
 
     }
-
+    class func meteorMethod(request: RVCrud) -> String {
+        return "\(RVMeteorMethod.Prefix)\(collectionType().rawValue)\(RVMeteorMethod.Separator)\(request.rawValue)"
+    }
     class func bulkQuery(query: RVQuery, callback: @escaping(_ items: [RVBaseModel], _ error: RVError?)-> Void) {
         if let appDomainId = RVBaseModel.addDomainId {
             query.addAnd(term: .domainId, value: appDomainId as AnyObject, comparison: .eq)
@@ -1010,8 +1037,8 @@ extension RVBaseModel {
 
         let (filters, projection) = query.query()
         //print("In RVBaseModel.bulkQuery")
-
-        Meteor.call(bulkQueryMethod.rawValue, params: [filters as AnyObject, projection as AnyObject]) { (result: Any?, error : DDPError?) in
+        Meteor.call(meteorMethod(request: .list), params: [filters as AnyObject, projection as AnyObject]) { (result: Any?, error : DDPError?) in
+//        Meteor.call(bulkQueryMethod.rawValue, params: [filters as AnyObject, projection as AnyObject]) { (result: Any?, error : DDPError?) in
            // print("In RVBaseModel.bulkQuery has response \(error), \(result)")
             DispatchQueue.main.async {
                 if let error = error {
@@ -1036,7 +1063,7 @@ extension RVBaseModel {
         }
     }
     class func deleteAll( callback: @escaping(_ error: RVError?) -> Void ) {
-        Meteor.call(deleteAllMethod.rawValue, params: [[RVKeys.specialCode.rawValue: RVCoreInfo.sharedInstance.specialCode]]) { (result, error: DDPError?) in
+        Meteor.call(meteorMethod(request: .deleteAll), params: [[RVKeys.specialCode.rawValue: RVCoreInfo.sharedInstance.specialCode]]) { (result, error: DDPError?) in
             DispatchQueue.main.async {
                 if let error = error {
                     let rvError = RVError(message: "In RVBaseModel.deleteAll() got DDPError", sourceError: error, lineNumber: #line, fileName: "")
@@ -1056,7 +1083,7 @@ extension RVBaseModel {
     }
     func delete(callback: @escaping(_ number: Int, _ error: RVError?) -> Void) {
      //   print("--------------------   In \(self.instanceType) delete ---------------------------------")
-        Meteor.call(type(of: self).deleteMethod.rawValue, params: [ self.localId as AnyObject]) { (result: Any?, error: DDPError?) in
+        Meteor.call(type(of: self).meteorMethod(request: .delete), params: [ self.localId as AnyObject]) { (result: Any?, error: DDPError?) in
             DispatchQueue.main.async {
                 if let error = error {
                     let rvError = RVError(message: "In \(self.instanceType).delete \(#line) got DDPError for id: \(self.localId)", sourceError: error)
