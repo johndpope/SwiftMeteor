@@ -382,7 +382,7 @@ class RVExpandCollapseOperation: RVLoadOperation {
         var indexPaths = [IndexPath]()
         let section = self.datasource.section
         let lastItem = self.datasource.offset + self.datasource.items.count
-        if lastItem > 0 { for row in 0..<lastItem { indexPaths.append(IndexPath(row: row, section: section)) } }
+        if (section >= 0) && (lastItem > 0) { for row in 0..<lastItem { indexPaths.append(IndexPath(row: row, section: section)) } }
         if (self.operationType == .collapseAndZero) || (self.operationType == .collapseZeroAndExpand ) || (self.operationType == .collapseZeroExpandAndLoad){
             self.datasource.items = [RVBaseModel]()
             self.datasource.offset = 0
@@ -514,7 +514,7 @@ class RVExpandCollapseOperation: RVLoadOperation {
         var indexPaths = [IndexPath]()
         let section = self.datasource.section
         let lastItem = self.datasource.offset + self.datasource.items.count
-        if lastItem > 0 { for row in 0..<lastItem { indexPaths.append(IndexPath(row: row, section: section)) } }
+        if (section >= 0) && (lastItem > 0) { for row in 0..<lastItem { indexPaths.append(IndexPath(row: row, section: section)) } }
         self.datasource.collapsed = false
         return indexPaths
     }
@@ -857,7 +857,7 @@ class RVLoadOperation: RVAsyncOperation {
             let arrayCount = clone.count - 1
             if !front {
                 for i in 0..<excess {
-                    indexPaths.append(IndexPath(item: virtualMax-i, section: section))
+                    if (section >= 0) { indexPaths.append(IndexPath(item: virtualMax-i, section: section)) }
                     clone.remove(at: arrayCount - i)
                 }
                 self.datasource.items = clone
@@ -913,7 +913,7 @@ class RVLoadOperation: RVAsyncOperation {
         var indexPaths = [IndexPath]()
         for i in 0..<models.count {
             clone.append(models[i])
-            indexPaths.append(IndexPath(row: virtualIndex + i, section: section))
+            if (section >= 0) { indexPaths.append(IndexPath(row: virtualIndex + i, section: section)) }
         }
         self.datasource.items = clone
        // print("In \(self.classForCoder).backHandler, items count = \(self.datasource.items.count) collapsed: \(self.datasource.collapsed)")
@@ -939,7 +939,7 @@ class RVLoadOperation: RVAsyncOperation {
                 var rowIndex: Int = (self.subscriptionOperation != .response) ? self.datasource.virtualCount : 0
                 for i in (self.datasource.offset)..<newCount {
                     clone.insert(newModels[i], at: 0)
-                    indexPaths.append(IndexPath(item: rowIndex, section: section))
+                    if (section >= 0 ) { indexPaths.append(IndexPath(item: rowIndex, section: section)) }
                     rowIndex = rowIndex + 1
                 }
                 self.datasource.items = clone
@@ -950,7 +950,7 @@ class RVLoadOperation: RVAsyncOperation {
             let section = self.datasource.section
             for i in 0..<newCount {
                 clone.insert(newModels[i], at: 0)
-                indexPaths.append(IndexPath(item: rowIndex, section: section))
+                if (section >= 0 ) {  indexPaths.append(IndexPath(item: rowIndex, section: section)) }
                 rowIndex = rowIndex + 1
             }
             self.datasource.offset = 0
@@ -1032,22 +1032,31 @@ class RVLoadOperation: RVAsyncOperation {
                         return
                     }
                     if (!self.datasource.collapsed) && (self.front) && (originalRow >= 0) && (indexPathsCount > 0) && (self.subscriptionOperation != .response) {
-                        var indexPath = IndexPath(row: (originalRow + indexPathsCount), section: self.datasource.section)
-                        if indexPath.row >= self.datasource.virtualCount { indexPath.row = self.datasource.virtualCount - 1 }
-                        tableView.scrollToRow(at: indexPath, at: UITableViewScrollPosition.bottom, animated: false)
-                        if let indexPaths = tableView.indexPathsForVisibleRows {
-                            if indexPaths.count < 9 {
-                                tableView.reloadRows(at: indexPaths, with: UITableViewRowAnimation.bottom)
+                        tableView.beginUpdates()
+                        let section = self.datasource.section
+                        if section >= 0 {
+                            var indexPath = IndexPath(row: (originalRow + indexPathsCount), section: section)
+                            if indexPath.row >= self.datasource.virtualCount { indexPath.row = self.datasource.virtualCount - 1 }
+                            tableView.scrollToRow(at: indexPath, at: UITableViewScrollPosition.bottom, animated: false)
+                            if let indexPaths = tableView.indexPathsForVisibleRows {
+                                if indexPaths.count < 9 {
+                                    tableView.reloadRows(at: indexPaths, with: UITableViewRowAnimation.bottom)
+                                }
                             }
                         }
-                        
+                        tableView.endUpdates()
                         callback(sizedModels, nil)
                         return
                     } else if  (self.subscriptionOperation == .response) {
-                        if self.datasource.virtualCount > 0 {
-                            let indexPath = IndexPath(row: 0, section: self.datasource.section)
-                            tableView.scrollToRow(at: indexPath, at: .top, animated: false)
+                        tableView.beginUpdates()
+                        let section = self.datasource.section
+                        if section >= 0 {
+                            if self.datasource.virtualCount > 0 {
+                                let indexPath = IndexPath(row: 0, section: section)
+                                tableView.scrollToRow(at: indexPath, at: .top, animated: false)
+                            }
                         }
+                        tableView.endUpdates()
                         callback(sizedModels, nil)
                     } else {
                         callback(sizedModels, nil)

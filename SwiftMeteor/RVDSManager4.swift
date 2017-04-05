@@ -247,7 +247,7 @@ class RVManagerAppendSections4: RVManagerRemoveSections4 {
                             for section in manager.sections {
                                 for type in self.sectionTypesToRemove {
                                     if section.datasourceType == type {
-                                        section.cancelAllOperations()
+                                        section.unsubscribe { section.cancelAllOperations() }
                                         self.sectionsToBeRemoved.append(section)
                                     }
                                 }
@@ -271,6 +271,16 @@ class RVManagerAppendSections4: RVManagerRemoveSections4 {
                 DispatchQueue.main.async {
                     collectionView.performBatchUpdates({
                         if !self.isCancelled {
+                            if self.sectionTypesToRemove.count > 0 {
+                                for section in manager.sections {
+                                    for type in self.sectionTypesToRemove {
+                                        if section.datasourceType == type {
+                                            section.unsubscribe { section.cancelAllOperations() }
+                                            self.sectionsToBeRemoved.append(section)
+                                        }
+                                    }
+                                }
+                            }
                             var indexes = [Int]()
                             for datasource in self.datasources {
                                 indexes.append(manager.sections.count)
@@ -285,6 +295,16 @@ class RVManagerAppendSections4: RVManagerRemoveSections4 {
                 }
                 return
             } else if manager.scrollView == nil {
+                if self.sectionTypesToRemove.count > 0 {
+                    for section in manager.sections {
+                        for type in self.sectionTypesToRemove {
+                            if section.datasourceType == type {
+                                section.unsubscribe { section.cancelAllOperations() }
+                                self.sectionsToBeRemoved.append(section)
+                            }
+                        }
+                    }
+                }
                 for datasource in self.datasources { manager.sections.append(datasource) }
                 DispatchQueue.main.async {
                     self.callback(self.emptyResponse, nil )
