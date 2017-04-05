@@ -749,9 +749,33 @@ class RVBaseModel: MeteorDocument {
         self.ownerId = owner.localId
         self.ownerModelType = owner.modelType
     }
-    class func baseQuery() -> RVQuery{
-        let query = RVQuery()
-        return query
+    class var baseQuery: (RVQuery, RVError?) {
+       // let query = RVQuery()
+       // query.addAnd(term: .deleted, value: false as AnyObject, comparison: .eq)
+       // return query
+        
+        
+        get {
+            let query = RVQuery()
+            var error: RVError? = nil
+            //query.addAnd(term: .modelType, value: RVModelType.transaction.rawValue as AnyObject, comparison: .eq)
+            query.addAnd(term: .deleted, value: false as AnyObject, comparison: .eq)
+            //query.addAnd(term: .deleted, value: false as AnyObject, comparison: .eq)
+            //query.limit = 10
+            if let loggedInUserId = RVTransaction.loggedInUserId {
+                query.addAnd(term: .targetUserProfileId, value: loggedInUserId as AnyObject, comparison: .eq)
+            } else {
+                error = RVError(message: "In \(self.classForCoder).basicQuery, no loggedInUserId")
+            }
+            if let domainId = RVTransaction.appDomainId {
+                query.addAnd(term: .domainId, value: domainId as AnyObject, comparison: .eq)
+            } else {
+                error = RVError(message: "In \(self.classForCoder).basicQuery, no domainId")
+            }
+            return (query, error)
+        }
+        
+        
     }
 }
 extension RVBaseModel {

@@ -15,7 +15,7 @@
 // Payload
 // targetUserId
 import Foundation
-class RVTransaction: RVBaseModel {
+class RVTransaction: RVInterest {
     override class func collectionType() -> RVModelType { return RVModelType.transaction }
     override class var insertMethod: RVMeteorMethods { get { return RVMeteorMethods.TransactionCreate } }
     override class var updateMethod: RVMeteorMethods { get { return RVMeteorMethods.TransactionUpdate } }
@@ -30,7 +30,7 @@ class RVTransaction: RVBaseModel {
         self.readState = .unread
         self.archived = false
     }
-    class var basicQuery: (RVQuery, RVError?) {
+    override class var baseQuery: (RVQuery, RVError?) {
         get {
             let query = RVQuery()
             var error: RVError? = nil

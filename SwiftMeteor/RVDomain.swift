@@ -70,9 +70,12 @@ class RVDomain: RVBaseModel {
     override func additionalToString() -> String {
         return "DomainName = \(self.domainName.rawValue)"
     }
-    override class func baseQuery() -> RVQuery{
+
+    /*
+    class func baseQuery() -> RVQuery{
         let query = RVQuery()
         query.addAnd(term: .modelType, value: RVModelType.domain.rawValue as AnyObject , comparison: .eq)
         return query
     }
+ */
 }

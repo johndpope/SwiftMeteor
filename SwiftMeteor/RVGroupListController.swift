@@ -43,7 +43,7 @@ class RVGroupListController: RVTransactionListViewController {
                 error.printError()
             } else {
                 print("In \(self.instanceType).runConfiguration success adding section")
-                let (query, _) = RVTransaction.basicQuery
+                let (query, _) = RVTransaction.baseQuery
                 query.addSort(field: .createdAt, order: .descending)
             //    query.addAnd(term: .createdAt, value: Date() as AnyObject, comparison: .lte)
                                 query.addAnd(term: .createdAt, value: self.date() as AnyObject, comparison: .lte)

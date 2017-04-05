@@ -56,7 +56,7 @@ class RVBaseConfiguration {
     typealias queryFunction = (_ params: [String: AnyObject]) -> (RVQuery)
     typealias queryFunction4 = (_ dynamicAnds: [RVQueryItem], _ matches: RVQueryItem?) -> RVQuery
     func dynamicQuery(_ dynamicAnds: [RVQueryItem], _ match: RVQueryItem? = nil, _ sortTerms: [RVSortTerm] = [RVSortTerm()]) -> (RVQuery, RVError?){
-        let (query, error) = RVTransaction.basicQuery
+        let (query, error) = RVTransaction.baseQuery
         if let error = error {
             error.append(message: "In \(self.instanceType).dynamicQuery, got error")
         } else {
