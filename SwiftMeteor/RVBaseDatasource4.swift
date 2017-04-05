@@ -986,6 +986,10 @@ class RVLoadOperation: RVAsyncOperation {
                     tableView.layer.removeAllAnimations()
                 }
                 Timer.scheduledTimer(withTimeInterval: delay, repeats: false, block: { (timer) in
+                    if self.isCancelled {
+                        callback(sizedModels, nil)
+                        return
+                    }
                     tableView.beginUpdates()
                     if let indexPaths = tableView.indexPathsForVisibleRows { if let indexPath = indexPaths.last { originalRow = indexPath.row } }
                     // print("In \(self.classForCoder).insert, subscriptionOperation = \(self.subscriptionOperation)")
@@ -1023,6 +1027,10 @@ class RVLoadOperation: RVAsyncOperation {
                     }
                     tableView.endUpdates()
                     tableView.isScrollEnabled = originalScrollEnabled
+                    if self.isCancelled {
+                        callback(sizedModels, nil)
+                        return
+                    }
                     if (!self.datasource.collapsed) && (self.front) && (originalRow >= 0) && (indexPathsCount > 0) && (self.subscriptionOperation != .response) {
                         var indexPath = IndexPath(row: (originalRow + indexPathsCount), section: self.datasource.section)
                         if indexPath.row >= self.datasource.virtualCount { indexPath.row = self.datasource.virtualCount - 1 }

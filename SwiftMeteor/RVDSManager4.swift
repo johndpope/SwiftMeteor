@@ -130,17 +130,67 @@ class RVManagerRemoveSections4: RVAsyncOperation {
         } else if let manager = self.manager {
             var indexes = [Int]()
             let datasources = self.all ? manager.sections : self.datasources
-            if let tableView = manager.scrollView as? UITableView {
+            DispatchQueue.main.async {
+                for datasource in datasources { datasource.cancelAllOperations() }
                 DispatchQueue.main.async {
-                    if !self.isCancelled {
-                        tableView.beginUpdates()
-                        if self.all {
-                            for i in 0..<manager.sections.count { indexes.append(i) }
-                            if indexes.count > 0 {
-                                manager.sections = [RVBaseDatasource4]()
-                                tableView.deleteSections(IndexSet(indexes), with: manager.rowAnimation)
+                    if let tableView = manager.scrollView as? UITableView {
+                        DispatchQueue.main.async {
+                            if !self.isCancelled {
+                                tableView.beginUpdates()
+                                if self.all {
+                                    for i in 0..<manager.sections.count { indexes.append(i) }
+                                    if indexes.count > 0 {
+                                        manager.sections = [RVBaseDatasource4]()
+                                        tableView.deleteSections(IndexSet(indexes), with: manager.rowAnimation)
+                                    }
+                                } else {
+                                    for datasource in datasources {
+                                        let sectionIndex = manager.sectionIndex(datasource: datasource)
+                                        if sectionIndex >= 0 { indexes.append(sectionIndex) }
+                                    }
+                                    if indexes.count > 0 {
+                                        indexes.sort()
+                                        indexes.reverse()
+                                        for index in indexes { manager.sections.remove(at: index) }
+                                        indexes.reverse()
+                                        tableView.deleteSections(IndexSet(indexes), with: manager.rowAnimation)
+                                    }
+                                }
+                                tableView.endUpdates()
                             }
-                        } else {
+                            self.completeIt()
+                        }
+                    } else if let collectionView = manager.scrollView as? UICollectionView {
+                        DispatchQueue.main.async {
+                            collectionView.performBatchUpdates({
+                                if !self.isCancelled {
+                                    if self.all {
+                                        for i in 0..<manager.sections.count { indexes.append(i) }
+                                        if indexes.count > 0 {
+                                            manager.sections = [RVBaseDatasource4]()
+                                            collectionView.deleteSections(IndexSet(indexes))
+                                        }
+                                    } else {
+                                        for datasource in datasources {
+                                            let sectionIndex = manager.sectionIndex(datasource: datasource)
+                                            if sectionIndex >= 0 { indexes.append(sectionIndex) }
+                                        }
+                                        if indexes.count > 0 {
+                                            indexes.sort()
+                                            indexes.reverse()
+                                            for index in indexes { manager.sections.remove(at: index) }
+                                            indexes.reverse()
+                                            collectionView.deleteSections(IndexSet(indexes))
+                                        }
+                                    }
+                                }
+                            }, completion: { (true) in
+                                self.completeIt()
+                            })
+                        }
+                    } else if manager.scrollView == nil {
+                        if self.all { manager.sections = [RVBaseDatasource4]() }
+                        else {
                             for datasource in datasources {
                                 let sectionIndex = manager.sectionIndex(datasource: datasource)
                                 if sectionIndex >= 0 { indexes.append(sectionIndex) }
@@ -149,59 +199,14 @@ class RVManagerRemoveSections4: RVAsyncOperation {
                                 indexes.sort()
                                 indexes.reverse()
                                 for index in indexes { manager.sections.remove(at: index) }
-                                indexes.reverse()
-                                tableView.deleteSections(IndexSet(indexes), with: manager.rowAnimation)
                             }
                         }
-                        tableView.endUpdates()
-                    }
-                    self.completeIt()
-                }
-            } else if let collectionView = manager.scrollView as? UICollectionView {
-                DispatchQueue.main.async {
-                    collectionView.performBatchUpdates({
-                        if !self.isCancelled {
-                            if self.all {
-                                for i in 0..<manager.sections.count { indexes.append(i) }
-                                if indexes.count > 0 {
-                                    manager.sections = [RVBaseDatasource4]()
-                                    collectionView.deleteSections(IndexSet(indexes))
-                                }
-                            } else {
-                                for datasource in datasources {
-                                    let sectionIndex = manager.sectionIndex(datasource: datasource)
-                                    if sectionIndex >= 0 { indexes.append(sectionIndex) }
-                                }
-                                if indexes.count > 0 {
-                                    indexes.sort()
-                                    indexes.reverse()
-                                    for index in indexes { manager.sections.remove(at: index) }
-                                    indexes.reverse()
-                                    collectionView.deleteSections(IndexSet(indexes))
-                                }
-                            }
-                        }
-                    }, completion: { (true) in
                         self.completeIt()
-                    })
-                }
-            } else if manager.scrollView == nil {
-                if self.all { manager.sections = [RVBaseDatasource4]() }
-                else {
-                    for datasource in datasources {
-                        let sectionIndex = manager.sectionIndex(datasource: datasource)
-                        if sectionIndex >= 0 { indexes.append(sectionIndex) }
-                    }
-                    if indexes.count > 0 {
-                        indexes.sort()
-                        indexes.reverse()
-                        for index in indexes { manager.sections.remove(at: index) }
+                    } else {
+                        let error = RVError(message: "In \(self.classForCoder).main, erroneous ScrollView: \(manager.scrollView)!")
+                        self.completeIt(error: error)
                     }
                 }
-                self.completeIt()
-            } else {
-                let error = RVError(message: "In \(self.classForCoder).main, erroneous ScrollView: \(manager.scrollView)!")
-                self.completeIt(error: error)
             }
         } else {
             let error = RVError(message: "In \(self.classForCoder).main, no manager")
@@ -242,6 +247,7 @@ class RVManagerAppendSections4: RVManagerRemoveSections4 {
                             for section in manager.sections {
                                 for type in self.sectionTypesToRemove {
                                     if section.datasourceType == type {
+                                        section.cancelAllOperations()
                                         self.sectionsToBeRemoved.append(section)
                                     }
                                 }
