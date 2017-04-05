@@ -29,7 +29,7 @@ class RVBaseDatasource4: NSObject {
         case subscribe  = "Subscribe"
         case unknown    = "Unknown"
     }
-    let LAST_SORT_STRING = "ZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZ"
+    static let LAST_SORT_STRING = "ZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZ"
     var instanceType: String { get { return String(describing: type(of: self)) } }
     let identifier = NSDate().timeIntervalSince1970
     var baseQuery: RVQuery? = nil
@@ -220,7 +220,7 @@ extension RVBaseDatasource4 {
         }
         if let sortTerm = query.sortTerms.first {
             let firstString: AnyObject = "" as AnyObject
-            let lastString:  AnyObject = LAST_SORT_STRING as AnyObject
+            let lastString:  AnyObject = RVBaseDatasource4.LAST_SORT_STRING as AnyObject
             var comparison = (sortTerm.order == .ascending) ?  RVComparison.gte : RVComparison.lte
             var sortString: AnyObject = (sortTerm.order == .descending) ? lastString : firstString
             if front {

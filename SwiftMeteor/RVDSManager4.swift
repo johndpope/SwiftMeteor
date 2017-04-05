@@ -33,7 +33,7 @@ class RVDSManager4 {
     
     var numberOfSections: Int { return sections.count }
     func numberOfItems(section: Int) -> Int {
-        if (section >= 0) || (section < sections.count) {
+        if (section >= 0) && (section < sections.count) {
             return sections[section].numberOfItems
         } else {
             print("In \(self.instanceType).numberOfItems, invalid sectionIndex: \(section) ")
@@ -128,14 +128,16 @@ class RVManagerRemoveSections4: RVAsyncOperation {
             self.completeIt(error: nil)
             return
         } else if let manager = self.manager {
+            print("In \(self.classForCoder).innerAsyncMain, past manager")
             var indexes = [Int]()
             let datasources = self.all ? manager.sections : self.datasources
             DispatchQueue.main.async {
-                for datasource in datasources { datasource.cancelAllOperations() }
+                for datasource in datasources { datasource.unsubscribe { datasource.cancelAllOperations() } }
                 DispatchQueue.main.async {
                     if let tableView = manager.scrollView as? UITableView {
                         DispatchQueue.main.async {
                             if !self.isCancelled {
+                                print("In \(self.classForCoder).innerAsyncMain, about to remove ")
                                 tableView.beginUpdates()
                                 if self.all {
                                     for i in 0..<manager.sections.count { indexes.append(i) }
@@ -144,9 +146,13 @@ class RVManagerRemoveSections4: RVAsyncOperation {
                                         tableView.deleteSections(IndexSet(indexes), with: manager.rowAnimation)
                                     }
                                 } else {
+                                    print("In \(self.classForCoder).innerAsyncMain, dataousrces to remove: \(datasources.count)")
                                     for datasource in datasources {
                                         let sectionIndex = manager.sectionIndex(datasource: datasource)
-                                        if sectionIndex >= 0 { indexes.append(sectionIndex) }
+                                        print("In \(self.classForCoder).innerAsyncMain, dataousrces to remove: \(sectionIndex)")
+                                        if sectionIndex >= 0 {
+                                            indexes.append(sectionIndex)
+                                        }
                                     }
                                     if indexes.count > 0 {
                                         indexes.sort()
@@ -243,6 +249,7 @@ class RVManagerAppendSections4: RVManagerRemoveSections4 {
                 DispatchQueue.main.async {
                     if !self.isCancelled {
                        // print("In \(self.classForCoder).main, have TableView, notCancelled")
+                        print("In \(self.classForCoder).asynMan, datasources to remove \(self.sectionTypesToRemove)")
                         if self.sectionTypesToRemove.count > 0 {
                             for section in manager.sections {
                                 for type in self.sectionTypesToRemove {
@@ -259,12 +266,15 @@ class RVManagerAppendSections4: RVManagerRemoveSections4 {
                             indexes.append(manager.sections.count)
                             manager.sections.append(datasource)
                         }
-                   //     print("In \(self.classForCoder).main number of sections = \(manager.sections.count)")
+                        print("In \(self.classForCoder).main number of sections = \(manager.sections.count)")
                         tableView.insertSections(IndexSet(indexes), with: manager.rowAnimation)
                         tableView.endUpdates()
                     }
+                    self.completeCancel()
+                    /*
                     self.callback(self.emptyResponse, nil)
                     self.completeOperation()
+ */
                 }
                 return
             } else if let collectionView = manager.scrollView as? UICollectionView {

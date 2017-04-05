@@ -44,26 +44,106 @@ class RVBaseConfiguration4 {
         self.SLKIsInverted          = false
         self.navigationBarTitle     = "Transactions"
         self.showTextInputBar       = true
-        self.topAreaMaxHeights       = [0.0, 0.0, 0.0]
-        self.topAreaMinHeights       = [0.0, 0.0, 0.0]
-        self.mainDatasourceMaxSize  = 300
-        self.filterDatasourceMaxSize = 300
-        self.scopes = [[RVKeys.title.rawValue: RVKeys.title], [RVKeys.fullName.rawValue: RVKeys.fullName]]
-        self.manager = RVDSManager4(scrollView: scrollView)
-        // update manager
+        self.topAreaMaxHeights          = [0.0, 0.0, 0.0]
+        self.topAreaMinHeights          = [0.0, 0.0, 0.0]
+        self.mainDatasourceMaxSize      = 300
+        self.filterDatasourceMaxSize    = 300
+        self.scopes                     = [[RVKeys.title.rawValue: RVKeys.title], [RVKeys.fullName.rawValue: RVKeys.fullName]]
+        self.manager                    = RVDSManager4(scrollView: scrollView)
     }
-    func install(callback: @escaping(RVError?) -> Void) {
-        var datasources = [RVBaseDatasource4]()
-        if let top = self.topDatasource { datasources.append(top) }
-        datasources.append(mainDatasource)
-        manager.appendSections(datasources: datasources) { (models, error ) in
-            if let error = error {
-                error.append(message: "In \(self.instanceType).install, got error")
-            }
-            callback(error)
+
+    func baseTopQuery() -> (RVQuery, RVError?) {
+        print("In \(self.instanceType).baseTopQuery(). Needs to be overridden")
+        return RVTransaction.baseQuery
+    }
+    func baseMainQuery() -> (RVQuery, RVError?) {
+        print("In \(self.instanceType).baseMainQuery(). Needs to be overridden")
+        return RVTransaction.baseQuery
+    }
+    func baseFilterQuery() -> (RVQuery, RVError?) {
+        print("In \(self.instanceType).baseFilterQuery(). Needs to be overridden")
+        return RVTransaction.baseQuery
+    }
+    func buildQuery(query: RVQuery, andTerms: [RVQueryItem], sortTerm: RVSortTerm) -> RVQuery {
+        let query = query.duplicate()
+        query.addSort(sortTerm: sortTerm)
+        let comparison = sortTerm.order == .descending ? RVComparison.lte : RVComparison.gte
+        var value: AnyObject = "" as AnyObject
+        switch (sortTerm.field) {
+        case .createdAt, .updatedAt:
+            value = sortTerm.order == .descending ? Date() as AnyObject : query.decadeAgo as AnyObject
+        default:
+            value = sortTerm.order == .descending ?   RVBaseDatasource4.LAST_SORT_STRING as AnyObject : "" as AnyObject
+        }
+        query.addAnd(term: sortTerm.field, value: value as AnyObject, comparison: comparison)
+        for and in andTerms { query.addAnd(term: and.term, value: and.value, comparison: and.comparison) }
+        return query
+    }
+    func mainQuery(andTerms: [RVQueryItem] = [RVQueryItem](), sortTerm: RVSortTerm = RVSortTerm(field: .createdAt, order: .descending)) -> (RVQuery, RVError?) {
+        let (query, error) = baseMainQuery()
+        if let error = error {
+            error.append(message: "In \(self.instanceType).mainQuery, got error sourcing Base Query")
+            return (query, error)
+        } else {
+            let query = buildQuery(query: query, andTerms: andTerms, sortTerm: sortTerm)
+            return (query, nil)
         }
     }
-    func search(callback: @escaping(RVError?) -> Void) {
+    func filterQuery(andTerms: [RVQueryItem] = [RVQueryItem](), matchTerm: RVQueryItem, filterString: String, sortTerm: RVSortTerm = RVSortTerm(field: .createdAt, order: .descending)) -> (RVQuery, RVError?) {
+        let (query, error) = baseFilterQuery()
+        if let error = error {
+            error.append(message: "In \(self.instanceType).filterQuery, got error sourcing Base Query")
+            return (query, error)
+        } else {
+            let query = buildQuery(query: query, andTerms: andTerms, sortTerm: sortTerm)
+            query.fixedTerm = matchTerm
+            return (query, nil)
+        }
+    }
+    func loadTop(query: RVQuery, callback: @escaping(RVError?)->Void) {
+        if let top = self.topDatasource {
+            manager.appendSections(datasources: [top], sectionTypesToRemove: [.top, .main, .filter]) { (models, error) in
+                if let error = error {
+                    error.append(message: "In \(self.instanceType).loadMain \(#line). Got error on datasource append")
+                    callback(error)
+                    return
+                } else {
+                    self.manager.restart(datasource: top, query: query, callback: { (models, error) in
+                        if let error = error {
+                            error.append(message: "In \(self.instanceType).loadTop \(#line). Got error on datasource restart")
+                        }
+                        callback(error)
+                    })
+                }
+            }
+            return
+        } else {
+            callback(nil)
+        }
         
     }
+    func loadMain(query: RVQuery, callback: @escaping(RVError?)->Void) {
+        loadDatasource(datasource: mainDatasource, query: query, callback: callback)
+    }
+    func loadSearch(query: RVQuery, callback: @escaping(RVError?)->Void) {
+        loadDatasource(datasource: filterDatasource, query: query, callback: callback)
+    }
+    func loadDatasource(datasource: RVBaseDatasource4, query: RVQuery, callback: @escaping(RVError?)->Void) {
+        print("In \(self.instanceType).loadDatasource before append")
+        manager.appendSections(datasources: [datasource], sectionTypesToRemove: [.main, .filter]) { (models, error) in
+            if let error = error {
+                error.append(message: "In \(self.instanceType).loadMain \(#line). Got error on datasource append")
+                callback(error)
+                return
+            } else {
+                self.manager.restart(datasource: datasource, query: query, callback: { (models, error) in
+                    if let error = error {
+                        error.append(message: "In \(self.instanceType).loadMain \(#line). Got error on datasource restart")
+                    }
+                    callback(error)
+                })
+            }
+        }
+    }
+
 }

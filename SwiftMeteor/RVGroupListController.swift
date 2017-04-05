@@ -9,8 +9,10 @@
 import UIKit
 class RVGroupListController: RVTransactionListViewController {
     var manager4 = RVDSManager4(scrollView: nil)
+    var configuration4 = RVTransactionConfiguration4(scrollView: nil)
     override func viewDidLoad() {
-        manager4 = RVDSManager4(scrollView: self.dsScrollView)
+        //manager4 = RVDSManager4(scrollView: self.dsScrollView)
+        configuration4 = RVTransactionConfiguration4(scrollView: self.dsScrollView)
         super.viewDidLoad()
         if let tableView = self.tableView {
             tableView.separatorStyle = .singleLine
@@ -18,8 +20,22 @@ class RVGroupListController: RVTransactionListViewController {
             tableView.register(nib, forCellReuseIdentifier: RVTransactionTableViewCell.identifier)
         }
         if let tableView = self.tableView { tableView.register(RVFirstViewHeaderCell.self, forHeaderFooterViewReuseIdentifier: RVFirstViewHeaderCell.identifier) }
-        self.configuration = RVTransactionListConfiguration()
-        configuration.configure(stack: self.stack) { }
+        //self.configuration = RVTransactionListConfiguration()
+        //configuration.configure(stack: self.stack) { }
+        let (query, _) = configuration4.baseTopQuery()
+        configuration4.loadTop(query: query, callback: { (error) in
+            if let error = error {
+                error.printError()
+            }
+            let (query, _) = self.configuration4.baseMainQuery()
+            self.configuration4.loadMain(query: query, callback: { (error) in
+                if let error = error {
+                    error.printError()
+                }
+            })
+        })
+        
+        
     }
     override func performSearch(searchText: String, field: RVKeys, order: RVSortOrder = .ascending) {
         
@@ -35,6 +51,7 @@ class RVGroupListController: RVTransactionListViewController {
         
     }
     override func runConfiguration() {
+        /*
         print("In \(self.classForCoder).runConfiguration")
         let datasource = RVTransactionDatasource44(manager: self.manager4, datasourceType: .main, maxSize: 100)
         datasource.subscription = RVTransactionSubscription(front: true , showResponse: false)
@@ -57,6 +74,7 @@ class RVGroupListController: RVTransactionListViewController {
                 })
             }
         }
+ */
         
     }
     override func expandCollapseButtonTouched(view: RVFirstViewHeaderCell) {
@@ -81,8 +99,14 @@ class RVGroupListController: RVTransactionListViewController {
             headerCell.transform = tableView.transform
         }
     }
-    override func numberOfSections(in tableView: UITableView) -> Int { return manager4.numberOfSections}
-    override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int { return manager4.numberOfItems(section: section)}
+    override func numberOfSections(in tableView: UITableView) -> Int {
+        return configuration4.manager.numberOfSections
+      //  return manager4.numberOfSections
+    }
+    override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        return configuration4.manager.numberOfItems(section: section)
+      //  return manager4.numberOfItems(section: section)
+    }
     override func primaryCellForRowAtIndexPath(tableView: UITableView, _ indexPath: IndexPath) -> RVTransactionTableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: RVTransactionTableViewCell.identifier) as! RVTransactionTableViewCell
         if cell.gestureRecognizers?.count == nil {
