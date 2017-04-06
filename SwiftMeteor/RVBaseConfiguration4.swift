@@ -79,6 +79,16 @@ class RVBaseConfiguration4 {
         for and in andTerms { query.addAnd(term: and.term, value: and.value, comparison: and.comparison) }
         return query
     }
+    func topQuery(andTerms: [RVQueryItem] = [RVQueryItem](), sortTerm: RVSortTerm = RVSortTerm(field: .createdAt, order: .descending)) -> (RVQuery, RVError?) {
+        let (query, error) = baseTopQuery()
+        if let error = error {
+            error.append(message: "In \(self.instanceType).mainQuery, got error sourcing Base Query")
+            return (query, error)
+        } else {
+            let query = buildQuery(query: query, andTerms: andTerms, sortTerm: sortTerm)
+            return (query, nil)
+        }
+    }
     func mainQuery(andTerms: [RVQueryItem] = [RVQueryItem](), sortTerm: RVSortTerm = RVSortTerm(field: .createdAt, order: .descending)) -> (RVQuery, RVError?) {
         let (query, error) = baseMainQuery()
         if let error = error {

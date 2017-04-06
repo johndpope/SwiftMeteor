@@ -22,12 +22,12 @@ class RVGroupListController: RVTransactionListViewController {
         if let tableView = self.tableView { tableView.register(RVFirstViewHeaderCell.self, forHeaderFooterViewReuseIdentifier: RVFirstViewHeaderCell.identifier) }
         //self.configuration = RVTransactionListConfiguration()
         //configuration.configure(stack: self.stack) { }
-        let (query, _) = configuration4.baseTopQuery()
+        let (query, _) = configuration4.topQuery()
         configuration4.loadTop(query: query, callback: { (error) in
             if let error = error {
                 error.printError()
             }
-            let (query, _) = self.configuration4.baseMainQuery()
+            let (query, _) = self.configuration4.mainQuery()
             self.configuration4.loadMain(query: query, callback: { (error) in
                 if let error = error {
                     error.printError()
@@ -114,8 +114,8 @@ class RVGroupListController: RVTransactionListViewController {
             cell.addGestureRecognizer(longPress)
         }
         cell.transform = tableView.transform
-        cell.item = manager4.item(indexPath: indexPath)
-
+    //    cell.item = manager4.item(indexPath: indexPath)
+        cell.item = configuration4.manager.item(indexPath: indexPath)
         //cell.configureSubviews()
         return cell
     }
@@ -129,10 +129,12 @@ class RVGroupListController: RVTransactionListViewController {
             if tableView == self.dsScrollView {
                 if let indexPaths = tableView.indexPathsForVisibleRows {
                     if let first = indexPaths.first {
-                        self.manager4.scrolling(indexPath: first, scrollView: tableView)
+                        configuration4.manager.scrolling(indexPath: first, scrollView: tableView)
+                      //  self.manager4.scrolling(indexPath: first, scrollView: tableView)
                     }
                     if let last = indexPaths.last {
-                        self.manager4.scrolling(indexPath: last, scrollView: tableView)
+                        configuration4.manager.scrolling(indexPath: last, scrollView: tableView)
+                     //   self.manager4.scrolling(indexPath: last, scrollView: tableView)
                     }
                 }
             }
