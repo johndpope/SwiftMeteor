@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Scheme
-   LastUpgradeVersion = "0820"
+   LastUpgradeVersion = "0830"
    version = "1.3">
    <BuildAction
       parallelizeBuildables = "YES"
@@ -14,7 +14,7 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "5E7677FAC6D9360B28B05CA865D76AC8"
+               BlueprintIdentifier = "3B855CAFC269BDE406BE47FD49F7DBD6"
                BuildableName = "XCGLogger.framework"
                BlueprintName = "XCGLogger"
                ReferencedContainer = "container:Pods.xcodeproj">
@@ -45,7 +45,7 @@
       <MacroExpansion>
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "5E7677FAC6D9360B28B05CA865D76AC8"
+            BlueprintIdentifier = "3B855CAFC269BDE406BE47FD49F7DBD6"
             BuildableName = "XCGLogger.framework"
             BlueprintName = "XCGLogger"
             ReferencedContainer = "container:Pods.xcodeproj">

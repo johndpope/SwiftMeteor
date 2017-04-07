@@ -74,6 +74,11 @@
 			<key>isShown</key>
 			<false/>
 		</dict>
+		<key>ObjcExceptionBridging.xcscheme</key>
+		<dict>
+			<key>isShown</key>
+			<false/>
+		</dict>
 		<key>Pods-SwiftMeteor.xcscheme</key>
 		<dict>
 			<key>isShown</key>
@@ -132,12 +137,12 @@
 	</dict>
 	<key>SuppressBuildableAutocreation</key>
 	<dict>
-		<key>0A4E028C64569570E49FEC55CCEE4E13</key>
+		<key>09973364A849BCBA76B289937A7D85FC</key>
 		<dict>
 			<key>primary</key>
 			<true/>
 		</dict>
-		<key>0E1A78081BD2A86587042886C427FAE4</key>
+		<key>1149A2033163480DA65946FA2BDDF73F</key>
 		<dict>
 			<key>primary</key>
 			<true/>
@@ -152,12 +157,27 @@
 			<key>primary</key>
 			<true/>
 		</dict>
+		<key>16642FC072C9FC943D7E393E3362BA65</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>1F860624CF1F1360579422C99BB4416F</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
 		<key>229CA853119F2EE3901E7FCD8A574A8C</key>
 		<dict>
 			<key>primary</key>
 			<true/>
 		</dict>
-		<key>2C7074B0BB841F486F9B830B4B227445</key>
+		<key>2780BDFC9B7DB1763E1DA2AFABD2B62F</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>33299F0820E417EBDD887817FD21F812</key>
 		<dict>
 			<key>primary</key>
 			<true/>
@@ -167,12 +187,12 @@
 			<key>primary</key>
 			<true/>
 		</dict>
-		<key>5168099F2EBFC99A707C03C9EADE01A5</key>
+		<key>3B855CAFC269BDE406BE47FD49F7DBD6</key>
 		<dict>
 			<key>primary</key>
 			<true/>
 		</dict>
-		<key>523AC474F522B7B025625BD3D75EB8B6</key>
+		<key>5168099F2EBFC99A707C03C9EADE01A5</key>
 		<dict>
 			<key>primary</key>
 			<true/>
@@ -187,27 +207,12 @@
 			<key>primary</key>
 			<true/>
 		</dict>
-		<key>5E7677FAC6D9360B28B05CA865D76AC8</key>
-		<dict>
-			<key>primary</key>
-			<true/>
-		</dict>
-		<key>62625B1CF8139AEC0F0AB49F5B2F8844</key>
-		<dict>
-			<key>primary</key>
-			<true/>
-		</dict>
-		<key>6A0CC98CDE4FD4A3637156557C805B46</key>
+		<key>5B0B5B8A1476F8AA333AA7B53F47E96B</key>
 		<dict>
 			<key>primary</key>
 			<true/>
 		</dict>
 		<key>6BB1C1403B2419F911818DA8413FDA07</key>
-		<dict>
-			<key>primary</key>
-			<true/>
-		</dict>
-		<key>862D61F5906EAD6BF9227075E90EF9DC</key>
 		<dict>
 			<key>primary</key>
 			<true/>
@@ -227,17 +232,12 @@
 			<key>primary</key>
 			<true/>
 		</dict>
+		<key>9F898D003704653CA7E6377B9FB2B4F5</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
 		<key>9FC549016533CEAB044C636D1C5E09D2</key>
-		<dict>
-			<key>primary</key>
-			<true/>
-		</dict>
-		<key>A0C2D8306441E5F90E45A54C55EC354E</key>
-		<dict>
-			<key>primary</key>
-			<true/>
-		</dict>
-		<key>A68E4C1C1E1902259D52021F4C7AD58F</key>
 		<dict>
 			<key>primary</key>
 			<true/>
@@ -252,7 +252,17 @@
 			<key>primary</key>
 			<true/>
 		</dict>
-		<key>D83E0C8E8D9BFADAFC407E443A64E9D6</key>
+		<key>D553ED280597D7BA3A446996AE51D5D3</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>EFA94B189FE0138D5B1EA4B086239EDD</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>EFAD76E68D3A9C7F61E8983C8953F63D</key>
 		<dict>
 			<key>primary</key>
 			<true/>

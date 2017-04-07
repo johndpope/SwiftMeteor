@@ -1,46 +1,50 @@
 PODS:
-  - AWSAutoScaling (2.4.16):
-    - AWSCore (= 2.4.16)
-  - AWSCloudWatch (2.4.16):
-    - AWSCore (= 2.4.16)
-  - AWSCognito (2.4.16):
-    - AWSCore (= 2.4.16)
-  - AWSCognitoIdentityProvider (2.4.16):
-    - AWSCore (= 2.4.16)
-  - AWSCore (2.4.16)
-  - AWSLambda (2.4.16):
-    - AWSCore (= 2.4.16)
-  - AWSS3 (2.4.16):
-    - AWSCore (= 2.4.16)
-  - CryptoSwift (0.6.7)
+  - AWSAutoScaling (2.5.3):
+    - AWSCore (= 2.5.3)
+  - AWSCloudWatch (2.5.3):
+    - AWSCore (= 2.5.3)
+  - AWSCognito (2.5.3):
+    - AWSCore (= 2.5.3)
+  - AWSCognitoIdentityProvider (2.5.3):
+    - AWSCore (= 2.5.3)
+  - AWSCore (2.5.3)
+  - AWSLambda (2.5.3):
+    - AWSCore (= 2.5.3)
+  - AWSS3 (2.5.3):
+    - AWSCore (= 2.5.3)
+  - CryptoSwift (0.6.8)
   - DropDown (2)
   - Font-Awesome-Swift (1.6.1)
   - Google-Material-Design-Icons-Swift (1.0.1)
-  - GoogleMaps (2.1.1):
-    - GoogleMaps/Maps (= 2.1.1)
-  - GoogleMaps/Base (2.1.1)
-  - GoogleMaps/Maps (2.1.1):
+  - GoogleMaps (2.2.0):
+    - GoogleMaps/Maps (= 2.2.0)
+  - GoogleMaps/Base (2.2.0)
+  - GoogleMaps/Maps (2.2.0):
     - GoogleMaps/Base
-  - GooglePlaces (2.1.1):
-    - GoogleMaps/Base (= 2.1.1)
+  - GooglePlaces (2.2.0):
+    - GoogleMaps/Base (= 2.2.0)
   - LoremIpsum (1.0.0)
+  - ObjcExceptionBridging (1.0.1):
+    - ObjcExceptionBridging/ObjcExceptionBridging (= 1.0.1)
+  - ObjcExceptionBridging/ObjcExceptionBridging (1.0.1)
   - SDWebImage (3.8.2):
     - SDWebImage/Core (= 3.8.2)
   - SDWebImage/Core (3.8.2)
-  - SeaseAssist (0.0.40)
+  - SeaseAssist (0.0.53)
   - SlackTextViewController (1.9.5)
   - SwiftDDP (0.4.1):
     - CryptoSwift (~> 0.6.6)
     - SwiftWebSocket (~> 2.6.5)
     - XCGLogger
-  - SwiftSoup (1.1.7)
+  - SwiftSoup (1.3.0)
   - SwiftWebSocket (2.6.5)
   - Toast-Swift (2.0.0)
   - TPKeyboardAvoiding (1.3.1)
   - ViewDeck (3.1.0)
-  - XCGLogger (4.0.0):
-    - XCGLogger/Core (= 4.0.0)
-  - XCGLogger/Core (4.0.0)
+  - XCGLogger (5.0.1):
+    - XCGLogger/Core (= 5.0.1)
+  - XCGLogger/Core (5.0.1):
+    - ObjcExceptionBridging
 
 DEPENDENCIES:
   - AWSAutoScaling
@@ -65,30 +69,31 @@ DEPENDENCIES:
   - ViewDeck
 
 SPEC CHECKSUMS:
-  AWSAutoScaling: b659a202a145e89c212f11b889122545a663f5e8
-  AWSCloudWatch: 3653a840e267235722b350202e06185a976c3ba9
-  AWSCognito: 666dba6eb65ac27faad79e83febf25630913aefc
-  AWSCognitoIdentityProvider: 1c74bb819fc5f74a708a4a8e0be8b235a959ab86
-  AWSCore: 7c3c129991e6387bcbad7132bc3661e7135754db
-  AWSLambda: 87ec46e9fc53409dcbe28b70a6ac86a27b87275b
-  AWSS3: fef6aa8f8f625df8f67f1b6574fe761f3a4ddc99
-  CryptoSwift: 685ae257941e5447474348a2b545583e1a16b573
+  AWSAutoScaling: 0b437901b2e63a66003ba388d4cc3eb31c22fddc
+  AWSCloudWatch: 1109f24b73e1577cafc8e49e63aa710b9481c98c
+  AWSCognito: 74be06e52a2a063ab932a9d457a89e003d68631d
+  AWSCognitoIdentityProvider: 1594ab95efebd3f3670bd6d2e21f0860463d672a
+  AWSCore: 344e21892790650cf902246d436402257a545bde
+  AWSLambda: bdf90b087e8c5f4f7af764ef067b92c15db7542d
+  AWSS3: 88095d68f9d588eaa042d7f502f350234f98f606
+  CryptoSwift: f21ea03ed3a94e79d241648ce26652cd4810508a
   DropDown: 744784d9c9aa505100e942c16acd05430cbb2f0a
   Font-Awesome-Swift: 70ab020f6749d7048bb49807c3e78b702d78afca
   Google-Material-Design-Icons-Swift: ff587db57d713061f66b8457229d1af2cae84c56
-  GoogleMaps: a5b5bbe47734e2443bde781a6aa64e69fdb6d785
-  GooglePlaces: 35636d86e5020cba3856eb988c09a5491de0a65a
+  GoogleMaps: 104c418d61ab8a05dff06ed0784c25ea9d37da45
+  GooglePlaces: bca867d5e9da15384c794b945e4226848bc6e9d9
   LoremIpsum: 9029c55d36501b2ee0b05cc9ecda11d3a0479160
+  ObjcExceptionBridging: c30e00eb3700467e695faeea30e26e18bd445001
   SDWebImage: 098e97e6176540799c27e804c96653ee0833d13c
-  SeaseAssist: c352abeb67053588a75d9bc2af9571308742ccf1
+  SeaseAssist: 07d3dd95101e43749318ab76d8b33ac0388f16f2
   SlackTextViewController: fbcdadbb8090673f604484ff5b6eb8d77baed42a
   SwiftDDP: 63bcefd72c4793bf8d86004862a1adca88eb3bc9
-  SwiftSoup: ad2b920e7900a9c057dc7ec899e3423ddec59cb7
+  SwiftSoup: 85f58ee28f902a6e65581be0d4b935b6a9f78c79
   SwiftWebSocket: 1ef8a0efb023544643bdf480c1ec4a62b204f293
   Toast-Swift: 5b2f8f720f7e78e48511f693df1f9c9a6e38a25a
   TPKeyboardAvoiding: 0d6af20e95e2850f4c621841225b59ec7d8dd852
   ViewDeck: 942d90dd23c9f97cc8038be352255378167edcca
-  XCGLogger: 38063ea89b4c8b23232d18efd2e12eb0005f3ea4
+  XCGLogger: 0b43697155d41e4a1b15fc776f319c2141646b09
 
 PODFILE CHECKSUM: 5412bb83f1807c5c19c88d1195d1d26aba58fdb6
 

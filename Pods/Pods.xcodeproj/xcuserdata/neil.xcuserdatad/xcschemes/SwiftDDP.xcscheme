@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Scheme
-   LastUpgradeVersion = "0820"
+   LastUpgradeVersion = "0830"
    version = "1.3">
    <BuildAction
       parallelizeBuildables = "YES"
@@ -14,7 +14,7 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "0A4E028C64569570E49FEC55CCEE4E13"
+               BlueprintIdentifier = "09973364A849BCBA76B289937A7D85FC"
                BuildableName = "SwiftDDP.framework"
                BlueprintName = "SwiftDDP"
                ReferencedContainer = "container:Pods.xcodeproj">
@@ -45,7 +45,7 @@
       <MacroExpansion>
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "0A4E028C64569570E49FEC55CCEE4E13"
+            BlueprintIdentifier = "09973364A849BCBA76B289937A7D85FC"
             BuildableName = "SwiftDDP.framework"
             BlueprintName = "SwiftDDP"
             ReferencedContainer = "container:Pods.xcodeproj">
