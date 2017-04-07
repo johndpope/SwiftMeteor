@@ -71,6 +71,7 @@ class RVBaseSLKViewController4: SLKTextViewController {
         updateTableViewInsetHeight()
         putTopViewOnTop()
         configureSearchController()
+        configureSLK()
         let (query, _) = configuration.topQuery()
         configuration.loadTop(query: query, callback: { (error) in
             if let error = error {
