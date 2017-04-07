@@ -139,7 +139,7 @@ class RVBaseConfiguration4 {
         loadDatasource(datasource: filterDatasource, query: query, callback: callback)
     }
     func loadDatasource(datasource: RVBaseDatasource4, query: RVQuery, callback: @escaping(RVError?)->Void) {
-        print("In \(self.instanceType).loadDatasource before append")
+        //print("In \(self.instanceType).loadDatasource before append")
         manager.appendSections(datasources: [datasource], sectionTypesToRemove: [.main, .filter]) { (models, error) in
             if let error = error {
                 error.append(message: "In \(self.instanceType).loadMain \(#line). Got error on datasource append")

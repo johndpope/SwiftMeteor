@@ -10,6 +10,7 @@ import UIKit
 class RVGroupListController: RVTransactionListViewController {
     var manager4 = RVDSManager4(scrollView: nil)
     var configuration4 = RVTransactionConfiguration4(scrollView: nil)
+    var lastSearchTerm: String = "DummyValue"
     override var installSearchControllerInTableView: Bool { get { return false }}
     
 
@@ -36,19 +37,34 @@ class RVGroupListController: RVTransactionListViewController {
         configuration4.loadTop(query: query, callback: { (error) in
             if let error = error {
                 error.printError()
+            } else {
+                self.loadMain(callback: { (error) in
+                    if let error = error {
+                        error.printError()
+                    }
+                })
             }
-            let (query, _) = self.configuration4.mainQuery()
+
+        })
+    }
+    func loadMain(callback: @escaping(RVError?) -> Void) {
+        let (query, error) = self.configuration4.mainQuery()
+        if let error = error {
+             error.append(message: "In \(self.instanceType).loadMain, got error creating Query")
+            callback(error)
+        } else {
             self.configuration4.loadMain(query: query, callback: { (error) in
                 if let error = error {
-                    error.printError()
+                    error.append(message: "In \(self.instanceType).loadMain, got error")
                 }
+                callback(error)
             })
-        })
-        
-        
+        }
     }
     override func performSearch(searchText: String, field: RVKeys, order: RVSortOrder = .ascending) {
         print("In \(self.classForCoder).performSearch \(searchText), field: \(field.rawValue) \(order.rawValue)")
+        if lastSearchTerm == searchText { return }
+        lastSearchTerm = searchText.lowercased()
         let matchTerm = RVQueryItem(term: field, value: searchText.lowercased() as AnyObject, comparison: .regex)
         let andTerms = [RVQueryItem]()
         let (query, error) = self.configuration4.filterQuery(andTerms: andTerms, matchTerm: matchTerm, sortTerm: RVSortTerm(field: field, order: order))
@@ -159,7 +175,11 @@ class RVGroupListController: RVTransactionListViewController {
     }
     
     override func endSearch() {
-        
+        self.loadMain { (error) in
+            if let error = error {
+                error.append(message: "In \(self.classForCoder).endSearch, got error")
+            }
+        }
     }
 
     override func scrollViewDidScroll(_ scrollView: UIScrollView) {
