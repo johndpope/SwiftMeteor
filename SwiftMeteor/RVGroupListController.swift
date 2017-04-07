@@ -10,6 +10,9 @@ import UIKit
 class RVGroupListController: RVTransactionListViewController {
     var manager4 = RVDSManager4(scrollView: nil)
     var configuration4 = RVTransactionConfiguration4(scrollView: nil)
+    override var installSearchControllerInTableView: Bool { get { return false }}
+    
+
     override func viewDidLoad() {
         //manager4 = RVDSManager4(scrollView: self.dsScrollView)
         configuration4 = RVTransactionConfiguration4(scrollView: self.dsScrollView)
@@ -20,6 +23,13 @@ class RVGroupListController: RVTransactionListViewController {
             tableView.register(nib, forCellReuseIdentifier: RVTransactionTableViewCell.identifier)
         }
         if let tableView = self.tableView { tableView.register(RVFirstViewHeaderCell.self, forHeaderFooterViewReuseIdentifier: RVFirstViewHeaderCell.identifier) }
+        
+     //   self.updateTableViewInsetHeight()
+        configureNavBar()
+      //  putTopViewOnTop()
+        configureSearchController()
+
+        
         //self.configuration = RVTransactionListConfiguration()
         //configuration.configure(stack: self.stack) { }
         let (query, _) = configuration4.topQuery()
@@ -38,6 +48,7 @@ class RVGroupListController: RVTransactionListViewController {
         
     }
     override func performSearch(searchText: String, field: RVKeys, order: RVSortOrder = .ascending) {
+        print("In \(self.classForCoder).performSearch")
         
     }
     override func freshenState(completion: @escaping (RVError?) -> Void) {
@@ -79,6 +90,16 @@ class RVGroupListController: RVTransactionListViewController {
     }
     override func expandCollapseButtonTouched(view: RVFirstViewHeaderCell) {
         if let datasource = view.datasource4 {
+            configuration4.manager.toggle(datasource: datasource) { (models, error) in
+                if let error = error {
+                    error.printError()
+                } else {
+                   print("In \(self.classForCoder).expandCollapseButtonTouched. Successful return")
+                }
+            }
+        }
+
+        if let datasource = view.datasource4 {
             manager4.toggle(datasource: datasource, callback: { (models, error) in
                 if let error = error {
                     error.printError()
@@ -90,8 +111,13 @@ class RVGroupListController: RVTransactionListViewController {
     }
     override func tableView(_ tableView: UITableView, willDisplayHeaderView view: UIView, forSection section: Int) {
         if let headerCell = view as? RVFirstViewHeaderCell {
+            /*
             if let datasource = manager4.datasourceInSection(section: 0) {
                // headerCell.datasourceType = datasource.datasourceType
+                headerCell.datasource4 = datasource
+            }
+ */
+            if let datasource = configuration4.manager.datasourceInSection(section: section) {
                 headerCell.datasource4 = datasource
             }
             headerCell.delegate = self

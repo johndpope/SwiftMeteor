@@ -458,7 +458,7 @@ open class DDPClient: NSObject {
     
     open func unsub(withName name: String, callback: DDPCallback?) -> [String] {
         
-        var unsubgroup = DispatchGroup()
+        let unsubgroup = DispatchGroup()
         
         let unsub_ids = findSubscription(name).map({id -> (String) in
             unsubgroup.enter()

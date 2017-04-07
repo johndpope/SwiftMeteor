@@ -30,7 +30,7 @@
                                         <rect key="frame" x="0.0" y="28" width="375" height="44"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="lXi-x4-73y" id="FMH-rn-uK1">
-                                            <rect key="frame" x="0.0" y="0.0" width="375" height="43.5"/>
+                                            <rect key="frame" x="0.0" y="0.0" width="375" height="43"/>
                                             <autoresizingMask key="autoresizingMask"/>
                                             <subviews>
                                                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Action" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="DDE-3a-oCM">
@@ -89,9 +89,33 @@
                     <view key="view" contentMode="scaleToFill" id="cSe-Gs-duK">
                         <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="Nzb-Pg-Vf7">
+                                <rect key="frame" x="0.0" y="104" width="375" height="60"/>
+                                <color key="backgroundColor" red="0.97500573079999997" green="0.94011389710000004" blue="0.68204833379999996" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="60" id="LUy-By-oD8"/>
+                                </constraints>
+                            </view>
+                        </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                        <constraints>
+                            <constraint firstItem="Nzb-Pg-Vf7" firstAttribute="leading" secondItem="cSe-Gs-duK" secondAttribute="leading" id="P0q-Pa-cNN"/>
+                            <constraint firstItem="Nzb-Pg-Vf7" firstAttribute="top" secondItem="BoM-on-DO2" secondAttribute="bottom" constant="40" id="WWz-HJ-XXu"/>
+                            <constraint firstAttribute="trailing" secondItem="Nzb-Pg-Vf7" secondAttribute="trailing" id="chX-zj-84s"/>
+                        </constraints>
                     </view>
-                    <navigationItem key="navigationItem" title="Groups" id="G53-Up-duj"/>
+                    <navigationItem key="navigationItem" title="Groups" id="G53-Up-duj">
+                        <barButtonItem key="rightBarButtonItem" systemItem="search" id="nHy-7k-31X">
+                            <color key="tintColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                            <connections>
+                                <action selector="searchButtonTouched:" destination="8tZ-lT-UhN" id="E1P-ps-am1"/>
+                            </connections>
+                        </barButtonItem>
+                    </navigationItem>
+                    <connections>
+                        <outlet property="searchControllerContainerView" destination="Nzb-Pg-Vf7" id="Olc-pX-3pJ"/>
+                    </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="Oyj-Vq-o7O" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>

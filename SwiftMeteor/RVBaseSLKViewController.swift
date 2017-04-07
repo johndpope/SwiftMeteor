@@ -53,7 +53,10 @@ class RVBaseSLKViewController: SLKTextViewController {
     var emojis: Array = ["-1", "m", "man", "machine", "block-a", "block-b", "bowtie", "boar", "boat", "book", "bookmark", "neckbeard", "metal", "fu", "feelsgood"]
     var setupSLKDatasource: Bool = true
     var searchResult: [String]? // for SLKTextViewController, not sure why
-    @IBAction func searchButtonTouched(_ sender: UIBarButtonItem) { searchController.isActive = true }
+    @IBAction func searchButtonTouched(_ sender: UIBarButtonItem) {
+        print("In \(self.classForCoder).searchButtonTouched")
+        searchController.isActive = true
+    }
     @IBAction func menuButtonTouched(_ sender: UIBarButtonItem) {
         RVStateDispatcher4.shared.changeState(newState: RVBaseAppState4(appState: .leftMenu))
     }
@@ -415,6 +418,7 @@ extension RVBaseSLKViewController {
 extension RVBaseSLKViewController: UISearchResultsUpdating {
     
     func configureSearchController() {
+        print("In \(self.classForCoder).configureSearchController")
         searchController.searchResultsUpdater = self
         searchController.delegate = self
         searchController.searchBar.delegate = self
