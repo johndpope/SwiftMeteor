@@ -99,7 +99,7 @@ class RVBaseConfiguration4 {
             return (query, nil)
         }
     }
-    func filterQuery(andTerms: [RVQueryItem] = [RVQueryItem](), matchTerm: RVQueryItem, filterString: String, sortTerm: RVSortTerm = RVSortTerm(field: .createdAt, order: .descending)) -> (RVQuery, RVError?) {
+    func filterQuery(andTerms: [RVQueryItem] = [RVQueryItem](), matchTerm: RVQueryItem, sortTerm: RVSortTerm = RVSortTerm(field: .createdAt, order: .descending)) -> (RVQuery, RVError?) {
         let (query, error) = baseFilterQuery()
         if let error = error {
             error.append(message: "In \(self.instanceType).filterQuery, got error sourcing Base Query")

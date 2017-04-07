@@ -48,8 +48,20 @@ class RVGroupListController: RVTransactionListViewController {
         
     }
     override func performSearch(searchText: String, field: RVKeys, order: RVSortOrder = .ascending) {
-        print("In \(self.classForCoder).performSearch")
-        
+        print("In \(self.classForCoder).performSearch \(searchText), field: \(field.rawValue) \(order.rawValue)")
+        let matchTerm = RVQueryItem(term: field, value: searchText.lowercased() as AnyObject, comparison: .regex)
+        let andTerms = [RVQueryItem]()
+        let (query, error) = self.configuration4.filterQuery(andTerms: andTerms, matchTerm: matchTerm, sortTerm: RVSortTerm(field: field, order: order))
+        if let error = error {
+            error.printError()
+        } else {
+            self.configuration4.loadSearch(query: query) { (error) in
+                if let error = error {
+                    error.printError()
+                }
+            }
+        }
+
     }
     override func freshenState(completion: @escaping (RVError?) -> Void) {
         completion(nil)
