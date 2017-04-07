@@ -230,7 +230,7 @@ extension RVImage {
                     rvImage.filetype = filetype
                     if let userProfile = RVCoreInfo.sharedInstance.userProfile {
                         rvImage.setOwner(owner: userProfile)
-                        print("\nIN \(self.classForCoder()).saveImage, \(rvImage.ownerId) \(rvImage.ownerModelType.rawValue)\n--------------------")
+                        print("\nIN \(self.classForCoder()).saveImage, \(rvImage.ownerId ?? " no owenerId") \(rvImage.ownerModelType.rawValue)\n--------------------")
                         rvImage.fullName = userProfile.fullName
                     }
                     if let domain = RVCoreInfo.sharedInstance.domain { rvImage.domainId = domain.localId}
@@ -256,7 +256,7 @@ extension RVImage {
                                                     error.append(message: "In RVImage.saveImage, got error creating RVImage record")
                                                     callback(nil, error)
                                                 } else if let rvImage = rvImage as? RVImage {
-                                                    print("Created a new RVImage record with id \(rvImage.localId) \(rvImage.shadowId) $$$$$$$$$$$$$$$$$")
+                                                    print("Created a new RVImage record with id \(rvImage.localId ?? " no LocalId") \(rvImage.shadowId ?? " no shadowId") $$$$$$$$$$$$$$$$$")
                                                     callback(rvImage, nil)
                                                 } else if let rvImage = rvImage {
                                                     print("In RVImage.saveImage, saved actual image, no cast is of type \(rvImage)")

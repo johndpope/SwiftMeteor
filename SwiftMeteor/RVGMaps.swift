@@ -24,11 +24,11 @@ class RVGMaps {
         
         var gmsType: GMSMapViewType {
             switch self {
-            case .normal: return kGMSTypeNormal
-            case .satellite: return kGMSTypeSatellite
-            case .hybrid: return kGMSTypeHybrid
-            case .terrain: return kGMSTypeTerrain
-            case .none: return kGMSTypeNone
+            case .normal: return .normal
+            case .satellite: return .satellite
+            case .hybrid: return .hybrid
+            case .terrain: return .terrain
+            case .none: return .none
             }
         }
     }
@@ -138,7 +138,7 @@ class RVMarker: GMSMarker {
         }
         self.title = location.title
         groundAnchor = CGPoint(x: 0.5, y: 1.0)
-        appearAnimation = GMSMarkerAnimation
+        appearAnimation = GMSMarkerAnimation.pop
     }
     init(place: RVGooglePlace) {
         self.place = place
@@ -153,7 +153,7 @@ class RVMarker: GMSMarker {
             }
         }
         groundAnchor = CGPoint(x: 0.5, y: 1.0)
-        appearAnimation = kGMSMarkerAnimationPop
+        appearAnimation = GMSMarkerAnimation.pop
     }
 }
 class RVMapView: GMSMapView {

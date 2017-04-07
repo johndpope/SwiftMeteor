@@ -447,7 +447,7 @@ class TaskCollection: AbstractCollection {
     override public func documentWasAdded(_ collection: String, id: String, fields: NSDictionary?) {
         let task = (TaskStruct(id: id, fields: fields))
         
-        print("\(count)  Appending task: \(task._id ?? "no task._id") \(task.text) \(task.createdAt) ")
+        print("\(count)  Appending task: \(task._id ?? "no task._id") \(task.text ?? " no text") \(task.createdAt?.description ?? " no createdAt") ")
         count = count + 1
         tasks.append(task)
     }
@@ -456,7 +456,7 @@ class TaskCollection: AbstractCollection {
             var task = tasks[index]
             task.update(fields: fields)
             tasks[index] = task
-            print("Task was changed: \(task._id) \(task.text)")
+            print("Task was changed: \(task._id ?? " no ._id") \(task.text ?? " no _id")")
         } else {
             print("Task was changed but not in local array: \(id)")
         }
@@ -501,7 +501,7 @@ class TaskCollection2: AbstractCollection {
     override public func documentWasAdded(_ collection: String, id: String, fields: NSDictionary?) {
         let task = (RVTask(id: id, fields: fields))
         count = count + 1
-        print("\(count)  Appending task: \(task.localId) \(task.text) \(task.createdAt) ")
+        print("\(count)  Appending task: \(task.localId ?? " no localId") \(task.text ?? " no text") \(task.createdAt?.description ?? " no createdAt") ")
         tasks.append(task)
     }
     override public func documentWasChanged(_ collection: String, id: String, fields: NSDictionary?, cleared: [String]?) {
@@ -513,7 +513,7 @@ class TaskCollection2: AbstractCollection {
             task.update(fields, cleared: cleared)
             print(task.toString())
             tasks[index] = task
-            print("In TaskCollection2 Task was changed: \(task.localId) \(task.text)")
+            print("In TaskCollection2 Task was changed: \(task.localId ?? " no localId") \(task.text ?? " no text")")
         } else {
             print("Task was changed but not in local array: \(id)")
         }

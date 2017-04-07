@@ -94,7 +94,7 @@ class RVRecord {
                 if dirty {valueChanged()}
                 return true
             } else {
-                print("Error. Attempted to update \(fieldName.rawValue) to a value that is not a String. Value: \(value)")
+                print("Error. Attempted to update \(fieldName.rawValue) to a value that is not a String. Value: \(value ?? " no value" as AnyObject)")
                 return false
             }
         } else {
@@ -136,7 +136,7 @@ class RVRecord {
                 if dirty { valueChanged() }
                 return true
             } else {
-                print("Error. Attempted to update \(fieldName.rawValue) to a value that is not a NSNumber. Value: \(value)")
+                print("Error. Attempted to update \(fieldName.rawValue) to a value that is not a NSNumber. Value: \(value ?? " no value" as AnyObject)")
                 return false
             }
         } else {
@@ -165,7 +165,7 @@ class RVRecord {
                 if dirty { valueChanged() }
                 return true
             } else {
-                print("Error. Attempted to update \(fieldName.rawValue) to a value that is not an Array. Value: \(value ?? " no vlaue")")
+                print("Error. Attempted to update \(fieldName.rawValue) to a value that is not an Array. Value: \(value ?? " no vlaue" as AnyObject)")
                 return false
             }
         } else {
@@ -221,7 +221,7 @@ class RVRecord {
                 if dirty { valueChanged() }
                 return true
             } else {
-                print("Error. Attempted to update \(fieldName.rawValue) to a value that is not a Date Array. Value: \(value)")
+                print("Error. Attempted to update \(fieldName.rawValue) to a value that is not a Date Array. Value: \(value ?? " no value" as AnyObject)")
                 return false
             }
         } else {
@@ -262,7 +262,7 @@ class RVRecord {
                 if dirty { valueChanged()}
                 return true
             } else {
-                print("Error. Attempted to update \(fieldName.rawValue) to a value that is not a Bool. Value: \(value)")
+                print("Error. Attempted to update \(fieldName.rawValue) to a value that is not a Bool. Value: \(value?.description ?? " no value")")
                 return false
             }
         } else {

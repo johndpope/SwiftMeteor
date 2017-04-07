@@ -173,10 +173,10 @@ public class AWSIdentityManager : NSObject, AWSIdentityProviderManager  {
         self.wipeAll()
         self.currentSignInProvider = nil
         if let credentials = self.credentialsProvider {
-            credentials.getIdentityId().continue({ (task: AWSTask<NSString>) -> Any? in
+            credentials.getIdentityId().continueWith(block: { (task: AWSTask<NSString>) -> Any? in
                 DispatchQueue.main.async {
                     NotificationCenter.default.post(name: NSNotification.Name(rawValue: AWSIdentityManager.DidSignOutNotification), object: AWSIdentityManager.defaultIdentityManager(), userInfo: nil)
-                    if let exception = task.exception {
+                    if let exception = task.error {
                         print("AWS Identity Manager Fatal Exception in logout")
                         print(exception)
                         kill(getpid(), SIGKILL)
@@ -225,7 +225,7 @@ public class AWSIdentityManager : NSObject, AWSIdentityProviderManager  {
                     if let _ = self.currentSignInProvider {
                         NotificationCenter.default.post(name: NSNotification.Name(rawValue: AWSIdentityManager.DidSignInNotification), object: AWSIdentityManager.defaultIdentityManager(), userInfo: nil)
                     }
-                    if let exception = task.exception {
+                    if let exception = task.error {
                         print("AWS Identity Manager Fatal Exception in completingLogin")
                         print(exception)
                         kill(getpid(), SIGKILL)

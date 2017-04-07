@@ -73,9 +73,10 @@ public class RVAWS: NSObject {
                 print(error)
                 let rvError = RVError(message: "In RVAWS.upload, failed to get Presigned URL for \(RVAWS.bucket)\(path)", sourceError: error)
                 callback(nil, nil, rvError)
-            } else if let exception = task.exception {
-                let rvError = RVError(message: "In RVAWS.upload, got exception \(exception)", sourceError: nil)
-                callback(nil, nil, rvError)
+            
+//            } else if let exception = task.exception {
+//                let rvError = RVError(message: "In RVAWS.upload, got exception \(exception)", sourceError: nil)
+//                callback(nil, nil, rvError)
             } else if let presignedURL = task.result  {
                 let interval: TimeInterval = 3600.0
                 let request = NSMutableURLRequest(url: presignedURL as URL, cachePolicy: NSURLRequest.CachePolicy.reloadIgnoringLocalCacheData, timeoutInterval: interval)

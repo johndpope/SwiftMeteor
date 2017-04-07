@@ -159,7 +159,7 @@ class RVMainLandingViewController: RVBaseViewController2 {
             if let controller = self.presentedViewController as? RVMessageAuthorViewController {
                 controller.performSegue(withIdentifier: RVMessageAuthorViewController.unwindFromMessageCreateSceneWithSegue, sender: ["Menu": true])
             } else {
-                print("No controller \(self.presentedViewController ?? " no presentedViewController")")
+                print("No controller \(self.presentedViewController?.description ?? " no presentedViewController")")
             }
         } else {
             RVViewDeck.sharedInstance.toggleSide(side: RVViewDeck.Side.left)

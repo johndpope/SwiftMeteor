@@ -159,7 +159,7 @@ class RVRightMenuViewController: RVBaseViewController {
         }
 
 
-        print("In \(self.classForCoder).viewDidAppear \(self.presentingViewController)")
+        print("In \(self.classForCoder).viewDidAppear \(self.presentingViewController?.description ?? " no presentingVIewController")")
     }
     
     override func addLogInOutListeners() {
@@ -170,8 +170,8 @@ class RVRightMenuViewController: RVBaseViewController {
                 print("\(self.classForCoder). login listener found RVMainLandingViewController")
                 self.performSegue(withIdentifier: "UnwindFromLoginToMainLanding", sender: nil)
             } else {
-                print("In \(self.classForCoder).addLogInOutListeners cast \(self.presentingViewController)")
-                print("\(self.viewDeckController?.centerViewController ?? "no centerViewController")   \(self.viewDeckController?.leftViewController)")
+                print("In \(self.classForCoder).addLogInOutListeners cast \(self.presentingViewController?.description ?? " no presentingVIewController")")
+                print("\(self.viewDeckController?.centerViewController.description ?? "no centerViewController")   \(self.viewDeckController?.leftViewController?.description ?? " no leftViewController")")
                 print("In \(RVViewDeck.sharedInstance.centerViewController) \(RVViewDeck.sharedInstance.leftViewController)")
             }
             return true

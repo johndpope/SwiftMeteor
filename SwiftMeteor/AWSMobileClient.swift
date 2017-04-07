@@ -78,7 +78,7 @@ class AWSMobileClient: NSObject {
             if (!isInitialized) {
                 if let manager = AWSIdentityManager.defaultIdentityManager() {
                     manager.resumeSessionWithCompletionHandler(completionHandler: {(result: AnyObject?, error: NSError?) -> Void in
-                        print("In DidFinishLaunching with Result: \(result ?? "no result" as AnyObject) \n Error:\(error ?? "No error")")
+                        print("In DidFinishLaunching with Result: \(result ?? "no result" as AnyObject) \n Error:\(error?.localizedDescription ?? "No error")")
                     }) // If you get an EXC_BAD_ACCESS here in iOS Simulator, then do Simulator -> "Reset Content and Settings..."
                     // This will clear bad auth tokens stored by other apps with the same bundle ID.
                     isInitialized = true

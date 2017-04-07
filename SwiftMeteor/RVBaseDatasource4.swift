@@ -463,7 +463,7 @@ class RVExpandCollapseOperation: RVLoadOperation {
                             }
                             return
                         } else {
-                            let error = RVError(message: "In \(self.classForCoder).main, erroneous scrollVIew \(self.scrollView ?? " no scrollView")")
+                            let error = RVError(message: "In \(self.classForCoder).main, erroneous scrollVIew \(self.scrollView?.description ?? " no scrollView")")
                             self.finishUp(models: self.emptyModels, error: error)
                             return
                         }
@@ -499,7 +499,7 @@ class RVExpandCollapseOperation: RVLoadOperation {
                         self.finishUp(models: self.datasource.items, error: nil)
                         return
                     } else {
-                        let error = RVError(message: "In \(self.classForCoder).main, invalid scrollView \(self.scrollView ?? " no scroll view")")
+                        let error = RVError(message: "In \(self.classForCoder).main, invalid scrollView \(self.scrollView?.description ?? " no scroll view")")
                         self.finishUp(models: self.datasource.items, error: error)
                         return
                     }
@@ -900,7 +900,7 @@ class RVLoadOperation: RVAsyncOperation {
                 callback(models, nil)
                 return
             } else {
-                let error = RVError(message: "In \(self.classForCoder).cleanupBack, erroreous scrollView \(self.scrollView ?? " no ScrollView")")
+                let error = RVError(message: "In \(self.classForCoder).cleanupBack, erroreous scrollView \(self.scrollView?.description ?? " no ScrollView")")
                 callback(models, error)
                 return
             }
@@ -1006,7 +1006,7 @@ class RVLoadOperation: RVAsyncOperation {
                             indexPathsCount = indexPaths.count
                         }
                     } else {
-                        print("In \(self.classForCoder).insert, tableView no reference match reference is \(self.reference ?? " no reference")")
+                        print("In \(self.classForCoder).insert, tableView no reference match reference is \(self.reference?.toString() ?? " no reference")")
                         /*
                         if self.subscriptionOperation {
                             if let subscription = self.datasource.subscription {
@@ -1088,7 +1088,7 @@ class RVLoadOperation: RVAsyncOperation {
                 callback(sizedModels, nil)
                 return
             } else {
-                let error = RVError(message: "In \(self.instanceType).insert, erroroneous scrollView \(self.scrollView ?? " no ScrollView")")
+                let error = RVError(message: "In \(self.instanceType).insert, erroroneous scrollView \(self.scrollView?.description ?? " no ScrollView")")
                 callback(sizedModels, error)
                 return
             }

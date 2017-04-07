@@ -209,7 +209,7 @@ class RVManagerRemoveSections4: RVAsyncOperation {
                         }
                         self.completeIt()
                     } else {
-                        let error = RVError(message: "In \(self.classForCoder).main, erroneous ScrollView: \(manager.scrollView)!")
+                        let error = RVError(message: "In \(self.classForCoder).main, erroneous ScrollView: \(manager.scrollView?.description ?? " no scrollView")!")
                         self.completeIt(error: error)
                     }
                 }
@@ -321,7 +321,7 @@ class RVManagerAppendSections4: RVManagerRemoveSections4 {
                     self.completeOperation()
                 }
             } else {
-                let error = RVError(message: "In \(self.classForCoder).main, erroneous ScrollView: \(manager.scrollView)!")
+                let error = RVError(message: "In \(self.classForCoder).main, erroneous ScrollView: \(manager.scrollView?.description  ?? " no ScrollView")!")
                 DispatchQueue.main.async {
                     self.callback(self.emptyResponse, error )
                     self.completeOperation()

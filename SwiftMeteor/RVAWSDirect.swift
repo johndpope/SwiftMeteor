@@ -98,9 +98,9 @@ public class RVAWSDirect: NSObject {
     
     func syncTest() {
         let syncClient = AWSCognito.default()
-        if let  dataset = syncClient.openOrCreateDataset("myDataset") {
+        let  dataset = syncClient.openOrCreateDataset("myDataset")
             dataset.setString("myValue....zzzzz", forKey: "myKey")
-            dataset.synchronize().continue({ (task) -> Any? in
+        dataset.synchronize().continueWith(block: { (task) -> Any? in
                 if let error = task.error {
                     print("Error RVAWSDirect \(error)")
                 } else if let result  = task.result {
@@ -111,9 +111,7 @@ public class RVAWSDirect: NSObject {
 
                 return nil
             })
-        } else {
-            print("No dataset")
-        }
+
     }
     
     func processIt(err: Error?, response: URLResponse?, url: URL?) throws -> Void  {
@@ -145,7 +143,7 @@ public class RVAWSDirect: NSObject {
         getPresignedURLRequest.expires = NSDate(timeIntervalSinceNow: 3600) as Date
         let presignedTask = AWSS3PreSignedURLBuilder.default().getPreSignedURL(getPresignedURLRequest)
         RVActivityIndicator.sharedInstance.incrementIndicatorCount()
-        presignedTask.continue(successBlock: { (task: AWSTask!) -> AnyObject! in
+        presignedTask.continueWith(block: { (task: AWSTask!) -> AnyObject! in
             if let error = task.error {
                 DispatchQueue.main.async {
                     RVActivityIndicator.sharedInstance.decrementIndicatorCount()
@@ -153,14 +151,14 @@ public class RVAWSDirect: NSObject {
                     completionHandler(nil, nil, error)
                 }
                 return nil
-            } else if let exception = task.exception {
+            } else if let exception = task.error {
                 DispatchQueue.main.sync {
                     RVActivityIndicator.sharedInstance.decrementIndicatorCount()
                     let error = RVError(message: "Got AWS Presigned URL exceptoin \(exception)", sourceError: nil )
                     completionHandler(nil, nil, error)
                 }
                 return nil
-            } else if let presignedURL = task.result as? URL  {
+            } else if let presignedURL = task.result as URL?  {
                 print("download presigned URL is: \(presignedURL)\n\n")
                 //let session = URLSession(configuration: URLSessionConfiguration.ephemeral, delegate: RVAWSDirect.sharedInstance, delegateQueue: OperationQueue.main)
                 let session = URLSession.shared
@@ -201,8 +199,8 @@ public class RVAWSDirect: NSObject {
         t.continueWith(block: {  (task: AWSTask!) -> AnyObject! in
             if let error = task.error {
                 print(error)
-            } else if let exception = task.exception {
-                print(exception)
+//            } else if let exception = task.exception {
+//                print(exception)
             } else if let presignedURL = task.result  {
                 print("download presigned URL is: \(presignedURL)\n\n")
                 let request = NSMutableURLRequest(url: presignedURL as URL)
@@ -244,8 +242,8 @@ public class RVAWSDirect: NSObject {
         t.continueWith(block: { (task: AWSTask!) -> AnyObject! in
             if let error = task.error {
                 print(error)
-            } else if let exception = task.exception {
-                print(exception)
+//            } else if let exception = task.exception {
+//                print(exception)
             } else if let presignedURL = task.result  {
                      print("Got presignedURL")
                      print("download presigned URL is: \(presignedURL)\n\n")
@@ -311,8 +309,8 @@ public class RVAWSDirect: NSObject {
         t.continueWith(block: { (task: AWSTask!) -> AnyObject! in
             if let error = task.error {
                 print(error)
-            } else if let exception = task.exception {
-                print(exception)
+//            } else if let exception = task.exception {
+ //               print(exception)
             } else if let presignedURL = task.result  {
                 //     print("Got presignedURL")
                 //     print("upload presigned URL is: \(presignedURL)\n\n")
@@ -342,8 +340,8 @@ public class RVAWSDirect: NSObject {
             s3.listObjects(listObjectsRequest).continueWith(block: { (task) -> Any? in
                 if let error = task.error {
                     print("List Objects Error \(error)")
-                } else if let exception = task.exception {
-                    print("List objects exception \(exception)")
+//                } else if let exception = task.exception {
+ //                   print("List objects exception \(exception)")
                 
                 } else if let result = task.result  {
                     if let contents = result.contents {
@@ -405,7 +403,7 @@ public class RVAWSDirect: NSObject {
         print("............ %%%%%%%%% before task")
 
         
-        let _: AWSTask<AnyObject> = task.continue(with: AWSExecutor.mainThread(), with: { (result: AWSTask<AnyObject>) in
+        let _: AWSTask<AnyObject> = task.continueWith(executor: AWSExecutor.mainThread(), block: { (result: AWSTask<AnyObject>) in
             print("CALLBACK.......")
             if let error = task.error { // AWSS3TransferManagerErrorDomain
                 // ErrorCancelled

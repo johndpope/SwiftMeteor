@@ -52,7 +52,7 @@ class RVSeed {
                 if let error = error {
                     error.printError()
                 } else {
-                    print("Created task with parent: \(task.parentId ?? " no parentId"), title: \(task.title!), handle: \(task.handle!), comment: \(task.comment)")
+                    print("Created task with parent: \(task.parentId ?? " no parentId"), title: \(task.title!), handle: \(task.handle!), comment: \(task.comment ?? " no comment")")
                 }
             })
             Timer.scheduledTimer(withTimeInterval: 0.5, repeats: false, block: { (timer) in

@@ -65,27 +65,20 @@ class RVMemberViewController2: RVMemberViewController {
         print("ShowHideTouched")
         hideOrShowTextInputbar(sender)
     }
-}
-import SwiftDDP
-class Message: MeteorDocument {
-    var collection: String = "Messages"
-}
-
-extension RVMemberViewController2 {
     override func viewDidLoad() {
-   
+        
         setupSLKDatasource = false
         super.viewDidLoad()
-       // let messages = MeteorCollection<Message>(name: "Messages")
+        // let messages = MeteorCollection<Message>(name: "Messages")
     }
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
-
-
-       print("In \(self.classForCoder).viewDidAppear just before appState initialize \(appState.state.rawValue) -------")
-
+        
+        
+        print("In \(self.classForCoder).viewDidAppear just before appState initialize \(appState.state.rawValue) -------")
+        
         if !appState.loaded {
-                    installUIComponents()
+            installUIComponents()
             configureOverlay()
             if let appState = self.appState as? RVMemberToMemberChatState {
                 appState.subscribe {
@@ -102,6 +95,14 @@ extension RVMemberViewController2 {
             }
         }
     }
+}
+import SwiftDDP
+class Message: MeteorDocument {
+    var collection: String = "Messages"
+}
+
+extension RVMemberViewController2 {
+
     func configureOverlay() {
         if let buddy = appState.stack.last as? RVUserProfile {
             if let label = self.fullNameLabel { label.text = buddy.fullName != nil ? buddy.fullName! : ""}
