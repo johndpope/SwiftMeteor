@@ -105,6 +105,7 @@ class RVManagerRemoveSections4: RVAsyncOperation {
     var datasources: [RVBaseDatasource4]
     var callback: RVCallback
     var all: Bool = false
+    var ignoreCancel: Bool = false
     let emptyResponse = [RVBaseModel]()
     init(title: String = "Remove Sections", manager: RVDSManager4, datasources: [RVBaseDatasource4], callback: @escaping RVCallback, all: Bool = false) {
         self.callback = callback
@@ -124,7 +125,7 @@ class RVManagerRemoveSections4: RVAsyncOperation {
         innerAsyncMain()
     }
     func innerAsyncMain() {
-        if ((datasources.count == 0) && (!self.all)) || self.isCancelled {
+        if ((datasources.count == 0) && (!self.all)) || (self.isCancelled && !self.ignoreCancel) {
             self.completeIt(error: nil)
             return
         } else if let manager = self.manager {
@@ -136,7 +137,7 @@ class RVManagerRemoveSections4: RVAsyncOperation {
                 DispatchQueue.main.async {
                     if let tableView = manager.scrollView as? UITableView {
                         DispatchQueue.main.async {
-                            if !self.isCancelled {
+                            if (!(self.isCancelled  && !self.ignoreCancel)){
                                 print("In \(self.classForCoder).innerAsyncMain, about to remove ")
                                 tableView.beginUpdates()
                                 if self.all {
@@ -169,7 +170,7 @@ class RVManagerRemoveSections4: RVAsyncOperation {
                     } else if let collectionView = manager.scrollView as? UICollectionView {
                         DispatchQueue.main.async {
                             collectionView.performBatchUpdates({
-                                if !self.isCancelled {
+                                if !(self.isCancelled && !self.ignoreCancel) {
                                     if self.all {
                                         for i in 0..<manager.sections.count { indexes.append(i) }
                                         if indexes.count > 0 {
@@ -228,12 +229,13 @@ class RVManagerAppendSections4: RVManagerRemoveSections4 {
         self.sectionTypesToRemove = sectionTypesToRemove
         super.init(title: "Add Sections", manager: manager, datasources: datasources, callback: callback)
     }
-    func completeCancel() {
+    func complete() {
         DispatchQueue.main.async {
             if self.sectionsToBeRemoved.count > 0 {
                 self.datasources = self.sectionsToBeRemoved
                 self.innerAsyncMain()
             } else {
+                self.datasources = [RVBaseDatasource4]()
                 self.callback(self.emptyResponse, nil)
                 self.completeOperation()
             }
@@ -241,7 +243,7 @@ class RVManagerAppendSections4: RVManagerRemoveSections4 {
     }
     override func asyncMain() {
         if (datasources.count == 0) || self.isCancelled {
-            completeCancel()
+            complete()
             return
         }
         if let manager = self.manager {
@@ -269,8 +271,9 @@ class RVManagerAppendSections4: RVManagerRemoveSections4 {
                         print("In \(self.classForCoder).main number of sections = \(manager.sections.count)")
                         tableView.insertSections(IndexSet(indexes), with: manager.rowAnimation)
                         tableView.endUpdates()
+                        self.ignoreCancel = true
                     }
-                    self.completeCancel()
+                    self.complete()
                     /*
                     self.callback(self.emptyResponse, nil)
                     self.completeOperation()
@@ -297,10 +300,10 @@ class RVManagerAppendSections4: RVManagerRemoveSections4 {
                                 manager.sections.append(datasource)
                             }
                             collectionView.insertSections(IndexSet(indexes))
+                            self.ignoreCancel = true
                         }
                     }, completion: { (success) in
-                        self.callback(self.emptyResponse, nil)
-                        self.completeOperation()
+                        self.complete()
                     })
                 }
                 return
@@ -317,21 +320,18 @@ class RVManagerAppendSections4: RVManagerRemoveSections4 {
                 }
                 for datasource in self.datasources { manager.sections.append(datasource) }
                 DispatchQueue.main.async {
-                    self.callback(self.emptyResponse, nil )
-                    self.completeOperation()
+                    self.complete()
                 }
             } else {
                 let error = RVError(message: "In \(self.classForCoder).main, erroneous ScrollView: \(manager.scrollView?.description  ?? " no ScrollView")!")
                 DispatchQueue.main.async {
-                    self.callback(self.emptyResponse, error )
-                    self.completeOperation()
+                    self.complete()
                 }
             }
         } else {
             let error = RVError(message: "In \(self.classForCoder).main, no manager")
             DispatchQueue.main.async {
-                self.callback(self.emptyResponse, error)
-                self.completeOperation()
+                self.complete()
             }
         }
     }

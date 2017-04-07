@@ -35,7 +35,7 @@ class RVTransaction: RVInterest {
             let query = RVQuery()
             var error: RVError? = nil
             query.addAnd(term: .modelType, value: RVModelType.transaction.rawValue as AnyObject, comparison: .eq)
-           // query.addAnd(term: .deleted, value: false as AnyObject, comparison: .eq)
+            query.addAnd(term: .deleted, value: false as AnyObject, comparison: .eq)
             query.limit = 10
             if let loggedInUserId = RVTransaction.loggedInUserId {
                 query.addAnd(term: .targetUserProfileId, value: loggedInUserId as AnyObject, comparison: .eq)
