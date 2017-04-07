@@ -25,6 +25,7 @@ class RVBaseSLKViewController4: SLKTextViewController {
     let navBarHeight: CGFloat = 62.0
     var _lastSearchTerm: String = "Dummy Value"
     var lastSearchTerm: String = "Dummy Value"
+    var SLKIsInverted          = false
     // SLK Stuff
     var pipWindow: UIWindow? // for SLK
     var users: Array = ["Allen", "Anna", "Alicia", "Arnold", "Armando", "Antonio", "Brad", "Catalaya", "Christoph", "Emerson", "Eric", "Everyone", "Steve"]
@@ -222,6 +223,47 @@ extension RVBaseSLKViewController4 {
         var frame = pipWindow.frame
         frame.origin.y = value.cgPointValue.y - 60.0
         pipWindow.frame = frame
+    }
+    func configureSLK() {
+        
+        
+        // SLKTVC's configuration
+        self.bounces = true
+        self.shakeToClearEnabled = true
+        self.isKeyboardPanningEnabled = true
+        self.shouldScrollToBottomAfterKeyboardShows = false
+        self.isInverted = self.SLKIsInverted
+        if configuration.showTextInputBar {
+            self.leftButton.setImage(UIImage(named: "icn_upload"), for: UIControlState())
+            self.leftButton.tintColor = UIColor.gray
+            
+            self.rightButton.setTitle(NSLocalizedString("Send", comment: ""), for: UIControlState())
+            // self.setTextInputbarHidden(false, animated: true)
+            self.textInputbar.autoHideRightButton = true
+            self.textInputbar.maxCharCount = 256
+            self.textInputbar.counterStyle = .split
+            self.textInputbar.counterPosition = .top
+            
+            self.textInputbar.editorTitle.textColor = UIColor.darkGray
+            self.textInputbar.editorLeftButton.tintColor = UIColor(red: 0/255, green: 122/255, blue: 255/255, alpha: 1)
+            self.textInputbar.editorRightButton.tintColor = UIColor(red: 0/255, green: 122/255, blue: 255/255, alpha: 1)
+            
+            if DEBUG_CUSTOM_TYPING_INDICATOR == false {
+                self.typingIndicatorView!.canResignByTouch = true
+            }
+            self.registerPrefixes(forAutoCompletion: ["@",  "#", ":", "+:", "/"])
+            
+            self.textView.placeholder = "Message";
+            
+            self.textView.registerMarkdownFormattingSymbol("*", withTitle: "Bold")
+            self.textView.registerMarkdownFormattingSymbol("_", withTitle: "Italics")
+            self.textView.registerMarkdownFormattingSymbol("~", withTitle: "Strike")
+            self.textView.registerMarkdownFormattingSymbol("`", withTitle: "Code")
+            self.textView.registerMarkdownFormattingSymbol("```", withTitle: "Preformatted")
+            self.textView.registerMarkdownFormattingSymbol(">", withTitle: "Quote")
+        } else {
+            self.setTextInputbarHidden(true, animated: false)
+        }
     }
 }
 // Top Area
