@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import SlackTextViewController
 
 class RVBaseConfiguration4 {
     var instanceType: String { get { return String(describing: type(of: self)) } }
@@ -17,13 +18,17 @@ class RVBaseConfiguration4 {
     var installRefresh: Bool        = false
     var SLKIsInverted: Bool         = false
     var showTextInputBar: Bool      = true
+    var searchBarPlaceholder: String = "... Search"
     var mainDatasourceMaxSize: Int  = 300
     var filterDatasourceMaxSize: Int = 300
     var topAreaMaxHeights: [CGFloat] = [0.0, 0.0, 0.0]
     var topAreaMinHeights: [CGFloat] = [0.0, 0.0, 0.0]
 
-    var scopes: [[String : RVKeys]]     = [[RVKeys.title.rawValue: RVKeys.title], [RVKeys.fullName.rawValue: RVKeys.fullName]]
+    var searchScopes: [[String : RVKeys]]     = [[RVKeys.title.rawValue: RVKeys.title], [RVKeys.fullName.rawValue: RVKeys.fullName]]
+    var defaultSortOrder: RVSortOrder = .ascending
+    var installSearchControllerInTableView: Bool = false
     var manager = RVDSManager4(scrollView: nil)
+    var navigationBarColor: UIColor = UIColor.facebookBlue()
     
     var topDatasource: RVBaseDatasource4? {
         return nil
@@ -38,20 +43,25 @@ class RVBaseConfiguration4 {
     init(scrollView: UIScrollView? ) {
         self.configurationName      = "RVBaseConfiguration4"
         self.navigationBarTitle     = "Replace"
+        self.navigationBarColor     = UIColor.facebookBlue()
         self.showSearch             = true
         self.showTopView            = true
         self.installRefresh         = false
         self.SLKIsInverted          = false
-        self.navigationBarTitle     = "Transactions"
         self.showTextInputBar       = true
+        self.defaultSortOrder       = .ascending
+        self.installSearchControllerInTableView = false
+        self.searchBarPlaceholder   = "... Search"
         self.topAreaMaxHeights          = [0.0, 0.0, 0.0]
         self.topAreaMinHeights          = [0.0, 0.0, 0.0]
         self.mainDatasourceMaxSize      = 300
         self.filterDatasourceMaxSize    = 300
-        self.scopes                     = [[RVKeys.title.rawValue: RVKeys.title], [RVKeys.fullName.rawValue: RVKeys.fullName]]
+        self.searchScopes               = [[RVKeys.title.rawValue: RVKeys.title], [RVKeys.fullName.rawValue: RVKeys.fullName]]
         self.manager                    = RVDSManager4(scrollView: scrollView)
     }
-
+    func removeAllSections(callback: @escaping RVCallback) {
+        self.manager.removeAllSections(callback: callback)
+    }
     func baseTopQuery() -> (RVQuery, RVError?) {
         print("In \(self.instanceType).baseTopQuery(). Needs to be overridden")
         return RVTransaction.baseQuery

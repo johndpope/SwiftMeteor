@@ -100,6 +100,7 @@ class RVDSManager4 {
 
 }
 
+
 class RVManagerRemoveSections4: RVAsyncOperation {
     weak var manager: RVDSManager4? = nil
     var datasources: [RVBaseDatasource4]
