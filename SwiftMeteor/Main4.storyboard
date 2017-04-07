@@ -91,17 +91,17 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="Nzb-Pg-Vf7">
-                                <rect key="frame" x="0.0" y="104" width="375" height="60"/>
+                                <rect key="frame" x="0.0" y="64" width="375" height="50"/>
                                 <color key="backgroundColor" red="0.97500573079999997" green="0.94011389710000004" blue="0.68204833379999996" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                 <constraints>
-                                    <constraint firstAttribute="height" constant="60" id="LUy-By-oD8"/>
+                                    <constraint firstAttribute="height" constant="50" id="LUy-By-oD8"/>
                                 </constraints>
                             </view>
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                         <constraints>
                             <constraint firstItem="Nzb-Pg-Vf7" firstAttribute="leading" secondItem="cSe-Gs-duK" secondAttribute="leading" id="P0q-Pa-cNN"/>
-                            <constraint firstItem="Nzb-Pg-Vf7" firstAttribute="top" secondItem="BoM-on-DO2" secondAttribute="bottom" constant="40" id="WWz-HJ-XXu"/>
+                            <constraint firstItem="Nzb-Pg-Vf7" firstAttribute="top" secondItem="BoM-on-DO2" secondAttribute="bottom" id="WWz-HJ-XXu"/>
                             <constraint firstAttribute="trailing" secondItem="Nzb-Pg-Vf7" secondAttribute="trailing" id="chX-zj-84s"/>
                         </constraints>
                     </view>
@@ -135,7 +135,7 @@
                         <subviews>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="WBx-bh-Xy2">
                                 <rect key="frame" x="0.0" y="64" width="375" height="50"/>
-                                <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                                <color key="backgroundColor" red="0.97500573079999997" green="0.94011389710000004" blue="0.68204833379999996" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="50" id="ZzL-2Q-T5G"/>
                                 </constraints>
