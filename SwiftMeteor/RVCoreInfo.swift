@@ -143,7 +143,7 @@ class RVCoreInfo: NSObject {
                             if let error = error {
                                 error.append(message: "In \(self.classForCoder).completeLogin, error getting Root Group")
                             } else if let group = group {
-                                print("Have root group \(group.localId)" )
+                                print("Have root group \(group.localId ?? " no group.localId")" )
                                 self.rootGroup = group
                             } else {
                                 print("In \(self.classForCoder).completeLogin, no error, but no root group")

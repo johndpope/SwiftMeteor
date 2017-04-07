@@ -14,7 +14,7 @@ import TPKeyboardAvoiding
 extension RVProfileViewController: GMSAutocompleteViewControllerDelegate {
     // Handle the user's selection
     func viewController(_ viewController: GMSAutocompleteViewController, didAutocompleteWith place: GMSPlace) {
-        print("Place name: \(place.name), address: \(place.formattedAddress), attributions: \(place.attributions)")
+        print("Place name: \(place.name), address: \(place.formattedAddress?.description ?? "No formatted Address"), attributions: \(place.attributions?.description ?? " no place.attributions")")
         let location = RVLocation(googlePlace: place)
         print(location.toString())
         if let profile = RVCoreInfo.sharedInstance.userProfile {
@@ -65,7 +65,7 @@ extension RVProfileViewController: RVCameraDelegate {
                             error.append(message: "In \(self.classForCoder).didFinish, got error ")
                             error.printError()
                         } else if let rvImage = image {
-                          print("In \(self.classForCoder).didFinsh got rvImage\n\(rvImage) with id \(rvImage.localId) \(rvImage.shadowId)")
+                          print("In \(self.classForCoder).didFinsh got rvImage\n\(rvImage) with id \(rvImage.localId ?? "no local id") \(rvImage.shadowId ?? "No shadowID")")
                             print(rvImage.toString())
                             print("ddddddd")
                             profile.image = rvImage
@@ -76,7 +76,7 @@ extension RVProfileViewController: RVCameraDelegate {
                                     RVCoreInfo.sharedInstance.userProfile = updatedProfile
                                     print("In \(self.classForCoder).didFinish, successfully updated profile\n\(updatedProfile.toString())")
                                     if let image = updatedProfile.image {
-                                        print("Profile iamge ids: localId = \(image.localId), \(image.shadowId)")
+                                        print("Profile iamge ids: localId = \(image.localId ?? "No localId"), \(image.shadowId ?? "no shadowId")")
                                     }
                                 } else {
                                     print("In \(self.classForCoder).didFinishPicking, on updating Profile, nothing returned")

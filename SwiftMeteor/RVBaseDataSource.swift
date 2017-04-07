@@ -423,7 +423,7 @@ class RVBaseDataSource: NSObject {
                                         }
                                     }
                                 case .commentLowercase, .comment:
-                                    print("In \(self.instanceType).queryForBack with lowercaseCommnet value = \(candidate.commentLowercase)")
+                                    print("In \(self.instanceType).queryForBack with lowercaseCommnet value = \(candidate.commentLowercase ?? "no candidate.commentLowercase")")
                                     if let candidateComment = candidate.comment {
                                         if let queryTerm = query.findAndTerm(term: sort.field) {
                                             queryTerm.value = candidateComment.lowercased() as AnyObject

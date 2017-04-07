@@ -29,7 +29,7 @@ class RVMessageCollection: RVAbstractMeteorCollection {
     
     // Include any logic that needs to occur when a document is changed on the server
     override public func documentWasChanged(_ collection:String, id:String, fields:NSDictionary?, cleared:[String]?) {
-        print("In \(self.classForCoder).documentWasChanged \(id), \(fields)")
+        print("In \(self.classForCoder).documentWasChanged \(id), \(fields?.description ?? " no fields")")
         /*
         if let index = contacts.indexOf({ contact in return contact._id == id }) {
             contact = contacts[index]

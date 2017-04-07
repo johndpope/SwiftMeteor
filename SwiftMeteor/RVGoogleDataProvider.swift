@@ -62,7 +62,7 @@ class RVGoogleDataProvider {
                                                         if let photoReference = image.photo_reference {
                                                             self.fetchPhotoFromReference(reference: photoReference, completion: { (image , error) in
                                                                 if let error = error {
-                                                                    print("In RVGoogleDataProvider, got error \(error.messages), \(error.sourceError?.localizedDescription)")
+                                                                    print("In RVGoogleDataProvider, got error \(error.messages), \(error.sourceError?.localizedDescription ?? "No localized Description")")
                                                                 } else if let image = image {
                                                                     location.photo = image
                                                                 }

@@ -37,8 +37,8 @@ public struct Completion {
         methodCallback = callback
     }
     
-    init(callback:@escaping DDPConnectedCallback) {
-        connectedCallback = callback
+    init(cCallback:@escaping DDPConnectedCallback) {
+        connectedCallback = cCallback
     }
     
     init(callback:@escaping DDPCallback) {

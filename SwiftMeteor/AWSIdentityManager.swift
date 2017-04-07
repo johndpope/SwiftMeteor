@@ -32,8 +32,8 @@ public class AWSIdentityManager : NSObject, AWSIdentityProviderManager  {
      */
     public func logins() -> AWSTask<NSDictionary> {
         if let provider = self.currentSignInProvider {
-            let handle = provider.token().continue(successBlock: { (task) -> Any? in
-                if let token = task.result as? String {
+            let handle = provider.token().continueWith(block: { (task) -> Any? in
+                if let token = task.result as String? {
                     let result:NSDictionary = [provider.identityProviderName : token]
                     return AWSTask(result: result)
                 }
@@ -220,7 +220,7 @@ public class AWSIdentityManager : NSObject, AWSIdentityProviderManager  {
         // Force a refresh of credentials to see if we need to merge
         if let provider = self.credentialsProvider {
             provider.invalidateCachedTemporaryCredentials()
-            provider.credentials().continue({ (task) -> Any? in
+            provider.credentials().continueWith( block: { (task) -> Any? in
                 DispatchQueue.main.async {
                     if let _ = self.currentSignInProvider {
                         NotificationCenter.default.post(name: NSNotification.Name(rawValue: AWSIdentityManager.DidSignInNotification), object: AWSIdentityManager.defaultIdentityManager(), userInfo: nil)

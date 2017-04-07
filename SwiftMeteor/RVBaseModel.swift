@@ -777,6 +777,25 @@ class RVBaseModel: MeteorDocument {
         
         
     }
+    override func update(_ fields: NSDictionary?, cleared: [String]? ) {
+        
+        if let fields = fields as? [String : AnyObject] {
+            for (rawValue, value) in fields {
+                if let property = RVKeys(rawValue: rawValue) {
+                    setProperty(key: property, value: value)
+                }
+            }
+            
+        }
+        if let cleared = cleared {
+            for index in (0..<cleared.count) {
+                let rawValue = cleared[index]
+                if let property = RVKeys(rawValue: rawValue) {
+                    setProperty(key: property, value: nil)
+                }
+            }
+        }
+    }
 }
 extension RVBaseModel {
     class func retrieveInstance(id: String, callback: @escaping (_ item: RVBaseModel? , _ error: RVError?) -> Void) {
@@ -922,38 +941,20 @@ extension RVBaseModel {
         // Meteor.call(type(of: self).insertMethod.rawValue, params: [dirties, tdirties]) {(result, error: DDPError?) in
             DispatchQueue.main.async {
                 if let error = error {
-                    let rvError = RVError(message: "In \(self.instanceType).insert \(#line) got DDPError for id: \(self.localId)", sourceError: error)
+                    let rvError = RVError(message: "In \(self.instanceType).insert \(#line) got DDPError for id: \(self.localId ?? " no localId")", sourceError: error)
                     callback(nil, rvError)
                 } else if let result = result as? [String: AnyObject] {
                   //  print("In \(self.instanceType).created line \(#line) of RVBaseModel, successfully created \(self.localId)")
                     callback(type(of: self).modelFromFields(fields: result),  nil)
                 } else {
-                    print("In \(self.instanceType).insert \(#line), no error but no casted result. id = \(self.localId). Result if any: \(result)")
+                    print("In \(self.instanceType).insert \(#line), no error but no casted result. id = \(self.localId ?? "No localId"). Result if any: \(result ?? "No result")")
                     callback(nil, nil)
                 }
             }
 
         }
     }
-    override func update(_ fields: NSDictionary?, cleared: [String]? ) {
 
-        if let fields = fields as? [String : AnyObject] {
-            for (rawValue, value) in fields {
-                if let property = RVKeys(rawValue: rawValue) {
-                    setProperty(key: property, value: value)
-                }
-            }
-            
-        }
-        if let cleared = cleared {
-            for index in (0..<cleared.count) {
-                let rawValue = cleared[index]
-                if let property = RVKeys(rawValue: rawValue) {
-                    setProperty(key: property, value: nil)
-                }
-            }
-        }
-    }
     func setProperty(key: RVKeys, value: AnyObject?) {
         switch(key) {
         case .collection, ._id, .private, .username, .handle, .handleLowercase, .fullName, .fullNameLowercase, .owner, .ownerId, .parentId:
@@ -1035,7 +1036,7 @@ extension RVBaseModel {
             Meteor.call(type(of: self).meteorMethod(request: .update), params: [ self.localId as AnyObject, dirties as AnyObject, unsets as AnyObject]) { (result: Any? , error: DDPError?) in
                 DispatchQueue.main.async {
                     if let error = error {
-                        let rvError = RVError(message: "In \(self.instanceType).updateById \(#line) got DDPError for id: \(self.localId)", sourceError: error)
+                        let rvError = RVError(message: "In \(self.instanceType).updateById \(#line) got DDPError for id: \(self.localId ?? "NO LocalID")", sourceError: error)
                         callback(nil, rvError)
                         return
                     } else if let fields = result as? [String : AnyObject] {
@@ -1043,7 +1044,7 @@ extension RVBaseModel {
                         callback(type(of: self).modelFromFields(fields: fields), nil)
                         return
                     } else {
-                        print("In \(self.instanceType).updateById \(#line), no error but no result. id = \(self.localId) \(result)")
+                        print("In \(self.instanceType).updateById \(#line), no error but no result. id = \(self.localId ?? "No localId") \(result ?? " no result")")
                         callback(nil, nil)
                     }
                 }
@@ -1110,12 +1111,12 @@ extension RVBaseModel {
         Meteor.call(type(of: self).meteorMethod(request: .delete), params: [ self.localId as AnyObject]) { (result: Any?, error: DDPError?) in
             DispatchQueue.main.async {
                 if let error = error {
-                    let rvError = RVError(message: "In \(self.instanceType).delete \(#line) got DDPError for id: \(self.localId)", sourceError: error)
+                    let rvError = RVError(message: "In \(self.instanceType).delete \(#line) got DDPError for id: \(self.localId ?? " no LocxalId")", sourceError: error)
                     callback(-1, rvError)
                 } else if let count = result as? Int {
                     callback(count, nil)
                 } else {
-                    print("In \(self.instanceType).delete \(#line), no error but no result. id = \(self.localId)")
+                    print("In \(self.instanceType).delete \(#line), no error but no result. id = \(self.localId ?? " no localId")")
                     callback(-1, nil)
                 }
             }
@@ -1131,7 +1132,7 @@ extension RVBaseModel {
     func toString() -> String {
         var output = "-------------------------------\(instanceType) instance --------------------------------\n"
         let id = self.localId
-            output = output + "_id = \(id), "
+            output = output + "_id = \(id ?? " no id"), "
 
         output = "\(output) modelType = \(modelType.rawValue), collection = \(collection.rawValue) \n"
         output = addTerm(term: "Shadow ID", input: output, value: self.shadowId)
@@ -1189,8 +1190,8 @@ extension RVBaseModel {
         } else {
             output = "\(output)comment <no comment>\n"
         }
-        output = addTerm(term: "schemaVersion", input: output, value: "\(self.schemaVersion)")
-        output = addTerm(term: "Update count", input: output, value: "\(self.updateCount)")
+        output = addTerm(term: "schemaVersion", input: output, value: "\(self.schemaVersion?.description ?? "No schemaVersion")")
+        output = addTerm(term: "Update count", input: output, value: "\(self.updateCount?.description ?? " no updateCount")")
         output = "\(output), deleted: \(deleted), "
         output = "\(output), validRecord: \(validRecord), "
         output = addTerm(term: "domainId", input: output, value: self.domainId)
@@ -1216,7 +1217,7 @@ extension RVBaseModel {
         if initializing { return }
         self.updateById { (result, error) in
             if let error = error {
-                print("In \(self.instanceType).valueChanged error changingn \(field.rawValue) \(value). \n\(error)")
+                print("In \(self.instanceType).valueChanged error changingn \(field.rawValue) \(value ?? " no value" as AnyObject). \n\(error)")
             }
         }
     }

@@ -496,7 +496,7 @@ extension RVMemberViewController {
         let contentType = userInfo[SLKTextViewPastedItemContentType]
         let data = userInfo[SLKTextViewPastedItemData]
         
-        print("didPasteMediaContent : \(contentType) (type = \(mediaType) | data : \(data))")
+        print("didPasteMediaContent : \(contentType ?? "No contentType") (type = \(mediaType?.description ?? "No mediaTYpe") | data : \(data ?? " No data"))")
     }
     
     // Notifies the view controller when a user did shake the device to undo the typed text

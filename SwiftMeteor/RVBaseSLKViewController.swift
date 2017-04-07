@@ -609,7 +609,7 @@ extension RVBaseSLKViewController {
             if let error = error {
                 error.printError()
             } else if let transaction = model as? RVTransaction {
-                print("In \(self.instanceType).expandCollapse, created transaction \(transaction.localId) \(transaction.createdAt)")
+                print("In \(self.instanceType).expandCollapse, created transaction \(transaction.localId ?? " no LocalId") \(transaction.createdAt ?? " no createdAt")")
             } else {
                 print("In \(self.instanceType).expandCollapse, no error, but no result ")
             }
@@ -672,7 +672,7 @@ extension RVBaseSLKViewController {
         let contentType = userInfo[SLKTextViewPastedItemContentType]
         let data = userInfo[SLKTextViewPastedItemData]
         
-        print("didPasteMediaContent : \(contentType) (type = \(mediaType) | data : \(data))")
+        print("didPasteMediaContent : \(contentType ?? "no contentType") (type = \(mediaType?.description ?? " No mediaType") | data : \(data))")
     }
     
     // Notifies the view controller when a user did shake the device to undo the typed text

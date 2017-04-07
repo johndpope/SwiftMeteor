@@ -26,7 +26,7 @@ class RVDocumentWasAddedOperation: RVAsyncOperation {
     var model: RVBaseModel
     init(model: RVBaseModel) {
         self.model = model
-        super.init(title: "Document Was Added: \(model.modelType.rawValue) id: \(model.localId) \(model.createdAt)")
+        super.init(title: "Document Was Added: \(model.modelType.rawValue) id: \(model.localId ?? " no localId") \(model.createdAt)")
     }
     override func asyncMain() {
         if self.isCancelled {
@@ -62,7 +62,7 @@ class RVDocumentWasAddedOperation: RVAsyncOperation {
             })
         } else if index == 2 {
             UIAlertController.showTextEntryDialog(withTitle: title, andMessage: message, andPlaceHolder: "Enter something", from: controller, completionHandler: { (response) in
-                print("Response is: \(response)")
+                print("Response is: \(response ?? " no response")")
                 self.completeOperation()
             })
         } else if index == 3 {
@@ -71,7 +71,7 @@ class RVDocumentWasAddedOperation: RVAsyncOperation {
                     print("Have textField")
                 }
             }, from: controller, completionHandler: { (response) in
-                print("Response is: \(response)")
+                print("Response is: \(response ?? " no response")")
                 self.completeOperation()
             })
         }

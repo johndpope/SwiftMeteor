@@ -15,7 +15,7 @@ import SDWebImage
 public class RVAWS: NSObject {
 
 
-    let defaultServiceRegionType = AWSRegionType.usWest1
+    let defaultServiceRegionType = AWSRegionType.USWest1
     private static let s3domainAddress     = "s3.amazonaws.com"
     private static let amazonDomainAddress = "amazonaws.com"
     let transferManagerIdentifier: String  = "USWest2S3TransferManager"
@@ -24,8 +24,8 @@ public class RVAWS: NSObject {
     static let bucket = "swiftmeteor"
     
     
-    private static let cognitoRegion = AWSRegionType.usWest2
-    private static let S3Region = AWSRegionType.usWest1
+    private static let cognitoRegion = AWSRegionType.USWest2
+    private static let S3Region = AWSRegionType.USWest1
     private static let S3RegionString = "s3-us-west-1"
     
     private static let accessKey           = "AKIAIMIHTAKR4RY7R2HA"
@@ -68,7 +68,7 @@ public class RVAWS: NSObject {
         let fileContentTypeString = contentType
         getPresignedURLRequest.contentType = fileContentTypeString
         let t = AWSS3PreSignedURLBuilder.default().getPreSignedURL(getPresignedURLRequest)
-        t.continue(successBlock: { (task: AWSTask!) -> AnyObject! in
+        t.continueWith(block: { (task: AWSTask!) -> AnyObject! in
             if let error = task.error {
                 print(error)
                 let rvError = RVError(message: "In RVAWS.upload, failed to get Presigned URL for \(RVAWS.bucket)\(path)", sourceError: error)

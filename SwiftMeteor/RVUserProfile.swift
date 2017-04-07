@@ -244,7 +244,7 @@ class RVUserProfile: RVInterest {
         profile.dirties = [String : AnyObject]()
         Meteor.call(RVMeteorMethods.getOrCreateUserUserProfile.rawValue, params: [fields]) {(result, error: DDPError?) in
             if let error = error {
-                let rvError = RVError(message: "In RVUserProfile.getOrCreateUsersUserProfile \(#line) got DDPError for id: \(profile.localId)", sourceError: error)
+                let rvError = RVError(message: "In RVUserProfile.getOrCreateUsersUserProfile \(#line) got DDPError for id: \(profile.localId ?? "No localId")", sourceError: error)
                 callback(nil, rvError)
             } else if let fields = result as? [String: AnyObject] {
                 if let _ = fields["newProfile"] as? Bool {
@@ -275,7 +275,7 @@ class RVUserProfile: RVInterest {
                     return
                 }
             } else {
-                print("In RVUserProfile.getOrCreateUsersUserProfile \(#line), no error but no result. id = \(profile.localId)")
+                print("In RVUserProfile.getOrCreateUsersUserProfile \(#line), no error but no result. id = \(profile.localId ?? " no localId")")
                 callback(nil, nil)
             }
         }

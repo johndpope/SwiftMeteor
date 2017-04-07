@@ -54,7 +54,7 @@ extension RVAWSDirect: URLSessionDownloadDelegate {
 public class RVAWSDirect: NSObject {
 
     var activeDownloads = [String: RVDataTask]()
-    let defaultServiceRegionType = AWSRegionType.usWest1
+    let defaultServiceRegionType = AWSRegionType.USWest1
     private static let s3domainAddress     = "s3.amazonaws.com"
     private static let amazonDomainAddress = "amazonaws.com"
     let transferManagerIdentifier: String = "USWest2S3TransferManager"
@@ -63,8 +63,8 @@ public class RVAWSDirect: NSObject {
     static let bucket = "swiftmeteor"
     
 
-    private static let cognitoRegion = AWSRegionType.usWest2
-    private static let S3Region = AWSRegionType.usWest1
+    private static let cognitoRegion = AWSRegionType.USWest2
+    private static let S3Region = AWSRegionType.USWest1
     private static let S3RegionString = "s3-us-west-1"
     
     private static let accessKey           = "AKIAIMIHTAKR4RY7R2HA"
@@ -98,7 +98,7 @@ public class RVAWSDirect: NSObject {
     
     func syncTest() {
         let syncClient = AWSCognito.default()
-        if let  dataset = syncClient?.openOrCreateDataset("myDataset") {
+        if let  dataset = syncClient.openOrCreateDataset("myDataset") {
             dataset.setString("myValue....zzzzz", forKey: "myKey")
             dataset.synchronize().continue({ (task) -> Any? in
                 if let error = task.error {
@@ -198,7 +198,7 @@ public class RVAWSDirect: NSObject {
         getPresignedURLRequest.httpMethod = AWSHTTPMethod.GET
         getPresignedURLRequest.expires = NSDate(timeIntervalSinceNow: 3600) as Date
         let t = AWSS3PreSignedURLBuilder.default().getPreSignedURL(getPresignedURLRequest)
-        t.continue(successBlock: { (task: AWSTask!) -> AnyObject! in
+        t.continueWith(block: {  (task: AWSTask!) -> AnyObject! in
             if let error = task.error {
                 print(error)
             } else if let exception = task.exception {
@@ -241,7 +241,7 @@ public class RVAWSDirect: NSObject {
         let t = AWSS3PreSignedURLBuilder.default().getPreSignedURL(getPresignedURLRequest)
         
         
-        t.continue(successBlock: { (task: AWSTask!) -> AnyObject! in
+        t.continueWith(block: { (task: AWSTask!) -> AnyObject! in
             if let error = task.error {
                 print(error)
             } else if let exception = task.exception {
@@ -308,7 +308,7 @@ public class RVAWSDirect: NSObject {
         let t = AWSS3PreSignedURLBuilder.default().getPreSignedURL(getPresignedURLRequest)
 
         
-        t.continue(successBlock: { (task: AWSTask!) -> AnyObject! in
+        t.continueWith(block: { (task: AWSTask!) -> AnyObject! in
             if let error = task.error {
                 print(error)
             } else if let exception = task.exception {
@@ -339,7 +339,7 @@ public class RVAWSDirect: NSObject {
         let s3 = AWSS3.default()
         
         if let listObjectsRequest = AWSS3ListObjectsRequest() {
-            s3.listObjects(listObjectsRequest).continue({ (task) -> Any? in
+            s3.listObjects(listObjectsRequest).continueWith(block: { (task) -> Any? in
                 if let error = task.error {
                     print("List Objects Error \(error)")
                 } else if let exception = task.exception {
@@ -375,7 +375,7 @@ public class RVAWSDirect: NSObject {
         let transferManager: AWSS3TransferManager = AWSS3TransferManager.default()
         let task: AWSTask<AnyObject> = transferManager.upload(request)
         
-        let _: AWSTask<AnyObject> = task.continue(with: AWSExecutor.mainThread(), withSuccessBlock: { (result: AWSTask<AnyObject>) in
+        let _: AWSTask<AnyObject> = task.continueWith(executor: AWSExecutor.mainThread(), block: { (result: AWSTask<AnyObject>)  -> Any? in
             if let error = task.error { // AWSS3TransferManagerErrorDomain
                 // ErrorCancelled
                 // ErrorPaused
@@ -387,6 +387,7 @@ public class RVAWSDirect: NSObject {
             }
             return nil
         })
+
     }
     public func downloadRequest(bucket: String, sourcePath: String, destinationFileURL: URL) -> AWSS3TransferManagerDownloadRequest {
         let downloadRequest: AWSS3TransferManagerDownloadRequest = AWSS3TransferManagerDownloadRequest()

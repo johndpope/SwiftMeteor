@@ -23,7 +23,7 @@ class RVTaskTableViewCell: RVBaseTableViewCell {
             setLabelText(label: customTextLabel, text: model.title)
             setLabelText(label: descriptionLabel, text: model.handle)
             setLabelText(label: commentLabel, text: model.comment)
-            setLabelText(label: scoreLabel, text: "\(model.score)")
+            setLabelText(label: scoreLabel, text: "\(model.score?.description ?? "")")
         }
         
     }

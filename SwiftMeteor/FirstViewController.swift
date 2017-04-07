@@ -447,7 +447,7 @@ class TaskCollection: AbstractCollection {
     override public func documentWasAdded(_ collection: String, id: String, fields: NSDictionary?) {
         let task = (TaskStruct(id: id, fields: fields))
         
-        print("\(count)  Appending task: \(task._id) \(task.text) \(task.createdAt) ")
+        print("\(count)  Appending task: \(task._id ?? "no task._id") \(task.text) \(task.createdAt) ")
         count = count + 1
         tasks.append(task)
     }

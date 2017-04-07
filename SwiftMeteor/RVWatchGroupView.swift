@@ -46,7 +46,7 @@ class RVWatchGroupView: UIView {
                     return nil
                 })
             } else {
-                print("In \(self.classForCoder).configure() top of stack is \(state.stack.last)")
+                print("In \(self.classForCoder).configure() top of stack is \(state.stack.last ?? "vNo state.stack.last")")
             }
         } else {
             print("In \(self.classForCoder).configure() no state")

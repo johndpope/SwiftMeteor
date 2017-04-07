@@ -124,7 +124,7 @@ class RVLocation: RVInterest {
                 }
             }
         } else {
-            print("In \(self.classForCoder).absorbGeocode, geometry did not cast: \(geocode[RVGooglePlace.Keys.geometry.rawValue]) ---------------")
+            print("In \(self.classForCoder).absorbGeocode, geometry did not cast: \(geocode[RVGooglePlace.Keys.geometry.rawValue] ?? "no Key" as AnyObject) ---------------")
         }
         if let formattedAddress = geocode[GeocodeKeys.formatted_address.rawValue] as? String {
             self.lines = [formattedAddress]

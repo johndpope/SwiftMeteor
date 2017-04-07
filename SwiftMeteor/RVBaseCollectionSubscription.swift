@@ -45,7 +45,7 @@ class RVBaseCollectionSubscription: RVBaseCollection, RVSubscription {
                     
                 } else {
                     if eventType == .removed { return }
-                    print("In \(self.instanceType) #\(#line).finishUp collection \(collection) EventType:\(eventType) fields is nil, id is \(id) and subID = \(self.subscriptionID)")
+                    print("In \(self.instanceType) #\(#line).finishUp collection \(collection) EventType:\(eventType) fields is nil, id is \(id) and subID = \(self.subscriptionID ?? "No subscriptionID")")
                     //if eventType == .removed { return }
                 }
                 if queue.operationCount > self.MaxOperations {
@@ -55,7 +55,7 @@ class RVBaseCollectionSubscription: RVBaseCollection, RVSubscription {
                     queue.addOperation(RVModelSubscriptionBroadcast(subscription: self , models: models, eventType: eventType, id: id))
                 }
             } else {
-                print("In \(self.classForCoder).finishUp, collectionName sent: \(collection), not equal to collection \(self.collection.rawValue). id: \(id) and subID = \(self.subscriptionID)")
+                print("In \(self.classForCoder).finishUp, collectionName sent: \(collection), not equal to collection \(self.collection.rawValue). id: \(id) and subID = \(self.subscriptionID ?? "No subscriptionID")")
             }
         } else {
             //print("In \(self.classForCoder).finishUp for collection: \(collection) got eventType: \(eventType) for id \(id), when subscriptionID id nil")
@@ -144,7 +144,7 @@ class RVModelSubscriptionBroadcast: RVAsyncOperation {
             })
         } else if index == 2 {
             UIAlertController.showTextEntryDialog(withTitle: title, andMessage: message, andPlaceHolder: "Enter something", from: controller, completionHandler: { (response) in
-                print("Response is: \(response)")
+                print("Response is: \(response ?? " no response")")
                 self.completeOperation()
             })
         } else if index == 3 {
@@ -153,7 +153,7 @@ class RVModelSubscriptionBroadcast: RVAsyncOperation {
                     print("Have textField")
                 }
             }, from: controller, completionHandler: { (response) in
-                print("Response is: \(response)")
+                print("Response is: \(response ?? " no response")")
                 self.completeOperation()
             })
         }

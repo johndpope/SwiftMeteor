@@ -74,16 +74,16 @@ class RVSwiftDDP: NSObject {
         NotificationCenter.default.addObserver(self, selector: #selector(RVSwiftDDP.ddpWebsocketClose), name: NSNotification.Name(rawValue: DDP_WEBSOCKET_CLOSE), object: nil)
     }
     @objc func ddpDisconnected(notification: NSNotification) {
-        print("IN \(self.classForCoder).ddpDisconnected \(notification.userInfo)")
+        print("IN \(self.classForCoder).ddpDisconnected \(notification.userInfo?.description ?? " No userInfo")")
     }
     @objc func ddpFailed(notification: NSNotification) {
-        print("IN \(self.classForCoder).ddpFailed \(notification.userInfo)")
+        print("IN \(self.classForCoder).ddpFailed \(notification.userInfo?.descripiton ?? " No userInfo")")
     }
     @objc func ddpWebsocketError(notification: NSNotification) {
-        print("IN \(self.classForCoder).ddpWebsocketError \(notification.userInfo)")
+        print("IN \(self.classForCoder).ddpWebsocketError \(notification.userInfo?.description ?? "No User Info")")
     }
     @objc func ddpWebsocketClose(notification: NSNotification) {
-        print("IN \(self.classForCoder).ddpWebsocketClose \(notification.userInfo)")
+        print("IN \(self.classForCoder).ddpWebsocketClose \(notification.userInfo?.description ?? " no userInfo")")
     }
     func getId() -> String {
         return Meteor.client.getId()

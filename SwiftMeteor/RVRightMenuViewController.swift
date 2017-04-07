@@ -50,7 +50,7 @@ class RVRightMenuViewController: RVBaseViewController {
             if let error = error {
                 error.printError()
             } else {
-                print("After loginWIthPassword \(result)")
+                print("After loginWIthPassword \(result ?? " no result")")
             }
         }
     }
@@ -171,7 +171,7 @@ class RVRightMenuViewController: RVBaseViewController {
                 self.performSegue(withIdentifier: "UnwindFromLoginToMainLanding", sender: nil)
             } else {
                 print("In \(self.classForCoder).addLogInOutListeners cast \(self.presentingViewController)")
-                print("\(self.viewDeckController?.centerViewController)   \(self.viewDeckController?.leftViewController)")
+                print("\(self.viewDeckController?.centerViewController ?? "no centerViewController")   \(self.viewDeckController?.leftViewController)")
                 print("In \(RVViewDeck.sharedInstance.centerViewController) \(RVViewDeck.sharedInstance.leftViewController)")
             }
             return true

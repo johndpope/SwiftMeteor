@@ -84,7 +84,7 @@ class RVCoreInfo2 {
         //print("In \(self.instanceType).connected")
         self.getDomain2 { (error) in
             if let error = error { error.printError() }
-            else {print("In \(self.instanceType).connected, have domain: \(self.domain!.localId) \(self.domain!.domainName.rawValue)") }
+            else {print("In \(self.instanceType).connected, have domain: \(self.domain!.localId ?? " no domain.localId") \(self.domain!.domainName.rawValue)") }
         }
     }
     @objc func userLoggedIn(notification: NSNotification) {
@@ -125,7 +125,7 @@ class RVCoreInfo2 {
         userProfileString = userProfileString + "\n"
         var rootGroupString = "No Root Group"
         if let rootGroup = self.rootGroup {
-            rootGroupString = rootGroup.localId   != nil ? "RootGroup:            id:\(rootGroup.localId)" : "RootGroup:            ### no id ### "
+            rootGroupString = rootGroup.localId   != nil ? "RootGroup:            id:\(rootGroup.localId ?? "no localId")" : "RootGroup:            ### no id ### "
             rootGroupString = rootGroup.title     != nil ? "\(rootGroupString), \(rootGroup.title!)" : "\(rootGroupString), \(rootGroupString) ### no title ### "
             rootGroupString = rootGroup.createdAt != nil ? "\(rootGroupString), createdAt: \(rootGroup.createdAt!)" : "\(rootGroupString), no createdAt"
          }
@@ -258,7 +258,7 @@ class RVCoreInfo2 {
                     callback(nil)
                     return
                 } else {
-                    print("In \(self.instanceType).getRootGroup, creating RootGroup, group was: \(group)")
+                    print("In \(self.instanceType).getRootGroup, creating RootGroup, group was: \(group?.toString() ?? "No group")")
                     let group = RVGroup()
                     group.domainId = domainId
                     group.special = .root

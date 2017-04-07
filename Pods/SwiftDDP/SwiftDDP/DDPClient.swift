@@ -220,7 +220,7 @@ open class DDPClient: NSObject {
                     callback?(session)
                 }
                 
-                var completion = Completion(callback: callbackWithServiceConfiguration)
+                var completion = Completion(cCallback: callbackWithServiceConfiguration)
                 //Reset the backoff to original values
                 backOff.reset()
                 completion.executionQueue = executionQueue

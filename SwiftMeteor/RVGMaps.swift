@@ -138,7 +138,7 @@ class RVMarker: GMSMarker {
         }
         self.title = location.title
         groundAnchor = CGPoint(x: 0.5, y: 1.0)
-        appearAnimation = kGMSMarkerAnimationPop
+        appearAnimation = GMSMarkerAnimation
     }
     init(place: RVGooglePlace) {
         self.place = place

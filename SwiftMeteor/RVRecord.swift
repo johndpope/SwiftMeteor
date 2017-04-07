@@ -165,7 +165,7 @@ class RVRecord {
                 if dirty { valueChanged() }
                 return true
             } else {
-                print("Error. Attempted to update \(fieldName.rawValue) to a value that is not an Array. Value: \(value)")
+                print("Error. Attempted to update \(fieldName.rawValue) to a value that is not an Array. Value: \(value ?? " no vlaue")")
                 return false
             }
         } else {

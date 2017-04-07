@@ -34,7 +34,7 @@ class RVDSManager {
         } else if let _ = self.scrollView as? UICollectionView {
             
         } else {
-            print("In \(self.instanceType).addSection, invalid scrollView, scrollVIew is \(self.scrollView)")
+            print("In \(self.instanceType).addSection, invalid scrollView, scrollVIew is \(self.scrollView?.description ?? "No scrollView")")
         }
     }
     func removeAllSections(callback: @escaping() -> Void) {
