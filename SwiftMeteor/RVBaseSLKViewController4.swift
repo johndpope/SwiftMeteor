@@ -39,8 +39,17 @@ class RVBaseSLKViewController4: SLKTextViewController {
     var emojis: Array = ["-1", "m", "man", "machine", "block-a", "block-b", "bowtie", "boar", "boat", "book", "bookmark", "neckbeard", "metal", "fu", "feelsgood"]
     var setupSLKDatasource: Bool = true
     var searchResult: [String]? // for SLKTextViewController, not sure why
-    
-    var configuration:      RVBaseConfiguration4 = RVBaseConfiguration4(scrollView: nil)
+    var _configuration: RVBaseConfiguration4? = nil
+    var configuration: RVBaseConfiguration4 {
+        get {
+            if let c = _configuration { return c }
+            let configuration = instanceConfiguration
+            _configuration = configuration
+            return configuration    
+        }
+    }
+    var instanceConfiguration: RVBaseConfiguration4 { return RVBaseConfiguration4(scrollView: dsScrollView) }
+    // var configuration:      RVBaseConfiguration4 = RVBaseConfiguration4(scrollView: nil)
     var manager:            RVDSManager4 { get { return configuration.manager }}
     let searchController    = UISearchController(searchResultsController: nil)
     var searchScopes:       [[String: RVKeys]] { get { return configuration.searchScopes } }
@@ -70,13 +79,12 @@ class RVBaseSLKViewController4: SLKTextViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         commonInit()
-
         configureNavBar()
+        configureSearchController()
+        configureSLK()
         adjustTableViewInsetForNavBar()
         updateTableViewInsetHeight()
         putTopViewOnTop()
-        configureSearchController()
-        configureSLK()
         let (query, _) = configuration.topQuery()
         configuration.loadTop(query: query, callback: { (error) in
             if let error = error {
