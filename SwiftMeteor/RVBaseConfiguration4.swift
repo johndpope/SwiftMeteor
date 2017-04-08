@@ -16,8 +16,6 @@ class RVBaseConfiguration4 {
     var showSearch: Bool            = true
     var showTopView:Bool            = true
     var installRefresh: Bool        = false
-    var SLKIsInverted: Bool         = false
-    var showTextInputBar: Bool      = true
     var searchBarPlaceholder: String = "... Search"
     var mainDatasourceMaxSize: Int  = 300
     var filterDatasourceMaxSize: Int = 300
@@ -29,6 +27,15 @@ class RVBaseConfiguration4 {
     var installSearchControllerInTableView: Bool = false
     var manager = RVDSManager4(scrollView: nil)
     var navigationBarColor: UIColor = UIColor.facebookBlue()
+    
+    // SLK
+    var SLKIsInverted: Bool                             = false
+    var SLKbounces: Bool                                = true
+    var SLKshakeToClearEnabled: Bool                    = true
+    var SLKisKeyboardPanningEnabled: Bool               = true
+    var SLKshouldScrollToBottomAfterKeyboardShows: Bool = false
+    var SLKshowTextInputBar: Bool                       = true
+    
     
     var topDatasource: RVBaseDatasource4? {
         return nil
@@ -47,8 +54,6 @@ class RVBaseConfiguration4 {
         self.showSearch             = true
         self.showTopView            = true
         self.installRefresh         = false
-        self.SLKIsInverted          = false
-        self.showTextInputBar       = true
         self.defaultSortOrder       = .ascending
         self.installSearchControllerInTableView = false
         self.searchBarPlaceholder   = "... Search"
@@ -57,7 +62,16 @@ class RVBaseConfiguration4 {
         self.mainDatasourceMaxSize      = 300
         self.filterDatasourceMaxSize    = 300
         self.searchScopes               = [[RVKeys.title.rawValue: RVKeys.title], [RVKeys.fullName.rawValue: RVKeys.fullName]]
+        configureSLK()
         self.manager                    = RVDSManager4(scrollView: scrollView)
+    }
+    func configureSLK() {
+        self.SLKIsInverted                             = false
+        self.SLKbounces                                = true
+        self.SLKshakeToClearEnabled                    = true
+        self.SLKisKeyboardPanningEnabled               = true
+        self.SLKshouldScrollToBottomAfterKeyboardShows = false
+        self.SLKshowTextInputBar                       = true
     }
     func removeAllSections(callback: @escaping RVCallback) {
         self.manager.removeAllSections(callback: callback)

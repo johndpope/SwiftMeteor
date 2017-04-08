@@ -24,8 +24,13 @@ class RVBaseSLKViewController4: SLKTextViewController {
     var tableViewInsetAdditionalHeight: CGFloat = 0.0
     let navBarHeight: CGFloat = 62.0
     var _lastSearchTerm: String = "Dummy Value"
-    var lastSearchTerm: String = "Dummy Value"
-    var SLKIsInverted          = false
+    var lastSearchTerm: String  = "Dummy Value"
+    var SLKIsInverted: Bool                             { return configuration.SLKIsInverted }
+    var SLKbounces: Bool                                { return configuration.SLKbounces }
+    var SLKshakeToClearEnabled: Bool                    { return configuration.SLKshakeToClearEnabled }
+    var SLKisKeyboardPanningEnabled: Bool               { return configuration.SLKisKeyboardPanningEnabled }
+    var SLKshouldScrollToBottomAfterKeyboardShows: Bool { return configuration.SLKshouldScrollToBottomAfterKeyboardShows }
+    var SLKshowTextInputBar: Bool                       { return configuration.SLKshowTextInputBar }
     // SLK Stuff
     var pipWindow: UIWindow? // for SLK
     var users: Array = ["Allen", "Anna", "Alicia", "Arnold", "Armando", "Antonio", "Brad", "Catalaya", "Christoph", "Emerson", "Eric", "Everyone", "Steve"]
@@ -234,7 +239,7 @@ extension RVBaseSLKViewController4 {
         self.isKeyboardPanningEnabled = true
         self.shouldScrollToBottomAfterKeyboardShows = false
         self.isInverted = self.SLKIsInverted
-        if configuration.showTextInputBar {
+        if configuration.SLKshowTextInputBar {
             self.leftButton.setImage(UIImage(named: "icn_upload"), for: UIControlState())
             self.leftButton.tintColor = UIColor.gray
             
