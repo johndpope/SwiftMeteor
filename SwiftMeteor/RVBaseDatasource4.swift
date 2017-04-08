@@ -310,6 +310,7 @@ extension RVBaseDatasource4 {
         }
     }
     func scroll(index: Int, scrollView: UIScrollView) {
+        print("in \(self.classForCoder).scroll \(index)")
         let _ = self.item(index: index, scrollView: scrollView, updateLast: false)
     }
     func cloneItems() -> [RVBaseModel] {
@@ -451,7 +452,7 @@ class RVExpandCollapseOperation: RVLoadOperation {
                 }
             }
         } else {
-            print("In \(self.classForCoder).main expand collapsed: \(datasource.collapsed)")
+           // print("In \(self.classForCoder).main expand collapsed: \(datasource.collapsed)")
             self.datasource.scrollView = self.scrollView
             if self.datasource.collapsed {
                 DispatchQueue.main.async {
@@ -791,7 +792,12 @@ class RVLoadOperation: RVAsyncOperation {
                     if let visibleIndexPaths = tableView.indexPathsForVisibleRows {
                         if visibleIndexPaths.count > 0 {
                             for indexPath in visibleIndexPaths {
-                                if let cell = tableView.cellForRow(at: indexPath) as? RVItemRetrieve { cell.item = self.datasource.item(index: indexPath.row, scrollView: tableView) }
+                                //print("In \(self.classForCoder).refreshViews indexPath \(indexPath.section) \(indexPath.row)")
+                                if indexPath.section == self.datasource.section {
+                                    if let cell = tableView.cellForRow(at: indexPath) as? RVItemRetrieve {
+                                        cell.item = self.datasource.item(index: indexPath.row, scrollView: tableView)
+                                    }
+                                }
                             }
                             tableView.endUpdates()
                             callback()
@@ -811,7 +817,11 @@ class RVLoadOperation: RVAsyncOperation {
                         let visibleIndexPaths = collectionView.indexPathsForVisibleItems
                         if visibleIndexPaths.count > 0 {
                             for indexPath in visibleIndexPaths {
-                                if let cell = collectionView.cellForItem(at: indexPath) as? RVItemRetrieve { cell.item = self.datasource.item(index: indexPath.item, scrollView: collectionView) }
+                                if indexPath.section == self.datasource.section {
+                                    if let cell = collectionView.cellForItem(at: indexPath) as? RVItemRetrieve {
+                                        cell.item = self.datasource.item(index: indexPath.item, scrollView: collectionView)
+                                    }
+                                }
                             }
                         }
                     }, completion: { (success) in

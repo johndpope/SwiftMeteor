@@ -122,7 +122,7 @@ class RVGroupListController: RVTransactionListViewController {
                 if let error = error {
                     error.printError()
                 } else {
-                   print("In \(self.classForCoder).expandCollapseButtonTouched. Successful return")
+                  // print("In \(self.classForCoder).expandCollapseButtonTouched. Successful return")
                 }
             }
         }
@@ -132,7 +132,7 @@ class RVGroupListController: RVTransactionListViewController {
                 if let error = error {
                     error.printError()
                 } else {
-                    print("In \(self.classForCoder).expandCollapseButtonTouched. Successful return")
+                   // print("In \(self.classForCoder).expandCollapseButtonTouched. Successful return")
                 }
             })
         }

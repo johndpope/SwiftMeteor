@@ -158,6 +158,7 @@ extension RVBaseSLKViewController4 {
         }
     }
     func primaryCellForRowAtIndexPath(tableView: UITableView, _ indexPath: IndexPath) -> RVTransactionTableViewCell {
+       // print("In \(self.classForCoder).primaryCell for indexPath \(indexPath.section) \(indexPath.row)")
         let cell = tableView.dequeueReusableCell(withIdentifier: RVTransactionTableViewCell.identifier) as! RVTransactionTableViewCell
         if cell.gestureRecognizers?.count == nil {
             let longPress = UILongPressGestureRecognizer(target: self, action: #selector(RVMemberViewController.didLongPressCell(_:)))
@@ -192,7 +193,7 @@ extension RVBaseSLKViewController4: RVFirstViewHeaderCellDelegate {
                 if let error = error {
                     error.printError()
                 } else {
-                    print("In \(self.classForCoder).expandCollapseButtonTouched. Successful return")
+                   // print("In \(self.classForCoder).expandCollapseButtonTouched. Successful return")
                 }
             }
         }
