@@ -26,7 +26,7 @@ class RVDocumentWasAddedOperation: RVAsyncOperation {
     var model: RVBaseModel
     init(model: RVBaseModel) {
         self.model = model
-        super.init(title: "Document Was Added: \(model.modelType.rawValue) id: \(model.localId ?? " no localId") \(model.createdAt?.description ?? " no createdAt")")
+        super.init(title: "Document Was Added: \(model.modelType.rawValue) id: \(model.localId ?? " no localId") \(model.createdAt?.description ?? " no createdAt")", callback: {(models: [RVBaseModel], error: RVError?) in })
     }
     override func asyncMain() {
         if self.isCancelled {

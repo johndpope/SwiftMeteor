@@ -96,7 +96,7 @@ class RVModelSubscriptionBroadcast: RVAsyncOperation {
         self.eventType = eventType
         self.subscription = subscription
         self.id = id
-        super.init(title: "RVModelSubscriptionBroad for \(self.subscription.collection.rawValue), event: \(self.eventType)")
+        super.init(title: "RVModelSubscriptionBroad for \(self.subscription.collection.rawValue), event: \(self.eventType)", callback: {(models: [RVBaseModel], error: RVError?) in } )
     }
     override func asyncMain() {
         if !self.isCancelled {

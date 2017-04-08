@@ -15,6 +15,8 @@ class RVAsyncOperation: Operation {
     private var _executing: Bool = false
     private var _finished:  Bool = false
     var parent: NSObject? = nil
+    var callback: RVCallback
+    let itemsPlug = [RVBaseModel]()
     let invoked = Date()
     override var isAsynchronous: Bool { return true }
     
@@ -36,9 +38,10 @@ class RVAsyncOperation: Operation {
             didChangeValue(forKey: key)
         }
     }
-    init(title: String, parent: NSObject? = nil) {
+    init(title: String, callback: @escaping RVCallback, parent: NSObject? = nil) {
         self.title = title
         self.parent = parent
+        self.callback = callback
         super.init()
     }
     override func start() {
@@ -85,10 +88,10 @@ class RVOperationQueue: OperationQueue {
     }
     func test() {
         var error: Error? = nil
-        let operation1 = RVAsyncOperation(title: "First")
+        let operation1 = RVAsyncOperation(title: "First", callback: {(models, error) in })
         operation1.completionBlock = { error = operation1.error }
         self.addOperation(operation1)
-        let operation2 = RVAsyncOperation(title: "Second")
+        let operation2 = RVAsyncOperation(title: "Second", callback: {(models, error) in })
         operation2.completionBlock = { error = operation2.error }
         self.addOperation(operation2)
         self.addOperation {

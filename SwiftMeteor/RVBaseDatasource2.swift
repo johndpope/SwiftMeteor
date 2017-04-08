@@ -21,10 +21,10 @@ class RVBaseDatasource2: RVBaseDataSource {
 }
 
 class RVQueryForFrontOperation: RVAsyncOperation {
-    private var callback: (RVError?) -> Void
+    private var pcallback: (RVError?) -> Void
     init(title: String, datasource: RVBaseDatasource2, callback: @escaping(RVError?) -> Void ) {
-        self.callback = callback
-        super.init(title: title , parent: datasource)
+        self.pcallback = callback
+        super.init(title: title , callback: {(models: [RVBaseModel], error: RVError?) in }, parent: datasource)
     }
     func createFrontQuery(sourceQuery: RVQuery, datasource: RVBaseDataSource) -> RVQuery {
         let query = sourceQuery.duplicate().updateQuery(front: true)
@@ -75,49 +75,49 @@ class RVQueryForFrontOperation: RVAsyncOperation {
     }
     override func asyncMain() {
         if self.isCancelled {
-            callback(nil)
+            pcallback(nil)
             completeOperation()
             return
         }
         if let datasource = self.parent as? RVBaseDatasource2 {
             if datasource.filterMode {
-                callback(nil)
+                pcallback(nil)
                 completeOperation()
                 return
             } else if var query = datasource.baseQuery {
                 if query.inSearchMode {
-                    callback(nil)
+                    pcallback(nil)
                     completeOperation()
                     return
                 } else if datasource.array.count == 0 {
-                    callback(nil)
+                    pcallback(nil)
                     completeOperation()
                     return
                 } else {
                     if let _ = datasource.array.first {
                         query = createFrontQuery(sourceQuery: query, datasource: datasource)
                         if self.isCancelled {
-                            callback(nil)
+                            pcallback(nil)
                             completeOperation()
                             return
                         }
                         datasource.bulkQuery(query: query, callback: { (models , error) in
                             DispatchQueue.main.async {
                                 if self.isCancelled {
-                                    self.callback(nil)
+                                    self.pcallback(nil)
                                     self.completeOperation()
                                     return
                                 } else {
                                     if let error = error {
                                         error.append(message: "In \(self.instanceType).operation, got error")
-                                        self.callback(error)
+                                        self.pcallback(error)
                                         self.completeOperation()
                                         return
                                     } else if let _ = models {
                        //                 datasource.insertAtFront(operation: <#T##RVDSOperation#>, items: models)
                                     } else {
                                         print("In \(self.instanceType).operation, no error but no results")
-                                        self.callback(nil)
+                                        self.pcallback(nil)
                                         self.completeOperation()
                                         return
                                     }
@@ -128,20 +128,20 @@ class RVQueryForFrontOperation: RVAsyncOperation {
                         return
                     } else {
                         let error = RVError(message: "In \(self.classForCoder).operation, illogical state, no first entry")
-                        callback(error)
+                        pcallback(error)
                         completeOperation()
                         return
                     }
                 }
             } else {
                 print("In \(self.classForCoder).opeation, no datasource")
-                callback(nil)
+                pcallback(nil)
                 completeOperation()
                 return
             }
         } else {
             print("In \(self.classForCoder).opeation, no datasource")
-            callback(nil)
+            pcallback(nil)
             completeOperation()
         }
     }

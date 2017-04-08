@@ -51,18 +51,18 @@ class RVManagerCollapseOperation: RVManagerExpandOperation {
     override func actualOperation(datasource: RVBaseDataSource, completeOperation: @escaping() -> Void) {
         //print("In \(self.classForCoder).actualOperation )")
         if self.isCancelled {
-            self.callback()
+            self.pcallback()
             completeOperation()
             return
         }
         if !datasource.collapsed {
             datasource.collapse {
-                self.callback()
+                self.pcallback()
                 completeOperation()
                 return
             }
         } else {
-            self.callback()
+            self.pcallback()
             completeOperation()
             return
         }
@@ -70,19 +70,19 @@ class RVManagerCollapseOperation: RVManagerExpandOperation {
 }
 class RVManagerExpandOperation: RVAsyncOperation {
     weak var manager: RVDSManager2? = nil
-    var callback: () -> Void
+    var pcallback: () -> Void
     weak var datasource: RVBaseDataSource? = nil
     init(title: String, manager: RVDSManager2, datasource: RVBaseDataSource, callback: @escaping() -> Void) {
         self.manager = manager
-        self.callback = callback
+        self.pcallback = callback
         self.datasource = datasource
-        super.init(title: title)
+        super.init(title: title, callback: {(models: [RVBaseModel], error: RVError?) in }, parent: nil)
     }
     override func asyncMain() {
         if let manager = self.manager {
             if let datasource = self.datasource {
                 if self.isCancelled {
-                    self.callback()
+                    self.pcallback()
                     completeOperation()
                     return
                 }
@@ -91,35 +91,35 @@ class RVManagerExpandOperation: RVAsyncOperation {
                     actualOperation(datasource: datasource, completeOperation: completeOperation)
                     return
                 } else {
-                    self.callback()
+                    self.pcallback()
                     completeOperation()
                     return
                 }
             } else {
-                self.callback()
+                self.pcallback()
                 completeOperation()
                 return
             }
         } else {
-            self.callback()
+            self.pcallback()
             completeOperation()
         }
 
     }
     func actualOperation(datasource: RVBaseDataSource, completeOperation: @escaping() -> Void) {
         if self.isCancelled {
-            self.callback()
+            self.pcallback()
             completeOperation()
             return
         }
         if datasource.collapsed {
             datasource.expand {
-                self.callback()
+                self.pcallback()
                 completeOperation()
                 return
             }
         } else {
-            self.callback()
+            self.pcallback()
             completeOperation()
             return
         }
@@ -133,7 +133,7 @@ class RVManagerRemoveAllSectionsOperation: RVManagerStartDatasourceOperation {
         if let manager = manager {
             if let tableView = manager.scrollView as? UITableView {
                 if self.isCancelled {
-                    self.callback(nil)
+                    self.pcallback(nil)
                     completeOperation()
                     return
                 }
@@ -142,24 +142,24 @@ class RVManagerRemoveAllSectionsOperation: RVManagerStartDatasourceOperation {
                 manager.sections = [RVBaseDataSource]()
                 tableView.deleteSections(indexSet, with: manager.animation)
                 tableView.endUpdates()
-                self.callback(nil)
+                self.pcallback(nil)
                 completeOperation()
                 return
             } else if let _ = manager.scrollView as? UICollectionView {
                 print("In \(self.instanceType).opeartion, CollectionView not supported")
                 let rvError = RVError(message: "In \(self.instanceType).operation CollectionView not supported")
-                self.callback(rvError)
+                self.pcallback(rvError)
                 completeOperation()
                 return
             } else {
                 manager.sections = [RVBaseDataSource]()
-                self.callback(nil)
+                self.pcallback(nil)
                 completeOperation()
                 return
             }
         } else {
             print("In \(self.instanceType).operation no manager")
-            self.callback(nil)
+            self.pcallback(nil)
             completeOperation()
         }
         
@@ -172,38 +172,38 @@ class RVManagerRemoveAllSectionsOperation: RVManagerStartDatasourceOperation {
 class RVManagerStartDatasourceOperation: RVAsyncOperation {
     var datasource: RVBaseDataSource
     var query: RVQuery
-    var callback: (RVError?) -> Void
+    var pcallback: (RVError?) -> Void
     weak var manager: RVDSManager2? = nil
     init(title: String, manager: RVDSManager2, datasource: RVBaseDataSource, query: RVQuery, callback: @escaping(RVError?) -> Void ) {
         self.datasource = datasource
         self.query = query
-        self.callback = callback
+        self.pcallback = callback
         self.manager = manager
-        super.init(title: title)
+        super.init(title: title, callback: {(models: [RVBaseModel], error: RVError?) in })
     }
     override func asyncMain() {
         if let manager = manager {
             if self.isCancelled {
-                self.callback(nil)
+                self.pcallback(nil)
                 completeOperation()
                 return
             }
             let sectionNumber = manager.section(datasource: datasource)
             if sectionNumber >= 0 {
                 self.datasource.start(query: query, callback: { (error) in
-                    self.callback(error)
+                    self.pcallback(error)
                     self.completeOperation()
                 })
                 return
             } else {
                 let rvError = RVError(message: "In \(self.instanceType).operation datasource not found")
-                self.callback(rvError)
+                self.pcallback(rvError)
                 completeOperation()
                 return
             }
         } else {
             print("In \(self.instanceType).operation no manager")
-            self.callback(nil)
+            self.pcallback(nil)
             completeOperation()
         }
 
@@ -211,23 +211,23 @@ class RVManagerStartDatasourceOperation: RVAsyncOperation {
 }
 class RVManagerResetDatasourceOperation: RVAsyncOperation {
     var datasource: RVBaseDataSource
-    var callback: (RVError?) -> Void
+    var pcallback: (RVError?) -> Void
     init(title: String, datasource: RVBaseDataSource, callback: @escaping(RVError?) -> Void ) {
         self.datasource = datasource
-        self.callback = callback
-        super.init(title: title)
+        self.pcallback = callback
+        super.init(title: title, callback: {(models: [RVBaseModel], error: RVError?) in })
     }
     override func asyncMain() {
         
         if self.isCancelled {
-            self.callback(nil)
+            self.pcallback(nil)
             completeOperation()
             return
         } else {
             
             self.datasource.reset {
                // print("IN \(self.classForCoder).main return from reset")
-                self.callback(nil)
+                self.pcallback(nil)
                 self.completeOperation()
             }
         }
@@ -240,26 +240,26 @@ class RVManagerStopDatasourceOperation: RVManagerStartDatasourceOperation {
     override func asyncMain() {
         if let manager = manager {
             if self.isCancelled {
-                self.callback(nil)
+                self.pcallback(nil)
                 completeOperation()
                 return
             }
             let sectionNumber = manager.section(datasource: datasource)
             if sectionNumber >= 0 {
                 self.datasource.stop{(error) in
-                    self.callback(error)
+                    self.pcallback(error)
                     self.completeOperation()
                 }
                 return
             } else {
                 let rvError = RVError(message: "In \(self.instanceType).operation datasource not found")
-                self.callback(rvError)
+                self.pcallback(rvError)
                 completeOperation()
                 return
             }
         } else {
             print("In \(self.instanceType).operation no manager")
-            self.callback(nil)
+            self.pcallback(nil)
             completeOperation()
         }
         

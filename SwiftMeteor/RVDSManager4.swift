@@ -102,16 +102,15 @@ class RVDSManager4 {
 class RVManagerRemoveSections4: RVAsyncOperation {
     weak var manager: RVDSManager4? = nil
     var datasources: [RVBaseDatasource4]
-    var callback: RVCallback
+
     var all: Bool = false
     var ignoreCancel: Bool = false
     let emptyResponse = [RVBaseModel]()
     init(title: String = "Remove Sections", manager: RVDSManager4, datasources: [RVBaseDatasource4], callback: @escaping RVCallback, all: Bool = false) {
-        self.callback = callback
         self.datasources = datasources
         self.all = all
         self.manager = manager
-        super.init(title: title)
+        super.init(title: title, callback: callback)
     }
     func completeIt(error: RVError? = nil) {
         DispatchQueue.main.async {
@@ -347,20 +346,19 @@ class RVManagerExpandCollapseOperation4: RVAsyncOperation {
         case toggle
     }
     weak var manager: RVDSManager4? = nil
+    
     let emptyResponse = [RVBaseModel]()
-    var callback: RVCallback
     var operationType: OperationType
     var datasources: [RVBaseDatasource4]
     var all: Bool = false
     var count: Int
     init(title: String, manager: RVDSManager4, operationType: OperationType, datasources: [RVBaseDatasource4], callback: @escaping RVCallback, all: Bool = false) {
         self.manager = manager
-        self.callback = callback
         self.datasources = datasources
         self.count = datasources.count
         self.operationType = operationType
         self.all = all
-        super.init(title: title)
+        super.init(title: title, callback: callback)
     }
     override func asyncMain() {
         if (self.manager != nil) && ( (self.datasources.count > 0) || self.all ) {

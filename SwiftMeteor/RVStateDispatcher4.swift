@@ -27,7 +27,7 @@ class RVChangeStateOperation: RVAsyncOperation {
     
     init(newState: RVBaseAppState4) {
         self.newState = newState
-        super.init(title: "Change State to \(newState.appState.rawValue)")
+        super.init(title: "Change State to \(newState.appState.rawValue)", callback: {(models: [RVBaseModel], error: RVError?) in })
     }
     override func asyncMain() {
         DispatchQueue.main.async {
@@ -43,7 +43,7 @@ class RVIntraStateChangeOperation: RVAsyncOperation {
     init(currentState: RVBaseAppState4, newIntraState: RVAppState4 ) {
         self.currentState = currentState
         self.newIntraState = newIntraState
-        super.init(title: "Intrastate Change from \(currentState.appState.rawValue) to \(newIntraState.rawValue)")
+        super.init(title: "Intrastate Change from \(currentState.appState.rawValue) to \(newIntraState.rawValue)", callback: {(models: [RVBaseModel], error: RVError?) in })
     }
     override func main() {
         DispatchQueue.main.async {

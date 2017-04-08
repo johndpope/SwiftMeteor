@@ -585,10 +585,10 @@ class RVLoadOperation: RVAsyncOperation {
         case response
     }
     typealias RVCallback = ([RVBaseModel], RVError?) -> Void
-    let itemsPlug = [RVBaseModel]()
+
     var datasource: RVBaseDatasource4
     weak var scrollView: UIScrollView?
-    var callback: RVCallback
+
     var reference: RVBaseModel? = nil
     var front: Bool
     var subscriptionOperation: SubscriptionOperation = .none
@@ -607,9 +607,9 @@ class RVLoadOperation: RVAsyncOperation {
     init(title: String = "RVLoadOperation", datasource: RVBaseDatasource4, scrollView: UIScrollView?, front: Bool = false, callback: @escaping RVCallback) {
         self.datasource             = datasource
         self.scrollView             = scrollView
-        self.callback               = callback
+
         self.front                  = front
-        super.init(title: "\(title) with front: \(front)")
+        super.init(title: "\(title) with front: \(front)", callback: callback, parent: nil)
     }
     override func asyncMain() {
         InnerMain()
