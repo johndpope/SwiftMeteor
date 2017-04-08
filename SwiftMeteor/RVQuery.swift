@@ -376,7 +376,7 @@ class RVQuery {
         }
     }
     
-    func updateQuery4(front: Bool, reference: RVBaseModel?) -> RVQuery {
+    func updateQuery4(front: Bool) -> RVQuery {
         for sortTerm in sortTerms {
             if !updateSort(front: front, field: sortTerm.field){
                 print("In \(self.instanceType).updateQuery, no and term matching sort for field: \(sortTerm.field.rawValue)")

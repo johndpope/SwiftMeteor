@@ -36,6 +36,7 @@ class RVBaseDatasource4: NSObject {
     fileprivate let queue = RVOperationQueue()
     var rowAnimation: UITableViewRowAnimation = UITableViewRowAnimation.automatic
     var items = [RVBaseModel]()
+    var sections = [RVBaseDatasource4]()
     var section: Int { get { return manager.sectionIndex(datasource: self) }}
     var backOperationActive: Bool = false
     var frontOperationActive: Bool = false
@@ -44,6 +45,26 @@ class RVBaseDatasource4: NSObject {
     var collapsed: Bool = false
     var subscription: RVSubscription? = nil
     var notificationInstalled: Bool = false
+    var itemsCount: Int { return items.count}
+    var sectionModel: RVBaseModel? = nil
+    func append(_ newElement: NSObject) {
+        if let item = newElement as? RVBaseModel {
+            items.append(item)
+        } else if let section = newElement as? RVBaseDatasource4 {
+            sections.append(section)
+        } else {
+            print("In \(self.classForCoder).append object is neither RVBaseModel or RVBaseDatasource4 \(newElement)")
+        }
+    }
+    func insert(_ newElement: NSObject, at: Int) {
+        if let item = newElement as? RVBaseModel {
+            items.insert(item, at: at)
+        } else if let section = newElement as? RVBaseDatasource4 {
+            sections.insert(section, at: at)
+        } else {
+            print("In \(self.classForCoder).insert object is neither RVBaseModel or RVBaseDatasource4 \(newElement)")
+        }
+    }
     weak var scrollView: UIScrollView? {
         willSet {
             if (scrollView == nil) || (newValue == nil) { return }
@@ -54,7 +75,7 @@ class RVBaseDatasource4: NSObject {
     var offset: Int = 0 {
         willSet {
             if newValue < 0 { print("In \(self.classForCoder) ERROR. attemtp to set Offset to a negative number \(newValue)") }
-            //print("In \(self.classForCoder).offset setting to \(newValue) and arraysize is \(items.count)")
+            //print("In \(self.classForCoder).offset setting to \(newValue) and arraysize is \(itemsCount)")
         }
     }
     var datasourceType: DatasourceType = .unknown
@@ -194,7 +215,7 @@ extension RVBaseDatasource4 {
         }
         return strip
     }
-    func updateSortTerm(query: RVQuery, front: Bool = false, candidate: RVBaseModel? = nil) -> RVQuery {
+    func updateSortTerm(query: RVQuery, front: Bool = false, candidate: NSObject? = nil) -> RVQuery {
         if (query.sortTerms.count == 0) || (query.sortTerms.count > 1) {
             print("In \(self.classForCoder).updateSortTerms, erroneous number of sort Tersm: \(query.sortTerms)")
         }
@@ -211,7 +232,15 @@ extension RVBaseDatasource4 {
             if front { sortDate = (sortTerm.order == .descending) ? query.decadeAgo : Date() }
             
             var finalValue: AnyObject = sortString as AnyObject
-            let strip = self.stripCandidate(candidate: candidate)
+
+            var strip = [RVKeys : AnyObject]()
+            if let candidate = candidate {
+                if let candidate = candidate as? RVBaseModel {
+                    strip = self.stripCandidate(candidate: candidate)
+                } else if let datasource = candidate as? RVBaseDatasource4 {
+                    strip = self.stripCandidate(candidate: datasource.sectionModel)
+                }
+            }
             if let value = strip[sortTerm.field] { finalValue = value }
             else if let andTerm = query.findAndTerm(term: sortTerm.field) { finalValue = andTerm.value as AnyObject }
             switch (sortTerm.field) {
@@ -235,7 +264,7 @@ extension RVBaseDatasource4 {
     var virtualCount: Int {
         get {
             if self.collapsed { return 0 }
-            return self.items.count + self.offset
+            return self.itemsCount + self.offset
         }
     }
     func inFront(scrollView: UIScrollView?) {
@@ -283,7 +312,7 @@ extension RVBaseDatasource4 {
         var OKtoRetrieve: Bool = true
         if self.subscription != nil {
             if self.subscriptionActive {
-                if self.items.count >= self.maxArraySize {
+                if self.itemsCount >= self.maxArraySize {
                     OKtoRetrieve = false
                 }
             }
@@ -291,21 +320,21 @@ extension RVBaseDatasource4 {
         let physicalIndex = index - offset
         if physicalIndex < 0 {
             //print("In \(self.instanceType).item got physical index less than 0 \(physicalIndex). Offset is \(offset)")
-            //print("In \(self.classForCoder).item calling inBack: index = \(index), count: \(items.count), offset: \(self.offset), backBuffer: \(self.backBufferSize)")
+            //print("In \(self.classForCoder).item calling inBack: index = \(index), count: \(itemsCount), offset: \(self.offset), backBuffer: \(self.backBufferSize)")
             if OKtoRetrieve {inFront(scrollView: scrollView)}
             return nil
-        } else if physicalIndex < items.count {
-            if (physicalIndex + self.backBufferSize) > items.count {
-                //print("In \(self.classForCoder).item calling inBack:  index = \(index), count: \(items.count), offset: \(self.offset), backBuffer: \(self.backBufferSize)")
+        } else if physicalIndex < itemsCount {
+            if (physicalIndex + self.backBufferSize) > itemsCount {
+                //print("In \(self.classForCoder).item calling inBack:  index = \(index), count: \(itemsCount), offset: \(self.offset), backBuffer: \(self.backBufferSize)")
                 if OKtoRetrieve {inBack(scrollView: scrollView) }
             }
             if physicalIndex < self.frontBufferSize {
-               // print("In \(self.classForCoder).item calling inFront: index = \(index), count: \(items.count), offset: \(self.offset), backBuffer: \(self.backBufferSize)")
+               // print("In \(self.classForCoder).item calling inFront: index = \(index), count: \(itemsCount), offset: \(self.offset), backBuffer: \(self.backBufferSize)")
                 if OKtoRetrieve { inFront(scrollView: scrollView) }
             }
             return items[physicalIndex]
         } else {
-            print("In \(self.instanceType).item physicalIndex of \(physicalIndex) exceeds or equals array size \(items.count). Offset is \(self.offset)")
+            print("In \(self.instanceType).item physicalIndex of \(physicalIndex) exceeds or equals array size \(itemsCount). Offset is \(self.offset)")
             return nil
         }
     }
@@ -320,14 +349,14 @@ extension RVBaseDatasource4 {
     }
     var frontItem: RVBaseModel? {
         get {
-            if items.count == 0 { return nil }
+            if itemsCount == 0 { return nil }
             else { return items[0] }
         }
     }
     var backItem: RVBaseModel? {
         get {
-            if items.count == 0 { return nil }
-            else { return items[items.count - 1] }
+            if itemsCount == 0 { return nil }
+            else { return items[itemsCount - 1] }
         }
     }
 
@@ -362,7 +391,7 @@ class RVExpandCollapseOperation: RVLoadOperation {
     func handleCollapse() -> [IndexPath] {
         var indexPaths = [IndexPath]()
         let section = self.datasource.section
-        let lastItem = self.datasource.offset + self.datasource.items.count
+        let lastItem = self.datasource.offset + self.datasource.itemsCount
         if (section >= 0) && (lastItem > 0) { for row in 0..<lastItem { indexPaths.append(IndexPath(row: row, section: section)) } }
         if (self.operationType == .collapseAndZero) || (self.operationType == .collapseZeroAndExpand ) || (self.operationType == .collapseZeroExpandAndLoad){
             self.datasource.items = [RVBaseModel]()
@@ -494,7 +523,7 @@ class RVExpandCollapseOperation: RVLoadOperation {
     func handleExpand() -> [IndexPath] {
         var indexPaths = [IndexPath]()
         let section = self.datasource.section
-        let lastItem = self.datasource.offset + self.datasource.items.count
+        let lastItem = self.datasource.offset + self.datasource.itemsCount
         if (section >= 0) && (lastItem > 0) { for row in 0..<lastItem { indexPaths.append(IndexPath(row: row, section: section)) } }
         self.datasource.collapsed = false
         return indexPaths
@@ -589,7 +618,7 @@ class RVLoadOperation: RVAsyncOperation {
     var datasource: RVBaseDatasource4
     weak var scrollView: UIScrollView?
 
-    var reference: RVBaseModel? = nil
+    var reference: NSObject? = nil
     var front: Bool
     var subscriptionOperation: SubscriptionOperation = .none
     var referenceMatch: Bool {
@@ -699,7 +728,7 @@ class RVLoadOperation: RVAsyncOperation {
                 query = query.duplicate()
                 self.reference = self.front ? datasource.frontItem : datasource.backItem
                 var query = datasource.updateSortTerm(query: query, front: self.front, candidate: self.reference)
-                query = query.updateQuery4(front: self.front, reference: self.reference)
+                query = query.updateQuery4(front: self.front)
                 if self.isCancelled {
                     finishUp(items: itemsPlug , error: nil)
                     return
@@ -714,9 +743,16 @@ class RVLoadOperation: RVAsyncOperation {
                             self.finishUp(items: itemsPlug, error: error)
                             return
                         } else {
-                            self.initiateSubscription(subscription: subscription, query: query, reference: reference, callback: {
-                                self.finishUp(items: self.itemsPlug, error: nil)
-                            })
+                            if let reference = reference as? RVBaseModel? {
+                                self.initiateSubscription(subscription: subscription, query: query, reference: reference, callback: {
+                                    self.finishUp(items: self.itemsPlug, error: nil)
+                                })
+                            } else {
+                                let error = RVError(message: "In \(self.classForCoder).InnerMain, attempting a subscription with SectionDatasource. Not Implemented")
+                                self.finishUp(items: self.itemsPlug, error: error)
+                                return
+                            }
+
                             return
                         }
                     } else {
@@ -864,7 +900,7 @@ class RVLoadOperation: RVAsyncOperation {
     func cleanup(models: [RVBaseModel], callback: @escaping([RVBaseModel], RVError?)-> Void) {
         DispatchQueue.main.async {
             let maxSize = self.datasource.maxArraySize
-            if self.datasource.items.count <= maxSize {
+            if self.datasource.itemsCount <= maxSize {
                 callback(models, nil)
                 return
             } else if self.isCancelled {
@@ -898,7 +934,7 @@ class RVLoadOperation: RVAsyncOperation {
     }
     func backHandler(models: [RVBaseModel]) -> [IndexPath] {
         let section = datasource.section
-        let virtualIndex = datasource.items.count + datasource.offset
+        let virtualIndex = datasource.itemsCount + datasource.offset
         var clone = datasource.cloneItems()
         var indexPaths = [IndexPath]()
         for i in 0..<models.count {
@@ -906,7 +942,7 @@ class RVLoadOperation: RVAsyncOperation {
             if (section >= 0) { indexPaths.append(IndexPath(row: virtualIndex + i, section: section)) }
         }
         self.datasource.items = clone
-       // print("In \(self.classForCoder).backHandler, items count = \(self.datasource.items.count) collapsed: \(self.datasource.collapsed)")
+       // print("In \(self.classForCoder).backHandler, items count = \(self.datasource.itemsCount) collapsed: \(self.datasource.collapsed)")
         return indexPaths
     }
     func frontHandler(newModels: [RVBaseModel]) -> [IndexPath] {
@@ -960,7 +996,7 @@ class RVLoadOperation: RVAsyncOperation {
             }
             var sizedModels = [RVBaseModel]()
             if self.datasource.datasourceType == .filter {
-                let room = self.datasource.maxArraySize - self.datasource.items.count
+                let room = self.datasource.maxArraySize - self.datasource.itemsCount
                 if (models.count <= room) { sizedModels = models }
                 else {
                     for i in 0..<room { sizedModels.append(models[i]) }
@@ -996,7 +1032,7 @@ class RVLoadOperation: RVAsyncOperation {
                             indexPathsCount = indexPaths.count
                         }
                     } else {
-                        print("In \(self.classForCoder).insert, tableView no reference match reference is \(self.reference?.toString() ?? " no reference")")
+                        print("In \(self.classForCoder).insert, tableView no reference match reference is \(self.reference?.description ?? " no reference")")
                         /*
                         if self.subscriptionOperation {
                             if let subscription = self.datasource.subscription {

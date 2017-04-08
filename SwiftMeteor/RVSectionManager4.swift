@@ -175,7 +175,7 @@ class RVSectionManagerExpandCollapseOperation: RVAsyncOperation {
             self.completeOperation(error: nil)
             return
         } else {
-            if let sectionManager = self.sectionManager {
+            if let _ = self.sectionManager {
                 
             }
         }
