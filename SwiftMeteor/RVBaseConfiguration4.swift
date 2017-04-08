@@ -21,11 +21,12 @@ class RVBaseConfiguration4 {
     var filterDatasourceMaxSize: Int = 300
     var topAreaMaxHeights: [CGFloat] = [0.0, 0.0, 0.0]
     var topAreaMinHeights: [CGFloat] = [0.0, 0.0, 0.0]
+    let LAST_SORT_STRING = "ZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZ"
 
     var searchScopes: [[String : RVKeys]]     = [[RVKeys.title.rawValue: RVKeys.title], [RVKeys.fullName.rawValue: RVKeys.fullName]]
     var defaultSortOrder: RVSortOrder = .ascending
     var installSearchControllerInTableView: Bool = false
-    var manager = RVDSManager4(scrollView: nil)
+    var manager = RVDSManager4<RVBaseModel>(scrollView: nil)
     var navigationBarColor: UIColor = UIColor.facebookBlue()
     
     // SLK
@@ -37,14 +38,14 @@ class RVBaseConfiguration4 {
     var SLKshowTextInputBar: Bool                       = true
     
     
-    var topDatasource: RVBaseDatasource4? {
+    var topDatasource: RVBaseDatasource4<RVBaseModel>? {
         return nil
     }
-    var mainDatasource: RVBaseDatasource4 {
-        return RVBaseDatasource4(manager: self.manager, datasourceType: .main , maxSize: self.mainDatasourceMaxSize)
+    var mainDatasource: RVBaseDatasource4<RVBaseModel> {
+        return RVBaseDatasource4<RVBaseModel>(manager: self.manager, datasourceType: .main , maxSize: self.mainDatasourceMaxSize)
     }
-    var filterDatasource: RVBaseDatasource4 {
-        return RVBaseDatasource4(manager: self.manager, datasourceType: .filter, maxSize: self.filterDatasourceMaxSize)
+    var filterDatasource: RVBaseDatasource4<RVBaseModel> {
+        return RVBaseDatasource4<RVBaseModel>(manager: self.manager, datasourceType: .filter, maxSize: self.filterDatasourceMaxSize)
     }
     
     init(scrollView: UIScrollView? ) {
@@ -99,7 +100,7 @@ class RVBaseConfiguration4 {
         case .createdAt, .updatedAt:
             value = sortTerm.order == .descending ? Date() as AnyObject : query.decadeAgo as AnyObject
         default:
-            value = sortTerm.order == .descending ?   RVBaseDatasource4.LAST_SORT_STRING as AnyObject : "" as AnyObject
+            value = sortTerm.order == .descending ?   self.LAST_SORT_STRING as AnyObject : "" as AnyObject
         }
         query.addAnd(term: sortTerm.field, value: value as AnyObject, comparison: comparison)
         for and in andTerms { query.addAnd(term: and.term, value: and.value, comparison: and.comparison) }
@@ -164,7 +165,7 @@ class RVBaseConfiguration4 {
     func loadSearch(query: RVQuery, callback: @escaping(RVError?)->Void) {
         loadDatasource(datasource: filterDatasource, query: query, callback: callback)
     }
-    func loadDatasource(datasource: RVBaseDatasource4, query: RVQuery, callback: @escaping(RVError?)->Void) {
+    func loadDatasource(datasource: RVBaseDatasource4<RVBaseModel>, query: RVQuery, callback: @escaping(RVError?)->Void) {
         //print("In \(self.instanceType).loadDatasource before append")
         manager.appendSections(datasources: [datasource], sectionTypesToRemove: [.main, .filter]) { (models, error) in
             if let error = error {

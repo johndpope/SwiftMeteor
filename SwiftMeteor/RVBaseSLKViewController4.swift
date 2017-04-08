@@ -51,7 +51,7 @@ class RVBaseSLKViewController4: SLKTextViewController {
     }
     var instanceConfiguration: RVBaseConfiguration4 { return RVBaseConfiguration4(scrollView: dsScrollView) }
     // var configuration:      RVBaseConfiguration4 = RVBaseConfiguration4(scrollView: nil)
-    var manager:            RVDSManager4 { get { return configuration.manager }}
+    var manager:            RVDSManager4<RVBaseModel> { get { return configuration.manager }}
     let searchController    = UISearchController(searchResultsController: nil)
     var searchScopes:       [[String: RVKeys]] { get { return configuration.searchScopes } }
     var defaultSortOrder:   RVSortOrder { get { return configuration.defaultSortOrder }}

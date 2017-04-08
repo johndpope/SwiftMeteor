@@ -7,6 +7,7 @@
 //
 
 import UIKit
+
 typealias RVCallback = ([RVBaseModel], RVError?) -> Void
 typealias DSOperation = () -> Void
 
@@ -21,7 +22,7 @@ enum RVExpandCollapseOperationType {
 protocol RVItemRetrieve: class {
     var item: RVBaseModel? { get set }
 }
-class RVBaseDatasource4: NSObject {
+class RVBaseDatasource4<T:NSObject>: NSObject {
     enum DatasourceType: String {
         case top        = "Top"
         case main       = "Main"
@@ -29,7 +30,7 @@ class RVBaseDatasource4: NSObject {
         case subscribe  = "Subscribe"
         case unknown    = "Unknown"
     }
-    static let LAST_SORT_STRING = "ZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZ"
+    let LAST_SORT_STRING = "ZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZ"
     var instanceType: String { get { return String(describing: type(of: self)) } }
     let identifier = NSDate().timeIntervalSince1970
     var baseQuery: RVQuery? = nil
@@ -79,7 +80,7 @@ class RVBaseDatasource4: NSObject {
         }
     }
     var datasourceType: DatasourceType = .unknown
-    var manager: RVDSManager4
+    var manager: RVDSManager4<T>
    // var model: RVBaseModel { return RVBaseModel() }
     fileprivate var lastItemIndex: Int = 0
     fileprivate let TargetBackBufferSize: Int = 20
@@ -116,7 +117,7 @@ class RVBaseDatasource4: NSObject {
         print("In RVBaseDatasource4.retrieve, need to override")
         RVBaseModel.bulkQuery(query: query, callback: callback as! ([RVBaseModel]?, RVError?) -> Void)
     }
-    init(manager: RVDSManager4, datasourceType: DatasourceType, maxSize: Int) {
+    init(manager: RVDSManager4<T>, datasourceType: RVBaseDatasource4<T>.DatasourceType, maxSize: Int) {
         self.manager = manager
         self.datasourceType = datasourceType
         self.maxArraySize = ((maxSize < 500) && (maxSize > 50)) ? maxSize : 500
@@ -151,7 +152,7 @@ class RVBaseDatasource4: NSObject {
             if let subscription = self.subscription {
                 if (subscription.isFront && front) || (!subscription.isFront && !front) {
                     print("Neil check this \(self.classForCoder).subscribe, took out subscriptionOperation flag")
-                    let operation = RVSubscribeOperation(datasource: self, subscription: subscription, callback: { (models, error) in
+                    let operation = RVSubscribeOperation<T>(datasource: self, subscription: subscription, callback: { (models, error) in
                         if let error = error {
                             print("In \(self.classForCoder).subscribe, got error)")
                             error.printError()
@@ -221,7 +222,7 @@ extension RVBaseDatasource4 {
         }
         if let sortTerm = query.sortTerms.first {
             let firstString: AnyObject = "" as AnyObject
-            let lastString:  AnyObject = RVBaseDatasource4.LAST_SORT_STRING as AnyObject
+            let lastString:  AnyObject = self.LAST_SORT_STRING as AnyObject
             var comparison = (sortTerm.order == .ascending) ?  RVComparison.gte : RVComparison.lte
             var sortString: AnyObject = (sortTerm.order == .descending) ? lastString : firstString
             if front {
@@ -377,13 +378,13 @@ extension RVBaseDatasource4 {
 
 }
 
-class RVExpandCollapseOperation: RVLoadOperation {
-    typealias RVCallback = ([RVBaseModel], RVError?) -> Void
+class RVExpandCollapseOperation<T:NSObject>: RVLoadOperation<T> {
+
 
     var operationType: RVExpandCollapseOperationType
     var query: RVQuery
     var emptyModels = [RVBaseModel]()
-    init(datasource: RVBaseDatasource4, scrollView: UIScrollView?, operationType: RVExpandCollapseOperationType, query: RVQuery = RVQuery(), callback: @escaping RVCallback) {
+    init(datasource: RVBaseDatasource4<T>, scrollView: UIScrollView?, operationType: RVExpandCollapseOperationType, query: RVQuery = RVQuery(), callback: @escaping RVCallback) {
         self.operationType  = operationType
         self.query = query
         super.init(title: "RVExpandCollapseOperation", datasource: datasource, scrollView: scrollView, callback: callback)
@@ -535,18 +536,18 @@ class RVExpandCollapseOperation: RVLoadOperation {
         }
     }
 }
-class RVSubscribeOperation: RVLoadOperation {
-    init(datasource: RVBaseDatasource4, subscription: RVSubscription, callback: @escaping RVCallback) {
+class RVSubscribeOperation<T:NSObject>: RVLoadOperation<T> {
+    init(datasource: RVBaseDatasource4<T>, subscription: RVSubscription, callback: @escaping RVCallback) {
         super.init(title: "SubscriptionOperation", datasource: datasource, scrollView: datasource.scrollView, front: subscription.isFront, callback: callback)
         self.subscriptionOperation = .subscribe
     }
 }
-class RVSubcriptionResponseOperation: RVLoadOperation {
+class RVSubcriptionResponseOperation<T:NSObject>: RVLoadOperation<T> {
 
     var incomingModels: [RVBaseModel]
     var responseType: RVEventType
     var sourceSubscription: RVSubscription
-    init(title: String = "RVSubscriptionResponseOperation", subscription: RVSubscription, datasource: RVBaseDatasource4, incomingModels: [RVBaseModel], responseType: RVEventType = .added, callback: @escaping RVCallback) {
+    init(title: String = "RVSubscriptionResponseOperation", subscription: RVSubscription, datasource: RVBaseDatasource4<T>, incomingModels: [RVBaseModel], responseType: RVEventType = .added, callback: @escaping RVCallback) {
         self.incomingModels = incomingModels
         self.responseType = responseType
         self.sourceSubscription = subscription
@@ -607,15 +608,15 @@ class RVSubcriptionResponseOperation: RVLoadOperation {
         }
     }
 }
-class RVLoadOperation: RVAsyncOperation {
+class RVLoadOperation<T:NSObject>: RVAsyncOperation {
     enum SubscriptionOperation {
         case none
         case subscribe
         case response
     }
-    typealias RVCallback = ([RVBaseModel], RVError?) -> Void
 
-    var datasource: RVBaseDatasource4
+
+    var datasource: RVBaseDatasource4<T>
     weak var scrollView: UIScrollView?
 
     var reference: NSObject? = nil
@@ -633,7 +634,7 @@ class RVLoadOperation: RVAsyncOperation {
             } else { return false }
         }
     }
-    init(title: String = "RVLoadOperation", datasource: RVBaseDatasource4, scrollView: UIScrollView?, front: Bool = false, callback: @escaping RVCallback) {
+    init(title: String = "RVLoadOperation", datasource: RVBaseDatasource4<T>, scrollView: UIScrollView?, front: Bool = false, callback: @escaping RVCallback) {
         self.datasource             = datasource
         self.scrollView             = scrollView
 

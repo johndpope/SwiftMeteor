@@ -7,13 +7,13 @@
 //
 
 import UIKit
-class RVSectionManager4 {
+class RVSectionManager4<T: NSObject> {
     var instanceType: String { get { return String(describing: type(of: self)) } }
     fileprivate let queue = RVOperationQueue()
     fileprivate var sections = [RVBaseDatasource4]()
 
-    var manager: RVDSManager4
-    init(manager: RVDSManager4) {
+    var manager: RVDSManager4<T>
+    init(manager: RVDSManager4<T>) {
         self.manager = manager
     }
     func numberOfSections() -> Int { return manager.numberOfSections }
@@ -26,7 +26,7 @@ class RVSectionManager4 {
     func scrolling(indexPath: IndexPath, scrollView: UIScrollView) {
         manager.scrolling(indexPath: indexPath , scrollView: scrollView)
     }
-    func collapse(datasource: RVBaseDatasource4, callback: @escaping RVCallback) {
+    func collapse(datasource: RVBaseDatasource4<T>, callback: @escaping RVCallback) {
         if manager.sectionIndex(datasource: datasource) < 0 {
             let error = RVError(message: "In \(self.instanceType).collapse, datasource is not installed as a section \(datasource)")
             callback([RVBaseModel](), error)
@@ -34,7 +34,7 @@ class RVSectionManager4 {
             
         }
     }
-    func expand(datasource: RVBaseDatasource4, callback: @escaping RVCallback) {
+    func expand(datasource: RVBaseDatasource4<T>, callback: @escaping RVCallback) {
         if manager.sectionIndex(datasource: datasource) < 0 {
             let error = RVError(message: "In \(self.instanceType).expand, datasource is not installed as a section \(datasource)")
             callback([RVBaseModel](), error)
@@ -52,15 +52,15 @@ class RVSectionManager4 {
     }
     var frontQueryOperationActive: Bool = false
     var backQueryOperationActive: Bool = false
-    var frontSection: RVBaseDatasource4? { return manager.frontSection}
-    var backSection: RVBaseDatasource4? { return manager.backSection }
+    var frontSection: RVBaseDatasource4<T>? { return manager.frontSection}
+    var backSection: RVBaseDatasource4<T>? { return manager.backSection }
 }
-class RVSectionManagerLoadOperation: RVAsyncOperation {
+class RVSectionManagerLoadOperation<T: NSObject>: RVAsyncOperation {
     weak var scrollView: UIScrollView?
     var front: Bool
-    weak var sectionManager: RVSectionManager4?
-    var reference: RVBaseDatasource4?
-    init(title: String = "RVSectionManagerLoadOperation", sectionManager: RVSectionManager4, scrollView: UIScrollView?, front: Bool = false, callback: @escaping RVCallback) {
+    weak var sectionManager: RVSectionManager4<T>?
+    var reference: RVBaseDatasource4<T>?
+    init(title: String = "RVSectionManagerLoadOperation", sectionManager: RVSectionManager4<T>, scrollView: UIScrollView?, front: Bool = false, callback: @escaping RVCallback) {
         self.scrollView             = scrollView
         self.sectionManager         = sectionManager
         self.front                  = front
@@ -140,7 +140,7 @@ class RVSectionManagerLoadOperation: RVAsyncOperation {
         print("In \(self.instanceType).retrieveSections, need to replace")
         callback([RVBaseModel](), nil)
     }
-    func updateQuery(query: RVQuery, reference: RVBaseDatasource4?, front: Bool) -> RVQuery {
+    func updateQuery(query: RVQuery, reference: RVBaseDatasource4<T>?, front: Bool) -> RVQuery {
         print("In \(self.classForCoder).updateQuery, need to implement")
         return query
     }
@@ -156,7 +156,7 @@ class RVSectionManagerLoadOperation: RVAsyncOperation {
         }
     }
 }
-class RVSectionManagerExpandCollapseOperation: RVAsyncOperation {
+class RVSectionManagerExpandCollapseOperation<T: NSObject>: RVAsyncOperation {
     enum Mode {
         case collapse
         case expand
@@ -164,8 +164,8 @@ class RVSectionManagerExpandCollapseOperation: RVAsyncOperation {
         case collapseRemoveExpand
     }
     var mode: Mode
-    weak var sectionManager: RVSectionManager4?
-    init(sectionManager: RVSectionManager4, mode: Mode = .collapse, callback: @escaping RVCallback) {
+    weak var sectionManager: RVSectionManager4<T>?
+    init(sectionManager: RVSectionManager4<T>, mode: Mode = .collapse, callback: @escaping RVCallback) {
         self.mode = mode
         self.sectionManager = sectionManager
         super.init(title: "RV", callback: callback, parent: nil)

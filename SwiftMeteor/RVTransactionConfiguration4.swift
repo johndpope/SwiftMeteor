@@ -36,14 +36,14 @@ class RVTransactionConfiguration4: RVBaseConfiguration4 {
         self.SLKshouldScrollToBottomAfterKeyboardShows = false
         self.SLKshowTextInputBar                       = true
     }
-    override var topDatasource: RVBaseDatasource4? {
-        return RVDummyTopDatasource4(manager: self.manager, datasourceType: .top, maxSize: 100)
+    override var topDatasource: RVBaseDatasource4<RVBaseModel>? {
+        return RVDummyTopDatasource4<RVBaseModel>(manager: self.manager, datasourceType: .top, maxSize: 100)
     }
-    override var mainDatasource: RVBaseDatasource4 {
-        return RVTransactionDatasource44(manager: self.manager, datasourceType: .main, maxSize: 80)
+    override var mainDatasource: RVBaseDatasource4<RVBaseModel> {
+        return RVTransactionDatasource44<RVBaseModel>(manager: self.manager, datasourceType: .main, maxSize: 80)
     }
-    override var filterDatasource: RVBaseDatasource4 {
-        return RVTransactionDatasource44(manager: self.manager, datasourceType: .filter, maxSize: self.mainDatasourceMaxSize)
+    override var filterDatasource: RVBaseDatasource4<RVBaseModel> {
+        return RVTransactionDatasource44<RVBaseModel>(manager: self.manager, datasourceType: .filter, maxSize: self.mainDatasourceMaxSize)
     }
     override func baseTopQuery() -> (RVQuery, RVError?) {
         let query = RVQuery()

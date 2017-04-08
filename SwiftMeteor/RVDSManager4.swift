@@ -8,10 +8,10 @@
 
 import UIKit
 
-class RVDSManager4 {
+class RVDSManager4<T:NSObject> {
     var instanceType: String { get { return String(describing: type(of: self)) } }
     fileprivate let queue = RVOperationQueue()
-    fileprivate var sections = [RVBaseDatasource4]()
+    fileprivate var sections = [RVBaseDatasource4<T>]()
     fileprivate var offset = 0
     fileprivate var virtualSectionsCount: Int {
         return sections.count + offset
@@ -21,22 +21,25 @@ class RVDSManager4 {
     init(scrollView: UIScrollView?) {
         self.scrollView = scrollView
     }
-    var frontSection: RVBaseDatasource4? {
+    
+    var frontSection: RVBaseDatasource4<T>? {
         return sections.first
     }
-    var backSection: RVBaseDatasource4? {
+    var backSection: RVBaseDatasource4<T>? {
         return sections.last
     }
-    func sectionIndex(datasource: RVBaseDatasource4) -> Int {
+    
+    func sectionIndex(datasource: RVBaseDatasource4<T>) -> Int {
         for i in 0..<sections.count {
             if sections[i] == datasource { return i + offset }
         }
         return -1
     }
-    func datasourceInSection(section: Int) -> RVBaseDatasource4? {
+    func datasourceInSection(section: Int) -> RVBaseDatasource4<T>? {
         if (section < 0) || (section >= self.sections.count) { return nil }
         return self.sections[section]
     }
+ 
     func removeDatasources(byType: [RVBaseDataSource.Type]) {
         
     }
@@ -75,16 +78,16 @@ class RVDSManager4 {
             return nil
         }
     }
-    func removeSections(datasources: [RVBaseDatasource4], callback: @escaping RVCallback) {
+    func removeSections(datasources: [RVBaseDatasource4<T>], callback: @escaping RVCallback) {
         self.queue.addOperation(RVManagerRemoveSections4(manager: self, datasources: datasources , callback: callback))
     }
     func removeAllSections(callback: @escaping RVCallback) {
-        self.queue.addOperation(RVManagerRemoveSections4(title: "Remove All Sections", manager: self, datasources: [RVBaseDatasource4](), callback: callback, all: true))
+        self.queue.addOperation(RVManagerRemoveSections4(title: "Remove All Sections", manager: self, datasources: [RVBaseDatasource4<T>](), callback: callback, all: true))
     }
     func collapseAll(callback: @escaping RVCallback) {
-        self.queue.addOperation(RVManagerExpandCollapseOperation4(title: "Collapse All", manager: self, operationType: .collapse, datasources: [RVBaseDatasource4](), callback: callback, all: true))
+        self.queue.addOperation(RVManagerExpandCollapseOperation4(title: "Collapse All", manager: self, operationType: .collapse, datasources: [RVBaseDatasource4<T>](), callback: callback, all: true))
     }
-    func collapse(datasource: RVBaseDatasource4, callback: @escaping RVCallback) {
+    func collapse(datasource: RVBaseDatasource4<T>, callback: @escaping RVCallback) {
         if self.sectionIndex(datasource: datasource) < 0 {
             let error = RVError(message: "In \(self.instanceType).collapse, datasource is not installed as a section \(datasource)")
             callback([RVBaseModel](), error)
@@ -93,7 +96,7 @@ class RVDSManager4 {
             self.queue.addOperation(RVManagerExpandCollapseOperation4(title: "Collapse Operation", manager: self, operationType: .collapse, datasources: [datasource], callback: callback))
         }
     }
-    func expand(datasource: RVBaseDatasource4, callback: @escaping RVCallback) {
+    func expand(datasource: RVBaseDatasource4<T>, callback: @escaping RVCallback) {
         if self.sectionIndex(datasource: datasource) < 0 {
             let error = RVError(message: "In \(self.instanceType).expand, datasource is not installed as a section \(datasource)")
             callback([RVBaseModel](), error)
@@ -102,7 +105,7 @@ class RVDSManager4 {
             self.queue.addOperation(RVManagerExpandCollapseOperation4(title: "Expand Operation", manager: self, operationType: .expand, datasources: [datasource], callback: callback))
         }
     }
-    func toggle(datasource: RVBaseDatasource4, callback: @escaping RVCallback) {
+    func toggle(datasource: RVBaseDatasource4<T>, callback: @escaping RVCallback) {
        // print("In \(self.instanceType).toggle -------------------------------------- ")
         if self.sectionIndex(datasource: datasource) < 0 {
             let error = RVError(message: "In \(self.instanceType).toggle, datasource is not installed as a section \(datasource)")
@@ -112,11 +115,11 @@ class RVDSManager4 {
             self.queue.addOperation(RVManagerExpandCollapseOperation4(title: "Toggle Operation", manager: self, operationType: .toggle, datasources: [datasource], callback: callback))
         }
     }
-    func appendSections(datasources: [RVBaseDatasource4], sectionTypesToRemove: [RVBaseDatasource4.DatasourceType] = Array<RVBaseDatasource4.DatasourceType>(), callback: @escaping RVCallback) {
+    func appendSections(datasources: [RVBaseDatasource4<T>], sectionTypesToRemove: [RVBaseDatasource4<T>.DatasourceType] = Array<RVBaseDatasource4<T>.DatasourceType>(), callback: @escaping RVCallback) {
         self.queue.addOperation(RVManagerAppendSections4(manager: self, datasources: datasources, sectionTypesToRemove: sectionTypesToRemove, callback: callback))
     }
 
-    func restart(datasource: RVBaseDatasource4, query: RVQuery, callback: @escaping RVCallback) {
+    func restart(datasource: RVBaseDatasource4<T>, query: RVQuery, callback: @escaping RVCallback) {
         datasource.restart(scrollView: self.scrollView, query: query, callback: callback)
     }
 
@@ -124,14 +127,14 @@ class RVDSManager4 {
 }
 
 
-class RVManagerRemoveSections4: RVAsyncOperation {
-    weak var manager: RVDSManager4? = nil
-    var datasources: [RVBaseDatasource4]
+class RVManagerRemoveSections4<T:NSObject>: RVAsyncOperation {
+    weak var manager: RVDSManager4<T>? = nil
+    var datasources: [RVBaseDatasource4<T>]
 
     var all: Bool = false
     var ignoreCancel: Bool = false
     let emptyResponse = [RVBaseModel]()
-    init(title: String = "Remove Sections", manager: RVDSManager4, datasources: [RVBaseDatasource4], callback: @escaping RVCallback, all: Bool = false) {
+    init(title: String = "Remove Sections", manager: RVDSManager4<T>, datasources: [RVBaseDatasource4<T>], callback: @escaping RVCallback, all: Bool = false) {
         self.datasources = datasources
         self.all = all
         self.manager = manager
@@ -166,7 +169,7 @@ class RVManagerRemoveSections4: RVAsyncOperation {
                                 if self.all {
                                     for i in 0..<manager.sections.count { indexes.append(i) }
                                     if indexes.count > 0 {
-                                        manager.sections = [RVBaseDatasource4]()
+                                        manager.sections = [RVBaseDatasource4<T>]()
                                         tableView.deleteSections(IndexSet(indexes), with: manager.rowAnimation)
                                     }
                                 } else {
@@ -197,7 +200,7 @@ class RVManagerRemoveSections4: RVAsyncOperation {
                                     if self.all {
                                         for i in 0..<manager.sections.count { indexes.append(i) }
                                         if indexes.count > 0 {
-                                            manager.sections = [RVBaseDatasource4]()
+                                            manager.sections = [RVBaseDatasource4<T>]()
                                             collectionView.deleteSections(IndexSet(indexes))
                                         }
                                     } else {
@@ -219,7 +222,7 @@ class RVManagerRemoveSections4: RVAsyncOperation {
                             })
                         }
                     } else if manager.scrollView == nil {
-                        if self.all { manager.sections = [RVBaseDatasource4]() }
+                        if self.all { manager.sections = [RVBaseDatasource4<T>]() }
                         else {
                             for datasource in datasources {
                                 let sectionIndex = manager.sectionIndex(datasource: datasource)
@@ -245,24 +248,24 @@ class RVManagerRemoveSections4: RVAsyncOperation {
     }
 }
 
-class RVManagerAppendSections4: RVManagerRemoveSections4 {
-    var sectionTypesToRemove: [RVBaseDatasource4.DatasourceType]
-    var sectionsToBeRemoved: [RVBaseDatasource4] = [RVBaseDatasource4]()
-    init(title: String = "Add Sections", manager: RVDSManager4, datasources: [RVBaseDatasource4], sectionTypesToRemove: [RVBaseDatasource4.DatasourceType] = Array<RVBaseDatasource4.DatasourceType>(), callback: @escaping RVCallback) {
+class RVManagerAppendSections4<T: NSObject>: RVManagerRemoveSections4<T> {
+    var sectionTypesToRemove: [RVBaseDatasource4<T>.DatasourceType]
+    var sectionsToBeRemoved: [RVBaseDatasource4<T>] = [RVBaseDatasource4<T>]()
+    init(title: String = "Add Sections", manager: RVDSManager4<T>, datasources: [RVBaseDatasource4<T>], sectionTypesToRemove: [RVBaseDatasource4<T>.DatasourceType] = Array<RVBaseDatasource4<T>.DatasourceType>(), callback: @escaping RVCallback) {
         self.sectionTypesToRemove = sectionTypesToRemove
         super.init(title: "Add Sections", manager: manager, datasources: datasources, callback: callback)
     }
     func complete(error: RVError?) {
         DispatchQueue.main.async {
             if let error = error {
-                self.datasources = [RVBaseDatasource4]()
+                self.datasources = [RVBaseDatasource4<T>]()
                 self.callback(self.emptyResponse, error)
                 self.completeOperation()
             } else if self.sectionsToBeRemoved.count > 0 {
                 self.datasources = self.sectionsToBeRemoved
                 self.innerAsyncMain()
             } else {
-                self.datasources = [RVBaseDatasource4]()
+                self.datasources = [RVBaseDatasource4<T>]()
                 self.callback(self.emptyResponse, error)
                 self.completeOperation()
             }
@@ -364,20 +367,20 @@ class RVManagerAppendSections4: RVManagerRemoveSections4 {
     }
 }
 
-class RVManagerExpandCollapseOperation4: RVAsyncOperation {
+class RVManagerExpandCollapseOperation4<T: NSObject>: RVAsyncOperation {
     enum OperationType {
         case expand
         case collapse
         case toggle
     }
-    weak var manager: RVDSManager4? = nil
+    weak var manager: RVDSManager4<T>? = nil
     
     let emptyResponse = [RVBaseModel]()
     var operationType: OperationType
-    var datasources: [RVBaseDatasource4]
+    var datasources: [RVBaseDatasource4<T>]
     var all: Bool = false
     var count: Int
-    init(title: String, manager: RVDSManager4, operationType: OperationType, datasources: [RVBaseDatasource4], callback: @escaping RVCallback, all: Bool = false) {
+    init(title: String, manager: RVDSManager4<T>, operationType: OperationType, datasources: [RVBaseDatasource4<T>], callback: @escaping RVCallback, all: Bool = false) {
         self.manager = manager
         self.datasources = datasources
         self.count = datasources.count

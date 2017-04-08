@@ -7,7 +7,7 @@
 //
 
 import Foundation
-class RVTransactionDatasource44: RVBaseDatasource4 {
+class RVTransactionDatasource44<T: NSObject>: RVBaseDatasource4<T> {
     override func retrieve(query: RVQuery, callback: @escaping RVCallback) {
             RVTransaction.bulkQuery(query: query) { (models, error) in
                 if let error = error {
