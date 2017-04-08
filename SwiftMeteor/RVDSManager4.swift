@@ -12,14 +12,24 @@ class RVDSManager4 {
     var instanceType: String { get { return String(describing: type(of: self)) } }
     fileprivate let queue = RVOperationQueue()
     fileprivate var sections = [RVBaseDatasource4]()
+    fileprivate var offset = 0
+    fileprivate var virtualSectionsCount: Int {
+        return sections.count + offset
+    }
     weak var scrollView: UIScrollView? = nil
     var rowAnimation: UITableViewRowAnimation = .automatic
     init(scrollView: UIScrollView?) {
         self.scrollView = scrollView
     }
+    var frontSection: RVBaseDatasource4? {
+        return sections.first
+    }
+    var backSection: RVBaseDatasource4? {
+        return sections.last
+    }
     func sectionIndex(datasource: RVBaseDatasource4) -> Int {
         for i in 0..<sections.count {
-            if sections[i] == datasource { return i }
+            if sections[i] == datasource { return i + offset }
         }
         return -1
     }
@@ -31,10 +41,15 @@ class RVDSManager4 {
         
     }
     
-    var numberOfSections: Int { return sections.count }
+    var numberOfSections: Int { return virtualSectionsCount }
     func numberOfItems(section: Int) -> Int {
-        if (section >= 0) && (section < sections.count) {
-            return sections[section].numberOfItems
+        if (section >= 0) && (section < virtualSectionsCount) {
+            let physical = section - offset
+            if physical >= 0 {
+                return sections[section].numberOfItems
+            } else {
+                return 0
+            }
         } else {
             print("In \(self.instanceType).numberOfItems, invalid sectionIndex: \(section) ")
             return 0
@@ -43,12 +58,22 @@ class RVDSManager4 {
     func scrolling(indexPath: IndexPath, scrollView: UIScrollView) {
         let section = indexPath.section
         if (section < 0) || (section >= sections.count) { return }
-        sections[section].scroll(index: indexPath.row, scrollView: scrollView)
+        let physical = section - offset
+        if physical >= 0 {
+            sections[section].scroll(index: indexPath.row, scrollView: scrollView)
+        } else {
+            // Retrieve more
+        }
     }
     func item(indexPath: IndexPath) ->  RVBaseModel? {
         let section = indexPath.section
-        if (section < 0) || (section >= sections.count) { return nil }
-        return sections[section].item(index: indexPath.row, scrollView: self.scrollView)
+        if (section < 0) || (section >= virtualSectionsCount) { return nil }
+        let physical = section - offset
+        if physical >= 0 {
+            return sections[section].item(index: indexPath.row, scrollView: self.scrollView)
+        } else {
+            return nil
+        }
     }
     func removeSections(datasources: [RVBaseDatasource4], callback: @escaping RVCallback) {
         self.queue.addOperation(RVManagerRemoveSections4(manager: self, datasources: datasources , callback: callback))

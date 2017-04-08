@@ -57,6 +57,13 @@ class RVAsyncOperation: Operation {
 
        // operation(completeOperation: completeOperation)
     }
+    func completeOperation(models: [RVBaseModel] = [RVBaseModel](), error: RVError? ) {
+        DispatchQueue.main.async {
+            self.callback(models, error)
+            self.isFinished = true
+            self.isExecuting = false
+        }
+    }
     func completeOperation() {
         DispatchQueue.main.async {
             self.isFinished = true
