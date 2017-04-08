@@ -13,6 +13,7 @@ class RVBaseSLKViewController4: SLKTextViewController {
     var instanceType: String { get { return String(describing: type(of: self)) } }
     var dsScrollView: UIScrollView? {return self.tableView }
     var deck: RVViewDeck { get { return RVViewDeck4.shared }}
+    @IBOutlet weak var transparentTableViewBackground: UIView!
     @IBOutlet weak var searchControllerContainerView: UIView!
     @IBOutlet weak var TopOuterView:            UIView!
     @IBOutlet weak var TopTopView:              UIView!
@@ -98,10 +99,13 @@ class RVBaseSLKViewController4: SLKTextViewController {
             }
             
         })
+        makeTableViewTransparent()
     }
-    override func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(animated)
-        
+    func makeTableViewTransparent() {
+        if let tableView = self.tableView {
+            makeTransparent(view: tableView)
+            makeTransparent(view: tableView.backgroundView)
+        }
     }
     func performSearch(searchText: String, field: RVKeys, order: RVSortOrder = .ascending) {
         if lastSearchTerm == searchText { return }
@@ -140,6 +144,20 @@ class RVBaseSLKViewController4: SLKTextViewController {
             }
         }
     }
+    func makeTransparent(view: UIView?) {
+        if let view = view {
+            view.backgroundColor = UIColor(white: 0.0, alpha: 0.0)
+            view.isOpaque = false
+            
+        }
+    }
+    func makeOpaque(view: UIView?) {
+        if let view = view {
+            view.backgroundColor = UIColor(white: 1.0, alpha: 1.0)
+            view.isOpaque = true
+            
+        }
+    }
     
 }
 // UITableViewDatasource
@@ -163,6 +181,12 @@ extension RVBaseSLKViewController4 {
         if cell.gestureRecognizers?.count == nil {
             let longPress = UILongPressGestureRecognizer(target: self, action: #selector(RVMemberViewController.didLongPressCell(_:)))
             cell.addGestureRecognizer(longPress)
+        }
+        if indexPath.section == 0 {
+            self.makeTransparent(view: cell.backgroundView)
+            self.makeTransparent(view: cell)
+        } else {
+            self.makeOpaque(view: cell.backgroundView)
         }
         cell.transform = tableView.transform
         //    cell.item = manager4.item(indexPath: indexPath)
