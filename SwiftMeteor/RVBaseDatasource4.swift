@@ -51,7 +51,7 @@ class RVBaseDatasource4: NSObject {
             print("In \(self.classForCoder).scrollValue oldValue and newValue are different \(scrollView?.description ?? " no scrollView"), \(newValue?.description ?? " no newValue")")
         }
     }
-    fileprivate var offset: Int = 0 {
+    var offset: Int = 0 {
         willSet {
             if newValue < 0 { print("In \(self.classForCoder) ERROR. attemtp to set Offset to a negative number \(newValue)") }
             //print("In \(self.classForCoder).offset setting to \(newValue) and arraysize is \(items.count)")
@@ -59,7 +59,7 @@ class RVBaseDatasource4: NSObject {
     }
     var datasourceType: DatasourceType = .unknown
     var manager: RVDSManager4
-    var model: RVBaseModel { return RVBaseModel() }
+   // var model: RVBaseModel { return RVBaseModel() }
     fileprivate var lastItemIndex: Int = 0
     fileprivate let TargetBackBufferSize: Int = 20
     fileprivate let TargetFrontBufferSize: Int = 20
@@ -168,27 +168,7 @@ class RVBaseDatasource4: NSObject {
         }
         
     }
-    /*
-    func receiveSubscriptionResponse(sourceSubscription: RVSubscription, incomingModels: [RVBaseModel], responseType: RVEventType) {
-        if let subscription = self.subscription {
-            if subscription.identifier == sourceSubscription.identifier {
-                let operation = RVSubcriptionResponseOperation(subscription: sourceSubscription, datasource: self, incomingModels: incomingModels, responseType: responseType, callback: { (models, error) in
-                    if let error = error {
-                        error.append(message: "In \(self.classForCoder).receiveSubscriptionResponse, got error from RVSubscriptionResponseOperation")
-                        error.printError()
-                    } else {
-                        print("In \(self.classForCoder).receiveSupscriptionResponse got callback")
-                    }
-                })
-                self.queue.addOperation(operation)
-            } else {
-                print("In \(self.classForCoder).receivingIncoming, sourceSubscription doesn't match datasource subscription")
-            }
-        } else {
-            print("In \(self.classForCoder).receivingIncoming, datasource subscription is nil")
-        }
-    }
- */
+
     deinit {
         self.unsubscribe {}
         self.cancelAllOperations()

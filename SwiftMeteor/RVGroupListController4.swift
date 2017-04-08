@@ -18,7 +18,6 @@ class RVGroupListController4: RVBaseSLKViewController4 {
         }
         if let tableView = self.tableView { tableView.register(RVFirstViewHeaderCell.self, forHeaderFooterViewReuseIdentifier: RVFirstViewHeaderCell.identifier) }
         super.viewDidLoad()
-
     }
     
 }

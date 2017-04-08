@@ -418,7 +418,7 @@ extension RVBaseSLKViewController {
 extension RVBaseSLKViewController: UISearchResultsUpdating {
     
     func configureSearchController() {
-        print("In \(self.classForCoder).configureSearchController")
+        //print("In \(self.classForCoder).configureSearchController")
         searchController.searchResultsUpdater = self
         searchController.delegate = self
         searchController.searchBar.delegate = self

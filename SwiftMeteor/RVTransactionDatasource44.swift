@@ -18,7 +18,5 @@ class RVTransactionDatasource44: RVBaseDatasource4 {
                     callback(models, nil)
                 }
             }
-        
-
     }
 }

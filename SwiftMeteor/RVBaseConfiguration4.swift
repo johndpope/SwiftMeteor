@@ -48,6 +48,7 @@ class RVBaseConfiguration4 {
     }
     
     init(scrollView: UIScrollView? ) {
+        /*
         self.configurationName      = "RVBaseConfiguration4"
         self.navigationBarTitle     = "Replace"
         self.navigationBarColor     = UIColor.facebookBlue()
@@ -62,6 +63,7 @@ class RVBaseConfiguration4 {
         self.mainDatasourceMaxSize      = 300
         self.filterDatasourceMaxSize    = 300
         self.searchScopes               = [[RVKeys.title.rawValue: RVKeys.title], [RVKeys.fullName.rawValue: RVKeys.fullName]]
+        */
         configureSLK()
         self.manager                    = RVDSManager4(scrollView: scrollView)
     }

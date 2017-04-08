@@ -112,6 +112,7 @@ class RVBaseSLKViewController4: SLKTextViewController {
         if let error = error {
             error.printError()
         } else {
+            self.zeroTopView()
             self.configuration.loadSearch(query: query) { (error) in
                 if let error = error {
                     error.printError()
@@ -125,6 +126,8 @@ class RVBaseSLKViewController4: SLKTextViewController {
             if let error = error {
                 error.append(message: "In \(self.classForCoder).endSearch, got error")
                 error.printError()
+            } else {
+                self.expandTopView()
             }
         }
     }
@@ -293,16 +296,52 @@ extension RVBaseSLKViewController4 {
     var totalTopHeight: CGFloat {
         get {
             var height: CGFloat = 0.0
-            height = (TopTopHeightConstraint != nil)    ? TopTopHeightConstraint.constant    + height : height
+            height = (TopTopHeightConstraint    != nil) ? TopTopHeightConstraint.constant    + height : height
             height = (TopMiddleHeightConstraint != nil) ? TopMiddleHeightConstraint.constant + height : height
             height = (TopBottomHeightConstraint != nil) ? TopBottomHeightConstraint.constant + height : height
             return height
         }
     }
+    func expandTopView() {
+        setHeightConstraints(array: configuration.topAreaMaxHeights)
+        self.updateTableViewInsetHeight()
+    }
+    func compressTopView() {
+        setHeightConstraints(array: configuration.topAreaMinHeights)
+        self.updateTableViewInsetHeight()
+    }
+    func zeroTopView() {
+        setHeightConstraints(array: [0.0, 0.0, 0.0])
+        self.updateTableViewInsetHeight()
+    }
+    func setHeightConstraints(array: [CGFloat]) {
+        let top = 0; let middle = 1; let bottom = 2
+        var cumulator: CGFloat = 0.0
+        if array.count > top {
+            changeConstraintConstant(constraint: self.TopTopHeightConstraint, newValue: array[top])
+            cumulator = cumulator + array[top]
+        } else {
+            changeConstraintConstant(constraint: self.TopTopHeightConstraint, newValue: 0.0)
+        }
+        if array.count > middle {
+            changeConstraintConstant(constraint: self.TopMiddleHeightConstraint, newValue: array[middle])
+            cumulator = cumulator + array[middle]
+        } else {
+            changeConstraintConstant(constraint: self.TopMiddleHeightConstraint, newValue: 0.0)
+        }
+        if array.count > bottom {
+            changeConstraintConstant(constraint: self.TopBottomHeightConstraint, newValue: array[bottom])
+            cumulator = cumulator + array[bottom]
+        } else {
+            changeConstraintConstant(constraint: self.TopBottomHeightConstraint, newValue: 0.0)
+        }
+        if cumulator == 0 { self.hideTopView() }
+        if cumulator == 0 { self.showTopView() }
+    }
     func changeConstraintConstant(constraint: NSLayoutConstraint?, newValue: CGFloat) {
         if let constraint = constraint { constraint.constant = newValue }
     }
-
+    func showTopView() { if let view = TopOuterView { view.isHidden = false } }
     func hideTopView() { if let view = TopOuterView { view.isHidden = true } }
     func putTopViewOnTop() {
         if let outerView = TopOuterView {
@@ -386,7 +425,7 @@ extension RVBaseSLKViewController4: UISearchResultsUpdating {
         }
     }
     func configureSearchController() {
-        print("In \(self.classForCoder).configureSearchController")
+        //print("In \(self.classForCoder).configureSearchController")
         searchController.searchResultsUpdater = self
         searchController.delegate = self
         searchController.searchBar.delegate = self

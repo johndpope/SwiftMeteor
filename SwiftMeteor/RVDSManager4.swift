@@ -78,7 +78,7 @@ class RVDSManager4 {
         }
     }
     func toggle(datasource: RVBaseDatasource4, callback: @escaping RVCallback) {
-        print("In \(self.instanceType).toggle -------------------------------------- ")
+       // print("In \(self.instanceType).toggle -------------------------------------- ")
         if self.sectionIndex(datasource: datasource) < 0 {
             let error = RVError(message: "In \(self.instanceType).toggle, datasource is not installed as a section \(datasource)")
             callback([RVBaseModel](), error)
@@ -92,11 +92,9 @@ class RVDSManager4 {
     }
 
     func restart(datasource: RVBaseDatasource4, query: RVQuery, callback: @escaping RVCallback) {
-        datasource.cancelAllOperations()
-        datasource.unsubscribe {
-            datasource.restart(scrollView: self.scrollView, query: query, callback: callback)
-        }
+        datasource.restart(scrollView: self.scrollView, query: query, callback: callback)
     }
+
 
 }
 
@@ -230,21 +228,25 @@ class RVManagerAppendSections4: RVManagerRemoveSections4 {
         self.sectionTypesToRemove = sectionTypesToRemove
         super.init(title: "Add Sections", manager: manager, datasources: datasources, callback: callback)
     }
-    func complete() {
+    func complete(error: RVError?) {
         DispatchQueue.main.async {
-            if self.sectionsToBeRemoved.count > 0 {
+            if let error = error {
+                self.datasources = [RVBaseDatasource4]()
+                self.callback(self.emptyResponse, error)
+                self.completeOperation()
+            } else if self.sectionsToBeRemoved.count > 0 {
                 self.datasources = self.sectionsToBeRemoved
                 self.innerAsyncMain()
             } else {
                 self.datasources = [RVBaseDatasource4]()
-                self.callback(self.emptyResponse, nil)
+                self.callback(self.emptyResponse, error)
                 self.completeOperation()
             }
         }
     }
     override func asyncMain() {
         if (datasources.count == 0) || self.isCancelled {
-            complete()
+            complete(error: nil)
             return
         }
         if let manager = self.manager {
@@ -274,7 +276,7 @@ class RVManagerAppendSections4: RVManagerRemoveSections4 {
                         tableView.endUpdates()
                         self.ignoreCancel = true
                     }
-                    self.complete()
+                    self.complete(error: nil)
                     /*
                     self.callback(self.emptyResponse, nil)
                     self.completeOperation()
@@ -304,7 +306,7 @@ class RVManagerAppendSections4: RVManagerRemoveSections4 {
                             self.ignoreCancel = true
                         }
                     }, completion: { (success) in
-                        self.complete()
+                        self.complete(error: nil)
                     })
                 }
                 return
@@ -321,18 +323,18 @@ class RVManagerAppendSections4: RVManagerRemoveSections4 {
                 }
                 for datasource in self.datasources { manager.sections.append(datasource) }
                 DispatchQueue.main.async {
-                    self.complete()
+                    self.complete(error: nil)
                 }
             } else {
                 let error = RVError(message: "In \(self.classForCoder).main, erroneous ScrollView: \(manager.scrollView?.description  ?? " no ScrollView")!")
                 DispatchQueue.main.async {
-                    self.complete()
+                    self.complete(error: error )
                 }
             }
         } else {
             let error = RVError(message: "In \(self.classForCoder).main, no manager")
             DispatchQueue.main.async {
-                self.complete()
+                self.complete(error: error )
             }
         }
     }
@@ -427,12 +429,12 @@ class RVManagerExpandCollapseOperation4: RVAsyncOperation {
                 }
                 return
             case .toggle:
-                print("In \(self.instanceType).actualOperation, toggle number of datasources \(datasources.count)")
+               // print("In \(self.instanceType).actualOperation, toggle number of datasources \(datasources.count)")
                 self.count = datasources.count
                 for datasource in datasources {
                     let scrollView = (manager.sectionIndex(datasource: datasource) < 0) ? nil : manager.scrollView
                     datasource.toggle(scrollView: scrollView, callback: { (models, error) in
-                        print("In \(self.instanceType).actualOperation, toggle count \(self.count)  $$$$$$$$$$$$$$$$$")
+                        //print("In \(self.instanceType).actualOperation, toggle count \(self.count)  $$$$$$$$$$$$$$$$$")
                         self.count = self.count - 1
                         if let error = error {
                             error.append(message: "In \(self.instanceType).actualOperation toggle, got error")
