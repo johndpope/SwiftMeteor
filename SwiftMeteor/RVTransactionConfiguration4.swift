@@ -46,7 +46,9 @@ class RVTransactionConfiguration4: RVBaseConfiguration4 {
         return RVTransactionDatasource44(manager: self.manager, datasourceType: .filter, maxSize: self.mainDatasourceMaxSize)
     }
     override func baseTopQuery() -> (RVQuery, RVError?) {
-        return (RVQuery(), nil)
+        let query = RVQuery()
+        query.addSort(sortTerm: RVSortTerm(field: .createdAt, order: .ascending))
+        return (query, nil)
     }
     override func baseMainQuery() -> (RVQuery, RVError?) {
         return RVTransaction.baseQuery
