@@ -8,6 +8,7 @@
 
 import UIKit
 class RVSectionManager4<T: NSObject> {
+    /*
     var instanceType: String { get { return String(describing: type(of: self)) } }
     fileprivate let queue = RVOperationQueue()
     fileprivate var sections = [RVBaseDatasource4<T>]()
@@ -52,10 +53,12 @@ class RVSectionManager4<T: NSObject> {
     }
     var frontQueryOperationActive: Bool = false
     var backQueryOperationActive: Bool = false
-    var frontSection: RVBaseDatasource4<T>? { return manager.frontElement}
-    var backSection: RVBaseDatasource4<T>? { return manager.backElement }
+    var frontSection: RVBaseDatasource4<RVBaseModel>? { return manager.frontElement}
+    var backSection: RVBaseDatasource4<RVBaseModel>? { return manager.backElement }
+ */
 }
 class RVSectionManagerLoadOperation<T: NSObject>: RVAsyncOperation<T> {
+    /*
     weak var scrollView: UIScrollView?
     var front: Bool
     weak var sectionManager: RVSectionManager4<T>?
@@ -155,6 +158,7 @@ class RVSectionManagerLoadOperation<T: NSObject>: RVAsyncOperation<T> {
             else if !front && sectionManager.backQueryOperationActive { sectionManager.backQueryOperationActive = false }
         }
     }
+ */
 }
 class RVSectionManagerExpandCollapseOperation<T: NSObject>: RVAsyncOperation<T> {
     enum Mode {
