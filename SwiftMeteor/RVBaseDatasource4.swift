@@ -18,6 +18,7 @@ enum RVExpandCollapseOperationType {
     case collapseZeroAndExpand
     case collapseZeroExpandAndLoad
     case toggle
+
 }
 protocol RVItemRetrieve: class {
     var item: RVBaseModel? { get set }
@@ -28,6 +29,7 @@ class RVBaseDatasource4<T:NSObject>: NSObject {
         case main       = "Main"
         case filter     = "Filter"
         case subscribe  = "Subscribe"
+        case section    = "Section"
         case unknown    = "Unknown"
     }
     let LAST_SORT_STRING = "ZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZ"
@@ -38,7 +40,11 @@ class RVBaseDatasource4<T:NSObject>: NSObject {
     var rowAnimation: UITableViewRowAnimation = UITableViewRowAnimation.automatic
     var elements = [T]()
     var sections = [RVBaseDatasource4<T>]()
-    var section: Int { get { return manager.sectionIndex(datasource: self) }}
+    var section: Int { get {
+        if let manager = self.manager { return manager.sectionIndex(datasource: self)}
+        return -1
+        }
+    }
     var backOperationActive: Bool = false
     var frontOperationActive: Bool = false
     var subscriptionActive: Bool = false
@@ -63,7 +69,7 @@ class RVBaseDatasource4<T:NSObject>: NSObject {
         }
     }
     var datasourceType: RVBaseDatasource4<T>.DatasourceType = .unknown
-    var manager: RVDSManager4<T>
+    var manager: RVDSManager4<T>?
 
     fileprivate var lastItemIndex: Int = 0
     fileprivate let TargetBackBufferSize: Int = 20
@@ -116,7 +122,7 @@ class RVBaseDatasource4<T:NSObject>: NSObject {
         }
     }
  
-    init(manager: RVDSManager4<T>, datasourceType: RVBaseDatasource4<T>.DatasourceType, maxSize: Int) {
+    init(manager: RVDSManager4<T>?, datasourceType: RVBaseDatasource4<T>.DatasourceType, maxSize: Int) {
         self.manager = manager
         self.datasourceType = datasourceType
         self.maxArraySize = ((maxSize < 500) && (maxSize > 50)) ? maxSize : 500

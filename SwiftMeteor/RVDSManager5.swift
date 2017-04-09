@@ -6,4 +6,9 @@
 //  Copyright © 2017 Neil Weintraut. All rights reserved.
 //
 
-import Foundation
+import UIKit
+class RVDSManager5<S: NSObject>: RVBaseDatasource4<RVBaseDatasource4<RVBaseModel>> {
+    init(scrollView: UIScrollView?, maxSize: Int = 300) {
+        super.init(manager: nil, datasourceType: .section, maxSize: maxSize)
+    }
+}
