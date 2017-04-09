@@ -36,7 +36,7 @@ class RVBaseDatasource4<T:NSObject>: NSObject {
     var baseQuery: RVQuery? = nil
     fileprivate let queue = RVOperationQueue()
     var rowAnimation: UITableViewRowAnimation = UITableViewRowAnimation.automatic
-    var items = [T]()
+    var elements = [T]()
     var sections = [RVBaseDatasource4<T>]()
     var section: Int { get { return manager.sectionIndex(datasource: self) }}
     var backOperationActive: Bool = false
@@ -46,26 +46,9 @@ class RVBaseDatasource4<T:NSObject>: NSObject {
     var collapsed: Bool = false
     var subscription: RVSubscription? = nil
     var notificationInstalled: Bool = false
-    var itemsCount: Int { return items.count}
+    var elementsCount: Int { return elements.count}
     var sectionModel: RVBaseModel? = nil
-    func append(_ newElement: NSObject) {
-        if let item = newElement as? T {
-            items.append(item)
-        } else if let section = newElement as? RVBaseDatasource4<T> {
-            sections.append(section)
-        } else {
-            print("In \(self.classForCoder).append object is neither RVBaseModel or RVBaseDatasource4 \(newElement)")
-        }
-    }
-    func insert(_ newElement: NSObject, at: Int) {
-        if let item = newElement as? T {
-            items.insert(item, at: at)
-        } else if let section = newElement as? RVBaseDatasource4<T> {
-            sections.insert(section, at: at)
-        } else {
-            print("In \(self.classForCoder).insert object is neither RVBaseModel or RVBaseDatasource4 \(newElement)")
-        }
-    }
+
     weak var scrollView: UIScrollView? {
         willSet {
             if (scrollView == nil) || (newValue == nil) { return }
@@ -76,7 +59,7 @@ class RVBaseDatasource4<T:NSObject>: NSObject {
     var offset: Int = 0 {
         willSet {
             if newValue < 0 { print("In \(self.classForCoder) ERROR. attemtp to set Offset to a negative number \(newValue)") }
-            //print("In \(self.classForCoder).offset setting to \(newValue) and arraysize is \(itemsCount)")
+            //print("In \(self.classForCoder).offset setting to \(newValue) and arraysize is \(elementsCount)")
         }
     }
     var datasourceType: RVBaseDatasource4<T>.DatasourceType = .unknown
@@ -281,7 +264,7 @@ extension RVBaseDatasource4 {
     var virtualCount: Int {
         get {
             if self.collapsed { return 0 }
-            return self.itemsCount + self.offset
+            return self.elementsCount + self.offset
         }
     }
     func inFront(scrollView: UIScrollView?) {
@@ -329,7 +312,7 @@ extension RVBaseDatasource4 {
         var OKtoRetrieve: Bool = true
         if self.subscription != nil {
             if self.subscriptionActive {
-                if self.itemsCount >= self.maxArraySize {
+                if self.elementsCount >= self.maxArraySize {
                     OKtoRetrieve = false
                 }
             }
@@ -337,21 +320,21 @@ extension RVBaseDatasource4 {
         let physicalIndex = index - offset
         if physicalIndex < 0 {
             //print("In \(self.instanceType).item got physical index less than 0 \(physicalIndex). Offset is \(offset)")
-            //print("In \(self.classForCoder).item calling inBack: index = \(index), count: \(itemsCount), offset: \(self.offset), backBuffer: \(self.backBufferSize)")
+            //print("In \(self.classForCoder).item calling inBack: index = \(index), count: \(elementsCount), offset: \(self.offset), backBuffer: \(self.backBufferSize)")
             if OKtoRetrieve {inFront(scrollView: scrollView)}
             return nil
-        } else if physicalIndex < itemsCount {
-            if (physicalIndex + self.backBufferSize) > itemsCount {
-                //print("In \(self.classForCoder).item calling inBack:  index = \(index), count: \(itemsCount), offset: \(self.offset), backBuffer: \(self.backBufferSize)")
+        } else if physicalIndex < elementsCount {
+            if (physicalIndex + self.backBufferSize) > elementsCount {
+                //print("In \(self.classForCoder).item calling inBack:  index = \(index), count: \(elementsCount), offset: \(self.offset), backBuffer: \(self.backBufferSize)")
                 if OKtoRetrieve {inBack(scrollView: scrollView) }
             }
             if physicalIndex < self.frontBufferSize {
-               // print("In \(self.classForCoder).item calling inFront: index = \(index), count: \(itemsCount), offset: \(self.offset), backBuffer: \(self.backBufferSize)")
+               // print("In \(self.classForCoder).item calling inFront: index = \(index), count: \(elementsCount), offset: \(self.offset), backBuffer: \(self.backBufferSize)")
                 if OKtoRetrieve { inFront(scrollView: scrollView) }
             }
-            return items[physicalIndex]
+            return elements[physicalIndex]
         } else {
-            print("In \(self.instanceType).item physicalIndex of \(physicalIndex) exceeds or equals array size \(itemsCount). Offset is \(self.offset)")
+            print("In \(self.instanceType).item physicalIndex of \(physicalIndex) exceeds or equals array size \(elementsCount). Offset is \(self.offset)")
             return nil
         }
     }
@@ -361,19 +344,19 @@ extension RVBaseDatasource4 {
     }
     func cloneItems() -> [T] {
         var clone = [T]()
-        for item in items { clone.append(item) }
+        for item in elements { clone.append(item) }
         return clone
     }
     var frontItem: T? {
         get {
-            if itemsCount == 0 { return nil }
-            else { return items[0] }
+            if elementsCount == 0 { return nil }
+            else { return elements[0] }
         }
     }
     var backItem: T? {
         get {
-            if itemsCount == 0 { return nil }
-            else { return items[itemsCount - 1] }
+            if elementsCount == 0 { return nil }
+            else { return elements[elementsCount - 1] }
         }
     }
 
@@ -408,10 +391,10 @@ class RVExpandCollapseOperation<T:NSObject>: RVLoadOperation<T> {
     func handleCollapse() -> [IndexPath] {
         var indexPaths = [IndexPath]()
         let section = self.datasource.section
-        let lastItem = self.datasource.offset + self.datasource.itemsCount
+        let lastItem = self.datasource.offset + self.datasource.elementsCount
         if (section >= 0) && (lastItem > 0) { for row in 0..<lastItem { indexPaths.append(IndexPath(row: row, section: section)) } }
         if (self.operationType == .collapseAndZero) || (self.operationType == .collapseZeroAndExpand ) || (self.operationType == .collapseZeroExpandAndLoad){
-            self.datasource.items = [T]()
+            self.datasource.elements = [T]()
             self.datasource.offset = 0
         }
         if (operationType == .collapseZeroAndExpand) || (operationType == .collapseZeroExpandAndLoad) {
@@ -432,7 +415,7 @@ class RVExpandCollapseOperation<T:NSObject>: RVLoadOperation<T> {
             self.datasource.scrollView = self.scrollView
             if self.datasource.collapsed {
                 if (operationType == .collapseAndZero) || (operationType == .collapseZeroAndExpand) || (operationType == .collapseZeroExpandAndLoad) {
-                    self.datasource.items = [T]()
+                    self.datasource.elements = [T]()
                     self.datasource.offset = 0
                 }
                 if (operationType == .collapseZeroAndExpand) || (operationType == .collapseZeroExpandAndLoad) { self.datasource.collapsed = false }
@@ -475,7 +458,7 @@ class RVExpandCollapseOperation<T:NSObject>: RVLoadOperation<T> {
                             return
                         } else if self.scrollView == nil {
                             if (operationType == .collapseAndZero) || (operationType == .collapseZeroAndExpand) || (self.operationType == .collapseZeroExpandAndLoad) {
-                                self.datasource.items = [T]()
+                                self.datasource.elements = [T]()
                                 self.datasource.offset = 0
                             }
                             if (operationType == .collapseZeroAndExpand) || (operationType == .collapseZeroExpandAndLoad) {
@@ -509,7 +492,7 @@ class RVExpandCollapseOperation<T:NSObject>: RVLoadOperation<T> {
                             tableView.insertRows(at: indexPaths, with: self.datasource.rowAnimation)
                         }
                         tableView.endUpdates()
-                        self.finishUp(models: self.datasource.items, error: nil)
+                        self.finishUp(models: self.datasource.elements, error: nil)
                         return
                     } else if let collectionView = self.scrollView as? UICollectionView {
                         collectionView.performBatchUpdates({
@@ -518,21 +501,21 @@ class RVExpandCollapseOperation<T:NSObject>: RVLoadOperation<T> {
                                 collectionView.insertItems(at: indexPaths)
                             }
                         }, completion: { (success) in
-                            self.finishUp(models: self.datasource.items, error: nil)
+                            self.finishUp(models: self.datasource.elements, error: nil)
                         })
                         return
                     } else if self.scrollView != nil {
                         let _ = self.handleExpand()
-                        self.finishUp(models: self.datasource.items, error: nil)
+                        self.finishUp(models: self.datasource.elements, error: nil)
                         return
                     } else {
                         let error = RVError(message: "In \(self.classForCoder).main, invalid scrollView \(self.scrollView?.description ?? " no scroll view")")
-                        self.finishUp(models: self.datasource.items, error: error)
+                        self.finishUp(models: self.datasource.elements, error: error)
                         return
                     }
                 }
             } else {
-                self.finishUp(models: self.datasource.items, error: nil)
+                self.finishUp(models: self.datasource.elements, error: nil)
                 return
             }
         }
@@ -540,7 +523,7 @@ class RVExpandCollapseOperation<T:NSObject>: RVLoadOperation<T> {
     func handleExpand() -> [IndexPath] {
         var indexPaths = [IndexPath]()
         let section = self.datasource.section
-        let lastItem = self.datasource.offset + self.datasource.itemsCount
+        let lastItem = self.datasource.offset + self.datasource.elementsCount
         if (section >= 0) && (lastItem > 0) { for row in 0..<lastItem { indexPaths.append(IndexPath(row: row, section: section)) } }
         self.datasource.collapsed = false
         return indexPaths
@@ -913,12 +896,12 @@ class RVLoadOperation<T:NSObject>: RVAsyncOperation<T> {
                     if (section >= 0) { indexPaths.append(IndexPath(item: virtualMax-i, section: section)) }
                     clone.remove(at: arrayCount - i)
                 }
-                self.datasource.items = clone
+                self.datasource.elements = clone
                 return indexPaths
             } else {
                 var slicedArray = [T]()
                 for i in excess..<clone.count { slicedArray.append(clone[i]) }
-                self.datasource.items = slicedArray
+                self.datasource.elements = slicedArray
                 self.datasource.offset = self.datasource.offset + excess
                 return indexPaths
             }
@@ -927,7 +910,7 @@ class RVLoadOperation<T:NSObject>: RVAsyncOperation<T> {
     func cleanup(models: [T], callback: @escaping([T], RVError?)-> Void) {
         DispatchQueue.main.async {
             let maxSize = self.datasource.maxArraySize
-            if self.datasource.itemsCount <= maxSize {
+            if self.datasource.elementsCount <= maxSize {
                 callback(models, nil)
                 return
             } else if self.isCancelled {
@@ -961,15 +944,15 @@ class RVLoadOperation<T:NSObject>: RVAsyncOperation<T> {
     }
     func backHandler(models: [T]) -> [IndexPath] {
         let section = datasource.section
-        let virtualIndex = datasource.itemsCount + datasource.offset
+        let virtualIndex = datasource.elementsCount + datasource.offset
         var clone = datasource.cloneItems()
         var indexPaths = [IndexPath]()
         for i in 0..<models.count {
             clone.append(models[i])
             if (section >= 0) { indexPaths.append(IndexPath(row: virtualIndex + i, section: section)) }
         }
-        self.datasource.items = clone
-       // print("In \(self.classForCoder).backHandler, items count = \(self.datasource.itemsCount) collapsed: \(self.datasource.collapsed)")
+        self.datasource.elements = clone
+       // print("In \(self.classForCoder).backHandler, items count = \(self.datasource.elementsCount) collapsed: \(self.datasource.collapsed)")
         return indexPaths
     }
     func frontHandler(newModels: [T]) -> [IndexPath] {
@@ -982,7 +965,7 @@ class RVLoadOperation<T:NSObject>: RVAsyncOperation<T> {
             print("In \(self.classForCoder).insertFront offset is \(self.datasource.offset) and newCount = \(newCount)")
             if newCount <= datasource.offset {
                 for i in 0..<newCount { clone.insert(newModels[i], at: 0) }
-                self.datasource.items = clone
+                self.datasource.elements = clone
                 self.datasource.offset = self.datasource.offset - newCount
                 return indexPaths
             } else {
@@ -995,7 +978,7 @@ class RVLoadOperation<T:NSObject>: RVAsyncOperation<T> {
                     if (section >= 0 ) { indexPaths.append(IndexPath(item: rowIndex, section: section)) }
                     rowIndex = rowIndex + 1
                 }
-                self.datasource.items = clone
+                self.datasource.elements = clone
                 return indexPaths
             }
         } else {
@@ -1007,7 +990,7 @@ class RVLoadOperation<T:NSObject>: RVAsyncOperation<T> {
                 rowIndex = rowIndex + 1
             }
             self.datasource.offset = 0
-            self.datasource.items = clone
+            self.datasource.elements = clone
             return indexPaths
         }
     }
@@ -1023,7 +1006,7 @@ class RVLoadOperation<T:NSObject>: RVAsyncOperation<T> {
             }
             var sizedModels = [T]()
             if self.datasource.datasourceType == .filter {
-                let room = self.datasource.maxArraySize - self.datasource.itemsCount
+                let room = self.datasource.maxArraySize - self.datasource.elementsCount
                 if (models.count <= room) { sizedModels = models }
                 else {
                     for i in 0..<room { sizedModels.append(models[i]) }
