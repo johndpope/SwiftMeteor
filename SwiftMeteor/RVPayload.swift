@@ -12,13 +12,13 @@ enum RVEventType {
     case changed
     case removed
 }
-class RVPayload {
+class RVPayload<T: NSObject> {
     class var payloadInfoKey: String { return  "PayloadInfoKey" }
     var subscription: RVSubscription
     var eventType: RVEventType
-    var models: [RVBaseModel]
-    var operation: RVAsyncOperation
-    init(subscription: RVSubscription, eventType: RVEventType, models: [RVBaseModel], operation: RVAsyncOperation) {
+    var models: [T]
+    var operation: RVAsyncOperation<T>
+    init(subscription: RVSubscription, eventType: RVEventType, models: [T], operation: RVAsyncOperation<T>) {
         self.subscription = subscription
         self.eventType = eventType
         self.models = models
@@ -30,7 +30,7 @@ class RVPayload {
         var created = "None"
         var country = "None"
         var everywhere = false
-        if let model = models.first {
+        if let model = models.first as? RVBaseModel {
             if let title = model.title { modelTitle = title}
             if let id = model.localId { localId = id }
             if let createdAt = model.createdAt { created = createdAt.description }

@@ -20,11 +20,11 @@ class RVBaseDatasource2: RVBaseDataSource {
 
 }
 
-class RVQueryForFrontOperation: RVAsyncOperation {
+class RVQueryForFrontOperation<T: NSObject>: RVAsyncOperation<T> {
     private var pcallback: (RVError?) -> Void
     init(title: String, datasource: RVBaseDatasource2, callback: @escaping(RVError?) -> Void ) {
         self.pcallback = callback
-        super.init(title: title , callback: {(models: [RVBaseModel], error: RVError?) in }, parent: datasource)
+        super.init(title: title , callback: {(models: [T], error: RVError?) in }, parent: datasource)
     }
     func createFrontQuery(sourceQuery: RVQuery, datasource: RVBaseDataSource) -> RVQuery {
         let query = sourceQuery.duplicate().updateQuery(front: true)

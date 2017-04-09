@@ -52,7 +52,7 @@ class RVBaseCollectionSubscription: RVBaseCollection, RVSubscription {
                     print("In \(self.classForCoder).finishUp \(eventType), queCount > MaxOperations. Count is: \(queue.operationCount). Tossing Operation")
                 } else {
                    // print("In \(self.classForCoder).finishUp, collection: \(collection) eventType: \(eventType), id: \(id)")
-                    queue.addOperation(RVModelSubscriptionBroadcast(subscription: self , models: models, eventType: eventType, id: id))
+                    queue.addOperation(RVModelSubscriptionBroadcast<RVBaseModel>(subscription: self , models: models, eventType: eventType, id: id))
                 }
             } else {
                 print("In \(self.classForCoder).finishUp, collectionName sent: \(collection), not equal to collection \(self.collection.rawValue). id: \(id) and subID = \(self.subscriptionID ?? "No subscriptionID")")
@@ -86,17 +86,17 @@ class RVBaseCollectionSubscription: RVBaseCollection, RVSubscription {
     }
     
 }
-class RVModelSubscriptionBroadcast: RVAsyncOperation {
-    var models: [RVBaseModel]
+class RVModelSubscriptionBroadcast<T: NSObject>: RVAsyncOperation<T> {
+    var models: [T]
     var eventType: RVEventType
     var subscription: RVSubscription
     var id: String
-    init(subscription: RVSubscription, models: [RVBaseModel], eventType: RVEventType, id: String) {
+    init(subscription: RVSubscription, models: [T], eventType: RVEventType, id: String) {
         self.models = models
         self.eventType = eventType
         self.subscription = subscription
         self.id = id
-        super.init(title: "RVModelSubscriptionBroad for \(self.subscription.collection.rawValue), event: \(self.eventType)", callback: {(models: [RVBaseModel], error: RVError?) in } )
+        super.init(title: "RVModelSubscriptionBroad for \(self.subscription.collection.rawValue), event: \(self.eventType)", callback: {(models: [T], error: RVError?) in } )
     }
     override func asyncMain() {
         if !self.isCancelled {
@@ -125,7 +125,7 @@ class RVModelSubscriptionBroadcast: RVAsyncOperation {
         var title = "Nothing"
         var messageTitle = "Nothing"
         var createdAt = "nothing"
-        if let model = self.models.first {
+        if let model = self.models.first as? RVBaseModel {
             title = "\(model.modelType.rawValue)"
             messageTitle = model.title == nil ? "No Title" : model.title!
             createdAt = model.createdAt == nil ? "No created at" : (model.createdAt!).description

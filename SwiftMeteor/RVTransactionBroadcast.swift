@@ -16,17 +16,25 @@ class RVTransactionBroadcast {
         return RVTransactionBroadcast()
     }()
     func documentWasAdded(document: RVBaseModel) {
-        queue.addOperation(RVDocumentWasAddedOperation(model: document))
+        queue.addOperation(RVDocumentWasAddedOperation<RVBaseModel>(model: document))
         count = count + 1
         if count > 3 { count = 0}
     }
 }
-class RVDocumentWasAddedOperation: RVAsyncOperation {
+class RVDocumentWasAddedOperation<T: NSObject>: RVAsyncOperation<T> {
 
-    var model: RVBaseModel
-    init(model: RVBaseModel) {
+    var model: T
+    init(model: T) {
         self.model = model
-        super.init(title: "Document Was Added: \(model.modelType.rawValue) id: \(model.localId ?? " no localId") \(model.createdAt?.description ?? " no createdAt")", callback: {(models: [RVBaseModel], error: RVError?) in })
+        var title = "Document Was Added: "
+        var id = "unknown"
+        var createdAt = "no createdAt"
+        if let model = model as? RVBaseModel {
+            title = title + model.modelType.rawValue
+            id = model.localId != nil ? model.localId! : "No Id"
+            createdAt = model.createdAt != nil ? model.createdAt!.description : "No createdAt"
+        }
+        super.init(title: "\(title), id: \(id), createdAt: \(createdAt)", callback: {(models: [T], error: RVError?) in })
     }
     override func asyncMain() {
         if self.isCancelled {
@@ -44,9 +52,14 @@ class RVDocumentWasAddedOperation: RVAsyncOperation {
         }
     }
     func choose(index: Int, controller: UIViewController) {
-        let title = "\(self.model.modelType.rawValue)"
-        let messageTitle = model.title == nil ? "No Title" : model.title!
-        let createdAt = model.createdAt == nil ? "No created at" : (model.createdAt!).description
+        var title = "No BaseModel"
+        var messageTitle = "Not Base Model"
+        var createdAt = "Not base model"
+        if let model = self.model as? RVBaseModel {
+            title = "\(model.modelType.rawValue)"
+            messageTitle = model.title == nil ? "No Title" : "\(model.title!)"
+            createdAt = model.createdAt == nil ? "No created At" : "\(model.createdAt!)"
+        }
         
         let message = "\(messageTitle), \(createdAt)"
         let actions = ["OK", "Jump", "Other"]

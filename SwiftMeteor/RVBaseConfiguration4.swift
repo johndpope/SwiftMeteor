@@ -76,7 +76,7 @@ class RVBaseConfiguration4 {
         self.SLKshouldScrollToBottomAfterKeyboardShows = false
         self.SLKshowTextInputBar                       = true
     }
-    func removeAllSections(callback: @escaping RVCallback) {
+    func removeAllSections(callback: @escaping RVCallback<RVBaseModel>) {
         self.manager.removeAllSections(callback: callback)
     }
     func baseTopQuery() -> (RVQuery, RVError?) {

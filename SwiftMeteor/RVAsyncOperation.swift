@@ -7,7 +7,7 @@
 //
 
 import Foundation
-class RVAsyncOperation: Operation {
+class RVAsyncOperation<T:NSObject>: Operation {
     var instanceType: String = { return String(describing: type(of: self)) }()
     //var instanceType: String { get { return String(describing: type(of: self)) } }
     private(set) var error: Error? = nil
@@ -15,8 +15,8 @@ class RVAsyncOperation: Operation {
     private var _executing: Bool = false
     private var _finished:  Bool = false
     var parent: NSObject? = nil
-    var callback: RVCallback
-    let itemsPlug = [RVBaseModel]()
+    var callback: RVCallback<T>
+    let itemsPlug = [T]()
     let invoked = Date()
     override var isAsynchronous: Bool { return true }
     
@@ -38,7 +38,7 @@ class RVAsyncOperation: Operation {
             didChangeValue(forKey: key)
         }
     }
-    init(title: String, callback: @escaping RVCallback, parent: NSObject? = nil) {
+    init(title: String, callback: @escaping RVCallback<T>, parent: NSObject? = nil) {
         self.title = title
         self.parent = parent
         self.callback = callback
@@ -57,7 +57,7 @@ class RVAsyncOperation: Operation {
 
        // operation(completeOperation: completeOperation)
     }
-    func completeOperation(models: [RVBaseModel] = [RVBaseModel](), error: RVError? ) {
+    func completeOperation(models: [T] = [T](), error: RVError? ) {
         DispatchQueue.main.async {
             self.callback(models, error)
             self.isFinished = true
@@ -95,7 +95,7 @@ class RVOperationQueue: OperationQueue {
     }
     func test() {
         var error: Error? = nil
-        let operation1 = RVAsyncOperation(title: "First", callback: {(models, error) in })
+        let operation1 = RVAsyncOperation<RVBaseModel>(title: "First", callback: {(models, error) in })
         operation1.completionBlock = { error = operation1.error }
         self.addOperation(operation1)
         let operation2 = RVAsyncOperation(title: "Second", callback: {(models, error) in })

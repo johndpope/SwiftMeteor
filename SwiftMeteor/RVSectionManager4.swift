@@ -10,7 +10,7 @@ import UIKit
 class RVSectionManager4<T: NSObject> {
     var instanceType: String { get { return String(describing: type(of: self)) } }
     fileprivate let queue = RVOperationQueue()
-    fileprivate var sections = [RVBaseDatasource4]()
+    fileprivate var sections = [RVBaseDatasource4<T>]()
 
     var manager: RVDSManager4<T>
     init(manager: RVDSManager4<T>) {
@@ -20,24 +20,24 @@ class RVSectionManager4<T: NSObject> {
     func numberOfItems(section: Int) -> Int {
         return manager.numberOfItems(section: section)
     }
-    func item(indexPath: IndexPath) -> RVBaseModel? {
+    func item(indexPath: IndexPath) -> T? {
         return manager.item(indexPath: indexPath)
     }
     func scrolling(indexPath: IndexPath, scrollView: UIScrollView) {
         manager.scrolling(indexPath: indexPath , scrollView: scrollView)
     }
-    func collapse(datasource: RVBaseDatasource4<T>, callback: @escaping RVCallback) {
+    func collapse(datasource: RVBaseDatasource4<T>, callback: @escaping RVCallback<T>) {
         if manager.sectionIndex(datasource: datasource) < 0 {
             let error = RVError(message: "In \(self.instanceType).collapse, datasource is not installed as a section \(datasource)")
-            callback([RVBaseModel](), error)
+            callback([T](), error)
         } else{
             
         }
     }
-    func expand(datasource: RVBaseDatasource4<T>, callback: @escaping RVCallback) {
+    func expand(datasource: RVBaseDatasource4<T>, callback: @escaping RVCallback<T>) {
         if manager.sectionIndex(datasource: datasource) < 0 {
             let error = RVError(message: "In \(self.instanceType).expand, datasource is not installed as a section \(datasource)")
-            callback([RVBaseModel](), error)
+            callback([T](), error)
         } else {
             
         }
@@ -46,21 +46,21 @@ class RVSectionManager4<T: NSObject> {
         print("In \(self.instanceType).baseQuery, need to replace")
         return (RVQuery(), nil)
     }
-    func retrieveSections(callback: RVCallback) {
+    func retrieveSections(callback: RVCallback<T>) {
         print("In \(self.instanceType).retrieveSections, need to replace")
-        callback([RVBaseModel](), nil)
+        callback([T](), nil)
     }
     var frontQueryOperationActive: Bool = false
     var backQueryOperationActive: Bool = false
     var frontSection: RVBaseDatasource4<T>? { return manager.frontSection}
     var backSection: RVBaseDatasource4<T>? { return manager.backSection }
 }
-class RVSectionManagerLoadOperation<T: NSObject>: RVAsyncOperation {
+class RVSectionManagerLoadOperation<T: NSObject>: RVAsyncOperation<T> {
     weak var scrollView: UIScrollView?
     var front: Bool
     weak var sectionManager: RVSectionManager4<T>?
     var reference: RVBaseDatasource4<T>?
-    init(title: String = "RVSectionManagerLoadOperation", sectionManager: RVSectionManager4<T>, scrollView: UIScrollView?, front: Bool = false, callback: @escaping RVCallback) {
+    init(title: String = "RVSectionManagerLoadOperation", sectionManager: RVSectionManager4<T>, scrollView: UIScrollView?, front: Bool = false, callback: @escaping RVCallback<T>) {
         self.scrollView             = scrollView
         self.sectionManager         = sectionManager
         self.front                  = front
@@ -128,17 +128,17 @@ class RVSectionManagerLoadOperation<T: NSObject>: RVAsyncOperation {
             }
         }
     }
-    func innerRetrieve(query: RVQuery, callback: @escaping RVCallback) {
+    func innerRetrieve(query: RVQuery, callback: @escaping RVCallback<T>) {
         DispatchQueue.main.async {
             self.retrieveSections(query: query, callback: callback)
         }
     }
-    func insert(models: [RVBaseModel], callback: @escaping RVCallback) {
+    func insert(models: [T], callback: @escaping RVCallback<T>) {
         print("In \(self.instanceType).insert, need to implement")
     }
-    func retrieveSections(query: RVQuery, callback: RVCallback) {
+    func retrieveSections(query: RVQuery, callback: RVCallback<T>) {
         print("In \(self.instanceType).retrieveSections, need to replace")
-        callback([RVBaseModel](), nil)
+        callback([T](), nil)
     }
     func updateQuery(query: RVQuery, reference: RVBaseDatasource4<T>?, front: Bool) -> RVQuery {
         print("In \(self.classForCoder).updateQuery, need to implement")
@@ -148,7 +148,7 @@ class RVSectionManagerLoadOperation<T: NSObject>: RVAsyncOperation {
         print("In \(self.classForCoder).refreshView, need to implement")
         callback()
     }
-    override func completeOperation(models: [RVBaseModel] = [RVBaseModel](), error: RVError?) {
+    override func completeOperation(models: [T] = [T](), error: RVError?) {
         super.completeOperation(models: models, error: error)
         if let sectionManager = self.sectionManager {
             if front && sectionManager.frontQueryOperationActive { sectionManager.frontQueryOperationActive = false }
@@ -156,7 +156,7 @@ class RVSectionManagerLoadOperation<T: NSObject>: RVAsyncOperation {
         }
     }
 }
-class RVSectionManagerExpandCollapseOperation<T: NSObject>: RVAsyncOperation {
+class RVSectionManagerExpandCollapseOperation<T: NSObject>: RVAsyncOperation<T> {
     enum Mode {
         case collapse
         case expand
@@ -165,7 +165,7 @@ class RVSectionManagerExpandCollapseOperation<T: NSObject>: RVAsyncOperation {
     }
     var mode: Mode
     weak var sectionManager: RVSectionManager4<T>?
-    init(sectionManager: RVSectionManager4<T>, mode: Mode = .collapse, callback: @escaping RVCallback) {
+    init(sectionManager: RVSectionManager4<T>, mode: Mode = .collapse, callback: @escaping RVCallback<T>) {
         self.mode = mode
         self.sectionManager = sectionManager
         super.init(title: "RV", callback: callback, parent: nil)

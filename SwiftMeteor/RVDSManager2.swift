@@ -15,24 +15,24 @@ class RVDSManager2: RVDSManager {
     override func item(section: Int, location: Int) -> RVBaseModel? { return super.item(section: section, location: location) }
     override func item(indexPath: IndexPath) -> RVBaseModel? { return super.item(indexPath: indexPath) }
     override func collapseDatasource(datasource: RVBaseDataSource, callback: @escaping () -> Void) {
-        let operation = RVManagerCollapseOperation(title: "Collapse", manager: self , datasource: datasource, callback: callback)
+        let operation = RVManagerCollapseOperation<RVBaseModel>(title: "Collapse", manager: self , datasource: datasource, callback: callback)
         self.queue.addOperation(operation)
     }
     override func expandDatasource(datasource: RVBaseDataSource, callback: @escaping () -> Void) {
-        let operation = RVManagerExpandOperation(title: "Expand", manager: self , datasource: datasource , callback: callback)
+        let operation = RVManagerExpandOperation<RVBaseModel>(title: "Expand", manager: self , datasource: datasource , callback: callback)
         self.queue.addOperation(operation)
     }
     override func addSection(section: RVBaseDataSource) { super.addSection(section: section) }
     func removeAllSections(callback: @escaping (RVError?) -> Void) {
-        let operation = RVManagerRemoveAllSectionsOperation(title: "RemoveAllSections", manager: self, callback: callback)
+        let operation = RVManagerRemoveAllSectionsOperation<RVBaseModel>(title: "RemoveAllSections", manager: self, callback: callback)
         self.queue.addOperation(operation)
     }
     override func startDatasource(datasource: RVBaseDataSource, query: RVQuery, callback: @escaping (RVError?) -> Void) {
-        let operation = RVManagerStartDatasourceOperation(title: datasource.datasourceType.rawValue, manager: self , datasource: datasource, query: query, callback: callback)
+        let operation = RVManagerStartDatasourceOperation<RVBaseModel>(title: datasource.datasourceType.rawValue, manager: self , datasource: datasource, query: query, callback: callback)
         self.queue.addOperation(operation)
     }
     override func stopDatasource(datasource: RVBaseDataSource, callback: @escaping (RVError?) -> Void) {
-        let operation = RVManagerStopDatasourceOperation(title: datasource.datasourceType.rawValue, manager: self , datasource: datasource, callback: callback)
+        let operation = RVManagerStopDatasourceOperation<RVBaseModel>(title: datasource.datasourceType.rawValue, manager: self , datasource: datasource, callback: callback)
         self.queue.addOperation(operation)
     }
     func toggle(datasource: RVBaseDataSource, callback: @escaping() -> Void) {
@@ -47,7 +47,7 @@ class RVDSManager2: RVDSManager {
         self.queue.addOperation(operation)
     }
 }
-class RVManagerCollapseOperation: RVManagerExpandOperation {
+class RVManagerCollapseOperation<T:NSObject>: RVManagerExpandOperation<T> {
     override func actualOperation(datasource: RVBaseDataSource, completeOperation: @escaping() -> Void) {
         //print("In \(self.classForCoder).actualOperation )")
         if self.isCancelled {
@@ -68,7 +68,7 @@ class RVManagerCollapseOperation: RVManagerExpandOperation {
         }
     }
 }
-class RVManagerExpandOperation: RVAsyncOperation {
+class RVManagerExpandOperation<T: NSObject>: RVAsyncOperation<T> {
     weak var manager: RVDSManager2? = nil
     var pcallback: () -> Void
     weak var datasource: RVBaseDataSource? = nil
@@ -76,7 +76,7 @@ class RVManagerExpandOperation: RVAsyncOperation {
         self.manager = manager
         self.pcallback = callback
         self.datasource = datasource
-        super.init(title: title, callback: {(models: [RVBaseModel], error: RVError?) in }, parent: nil)
+        super.init(title: title, callback: {(models: [T], error: RVError?) in }, parent: nil)
     }
     override func asyncMain() {
         if let manager = self.manager {
@@ -125,7 +125,7 @@ class RVManagerExpandOperation: RVAsyncOperation {
         }
     }
 }
-class RVManagerRemoveAllSectionsOperation: RVManagerStartDatasourceOperation {
+class RVManagerRemoveAllSectionsOperation<T: NSObject>: RVManagerStartDatasourceOperation<T> {
     init(title: String, manager: RVDSManager2, callback: @escaping (RVError?) -> Void) {
         super.init(title: title, manager: manager, datasource: RVBaseDatasource2(), query: RVQuery() , callback: callback)
     }
@@ -169,7 +169,7 @@ class RVManagerRemoveAllSectionsOperation: RVManagerStartDatasourceOperation {
 
     }
 }
-class RVManagerStartDatasourceOperation: RVAsyncOperation {
+class RVManagerStartDatasourceOperation<T: NSObject>: RVAsyncOperation<T> {
     var datasource: RVBaseDataSource
     var query: RVQuery
     var pcallback: (RVError?) -> Void
@@ -179,7 +179,7 @@ class RVManagerStartDatasourceOperation: RVAsyncOperation {
         self.query = query
         self.pcallback = callback
         self.manager = manager
-        super.init(title: title, callback: {(models: [RVBaseModel], error: RVError?) in })
+        super.init(title: title, callback: {(models: [T], error: RVError?) in })
     }
     override func asyncMain() {
         if let manager = manager {
@@ -209,13 +209,13 @@ class RVManagerStartDatasourceOperation: RVAsyncOperation {
 
     }
 }
-class RVManagerResetDatasourceOperation: RVAsyncOperation {
+class RVManagerResetDatasourceOperation<T: NSObject>: RVAsyncOperation<T> {
     var datasource: RVBaseDataSource
     var pcallback: (RVError?) -> Void
     init(title: String, datasource: RVBaseDataSource, callback: @escaping(RVError?) -> Void ) {
         self.datasource = datasource
         self.pcallback = callback
-        super.init(title: title, callback: {(models: [RVBaseModel], error: RVError?) in })
+        super.init(title: title, callback: {(models: [T], error: RVError?) in })
     }
     override func asyncMain() {
         
@@ -233,7 +233,7 @@ class RVManagerResetDatasourceOperation: RVAsyncOperation {
         }
     }
 }
-class RVManagerStopDatasourceOperation: RVManagerStartDatasourceOperation {
+class RVManagerStopDatasourceOperation<T: NSObject>: RVManagerStartDatasourceOperation<T> {
     init(title: String, manager: RVDSManager2, datasource: RVBaseDataSource, callback: @escaping(RVError?) -> Void ) {
         super.init(title: title, manager: manager, datasource: datasource , query: RVQuery() , callback: callback)
     }
