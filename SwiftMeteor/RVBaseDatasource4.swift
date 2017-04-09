@@ -34,7 +34,7 @@ class RVBaseDatasource4<T:NSObject>: NSObject {
     var instanceType: String { get { return String(describing: type(of: self)) } }
     let identifier = NSDate().timeIntervalSince1970
     var baseQuery: RVQuery? = nil
-    fileprivate let queue = RVOperationQueue()
+    let queue = RVOperationQueue()
     var rowAnimation: UITableViewRowAnimation = UITableViewRowAnimation.automatic
     var elements = [T]()
     var sections = [RVBaseDatasource4<T>]()
@@ -260,7 +260,7 @@ extension RVBaseDatasource4 {
         }
         return query
     }
-    var numberOfItems: Int { get { return virtualCount } }
+    var numberOfElements: Int { get { return virtualCount } }
     var virtualCount: Int {
         get {
             if self.collapsed { return 0 }
@@ -300,7 +300,7 @@ extension RVBaseDatasource4 {
             self.queue.addOperation(operation)
         }
     }
-    func item(index: Int, scrollView: UIScrollView?, updateLast: Bool = true) -> T? {
+    func element(index: Int, scrollView: UIScrollView?, updateLast: Bool = true) -> T? {
         if updateLast { self.lastItemIndex = index }
         if index < 0 {
             print("In \(self.instanceType).item, got negative index \(index)")
@@ -340,20 +340,20 @@ extension RVBaseDatasource4 {
     }
     func scroll(index: Int, scrollView: UIScrollView) {
         print("in \(self.classForCoder).scroll \(index)")
-        let _ = self.item(index: index, scrollView: scrollView, updateLast: false)
+        let _ = self.element(index: index, scrollView: scrollView, updateLast: false)
     }
     func cloneItems() -> [T] {
         var clone = [T]()
         for item in elements { clone.append(item) }
         return clone
     }
-    var frontItem: T? {
+    var frontElement: T? {
         get {
             if elementsCount == 0 { return nil }
             else { return elements[0] }
         }
     }
-    var backItem: T? {
+    var backElement: T? {
         get {
             if elementsCount == 0 { return nil }
             else { return elements[elementsCount - 1] }
@@ -623,7 +623,7 @@ class RVLoadOperation<T:NSObject>: RVAsyncOperation<T> {
     var subscriptionOperation: SubscriptionOperation = .none
     var referenceMatch: Bool {
         get {
-            let current = self.front ? self.datasource.frontItem : self.datasource.backItem
+            let current = self.front ? self.datasource.frontElement : self.datasource.backElement
             if (reference == nil) && (current == nil) { return true }
             if let reference = self.reference {
                 if let current = current {
@@ -732,7 +732,7 @@ class RVLoadOperation<T:NSObject>: RVAsyncOperation<T> {
                 }
                 //print("In \(self.classForCoder).InnerMain, about to do retrieve. Front: \(self.front)")
                 query = query.duplicate()
-                self.reference = self.front ? datasource.frontItem : datasource.backItem
+                self.reference = self.front ? datasource.frontElement : datasource.backElement
                 var query = datasource.updateSortTerm(query: query, front: self.front, candidate: self.reference)
                 query = query.updateQuery4(front: self.front)
                 if self.isCancelled {
@@ -837,7 +837,7 @@ class RVLoadOperation<T:NSObject>: RVAsyncOperation<T> {
                                 //print("In \(self.classForCoder).refreshViews indexPath \(indexPath.section) \(indexPath.row)")
                                 if indexPath.section == self.datasource.section {
                                     if let cell = tableView.cellForRow(at: indexPath) as? RVItemRetrieve {
-                                        if let item = self.datasource.item(index: indexPath.row, scrollView: tableView) as? RVBaseModel {
+                                        if let item = self.datasource.element(index: indexPath.row, scrollView: tableView) as? RVBaseModel {
                                             cell.item = item
                                         }
                                     }
@@ -863,7 +863,7 @@ class RVLoadOperation<T:NSObject>: RVAsyncOperation<T> {
                             for indexPath in visibleIndexPaths {
                                 if indexPath.section == self.datasource.section {
                                     if let cell = collectionView.cellForItem(at: indexPath) as? RVItemRetrieve {
-                                        if let item = self.datasource.item(index: indexPath.item, scrollView: collectionView) as? RVBaseModel {
+                                        if let item = self.datasource.element(index: indexPath.item, scrollView: collectionView) as? RVBaseModel {
                                             cell.item = item
                                         }
                                     }
@@ -1046,7 +1046,7 @@ class RVLoadOperation<T:NSObject>: RVAsyncOperation<T> {
                         /*
                         if self.subscriptionOperation {
                             if let subscription = self.datasource.subscription {
-                                subscription.reference = self.front ? self.datasource.frontItem : self.datasource.backItem
+                                subscription.reference = self.front ? self.datasource.frontElement : self.datasource.backElement
                             }
                         }
  */

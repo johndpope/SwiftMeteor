@@ -10,70 +10,57 @@ import UIKit
 
 class RVDSManager4<T:NSObject> {
     var instanceType: String { get { return String(describing: type(of: self)) } }
-    fileprivate let queue = RVOperationQueue()
-    fileprivate var sections = [RVBaseDatasource4<T>]()
-    fileprivate var offset = 0
-    fileprivate var virtualSectionsCount: Int {
-        return sections.count + offset
+    let queue = RVOperationQueue()
+    var elements = [RVBaseDatasource4<T>]()
+    var offset = 0
+    var virtualCount: Int {
+        return elements.count + offset
     }
     weak var scrollView: UIScrollView? = nil
     var rowAnimation: UITableViewRowAnimation = .automatic
-    init(scrollView: UIScrollView?) {
-        self.scrollView = scrollView
-    }
-    
-    var frontSection: RVBaseDatasource4<T>? {
-        return sections.first
-    }
-    var backSection: RVBaseDatasource4<T>? {
-        return sections.last
-    }
+    init(scrollView: UIScrollView?) { self.scrollView = scrollView }
+    var frontElement: RVBaseDatasource4<T>? { return elements.first }
+    var backElement: RVBaseDatasource4<T>? { return elements.last }
     
     func sectionIndex(datasource: RVBaseDatasource4<T>) -> Int {
-        for i in 0..<sections.count {
-            if sections[i] == datasource { return i + offset }
+        for i in 0..<elements.count {
+            if elements[i] == datasource { return i + offset }
         }
         return -1
     }
     func datasourceInSection(section: Int) -> RVBaseDatasource4<T>? {
-        if (section < 0) || (section >= self.sections.count) { return nil }
-        return self.sections[section]
-    }
- 
-    func removeDatasources(byType: [RVBaseDataSource.Type]) {
-        
-    }
-    
-    var numberOfSections: Int { return virtualSectionsCount }
-    func numberOfItems(section: Int) -> Int {
-        if (section >= 0) && (section < virtualSectionsCount) {
+        if (section >= 0) && (section < virtualCount) {
             let physical = section - offset
             if physical >= 0 {
-                return sections[section].numberOfItems
+                return elements[physical]
             } else {
-                return 0
+                // Neil retreive sections
+                return nil
             }
         } else {
-            print("In \(self.instanceType).numberOfItems, invalid sectionIndex: \(section) ")
-            return 0
+            print("In \(self.instanceType).datasourceInSection, invalid sectionIndex: \(section) ")
+            return nil
         }
+    }
+ 
+    var numberOfSections: Int { return virtualCount }
+    func numberOfElements(section: Int) -> Int {
+        if let datasource = self.datasourceInSection(section: section) {
+            return datasource.numberOfElements
+        } else { return 0 }
     }
     func scrolling(indexPath: IndexPath, scrollView: UIScrollView) {
         let section = indexPath.section
-        if (section < 0) || (section >= sections.count) { return }
-        let physical = section - offset
-        if physical >= 0 {
-            sections[section].scroll(index: indexPath.row, scrollView: scrollView)
+        if let datasource = self.datasourceInSection(section: section) {
+            datasource.scroll(index: indexPath.row, scrollView: scrollView)
         } else {
-            // Retrieve more
+            // Neil retrieve more
         }
     }
-    func item(indexPath: IndexPath) ->  T? {
+    func element(indexPath: IndexPath) ->  T? {
         let section = indexPath.section
-        if (section < 0) || (section >= virtualSectionsCount) { return nil }
-        let physical = section - offset
-        if physical >= 0 {
-            return sections[section].item(index: indexPath.row, scrollView: self.scrollView)
+        if let datasource = datasourceInSection(section: section) {
+            return datasource.element(index: indexPath.row, scrollView: scrollView)
         } else {
             return nil
         }
@@ -157,7 +144,7 @@ class RVManagerRemoveSections4<T:NSObject>: RVAsyncOperation<T> {
         } else if let manager = self.manager {
             //print("In \(self.classForCoder).innerAsyncMain, past manager")
             var indexes = [Int]()
-            let datasources = self.all ? manager.sections : self.datasources
+            let datasources = self.all ? manager.elements : self.datasources
             DispatchQueue.main.async {
                 for datasource in datasources { datasource.unsubscribe { datasource.cancelAllOperations() } }
                 DispatchQueue.main.async {
@@ -167,9 +154,9 @@ class RVManagerRemoveSections4<T:NSObject>: RVAsyncOperation<T> {
                                 //print("In \(self.classForCoder).innerAsyncMain, about to remove ")
                                 tableView.beginUpdates()
                                 if self.all {
-                                    for i in 0..<manager.sections.count { indexes.append(i) }
+                                    for i in 0..<manager.elements.count { indexes.append(i) }
                                     if indexes.count > 0 {
-                                        manager.sections = [RVBaseDatasource4<T>]()
+                                        manager.elements = [RVBaseDatasource4<T>]()
                                         tableView.deleteSections(IndexSet(indexes), with: manager.rowAnimation)
                                     }
                                 } else {
@@ -184,7 +171,7 @@ class RVManagerRemoveSections4<T:NSObject>: RVAsyncOperation<T> {
                                     if indexes.count > 0 {
                                         indexes.sort()
                                         indexes.reverse()
-                                        for index in indexes { manager.sections.remove(at: index) }
+                                        for index in indexes { manager.elements.remove(at: index) }
                                         indexes.reverse()
                                         tableView.deleteSections(IndexSet(indexes), with: manager.rowAnimation)
                                     }
@@ -198,9 +185,9 @@ class RVManagerRemoveSections4<T:NSObject>: RVAsyncOperation<T> {
                             collectionView.performBatchUpdates({
                                 if !(self.isCancelled && !self.ignoreCancel) {
                                     if self.all {
-                                        for i in 0..<manager.sections.count { indexes.append(i) }
+                                        for i in 0..<manager.elements.count { indexes.append(i) }
                                         if indexes.count > 0 {
-                                            manager.sections = [RVBaseDatasource4<T>]()
+                                            manager.elements = [RVBaseDatasource4<T>]()
                                             collectionView.deleteSections(IndexSet(indexes))
                                         }
                                     } else {
@@ -211,7 +198,7 @@ class RVManagerRemoveSections4<T:NSObject>: RVAsyncOperation<T> {
                                         if indexes.count > 0 {
                                             indexes.sort()
                                             indexes.reverse()
-                                            for index in indexes { manager.sections.remove(at: index) }
+                                            for index in indexes { manager.elements.remove(at: index) }
                                             indexes.reverse()
                                             collectionView.deleteSections(IndexSet(indexes))
                                         }
@@ -222,7 +209,7 @@ class RVManagerRemoveSections4<T:NSObject>: RVAsyncOperation<T> {
                             })
                         }
                     } else if manager.scrollView == nil {
-                        if self.all { manager.sections = [RVBaseDatasource4<T>]() }
+                        if self.all { manager.elements = [RVBaseDatasource4<T>]() }
                         else {
                             for datasource in datasources {
                                 let sectionIndex = manager.sectionIndex(datasource: datasource)
@@ -231,7 +218,7 @@ class RVManagerRemoveSections4<T:NSObject>: RVAsyncOperation<T> {
                             if indexes.count > 0 {
                                 indexes.sort()
                                 indexes.reverse()
-                                for index in indexes { manager.sections.remove(at: index) }
+                                for index in indexes { manager.elements.remove(at: index) }
                             }
                         }
                         self.completeIt()
@@ -283,7 +270,7 @@ class RVManagerAppendSections4<T: NSObject>: RVManagerRemoveSections4<T> {
                        // print("In \(self.classForCoder).main, have TableView, notCancelled")
                        // print("In \(self.classForCoder).asynMan, datasources to remove \(self.sectionTypesToRemove)")
                         if self.sectionTypesToRemove.count > 0 {
-                            for section in manager.sections {
+                            for section in manager.elements {
                                 for type in self.sectionTypesToRemove {
                                     if section.datasourceType == type {
                                         section.unsubscribe { section.cancelAllOperations() }
@@ -295,10 +282,10 @@ class RVManagerAppendSections4<T: NSObject>: RVManagerRemoveSections4<T> {
                         tableView.beginUpdates()
                         var indexes = [Int]()
                         for datasource in self.datasources {
-                            indexes.append(manager.sections.count)
-                            manager.sections.append(datasource)
+                            indexes.append(manager.elements.count)
+                            manager.elements.append(datasource)
                         }
-                        //print("In \(self.classForCoder).main number of sections = \(manager.sections.count)")
+                        //print("In \(self.classForCoder).main number of sections = \(manager.elements.count)")
                         tableView.insertSections(IndexSet(indexes), with: manager.rowAnimation)
                         tableView.endUpdates()
                         self.ignoreCancel = true
@@ -315,7 +302,7 @@ class RVManagerAppendSections4<T: NSObject>: RVManagerRemoveSections4<T> {
                     collectionView.performBatchUpdates({
                         if !self.isCancelled {
                             if self.sectionTypesToRemove.count > 0 {
-                                for section in manager.sections {
+                                for section in manager.elements {
                                     for type in self.sectionTypesToRemove {
                                         if section.datasourceType == type {
                                             section.unsubscribe { section.cancelAllOperations() }
@@ -326,8 +313,8 @@ class RVManagerAppendSections4<T: NSObject>: RVManagerRemoveSections4<T> {
                             }
                             var indexes = [Int]()
                             for datasource in self.datasources {
-                                indexes.append(manager.sections.count)
-                                manager.sections.append(datasource)
+                                indexes.append(manager.elements.count)
+                                manager.elements.append(datasource)
                             }
                             collectionView.insertSections(IndexSet(indexes))
                             self.ignoreCancel = true
@@ -339,7 +326,7 @@ class RVManagerAppendSections4<T: NSObject>: RVManagerRemoveSections4<T> {
                 return
             } else if manager.scrollView == nil {
                 if self.sectionTypesToRemove.count > 0 {
-                    for section in manager.sections {
+                    for section in manager.elements {
                         for type in self.sectionTypesToRemove {
                             if section.datasourceType == type {
                                 section.unsubscribe { section.cancelAllOperations() }
@@ -348,7 +335,7 @@ class RVManagerAppendSections4<T: NSObject>: RVManagerRemoveSections4<T> {
                         }
                     }
                 }
-                for datasource in self.datasources { manager.sections.append(datasource) }
+                for datasource in self.datasources { manager.elements.append(datasource) }
                 DispatchQueue.main.async {
                     self.complete(error: nil)
                 }
@@ -412,7 +399,7 @@ class RVManagerExpandCollapseOperation4<T: NSObject>: RVAsyncOperation<T> {
             return
         }
         if let manager = self.manager {
-            let datasources = self.all ? manager.sections : self.datasources
+            let datasources = self.all ? manager.elements : self.datasources
             switch(self.operationType) {
             case .expand:
                 for datasource in datasources {

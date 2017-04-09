@@ -166,7 +166,7 @@ extension RVBaseSLKViewController4 {
         return manager.numberOfSections
     }
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return manager.numberOfItems(section: section)
+        return manager.numberOfElements(section: section)
     }
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         if tableView == self.tableView {
@@ -190,7 +190,7 @@ extension RVBaseSLKViewController4 {
         }
         cell.transform = tableView.transform
         //    cell.item = manager4.item(indexPath: indexPath)
-        cell.item = manager.item(indexPath: indexPath)
+        cell.item = manager.element(indexPath: indexPath)
         //cell.configureSubviews()
         return cell
     }

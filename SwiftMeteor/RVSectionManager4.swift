@@ -18,10 +18,10 @@ class RVSectionManager4<T: NSObject> {
     }
     func numberOfSections() -> Int { return manager.numberOfSections }
     func numberOfItems(section: Int) -> Int {
-        return manager.numberOfItems(section: section)
+        return manager.numberOfElements(section: section)
     }
-    func item(indexPath: IndexPath) -> T? {
-        return manager.item(indexPath: indexPath)
+    func element(indexPath: IndexPath) -> T? {
+        return manager.element(indexPath: indexPath)
     }
     func scrolling(indexPath: IndexPath, scrollView: UIScrollView) {
         manager.scrolling(indexPath: indexPath , scrollView: scrollView)
@@ -52,8 +52,8 @@ class RVSectionManager4<T: NSObject> {
     }
     var frontQueryOperationActive: Bool = false
     var backQueryOperationActive: Bool = false
-    var frontSection: RVBaseDatasource4<T>? { return manager.frontSection}
-    var backSection: RVBaseDatasource4<T>? { return manager.backSection }
+    var frontSection: RVBaseDatasource4<T>? { return manager.frontElement}
+    var backSection: RVBaseDatasource4<T>? { return manager.backElement }
 }
 class RVSectionManagerLoadOperation<T: NSObject>: RVAsyncOperation<T> {
     weak var scrollView: UIScrollView?

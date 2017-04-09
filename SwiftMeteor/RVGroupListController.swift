@@ -158,7 +158,7 @@ class RVGroupListController: RVTransactionListViewController {
       //  return manager4.numberOfSections
     }
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return configuration4.manager.numberOfItems(section: section)
+        return configuration4.manager.numberOfElements(section: section)
       //  return manager4.numberOfItems(section: section)
     }
     override func primaryCellForRowAtIndexPath(tableView: UITableView, _ indexPath: IndexPath) -> RVTransactionTableViewCell {
@@ -169,7 +169,7 @@ class RVGroupListController: RVTransactionListViewController {
         }
         cell.transform = tableView.transform
     //    cell.item = manager4.item(indexPath: indexPath)
-        cell.item = configuration4.manager.item(indexPath: indexPath)
+        cell.item = configuration4.manager.element(indexPath: indexPath)
         //cell.configureSubviews()
         return cell
     }
