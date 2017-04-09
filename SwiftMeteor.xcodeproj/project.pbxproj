@@ -145,6 +145,7 @@
 		2894BA971E3DBF04008AD39C /* RVSegmentKey.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2894BA961E3DBF04008AD39C /* RVSegmentKey.swift */; };
 		2894BA991E3DC565008AD39C /* RVWatchGroupMembersState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2894BA981E3DC565008AD39C /* RVWatchGroupMembersState.swift */; };
 		2894BA9B1E3DC571008AD39C /* RVWatchGroupForumState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2894BA9A1E3DC571008AD39C /* RVWatchGroupForumState.swift */; };
+		2896DAF91E9AABED00E5CE44 /* RVDSManager5.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2896DAF81E9AABED00E5CE44 /* RVDSManager5.swift */; };
 		289A45EE1E46F45A001BBB29 /* RVFollowDatasource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 289A45ED1E46F45A001BBB29 /* RVFollowDatasource.swift */; };
 		289A45F11E47A775001BBB29 /* UserList.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 289A45F01E47A775001BBB29 /* UserList.storyboard */; };
 		289A45F31E47A888001BBB29 /* RVUserListViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 289A45F21E47A888001BBB29 /* RVUserListViewController.swift */; };
@@ -380,6 +381,7 @@
 		2894BA961E3DBF04008AD39C /* RVSegmentKey.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RVSegmentKey.swift; sourceTree = "<group>"; };
 		2894BA981E3DC565008AD39C /* RVWatchGroupMembersState.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RVWatchGroupMembersState.swift; sourceTree = "<group>"; };
 		2894BA9A1E3DC571008AD39C /* RVWatchGroupForumState.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RVWatchGroupForumState.swift; sourceTree = "<group>"; };
+		2896DAF81E9AABED00E5CE44 /* RVDSManager5.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RVDSManager5.swift; sourceTree = "<group>"; };
 		289A45ED1E46F45A001BBB29 /* RVFollowDatasource.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RVFollowDatasource.swift; sourceTree = "<group>"; };
 		289A45F01E47A775001BBB29 /* UserList.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = UserList.storyboard; sourceTree = "<group>"; };
 		289A45F21E47A888001BBB29 /* RVUserListViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RVUserListViewController.swift; sourceTree = "<group>"; };
@@ -877,6 +879,7 @@
 		28D737241E7F6A100096E0A3 /* Version4 */ = {
 			isa = PBXGroup;
 			children = (
+				2896DAF81E9AABED00E5CE44 /* RVDSManager5.swift */,
 				28756A361E995EBB005B8B63 /* RVSectionManager4.swift */,
 				285024441E9891BA009890F4 /* RVDummyTopDatasource4.swift */,
 				285024401E981DEF009890F4 /* RVBaseSLKViewController4.swift */,
@@ -1364,6 +1367,7 @@
 				28E525E11E5D5A0F00B84EAB /* RVTransaction.swift in Sources */,
 				289A45F31E47A888001BBB29 /* RVUserListViewController.swift in Sources */,
 				28447A6A1E3BAB35001DD9DA /* RVMainStateTask.swift in Sources */,
+				2896DAF91E9AABED00E5CE44 /* RVDSManager5.swift in Sources */,
 				2813FAF61E20A9B8007E9428 /* RVTaskTableViewCell.swift in Sources */,
 				286CA3231E327BCA00B081B8 /* RVGMaps.swift in Sources */,
 				28201A441E1DE819008D8E59 /* RVMainLandingTableViewCell.swift in Sources */,
