@@ -156,6 +156,7 @@
 		28A232971E333E4C00489EB3 /* RVVisibility.swift in Sources */ = {isa = PBXBuildFile; fileRef = 28A232961E333E4C00489EB3 /* RVVisibility.swift */; };
 		28A2A2D91E393719002AA1A8 /* JNW.png in Resources */ = {isa = PBXBuildFile; fileRef = 28A2A2D81E393719002AA1A8 /* JNW.png */; };
 		28A2A2DD1E3945A0002AA1A8 /* RVCamera.swift in Sources */ = {isa = PBXBuildFile; fileRef = 28A2A2DC1E3945A0002AA1A8 /* RVCamera.swift */; };
+		28A5FCAF1E9A0491003B7DFD /* RVDSManager44.swift in Sources */ = {isa = PBXBuildFile; fileRef = 28A5FCAE1E9A0491003B7DFD /* RVDSManager44.swift */; };
 		28A6FAA51E70F7BE00A646D2 /* Main3.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 28A6FAA41E70F7BE00A646D2 /* Main3.storyboard */; };
 		28A72D211E592B83005AB9AA /* RVMemberViewController2.swift in Sources */ = {isa = PBXBuildFile; fileRef = 28A72D201E592B83005AB9AA /* RVMemberViewController2.swift */; };
 		28A93E571E5AAC2200EFE7D9 /* RVAbstractMeteorCollection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 28A93E561E5AAC2200EFE7D9 /* RVAbstractMeteorCollection.swift */; };
@@ -390,6 +391,7 @@
 		28A232961E333E4C00489EB3 /* RVVisibility.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RVVisibility.swift; sourceTree = "<group>"; };
 		28A2A2D81E393719002AA1A8 /* JNW.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = JNW.png; sourceTree = "<group>"; };
 		28A2A2DC1E3945A0002AA1A8 /* RVCamera.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RVCamera.swift; sourceTree = "<group>"; };
+		28A5FCAE1E9A0491003B7DFD /* RVDSManager44.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RVDSManager44.swift; sourceTree = "<group>"; };
 		28A6FAA41E70F7BE00A646D2 /* Main3.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = Main3.storyboard; sourceTree = "<group>"; };
 		28A72D201E592B83005AB9AA /* RVMemberViewController2.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RVMemberViewController2.swift; sourceTree = "<group>"; };
 		28A93E561E5AAC2200EFE7D9 /* RVAbstractMeteorCollection.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RVAbstractMeteorCollection.swift; sourceTree = "<group>"; };
@@ -892,6 +894,7 @@
 				284012071E881F4900CDE8BD /* RVDSArray4.swift */,
 				2842903A1E88D7DD00672B46 /* RVTransactionDatasource4.swift */,
 				2842903C1E89859100672B46 /* RVTransactionDatasource44.swift */,
+				28A5FCAE1E9A0491003B7DFD /* RVDSManager44.swift */,
 			);
 			name = Version4;
 			sourceTree = "<group>";
@@ -1384,6 +1387,7 @@
 				28928CD71E199AEA003538B8 /* RVFirstViewTableCell.swift in Sources */,
 				283460A11E468D1C0009D606 /* RVProfileState.swift in Sources */,
 				28360E1A1E046C0700E62384 /* RVMeteorUser.swift in Sources */,
+				28A5FCAF1E9A0491003B7DFD /* RVDSManager44.swift in Sources */,
 				280E0F781DFFBF3100E597B4 /* RVBaseModel2.swift in Sources */,
 				284FBACD1DEC139100446C86 /* RVLeftMenuViewController.swift in Sources */,
 				2834609D1E466C270009D606 /* RVMessageTableCell.swift in Sources */,

@@ -8,7 +8,9 @@
 
 import UIKit
 
-class RVDSManager4<T:NSObject> {
+
+
+class RVDSManager4<T:NSObject>: NSObject {
     var instanceType: String { get { return String(describing: type(of: self)) } }
     let queue = RVOperationQueue()
     var elements = [RVBaseDatasource4<T>]()
