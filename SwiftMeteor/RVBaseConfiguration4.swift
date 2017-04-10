@@ -138,6 +138,7 @@ class RVBaseConfiguration4 {
         }
     }
     func loadTop(query: RVQuery, callback: @escaping(RVError?)->Void) {
+        //print("In \(self.instanceType).loadTop query: \(query)")
         if let top = self.topDatasource {
             manager.appendSections(datasources: [top], sectionTypesToRemove: [.top, .main, .filter]) { (models, error) in
                 if let error = error {

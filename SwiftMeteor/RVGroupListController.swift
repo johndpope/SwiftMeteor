@@ -15,7 +15,7 @@ class RVGroupListController: RVTransactionListViewController {
     
 
     override func viewDidLoad() {
-        //manager4 = RVDSManager4(scrollView: self.dsScrollView)
+        //manager4 = RVDSManager5<RVBaseModel>(scrollView: self.dsScrollView)
         configuration4 = RVTransactionConfiguration4(scrollView: self.dsScrollView)
         super.viewDidLoad()
         if let tableView = self.tableView {
@@ -34,7 +34,9 @@ class RVGroupListController: RVTransactionListViewController {
         //self.configuration = RVTransactionListConfiguration()
         //configuration.configure(stack: self.stack) { }
         let (query, _) = configuration4.topQuery()
+        print("In \(self.classForCoder).viewDidLoad query: \(query)")
         configuration4.loadTop(query: query, callback: { (error) in
+            print("In \(self.classForCoder).viewDidLoad query: \(query)")
             if let error = error {
                 error.printError()
             } else {

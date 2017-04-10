@@ -398,6 +398,7 @@ class RVExpandCollapseOperation<T:NSObject>: RVLoadOperation<T> {
         self.operationType  = operationType
         self.query = query
         super.init(title: "RVExpandCollapseOperation", datasource: datasource, scrollView: scrollView, callback: callback)
+     //   print("In \(self.instanceType).init query: \(query) and scrollView: \(String(describing: self.scrollView))")
     }
     func handleCollapse() -> [IndexPath] {
         var indexPaths = [IndexPath]()
@@ -417,14 +418,17 @@ class RVExpandCollapseOperation<T:NSObject>: RVLoadOperation<T> {
     }
 
     override func asyncMain() {
+      //   print("In \(self.instanceType).asyncMain operationType: \(self.operationType), query: \(query)")
         var operationType = self.operationType
         if operationType == .toggle { operationType = (self.datasource.collapsed) ? .expandOnly : .collapseOnly }
         if self.isCancelled {
             self.finishUp(models: self.emptyModels, error: nil)
             return
         } else if (operationType != .expandOnly) {
+         //   print("In \(self.instanceType).asyncMain operationType: \(self.operationType), passed not expand only, query: \(query), scrollView: \(String(describing: self.scrollView))")
             self.datasource.scrollView = self.scrollView
             if self.datasource.collapsed {
+             //   print("In \(self.instanceType).asyncMain operationType: \(self.operationType), thinks collapsed, query: \(query), scrollView: \(String(describing: self.scrollView))")
                 if (operationType == .collapseAndZero) || (operationType == .collapseZeroAndExpand) || (operationType == .collapseZeroExpandAndLoad) {
                     self.datasource.elements = [T]()
                     self.datasource.offset = 0
@@ -433,6 +437,7 @@ class RVExpandCollapseOperation<T:NSObject>: RVLoadOperation<T> {
                 self.finishUp(models: self.emptyModels, error: nil)
                 return
             } else {
+              //  print("In \(self.instanceType).asyncMain operationType: \(self.operationType), thinks not collapsed, query: \(query), scrollView: \(String(describing: self.scrollView))")
                 DispatchQueue.main.async {
                     if self.isCancelled {
                         self.finishUp(models: self.emptyModels, error: nil)
@@ -447,6 +452,7 @@ class RVExpandCollapseOperation<T:NSObject>: RVLoadOperation<T> {
                             }
                             if (operationType == .collapseZeroExpandAndLoad) {
                                // print("In \(self.classForCoder).main, about to do InnerMain, collapsed = \(self.datasource.collapsed)")
+                               // print("In \(self.instanceType).asyncMain just before assigning query operationType: \(self.operationType), query: \(self.query)")
                                 self.datasource.baseQuery = self.query
                                 self.InnerMain()
                             } else {
@@ -478,6 +484,7 @@ class RVExpandCollapseOperation<T:NSObject>: RVLoadOperation<T> {
                                 self.datasource.collapsed = true
                             }
                             if (operationType == .collapseZeroExpandAndLoad) {
+                                self.datasource.baseQuery = self.query
                                 self.InnerMain()
                             } else {
                                 self.finishUp(models: self.emptyModels, error: nil)
