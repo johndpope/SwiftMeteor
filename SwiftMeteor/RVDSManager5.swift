@@ -109,10 +109,7 @@ extension RVDSManager5 {
         sorted.reverse()
         for index in sorted { remove(at: index) }
     }
-    func zeroElements() {
-        self.elements = [RVBaseDatasource4<S>]()
-        self.offset = 0
-    }
+
 }
 class RVManagerExpandCollapseOperation5<T: NSObject> : RVAsyncOperation<T> {
     enum OperationType {

@@ -31,7 +31,7 @@ enum RVDatasourceType: String {
     case unknown    = "Unknown"
 }
 class RVBaseDatasource4<T:NSObject>: NSObject {
-
+    let FAKESECTION = 1234567
     var sectionDatasource: Bool = false
     let LAST_SORT_STRING = "ZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZ"
     var instanceType: String { get { return String(describing: type(of: self)) } }
@@ -195,6 +195,10 @@ class RVBaseDatasource4<T:NSObject>: NSObject {
             }
         }
         
+    }
+    func zeroElements() {
+        self.elements = [T]()
+        self.offset = 0
     }
 
     deinit {
@@ -404,21 +408,26 @@ class RVExpandCollapseOperation<T:NSObject>: RVLoadOperation<T> {
         super.init(title: "RVExpandCollapseOperation", datasource: datasource, scrollView: scrollView, callback: callback)
      //   print("In \(self.instanceType).init query: \(query) and scrollView: \(String(describing: self.scrollView))")
     }
-    func handleCollapse() -> [IndexPath] {
+    func handleCollapse() -> (indexPaths: [IndexPath], sectionIndexes: IndexSet ){
         var indexPaths = [IndexPath]()
-        let section = self.datasource.section
+        var sectionIndexes = [Int]()
+        let section =  !self.datasource.sectionDatasource ? self.datasource.section : self.datasource.FAKESECTION
         let lastItem = self.datasource.offset + self.datasource.elementsCount
-        if (section >= 0) && (lastItem > 0) { for row in 0..<lastItem { indexPaths.append(IndexPath(row: row, section: section)) } }
+        if (section >= 0) && (lastItem > 0) {
+            for row in 0..<lastItem {
+                indexPaths.append(IndexPath(row: row, section: section))
+                sectionIndexes.append(row)
+            }
+        }
         if (self.operationType == .collapseAndZero) || (self.operationType == .collapseZeroAndExpand ) || (self.operationType == .collapseZeroExpandAndLoad){
-            self.datasource.elements = [T]()
-            self.datasource.offset = 0
+            self.datasource.zeroElements()
         }
         if (operationType == .collapseZeroAndExpand) || (operationType == .collapseZeroExpandAndLoad) {
             self.datasource.collapsed = false
         } else {
             self.datasource.collapsed = true
         }
-        return indexPaths
+        return (indexPaths: indexPaths, sectionIndexes: IndexSet(sectionIndexes))
     }
 
     override func asyncMain() {
@@ -450,8 +459,8 @@ class RVExpandCollapseOperation<T:NSObject>: RVLoadOperation<T> {
                         if let tableView = self.scrollView as? UITableView {
                             tableView.beginUpdates()
                             if !self.isCancelled {
-                                let indexPaths = self.handleCollapse()
-                                if indexPaths.count > 0 { tableView.deleteRows(at: indexPaths, with: UITableViewRowAnimation.none) }
+                                let paths = self.handleCollapse()
+                                if paths.indexPaths.count > 0 { tableView.deleteRows(at: paths.indexPaths, with: UITableViewRowAnimation.none) }
                                 tableView.endUpdates()
                             }
                             if (operationType == .collapseZeroExpandAndLoad) {
@@ -466,8 +475,8 @@ class RVExpandCollapseOperation<T:NSObject>: RVLoadOperation<T> {
                         } else if let collectionView = self.scrollView as? UICollectionView {
                             collectionView.performBatchUpdates({
                                 if self.isCancelled { return }
-                                let indexPaths = self.handleCollapse()
-                                if indexPaths.count > 0 { collectionView.deleteItems(at: indexPaths) }
+                                let paths = self.handleCollapse()
+                                if paths.indexPaths.count > 0 { collectionView.deleteItems(at: paths.indexPaths) }
                             }, completion: { (success) in
                                 if (operationType == .collapseZeroExpandAndLoad) {
                                     self.datasource.baseQuery = self.query
@@ -510,8 +519,8 @@ class RVExpandCollapseOperation<T:NSObject>: RVLoadOperation<T> {
                     if let tableView = self.scrollView as? UITableView {
                         tableView.beginUpdates()
                         if !self.isCancelled {
-                            let indexPaths = self.handleExpand()
-                            tableView.insertRows(at: indexPaths, with: self.datasource.rowAnimation)
+                            let paths = self.handleExpand()
+                            tableView.insertRows(at: paths.indexPaths, with: self.datasource.rowAnimation)
                         }
                         tableView.endUpdates()
                         self.finishUp(models: self.datasource.elements, error: nil)
@@ -519,8 +528,8 @@ class RVExpandCollapseOperation<T:NSObject>: RVLoadOperation<T> {
                     } else if let collectionView = self.scrollView as? UICollectionView {
                         collectionView.performBatchUpdates({
                             if !self.isCancelled {
-                                let indexPaths = self.handleExpand()
-                                collectionView.insertItems(at: indexPaths)
+                                let paths = self.handleExpand()
+                                collectionView.insertItems(at: paths.indexPaths)
                             }
                         }, completion: { (success) in
                             self.finishUp(models: self.datasource.elements, error: nil)
@@ -542,13 +551,19 @@ class RVExpandCollapseOperation<T:NSObject>: RVLoadOperation<T> {
             }
         }
     }
-    func handleExpand() -> [IndexPath] {
+    func handleExpand() -> (indexPaths: [IndexPath], sectionIndexes: IndexSet) {
         var indexPaths = [IndexPath]()
-        let section = self.datasource.section
+        var sectionIndexes = [Int]()
+        let section = !self.datasource.sectionDatasource ? self.datasource.section : self.datasource.FAKESECTION
         let lastItem = self.datasource.offset + self.datasource.elementsCount
-        if (section >= 0) && (lastItem > 0) { for row in 0..<lastItem { indexPaths.append(IndexPath(row: row, section: section)) } }
+        if (section >= 0) && (lastItem > 0) {
+            for row in 0..<lastItem {
+                indexPaths.append(IndexPath(row: row, section: section))
+                sectionIndexes.append(row)
+            }
+        }
         self.datasource.collapsed = false
-        return indexPaths
+        return (indexPaths: indexPaths, sectionIndexes: IndexSet(sectionIndexes))
     }
     func finishUp(models: [T], error: RVError?) {
         DispatchQueue.main.async {
@@ -835,7 +850,7 @@ class RVLoadOperation<T:NSObject>: RVAsyncOperation<T> {
         //print("In \(self.classForCoder).deinit")
     }
 
-    func innerCleanup() -> [IndexPath] {
+    func innerCleanup() -> (indexPaths: [IndexPath], sectionIndexes: IndexSet) {
         if let subscription = self.datasource.subscription {
             if self.datasource.subscriptionActive {
                 if subscription.isFront { return innerCleanup2(front: false)}
@@ -904,28 +919,32 @@ class RVLoadOperation<T:NSObject>: RVAsyncOperation<T> {
             }
         }
     }
-    func innerCleanup2(front: Bool) -> [IndexPath] {
+    func innerCleanup2(front: Bool) -> (indexPaths: [IndexPath], sectionIndexes: IndexSet) {
         var indexPaths = [IndexPath]()
+        var sectionIndexes = [Int]()
         var clone = self.datasource.cloneItems()
         let excess = clone.count - self.datasource.maxArraySize
-        if (excess <= 0) { return indexPaths }
+        if (excess <= 0) { return (indexPaths: indexPaths, sectionIndexes: IndexSet(sectionIndexes) ) }
         else {
             let virtualMax = self.datasource.virtualCount-1
-            let section = self.datasource.section
+            let section = !self.datasource.sectionDatasource ? self.datasource.section : self.datasource.FAKESECTION
             let arrayCount = clone.count - 1
             if !front {
                 for i in 0..<excess {
-                    if (section >= 0) { indexPaths.append(IndexPath(item: virtualMax-i, section: section)) }
+                    if (section >= 0) {
+                        indexPaths.append(IndexPath(item: virtualMax-i, section: section))
+                        sectionIndexes.append(virtualMax - i)
+                    }
                     clone.remove(at: arrayCount - i)
                 }
                 self.datasource.elements = clone
-                return indexPaths
+                return (indexPaths: indexPaths, sectionIndexes: IndexSet(sectionIndexes) )
             } else {
                 var slicedArray = [T]()
                 for i in excess..<clone.count { slicedArray.append(clone[i]) }
                 self.datasource.elements = slicedArray
                 self.datasource.offset = self.datasource.offset + excess
-                return indexPaths
+                return (indexPaths: indexPaths, sectionIndexes: IndexSet(sectionIndexes) )
             }
         }
     }
@@ -940,15 +959,15 @@ class RVLoadOperation<T:NSObject>: RVAsyncOperation<T> {
                 return
             } else if let tableView = self.scrollView as? UITableView {
                 tableView.beginUpdates()
-                let indexPaths = self.innerCleanup()
-                if (indexPaths.count > 0) && (!self.datasource.collapsed) { tableView.deleteRows(at: indexPaths, with: self.datasource.rowAnimation) }
+                let paths = self.innerCleanup()
+                if (paths.indexPaths.count > 0) && (!self.datasource.collapsed) { tableView.deleteRows(at: paths.indexPaths, with: self.datasource.rowAnimation) }
                 tableView.endUpdates()
                 callback(models, nil)
                 return
             } else if let collectionView = self.scrollView as? UICollectionView {
                 collectionView.performBatchUpdates({
-                    let indexPaths = self.innerCleanup()
-                    if (indexPaths.count > 0 ) && (!self.datasource.collapsed) { collectionView.deleteItems(at: indexPaths) }
+                    let paths = self.innerCleanup()
+                    if (paths.indexPaths.count > 0 ) && (!self.datasource.collapsed) { collectionView.deleteItems(at: paths.indexPaths) }
                 }, completion: { (success) in
                     callback(models, nil)
                     return
