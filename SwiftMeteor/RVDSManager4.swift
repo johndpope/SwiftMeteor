@@ -69,6 +69,15 @@ class RVDSManager4<T:NSObject>: NSObject {
             return nil
         }
     }
+    func item(indexPath: IndexPath, scrollView: UIScrollView?, updateLast: Bool = true) -> T? {
+        // func element(indexPath: IndexPath) ->  T? {
+        let section = indexPath.section
+        if let datasource = datasourceInSection(section: section) {
+            return datasource.element(indexPath: indexPath, scrollView: scrollView)
+        } else {
+            return nil
+        }
+    }
     func removeSections(datasources: [RVBaseDatasource4<T>], callback: @escaping RVCallback<T>) {
         self.queue.addOperation(RVManagerRemoveSections4(manager: self, datasources: datasources , callback: callback))
     }
