@@ -11,4 +11,7 @@ class RVDSManager5<S: NSObject>: RVBaseDatasource4<RVBaseDatasource4<RVBaseModel
     init(scrollView: UIScrollView?, maxSize: Int = 300) {
         super.init(manager: nil, datasourceType: .section, maxSize: maxSize)
     }
+    var numberOfSections: Int {
+        return virtualCount
+    }
 }

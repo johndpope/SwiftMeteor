@@ -45,8 +45,9 @@ class RVDSManager4<T:NSObject>: NSObject {
         }
     }
  
-    var numberOfSections: Int { return virtualCount }
-    func numberOfElements(section: Int) -> Int {
+    var numberOfSections: Int { return numberOfElements }
+    var numberOfElements: Int { get { return virtualCount } }
+    func numberOfItems(section: Int) -> Int {
         if let datasource = self.datasourceInSection(section: section) {
             return datasource.numberOfElements
         } else { return 0 }
