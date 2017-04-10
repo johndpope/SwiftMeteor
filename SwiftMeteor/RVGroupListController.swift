@@ -8,7 +8,7 @@
 
 import UIKit
 class RVGroupListController: RVTransactionListViewController {
-    var manager4 = RVDSManager5<RVBaseModel>(scrollView: nil)
+    var manager4 = RVDSManager5<RVBaseModel>(scrollView: nil, managerType: .filter)
     var configuration4 = RVTransactionConfiguration4(scrollView: nil)
     var lastSearchTerm: String = "DummyValue"
     override var installSearchControllerInTableView: Bool { get { return false }}

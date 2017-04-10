@@ -26,7 +26,7 @@ class RVBaseConfiguration4 {
     var searchScopes: [[String : RVKeys]]     = [[RVKeys.title.rawValue: RVKeys.title], [RVKeys.fullName.rawValue: RVKeys.fullName]]
     var defaultSortOrder: RVSortOrder = .ascending
     var installSearchControllerInTableView: Bool = false
-    var manager = RVDSManager5<RVBaseModel>(scrollView: nil)
+    var manager = RVDSManager5<RVBaseModel>(scrollView: nil, managerType: .filter)
     var navigationBarColor: UIColor = UIColor.facebookBlue()
     
     // SLK
@@ -66,7 +66,7 @@ class RVBaseConfiguration4 {
         self.searchScopes               = [[RVKeys.title.rawValue: RVKeys.title], [RVKeys.fullName.rawValue: RVKeys.fullName]]
         */
         configureSLK()
-        self.manager                    = RVDSManager5<RVBaseModel>(scrollView: scrollView)
+        self.manager                    = RVDSManager5<RVBaseModel>(scrollView: scrollView, managerType: .filter)
     }
     func configureSLK() {
         self.SLKIsInverted                             = false

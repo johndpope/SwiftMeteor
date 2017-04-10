@@ -23,15 +23,16 @@ enum RVExpandCollapseOperationType {
 protocol RVItemRetrieve: class {
     var item: RVBaseModel? { get set }
 }
+enum RVDatasourceType: String {
+    case top        = "Top"
+    case main       = "Main"
+    case filter     = "Filter"
+    case subscribe  = "Subscribe"
+    case unknown    = "Unknown"
+}
 class RVBaseDatasource4<T:NSObject>: NSObject {
-    enum DatasourceType: String {
-        case top        = "Top"
-        case main       = "Main"
-        case filter     = "Filter"
-        case subscribe  = "Subscribe"
-        case section    = "Section"
-        case unknown    = "Unknown"
-    }
+
+    var sectionDatasource: Bool = false
     let LAST_SORT_STRING = "ZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZ"
     var instanceType: String { get { return String(describing: type(of: self)) } }
     let identifier = NSDate().timeIntervalSince1970
@@ -53,7 +54,7 @@ class RVBaseDatasource4<T:NSObject>: NSObject {
     var subscription: RVSubscription? = nil
     var notificationInstalled: Bool = false
     var elementsCount: Int { return elements.count}
-    var sectionModel: RVBaseModel? = nil
+    var sectionModel: T? = nil
 
     weak var scrollView: UIScrollView? {
         willSet {
@@ -68,7 +69,7 @@ class RVBaseDatasource4<T:NSObject>: NSObject {
             //print("In \(self.classForCoder).offset setting to \(newValue) and arraysize is \(elementsCount)")
         }
     }
-    var datasourceType: RVBaseDatasource4<T>.DatasourceType = .unknown
+    var datasourceType: RVDatasourceType = .unknown
     var manager: RVDSManager5<T>?
 
     fileprivate var lastItemIndex: Int = 0
@@ -122,7 +123,7 @@ class RVBaseDatasource4<T:NSObject>: NSObject {
         }
     }
  
-    init(manager: RVDSManager5<T>?, datasourceType: RVBaseDatasource4<T>.DatasourceType, maxSize: Int) {
+    init(manager: RVDSManager5<T>?, datasourceType: RVDatasourceType, maxSize: Int) {
         self.manager = manager
         self.datasourceType = datasourceType
         self.maxArraySize = ((maxSize < 500) && (maxSize > 50)) ? maxSize : 500
@@ -244,7 +245,10 @@ extension RVBaseDatasource4 {
                 if let candidate = candidate as? RVBaseModel {
                     strip = self.stripCandidate(candidate: candidate)
                 } else if let datasource = candidate as? RVBaseDatasource4<T> {
-                    strip = self.stripCandidate(candidate: datasource.sectionModel)
+                    if let sectionModel = datasource.sectionModel as? RVBaseModel {
+                        strip = self.stripCandidate(candidate: sectionModel)
+                    }
+                    
                 }
             }
             if let value = strip[sortTerm.field] { finalValue = value }

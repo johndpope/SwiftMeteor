@@ -8,9 +8,10 @@
 
 import UIKit
 class RVDSManager5<S: NSObject>: RVBaseDatasource4<RVBaseDatasource4<S>> {
-    init(scrollView: UIScrollView?, maxSize: Int = 300) {
-        super.init(manager: nil, datasourceType: .section, maxSize: maxSize)
+    init(scrollView: UIScrollView?, maxSize: Int = 300, managerType: RVDatasourceType) {
+        super.init(manager: nil, datasourceType: managerType, maxSize: maxSize)
         self.scrollView = scrollView
+        self.sectionDatasource = true
     }
     var numberOfSections: Int { return numberOfElements } // Unique to RVDSManagers
 }
@@ -65,7 +66,7 @@ extension RVDSManager5 {
             queue.addOperation(operation)
         }
     }
-    func appendSections(datasources: [RVBaseDatasource4<S>], sectionTypesToRemove: [RVBaseDatasource4<S>.DatasourceType] = Array<RVBaseDatasource4<S>.DatasourceType>(), callback: @escaping RVCallback<S>) {
+    func appendSections(datasources: [RVBaseDatasource4<S>], sectionTypesToRemove: [RVDatasourceType] = Array<RVDatasourceType>(), callback: @escaping RVCallback<S>) {
         let operation = RVManagerAppendSections5( manager: self, datasources: datasources, sectionTypesToRemove: sectionTypesToRemove, callback: callback)
         queue.addOperation(operation)
     }
@@ -210,9 +211,9 @@ class RVManagerExpandCollapseOperation5<T: NSObject> : RVAsyncOperation<T> {
     
 }
 class RVManagerAppendSections5<T: NSObject> : RVManagerRemoveSections5<T> {
-    var sectionTypesToRemove: [RVBaseDatasource4<T>.DatasourceType]
+    var sectionTypesToRemove: [RVDatasourceType]
     var sectionsToBeRemoved: [RVBaseDatasource4<T>] = [RVBaseDatasource4<T>]()
-    init(title: String = "Add Sections", manager: RVDSManager5<T>, datasources: [RVBaseDatasource4<T>], sectionTypesToRemove: [RVBaseDatasource4<T>.DatasourceType] = Array<RVBaseDatasource4<T>.DatasourceType>(), callback: @escaping RVCallback<T>) {
+    init(title: String = "Add Sections", manager: RVDSManager5<T>, datasources: [RVBaseDatasource4<T>], sectionTypesToRemove: [RVDatasourceType] = Array<RVDatasourceType>(), callback: @escaping RVCallback<T>) {
         self.sectionTypesToRemove = sectionTypesToRemove
         super.init(title: "Add Sections", manager: manager, datasources: datasources, callback: callback)
     }

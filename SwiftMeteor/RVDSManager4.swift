@@ -115,7 +115,7 @@ class RVDSManager4Z<T:NSObject>: NSObject {
             self.queue.addOperation(RVManagerExpandCollapseOperation4(title: "Toggle Operation", manager: self, operationType: .toggle, datasources: [datasource], callback: callback))
         }
     }
-    func appendSections(datasources: [RVBaseDatasource4<T>], sectionTypesToRemove: [RVBaseDatasource4<T>.DatasourceType] = Array<RVBaseDatasource4<T>.DatasourceType>(), callback: @escaping RVCallback<T>) {
+    func appendSections(datasources: [RVBaseDatasource4<T>], sectionTypesToRemove: [RVDatasourceType] = Array<RVDatasourceType>(), callback: @escaping RVCallback<T>) {
         self.queue.addOperation(RVManagerAppendSections4<T>(manager: self, datasources: datasources, sectionTypesToRemove: sectionTypesToRemove, callback: callback))
     }
 
@@ -249,9 +249,9 @@ class RVManagerRemoveSections4<T:NSObject>: RVAsyncOperation<T> {
 }
 
 class RVManagerAppendSections4<T: NSObject>: RVManagerRemoveSections4<T> {
-    var sectionTypesToRemove: [RVBaseDatasource4<T>.DatasourceType]
+    var sectionTypesToRemove: [RVDatasourceType]
     var sectionsToBeRemoved: [RVBaseDatasource4<T>] = [RVBaseDatasource4<T>]()
-    init(title: String = "Add Sections", manager: RVDSManager4Z<T>, datasources: [RVBaseDatasource4<T>], sectionTypesToRemove: [RVBaseDatasource4<T>.DatasourceType] = Array<RVBaseDatasource4<T>.DatasourceType>(), callback: @escaping RVCallback<T>) {
+    init(title: String = "Add Sections", manager: RVDSManager4Z<T>, datasources: [RVBaseDatasource4<T>], sectionTypesToRemove: [RVDatasourceType] = Array<RVDatasourceType>(), callback: @escaping RVCallback<T>) {
         self.sectionTypesToRemove = sectionTypesToRemove
         super.init(title: "Add Sections", manager: manager, datasources: datasources, callback: callback)
     }
