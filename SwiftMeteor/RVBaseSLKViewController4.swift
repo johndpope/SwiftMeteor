@@ -190,7 +190,7 @@ extension RVBaseSLKViewController4 {
         }
         cell.transform = tableView.transform
         //    cell.item = manager4.item(indexPath: indexPath)
-        cell.item = manager.element(indexPath: indexPath)
+        cell.item = manager.element(indexPath: indexPath, scrollView: tableView)
         //cell.configureSubviews()
         return cell
     }

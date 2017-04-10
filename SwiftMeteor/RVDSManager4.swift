@@ -54,15 +54,16 @@ class RVDSManager4<T:NSObject>: NSObject {
     func scrolling(indexPath: IndexPath, scrollView: UIScrollView) {
         let section = indexPath.section
         if let datasource = self.datasourceInSection(section: section) {
-            datasource.scroll(index: indexPath.row, scrollView: scrollView)
+            datasource.scroll(indexPath: indexPath, scrollView: scrollView)
         } else {
             // Neil retrieve more
         }
     }
-    func element(indexPath: IndexPath) ->  T? {
+    func element(indexPath: IndexPath, scrollView: UIScrollView?, updateLast: Bool = true) -> T? {
+   // func element(indexPath: IndexPath) ->  T? {
         let section = indexPath.section
         if let datasource = datasourceInSection(section: section) {
-            return datasource.element(index: indexPath.row, scrollView: scrollView)
+            return datasource.element(indexPath: indexPath, scrollView: scrollView)
         } else {
             return nil
         }

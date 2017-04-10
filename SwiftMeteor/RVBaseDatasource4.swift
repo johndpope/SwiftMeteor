@@ -306,7 +306,11 @@ extension RVBaseDatasource4 {
             self.queue.addOperation(operation)
         }
     }
-    func element(index: Int, scrollView: UIScrollView?, updateLast: Bool = true) -> T? {
+    func element(indexPath: IndexPath, scrollView: UIScrollView?, updateLast: Bool = true) -> T? {
+        if type(of: RVBaseDatasource4<T>.self) == type(of: self) {
+            print("IN \(self.instanceType).element, types matched")
+        }
+        let index = indexPath.row
         if updateLast { self.lastItemIndex = index }
         if index < 0 {
             print("In \(self.instanceType).item, got negative index \(index)")
@@ -344,10 +348,11 @@ extension RVBaseDatasource4 {
             return nil
         }
     }
-    func scroll(index: Int, scrollView: UIScrollView) {
-        print("in \(self.classForCoder).scroll \(index)")
-        let _ = self.element(index: index, scrollView: scrollView, updateLast: false)
+    func scroll(indexPath: IndexPath, scrollView: UIScrollView) {
+        //print("in \(self.classForCoder).scroll \(index)")
+        let _ = self.element(indexPath: indexPath, scrollView: scrollView, updateLast: false)
     }
+ 
     func cloneItems() -> [T] {
         var clone = [T]()
         for item in elements { clone.append(item) }
@@ -843,7 +848,7 @@ class RVLoadOperation<T:NSObject>: RVAsyncOperation<T> {
                                 //print("In \(self.classForCoder).refreshViews indexPath \(indexPath.section) \(indexPath.row)")
                                 if indexPath.section == self.datasource.section {
                                     if let cell = tableView.cellForRow(at: indexPath) as? RVItemRetrieve {
-                                        if let item = self.datasource.element(index: indexPath.row, scrollView: tableView) as? RVBaseModel {
+                                        if let item = self.datasource.element(indexPath: indexPath, scrollView: tableView) as? RVBaseModel {
                                             cell.item = item
                                         }
                                     }
@@ -869,7 +874,7 @@ class RVLoadOperation<T:NSObject>: RVAsyncOperation<T> {
                             for indexPath in visibleIndexPaths {
                                 if indexPath.section == self.datasource.section {
                                     if let cell = collectionView.cellForItem(at: indexPath) as? RVItemRetrieve {
-                                        if let item = self.datasource.element(index: indexPath.item, scrollView: collectionView) as? RVBaseModel {
+                                        if let item = self.datasource.element(indexPath: indexPath, scrollView: collectionView) as? RVBaseModel {
                                             cell.item = item
                                         }
                                     }

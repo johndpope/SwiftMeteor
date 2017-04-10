@@ -169,7 +169,7 @@ class RVGroupListController: RVTransactionListViewController {
         }
         cell.transform = tableView.transform
     //    cell.item = manager4.item(indexPath: indexPath)
-        cell.item = configuration4.manager.element(indexPath: indexPath)
+        cell.item = configuration4.manager.element(indexPath: indexPath, scrollView: tableView)
         //cell.configureSubviews()
         return cell
     }
