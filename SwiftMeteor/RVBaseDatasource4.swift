@@ -983,24 +983,29 @@ class RVLoadOperation<T:NSObject>: RVAsyncOperation<T> {
             }
         }
     }
-    func backHandler(models: [T]) -> [IndexPath] {
-        let section = datasource.section
+    func backHandler(models: [T]) -> (indexPaths: [IndexPath], sectionIndexes: IndexSet) {
+        let section = !self.datasource.sectionDatasource ? self.datasource.section : self.datasource.FAKESECTION
         let virtualIndex = datasource.elementsCount + datasource.offset
         var clone = datasource.cloneItems()
         var indexPaths = [IndexPath]()
+        var sectionIndexes = [Int]()
         for i in 0..<models.count {
             clone.append(models[i])
-            if (section >= 0) { indexPaths.append(IndexPath(row: virtualIndex + i, section: section)) }
+            if (section >= 0) {
+                indexPaths.append(IndexPath(row: virtualIndex + i, section: section))
+                sectionIndexes.append(virtualIndex + i)
+            }
         }
         self.datasource.elements = clone
        // print("In \(self.classForCoder).backHandler, items count = \(self.datasource.elementsCount) collapsed: \(self.datasource.collapsed)")
-        return indexPaths
+        return (indexPaths: indexPaths, sectionIndexes: IndexSet(sectionIndexes))
     }
-    func frontHandler(newModels: [T]) -> [IndexPath] {
+    func frontHandler(newModels: [T]) -> (indexPaths: [IndexPath], sectionIndexes: IndexSet) {
         //print("In \(self.classForCoder).frontHandler")
         var clone = datasource.cloneItems()
  
         var indexPaths = [IndexPath]()
+        var sectionIndexes = [Int]()
         let newCount = newModels.count
         if self.datasource.offset > 0 {
             print("In \(self.classForCoder).insertFront offset is \(self.datasource.offset) and newCount = \(newCount)")
@@ -1008,7 +1013,7 @@ class RVLoadOperation<T:NSObject>: RVAsyncOperation<T> {
                 for i in 0..<newCount { clone.insert(newModels[i], at: 0) }
                 self.datasource.elements = clone
                 self.datasource.offset = self.datasource.offset - newCount
-                return indexPaths
+                return (indexPaths: indexPaths, sectionIndexes: IndexSet(sectionIndexes))
             } else {
                 for i in 0..<self.datasource.offset { clone.insert(newModels[i], at: 0) }
                 self.datasource.offset = 0
@@ -1016,23 +1021,29 @@ class RVLoadOperation<T:NSObject>: RVAsyncOperation<T> {
                 var rowIndex: Int = (self.subscriptionOperation != .response) ? self.datasource.virtualCount : 0
                 for i in (self.datasource.offset)..<newCount {
                     clone.insert(newModels[i], at: 0)
-                    if (section >= 0 ) { indexPaths.append(IndexPath(item: rowIndex, section: section)) }
+                    if (section >= 0 ) {
+                        indexPaths.append(IndexPath(item: rowIndex, section: section))
+                        sectionIndexes.append(rowIndex)
+                    }
                     rowIndex = rowIndex + 1
                 }
                 self.datasource.elements = clone
-                return indexPaths
+                return (indexPaths: indexPaths, sectionIndexes: IndexSet(sectionIndexes))
             }
         } else {
             var rowIndex: Int = (self.subscriptionOperation != .response) ? self.datasource.virtualCount : 0
             let section = self.datasource.section
             for i in 0..<newCount {
                 clone.insert(newModels[i], at: 0)
-                if (section >= 0 ) {  indexPaths.append(IndexPath(item: rowIndex, section: section)) }
+                if (section >= 0 ) {
+                    indexPaths.append(IndexPath(item: rowIndex, section: section))
+                    sectionIndexes.append(rowIndex)
+                }
                 rowIndex = rowIndex + 1
             }
             self.datasource.offset = 0
             self.datasource.elements = clone
-            return indexPaths
+            return (indexPaths: indexPaths, sectionIndexes: IndexSet(sectionIndexes))
         }
     }
     
@@ -1075,8 +1086,8 @@ class RVLoadOperation<T:NSObject>: RVAsyncOperation<T> {
                         if let indexPath = tableView.indexPathForRow(at: point) { originalRow = indexPath.row }
                         var indexPaths = [IndexPath]()
                         //print("In \(self.classForCoder).insert, tableView reference match")
-                        if self.front { indexPaths = self.frontHandler(newModels: sizedModels) }
-                        else { indexPaths = self.backHandler(models: sizedModels) }
+                        if self.front { indexPaths = self.frontHandler(newModels: sizedModels).indexPaths }
+                        else { indexPaths = self.backHandler(models: sizedModels).indexPaths }
                         //print("In \(self.classForCoder).insert numberOfIndexPaths = \(indexPaths.count)")
                         if  (!self.datasource.collapsed)  {
                             tableView.insertRows(at: indexPaths, with: UITableViewRowAnimation.middle)
@@ -1145,8 +1156,8 @@ class RVLoadOperation<T:NSObject>: RVAsyncOperation<T> {
                     if !self.isCancelled {
                         if (self.subscriptionOperation == .none) && self.referenceMatch {
                             var indexPaths = [IndexPath]()
-                            if self.front { indexPaths = self.frontHandler(newModels: sizedModels) }
-                            else { indexPaths = self.backHandler(models: sizedModels) }
+                            if self.front { indexPaths = self.frontHandler(newModels: sizedModels).indexPaths }
+                            else { indexPaths = self.backHandler(models: sizedModels).indexPaths }
                             if  (!self.datasource.collapsed)  { collectionView.insertItems(at: indexPaths) }
                         }
                     }
