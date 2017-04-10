@@ -10,7 +10,7 @@ import UIKit
 
 
 
-class RVDSManager4<T:NSObject>: NSObject {
+class RVDSManager4Z<T:NSObject>: NSObject {
     var instanceType: String { get { return String(describing: type(of: self)) } }
     let queue = RVOperationQueue()
     var elements = [RVBaseDatasource4<T>]()
@@ -128,13 +128,13 @@ class RVDSManager4<T:NSObject>: NSObject {
 
 
 class RVManagerRemoveSections4<T:NSObject>: RVAsyncOperation<T> {
-    weak var manager: RVDSManager4<T>? = nil
+    weak var manager: RVDSManager4Z<T>? = nil
     var datasources: [RVBaseDatasource4<T>]
 
     var all: Bool = false
     var ignoreCancel: Bool = false
     let emptyResponse = [T]()
-    init(title: String = "Remove Sections", manager: RVDSManager4<T>, datasources: [RVBaseDatasource4<T>], callback: @escaping RVCallback<T>, all: Bool = false) {
+    init(title: String = "Remove Sections", manager: RVDSManager4Z<T>, datasources: [RVBaseDatasource4<T>], callback: @escaping RVCallback<T>, all: Bool = false) {
         self.datasources = datasources
         self.all = all
         self.manager = manager
@@ -251,7 +251,7 @@ class RVManagerRemoveSections4<T:NSObject>: RVAsyncOperation<T> {
 class RVManagerAppendSections4<T: NSObject>: RVManagerRemoveSections4<T> {
     var sectionTypesToRemove: [RVBaseDatasource4<T>.DatasourceType]
     var sectionsToBeRemoved: [RVBaseDatasource4<T>] = [RVBaseDatasource4<T>]()
-    init(title: String = "Add Sections", manager: RVDSManager4<T>, datasources: [RVBaseDatasource4<T>], sectionTypesToRemove: [RVBaseDatasource4<T>.DatasourceType] = Array<RVBaseDatasource4<T>.DatasourceType>(), callback: @escaping RVCallback<T>) {
+    init(title: String = "Add Sections", manager: RVDSManager4Z<T>, datasources: [RVBaseDatasource4<T>], sectionTypesToRemove: [RVBaseDatasource4<T>.DatasourceType] = Array<RVBaseDatasource4<T>.DatasourceType>(), callback: @escaping RVCallback<T>) {
         self.sectionTypesToRemove = sectionTypesToRemove
         super.init(title: "Add Sections", manager: manager, datasources: datasources, callback: callback)
     }
@@ -373,14 +373,14 @@ class RVManagerExpandCollapseOperation4<T: NSObject>: RVAsyncOperation<T> {
         case collapse
         case toggle
     }
-    weak var manager: RVDSManager4<T>? = nil
+    weak var manager: RVDSManager4Z<T>? = nil
     
     let emptyResponse = [T]()
     var operationType: OperationType
     var datasources: [RVBaseDatasource4<T>]
     var all: Bool = false
     var count: Int
-    init(title: String, manager: RVDSManager4<T>, operationType: OperationType, datasources: [RVBaseDatasource4<T>], callback: @escaping RVCallback<T>, all: Bool = false) {
+    init(title: String, manager: RVDSManager4Z<T>, operationType: OperationType, datasources: [RVBaseDatasource4<T>], callback: @escaping RVCallback<T>, all: Bool = false) {
         self.manager = manager
         self.datasources = datasources
         self.count = datasources.count

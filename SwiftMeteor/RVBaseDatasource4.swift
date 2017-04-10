@@ -69,7 +69,7 @@ class RVBaseDatasource4<T:NSObject>: NSObject {
         }
     }
     var datasourceType: RVBaseDatasource4<T>.DatasourceType = .unknown
-    var manager: RVDSManager4<T>?
+    var manager: RVDSManager5<T>?
 
     fileprivate var lastItemIndex: Int = 0
     fileprivate let TargetBackBufferSize: Int = 20
@@ -122,7 +122,7 @@ class RVBaseDatasource4<T:NSObject>: NSObject {
         }
     }
  
-    init(manager: RVDSManager4<T>?, datasourceType: RVBaseDatasource4<T>.DatasourceType, maxSize: Int) {
+    init(manager: RVDSManager5<T>?, datasourceType: RVBaseDatasource4<T>.DatasourceType, maxSize: Int) {
         self.manager = manager
         self.datasourceType = datasourceType
         self.maxArraySize = ((maxSize < 500) && (maxSize > 50)) ? maxSize : 500

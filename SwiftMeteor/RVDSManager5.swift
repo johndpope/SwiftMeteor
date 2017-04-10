@@ -52,4 +52,29 @@ extension RVDSManager5 {
     func removeAllSections(callback: RVCallback<S>) {
         print("In \(self.classForCoder).removeAllSections Needs to be implemented")
     }
+    func toggle(datasource: RVBaseDatasource4<S>, callback: @escaping RVCallback<S>) {
+        // print("In \(self.instanceType).toggle -------------------------------------- ")
+        if self.sectionIndex(datasource: datasource) < 0 {
+            let error = RVError(message: "In \(self.instanceType).toggle, datasource is not installed as a section \(datasource)")
+            callback([S](), error)
+            return
+        } else {
+            print("In \(self.instanceType).toggle, needs to be implemented")
+        }
+    }
+    func appendSections(datasources: [RVBaseDatasource4<S>], sectionTypesToRemove: [RVBaseDatasource4<S>.DatasourceType] = Array<RVBaseDatasource4<S>.DatasourceType>(), callback: @escaping RVCallback<S>) {
+        print("In \(self.instanceType).appendSections, Needs to be implemented ")
+        
+    }
+    func restart(datasource: RVBaseDatasource4<S>, query: RVQuery, callback: @escaping RVCallback<S>) {
+        datasource.restart(scrollView: self.scrollView, query: query, callback: callback)
+    }
+    func scrolling(indexPath: IndexPath, scrollView: UIScrollView) {
+        let section = indexPath.section
+        if let datasource = self.datasourceInSection(section: section) {
+            datasource.scroll(indexPath: indexPath, scrollView: scrollView)
+        } else {
+            // Neil retrieve more
+        }
+    }
 }
