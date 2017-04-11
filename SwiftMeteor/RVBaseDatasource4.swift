@@ -277,7 +277,11 @@ extension RVBaseDatasource4 {
     var numberOfElements: Int { get { return virtualCount } }
     var virtualCount: Int {
         get {
-            if self.collapsed { return 0 }
+            if self.collapsed {
+               // print("In \(self.classForCoder).virtualCount............ collapsed elementsCount = \(self.elementsCount)")
+                return 0
+            }
+           // print("In virtualCount \(self.description) \(self.elements.description) count: \(self.elements.count) offset: \(self.offset)")
             return self.elementsCount + self.offset
         }
     }
@@ -842,6 +846,7 @@ class RVLoadOperation<T:NSObject>: RVAsyncOperation<T> {
                             self.finishUp(items: models, error: error)
                             return
                         } else if models.count > 0 {
+                           // print("In \(self.classForCoder).InnerMain, have \(models.count) models")
                             self.insert(models: models, callback: { (models, error) in
                                 if let error = error {
                                     error.append(message: "In \(self.instanceType).main, got error doing insert")
@@ -1049,7 +1054,7 @@ class RVLoadOperation<T:NSObject>: RVAsyncOperation<T> {
             }
         }
         self.datasource.elements = clone
-       // print("In \(self.classForCoder).backHandler, items count = \(self.datasource.elementsCount) collapsed: \(self.datasource.collapsed)")
+        //print("In \(self.classForCoder).backHandler, items count = \(self.datasource.elementsCount) collapsed: \(self.datasource.collapsed), datasource \(self.datasource.description )")
         return (indexPaths: indexPaths, sectionIndexes: IndexSet(sectionIndexes))
     }
     func frontHandler(newModels: [T]) -> (indexPaths: [IndexPath], sectionIndexes: IndexSet) {
@@ -1131,6 +1136,7 @@ class RVLoadOperation<T:NSObject>: RVAsyncOperation<T> {
                         return
                     }
                     tableView.beginUpdates()
+                  //  print("In \(self.classForCoder).insert, have \(models.count) \(String(describing: models.first))")
                     if let indexPaths = tableView.indexPathsForVisibleRows { if let indexPath = indexPaths.last { originalRow = indexPath.row } }
 
                     // print("In \(self.classForCoder).insert, subscriptionOperation = \(self.subscriptionOperation)")

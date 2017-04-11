@@ -19,7 +19,11 @@ class RVFirstHeaderContentView: UIView {
         }
     }
     func configure(model: RVBaseModel?, collapsed: Bool, section: Int) {
-        setLabelText(label: headerLabel, text: "Section... \(section)")
+        if let model = model {
+            //print("In \(self.classForCoder).configure, have model")
+            setLabelText(label: headerLabel, text: "\(model.title!)")
+        }
+        
         if collapsed {
             setButtonText(button: expandCollapseButton , text: "Expand")
         } else {

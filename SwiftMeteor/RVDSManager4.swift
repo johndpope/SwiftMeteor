@@ -31,6 +31,7 @@ class RVDSManager4Z<T:NSObject>: NSObject {
         return -1
     }
     func datasourceInSection(section: Int) -> RVBaseDatasource4<T>? {
+        print("In \(self.classForCoder).datasourceInSection, \(section)")
         if (section >= 0) && (section < virtualCount) {
             let physical = section - offset
             if physical >= 0 {

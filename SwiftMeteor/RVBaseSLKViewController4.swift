@@ -10,6 +10,8 @@ import UIKit
 import SlackTextViewController
 
 class RVBaseSLKViewController4: SLKTextViewController {
+    var sectionManager = RVDSManager5<RVBaseModel>(scrollView: nil, managerType: .main)
+    var sectionTest: Bool = false
     var instanceType: String { get { return String(describing: type(of: self)) } }
     var dsScrollView: UIScrollView? {return self.tableView }
     var deck: RVViewDeck { get { return RVViewDeck4.shared }}
@@ -79,6 +81,7 @@ class RVBaseSLKViewController4: SLKTextViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        sectionManager = RVDSManager5Transaction<RVBaseModel>(scrollView: self.dsScrollView, maxSize: 80, managerType: .main)
         commonInit()
         configureNavBar()
         configureSearchController()
@@ -86,20 +89,32 @@ class RVBaseSLKViewController4: SLKTextViewController {
         adjustTableViewInsetForNavBar()
         updateTableViewInsetHeight()
         putTopViewOnTop()
-        let (query, _) = configuration.topQuery()
-        configuration.loadTop(query: query, callback: { (error) in
-            if let error = error {
-                error.printError()
-            } else {
-                self.loadMain(callback: { (error) in
-                    if let error = error {
-                        error.printError()
-                    }
-                })
-            }
-            
-        })
+        if !sectionTest {
+            let (query, _) = configuration.topQuery()
+            configuration.loadTop(query: query, callback: { (error) in
+                if let error = error {
+                    error.printError()
+                } else {
+                    self.loadMain(callback: { (error) in
+                        if let error = error {
+                            error.printError()
+                        }
+                    })
+                }
+                
+            })
+        } else {
+            doSectionTest(callback: { (error) in
+                if let error = error {
+                    error.printError()
+                }
+            })
+        }
+
         makeTableViewTransparent()
+    }
+    func doSectionTest(callback: @escaping(RVError?) -> Void ) {
+        print("In \(self.instanceType).doSectionTest need to override")
     }
     func makeTableViewTransparent() {
         if let tableView = self.tableView {
@@ -159,9 +174,7 @@ class RVBaseSLKViewController4: SLKTextViewController {
         }
     }
     
-}
 // UITableViewDatasource
-extension RVBaseSLKViewController4 {
     override func numberOfSections(in tableView: UITableView) -> Int {
         return manager.numberOfSections
     }
@@ -194,20 +207,22 @@ extension RVBaseSLKViewController4 {
         //cell.configureSubviews()
         return cell
     }
-}
-// UITableViewDelegate
-extension RVBaseSLKViewController4 {
-    override func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
-        return 35.0
-    }
     override func tableView(_ tableView: UITableView, willDisplayHeaderView view: UIView, forSection section: Int) {
         if let headerCell = view as? RVFirstViewHeaderCell {
+            print("In \(self.classForCoder).willDisplayHeaderView")
             if let datasource = manager.datasourceInSection(section: section) { headerCell.datasource4 = datasource }
             headerCell.delegate = self
             headerCell.configure(model: nil)
             headerCell.transform = tableView.transform
         }
     }
+}
+// UITableViewDelegate
+extension RVBaseSLKViewController4 {
+    override func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
+        return 35.0
+    }
+
 }
 // RVFirstViewHeaderCell
 extension RVBaseSLKViewController4: RVFirstViewHeaderCellDelegate {

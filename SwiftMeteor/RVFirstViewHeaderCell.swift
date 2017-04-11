@@ -30,6 +30,9 @@ class RVFirstViewHeaderCell: UITableViewHeaderFooterView {
                     section = manager.section(datasource: datasource)
                 }
             }
+            if let model = self.model {
+               // print("In \(self.classForCoder).configureContentView, have model \(model)")
+            }
             view.configure(model: self.model, collapsed: collapsed, section: section)
         }
     }

@@ -8,12 +8,48 @@
 
 import UIKit
 class RVDSManager5<S: NSObject>: RVBaseDatasource4<RVBaseDatasource4<S>> {
+    let emtpySectionResults = [RVBaseDatasource4<S>]()
     init(scrollView: UIScrollView?, maxSize: Int = 300, managerType: RVDatasourceType) {
         super.init(manager: nil, datasourceType: managerType, maxSize: maxSize)
         self.scrollView = scrollView
         self.sectionDatasource = true
     }
     var numberOfSections: Int { return numberOfElements } // Unique to RVDSManagers
+    override func retrieve(query: RVQuery, callback: @escaping ([RVBaseDatasource4<S>], RVError?) -> Void) {
+        
+        self.retrieveSectionModels(query: query) { (models: [S], error) in
+            if let error = error {
+                error.append(message: "In \(self.instanceType).retrieve got error from retriveSectionModels")
+                callback(self.emtpySectionResults, error)
+                return
+            } else {
+                var datasourceResults = [RVBaseDatasource4<S>]()
+                for model in models {
+                    let datasource = RVBaseDatasource4<S>(manager: self, datasourceType: .main, maxSize: self.maxArraySize)
+                    datasource.sectionModel = model
+                    datasourceResults.append(datasource)
+                }
+                callback(datasourceResults, nil)
+            }
+        }
+    }
+    func retrieveSectionModels(query: RVQuery, callback: @escaping ([S], RVError?) -> Void) {
+        print("In \(self.classForCoder).retrieveSectionModels base class RVDSManager5, need to override ")
+        RVBaseModel.bulkQuery(query: query) { (models, error) in
+            if let error = error {
+                error.append(message: "In \(self.classForCoder).retrieve, got Meteor Error")
+                callback([S](), error)
+            } else {
+                //print("In \(self.classForCoder).retrieve have \(models.count) models ----------------")
+                if let models = models as? [S] {
+                    callback(models, nil)
+                } else {
+                    let error = RVError(message: "In \(self.classForCoder).retrieve, failed to cast to type \(type(of: S.self))")
+                    callback([S](), error)
+                }
+            }
+        }
+    }
 }
 // RVDSManager Unique
 extension RVDSManager5 {
@@ -24,6 +60,7 @@ extension RVDSManager5 {
         return -1
     }
     func numberOfItems(section: Int) -> Int {
+       // print("In \(self.classForCoder).numberOfItems in section: \(section)")
         if let datasource = self.datasourceInSection(section: section) {
             return datasource.numberOfElements
         } else { return 0 }
@@ -38,19 +75,21 @@ extension RVDSManager5 {
         }
     }
     func datasourceInSection(section: Int) -> RVBaseDatasource4<S>? {
-        if (section >= 0) && (section < numberOfElements) {
+        if (section >= 0) && (section < self.virtualCount) {
+           // print("In \(self.instanceType).datasourceInSection, sectionIndex: \(section), virtualCount is \(self.virtualCount) ")
             let physical = section - offset
-            if physical >= 0 {
+            if (physical >= 0) && (physical < elementsCount) {
                 return elements[physical]
             } else {
                 // Neil retreive sections
                 return nil
             }
         } else {
-            print("In \(self.instanceType).datasourceInSection, invalid sectionIndex: \(section) ")
+            print("In \(self.instanceType).datasourceInSection, invalid sectionIndex: \(section), virtualCOunt is \(self.virtualCount) ")
             return nil
         }
     }
+
     func removeAllSections(callback: @escaping RVCallback<S>) {
         let operation = RVManagerRemoveSections5<S>(manager: self, datasources: [RVBaseDatasource4<S>](), callback: callback, all: true)
         queue.addOperation(operation)
@@ -70,10 +109,14 @@ extension RVDSManager5 {
         let operation = RVManagerAppendSections5( manager: self, datasources: datasources, sectionTypesToRemove: sectionTypesToRemove, callback: callback)
         queue.addOperation(operation)
     }
+    func restartSectionDatasource(query: RVQuery, callback: @escaping RVCallback<RVBaseDatasource4<S>>) {
+        self.restart(scrollView: self.scrollView, query: query, callback: callback)
+    }
     func restart(datasource: RVBaseDatasource4<S>, query: RVQuery, callback: @escaping RVCallback<S>) {
         datasource.restart(scrollView: self.scrollView, query: query, callback: callback)
     }
     func scrolling(indexPath: IndexPath, scrollView: UIScrollView) {
+        print("In \(self.classForCoder).scrolling \(indexPath)")
         let section = indexPath.section
         if let datasource = self.datasourceInSection(section: section) {
             datasource.scroll(indexPath: indexPath, scrollView: scrollView)
@@ -83,16 +126,16 @@ extension RVDSManager5 {
     }
     func remove(at: Int) {
         if at < 0 { return }
-        if at >= self.elementsCount {
-            print("IN \(self.classForCoder).remove at \(at), attempted to remove at an index greater than or equal to elementsCount \(self.elementsCount)")
+        if at >= self.virtualCount {
+            print("IN \(self.classForCoder).remove at \(at), attempted to remove at an index greater than or equal to virtualCount \(self.virtualCount)")
             return
         } else {
             let physical = at - offset
             if physical >= 0 {
-                if self.elements.count > 0 {
+                if (self.elements.count > 0) && (physical < self.elements.count) {
                     self.elements.remove(at: physical)
                 } else {
-                    print("In \(self.classForCoder).remove, attempting to remove element at \(physical) when count is zero")
+                    print("In \(self.classForCoder).remove, attempting to remove element at physical index \(physical) when count is zero or greated than element count \(self.elements.count)")
                 }
             } else {
                 if offset <= 0 {
@@ -358,7 +401,7 @@ class RVManagerRemoveSections5<T: NSObject>: RVAsyncOperation<T> {
                                 //print("In \(self.classForCoder).innerAsyncMain, about to remove ")
                                 tableView.beginUpdates()
                                 if self.all {
-                                    for i in 0..<manager.elementsCount { indexes.append(i) }
+                                    for i in 0..<manager.virtualCount { indexes.append(i) }
                                     if indexes.count > 0 {
                                         manager.zeroElements()
                                         tableView.deleteSections(IndexSet(indexes), with: manager.rowAnimation)
