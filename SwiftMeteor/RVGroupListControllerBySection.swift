@@ -9,7 +9,8 @@
 import UIKit
 
 class RVGroupListControllerBySection: RVGroupListController4 {
-
+    
+    override var instanceConfiguration: RVBaseConfiguration4 { return RVTransactionConfiguration4DynamicSections(scrollView: dsScrollView) }
     override func viewDidLoad() {
         self.sectionTest = true
         super.viewDidLoad()
