@@ -26,7 +26,7 @@ class RVBaseConfiguration4 {
     var searchScopes: [[String : RVKeys]]     = [[RVKeys.title.rawValue: RVKeys.title], [RVKeys.fullName.rawValue: RVKeys.fullName]]
     var defaultSortOrder: RVSortOrder = .ascending
     var installSearchControllerInTableView: Bool = false
-    var manager = RVDSManager5<RVBaseModel>(scrollView: nil, managerType: .filter, sectionDatasourceMode: true)
+    var manager: RVDSManager5<RVBaseModel> = RVDSManager5<RVBaseModel>(scrollView: nil, managerType: .filter, dynamicSections: false)
     var navigationBarColor: UIColor = UIColor.facebookBlue()
     
     // SLK
@@ -64,9 +64,9 @@ class RVBaseConfiguration4 {
         self.mainDatasourceMaxSize      = 300
         self.filterDatasourceMaxSize    = 300
         self.searchScopes               = [[RVKeys.title.rawValue: RVKeys.title], [RVKeys.fullName.rawValue: RVKeys.fullName]]
-        */
+         */
+        self.manager = RVDSManager5<RVBaseModel>(scrollView: scrollView, managerType: .filter, dynamicSections: false)
         configureSLK()
-        self.manager                    = RVDSManager5<RVBaseModel>(scrollView: scrollView, managerType: .filter, sectionDatasourceMode: true)
     }
     func configureSLK() {
         self.SLKIsInverted                             = false
@@ -181,6 +181,72 @@ class RVBaseConfiguration4 {
                     callback(error)
                 })
             }
+        }
+    }
+    func initializeDatasource(callback: @escaping(RVError?) -> Void) {
+        if !manager.dynamicSections {
+            let (query, _) = self.topQuery()
+            self.loadTop(query: query, callback: { (error) in
+                if let error = error {()
+                    error.append(message: "In \(self.instanceType).initializeDatasource, got error from loadTOp")
+                    callback(error)
+                    return
+                } else {
+                    self.getQueryAndLoadMain(callback: { (error) in
+                        if let error = error {
+                            error.append(message: "In \(self.instanceType).initializeDatasource, got error from getQueryAndLoadMain")
+                            callback(error)
+                            return
+                        } else {
+                            callback(nil)
+                            return
+                        }
+                    })
+                    return
+                }
+            })
+            return
+        } else {
+            loadDynamicSections(callback: { (error) in
+                if let error = error {
+                    error.printError()
+                }
+            })
+        }
+    }
+    func getQueryAndLoadMain(callback: @escaping(RVError?) -> Void) {
+        let (query, error) = self.mainQuery()
+        if let error = error {
+            error.append(message: "In \(self.instanceType).getQueryAndLoadMain, got error creating Query")
+            callback(error)
+            return
+        } else {
+            self.loadMain(query: query, callback: { (error) in
+                if let error = error {
+                    error.append(message: "In \(self.instanceType).getQueryAndLoadMain, got error")
+                }
+                callback(error)
+            })
+        }
+    }
+    func loadDynamicSections(callback: @escaping(RVError?) -> Void) {
+        var (query, error) = self.mainQuery()
+        query = query.duplicate()
+        query.addSort(field: .createdAt, order: .ascending)
+        query.limit = 3
+        if let error = error {
+            error.append(message: "In \(self.instanceType).loadMain, got error creating Query")
+            callback(error)
+        } else {
+            self.manager.restartSectionDatasource(query: query, callback: { (datasources, error) in
+                if let error = error {
+                    error.append(message: "IN \(self.instanceType).doSectionText, have error on restart callback")
+                    callback(error)
+                    return
+                } else {
+                    print("In \(self.instanceType).doSectionTest, successful return")
+                }
+            })
         }
     }
 

@@ -10,7 +10,7 @@ import UIKit
 import SlackTextViewController
 
 class RVBaseSLKViewController4: SLKTextViewController {
-    var sectionManager = RVDSManager5<RVBaseModel>(scrollView: nil, managerType: .main, sectionDatasourceMode: true)
+    var sectionManager = RVDSManager5<RVBaseModel>(scrollView: nil, managerType: .main, dynamicSections: false)
     var sectionTest: Bool = false
     var instanceType: String { get { return String(describing: type(of: self)) } }
     var dsScrollView: UIScrollView? {return self.tableView }
@@ -81,7 +81,7 @@ class RVBaseSLKViewController4: SLKTextViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        sectionManager = RVDSManager5Transaction<RVBaseModel>(scrollView: self.dsScrollView, maxSize: 80, managerType: .main, sectionDatasourceMode: true)
+        sectionManager = RVDSManager5Transaction<RVBaseModel>(scrollView: self.dsScrollView, maxSize: 80, managerType: .main, dynamicSections: false)
         commonInit()
         configureNavBar()
         configureSearchController()
