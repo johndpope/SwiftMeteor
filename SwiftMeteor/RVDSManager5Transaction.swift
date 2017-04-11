@@ -32,6 +32,8 @@ class RVDSManager5Transaction<S: NSObject>: RVDSManager5<S> {
     }
     override var queryForDatasourceInstance: (RVQuery, RVError?) {
         let (query, error) = RVTransaction.baseQuery
+        query.addSort(field: .createdAt, order: .descending)
+        query.addAnd(term: .createdAt, value: Date() as AnyObject, comparison: .lte)
         return (query, error)
     }
 

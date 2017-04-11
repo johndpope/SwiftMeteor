@@ -229,7 +229,7 @@ extension RVBaseDatasource4 {
     }
     func updateSortTerm(query: RVQuery, front: Bool = false, candidate: NSObject? = nil) -> RVQuery {
         if (query.sortTerms.count == 0) || (query.sortTerms.count > 1) {
-            print("In \(self.classForCoder).updateSortTerms, erroneous number of sort Tersm: \(query.sortTerms)")
+            print("In \(self.classForCoder).updateSortTerms, erroneous number of sort Tersm: sortTerms are: \(query.sortTerms)")
         }
         if let sortTerm = query.sortTerms.first {
             let firstString: AnyObject = "" as AnyObject
@@ -237,7 +237,7 @@ extension RVBaseDatasource4 {
             var comparison = (sortTerm.order == .ascending) ?  RVComparison.gte : RVComparison.lte
             var sortString: AnyObject = (sortTerm.order == .descending) ? lastString : firstString
             if front {
-                comparison = (sortTerm.order == .descending) ?  RVComparison.gt : RVComparison.lt
+                comparison = (sortTerm.order == .ascending) ?  RVComparison.lt : RVComparison.gt
                 sortString = (sortTerm.order == .descending) ? firstString : lastString
             }
             var sortDate: Date  = (sortTerm.order == .ascending)  ? query.decadeAgo : Date()
@@ -248,13 +248,22 @@ extension RVBaseDatasource4 {
             var strip = [RVKeys : AnyObject]()
             if let candidate = candidate {
                 if let candidate = candidate as? RVBaseModel {
+                  //   print("In \(self.classForCoder).updateSortTerm, have candidate \(candidate)")
                     strip = self.stripCandidate(candidate: candidate)
                 } else if let datasource = candidate as? RVBaseDatasource4<T> {
+                    print("In \(self.classForCoder).updateSortTerm, candidate is a RVBaseDatasource4<T>")
                     if let sectionModel = datasource.sectionModel as? RVBaseModel {
+                        print("In \(self.classForCoder).updateSortTerm, have sectionModel")
                         strip = self.stripCandidate(candidate: sectionModel)
+                    } else {
+                        print("In \(self.classForCoder).updateSortTerm, do not have sectionModel")
                     }
                     
+                } else {
+                    print("In \(self.classForCoder).updateSortTerm, some unknown candidate \(candidate)")
                 }
+            } else {
+               // print("In \(self.classForCoder).updateSortTerm, no candidate")
             }
             if let value = strip[sortTerm.field] { finalValue = value }
             else if let andTerm = query.findAndTerm(term: sortTerm.field) { finalValue = andTerm.value as AnyObject }
@@ -448,7 +457,7 @@ class RVExpandCollapseOperation<T:NSObject>: RVLoadOperation<T> {
             self.finishUp(models: self.emptyModels, error: nil)
             return
         } else if (operationType != .expandOnly) {
-         //   print("In \(self.instanceType).asyncMain operationType: \(self.operationType), passed not expand only, query: \(query), scrollView: \(String(describing: self.scrollView))")
+           // print("In \(self.instanceType).asyncMain operationType: \(self.operationType), passed not expand only, query: \(query), scrollView: \(String(describing: self.scrollView))")
             self.datasource.scrollView = self.scrollView
             if self.datasource.collapsed {
              //   print("In \(self.instanceType).asyncMain operationType: \(self.operationType), thinks collapsed, query: \(query), scrollView: \(String(describing: self.scrollView))")
