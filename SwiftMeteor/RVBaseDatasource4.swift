@@ -460,7 +460,14 @@ class RVExpandCollapseOperation<T:NSObject>: RVLoadOperation<T> {
                             tableView.beginUpdates()
                             if !self.isCancelled {
                                 let paths = self.handleCollapse()
-                                if paths.indexPaths.count > 0 { tableView.deleteRows(at: paths.indexPaths, with: UITableViewRowAnimation.none) }
+                                if paths.indexPaths.count > 0 {
+                                    if !self.datasource.sectionDatasource {
+                                       tableView.deleteRows(at: paths.indexPaths, with: UITableViewRowAnimation.none)
+                                    } else {
+                                        tableView.deleteSections(paths.sectionIndexes, with: .none)
+                                    }
+                                    
+                                }
                                 tableView.endUpdates()
                             }
                             if (operationType == .collapseZeroExpandAndLoad) {
@@ -476,7 +483,14 @@ class RVExpandCollapseOperation<T:NSObject>: RVLoadOperation<T> {
                             collectionView.performBatchUpdates({
                                 if self.isCancelled { return }
                                 let paths = self.handleCollapse()
-                                if paths.indexPaths.count > 0 { collectionView.deleteItems(at: paths.indexPaths) }
+                                if paths.indexPaths.count > 0 {
+                                    if !self.datasource.sectionDatasource {
+                                        collectionView.deleteItems(at: paths.indexPaths)
+                                    } else {
+                                        collectionView.deleteSections(paths.sectionIndexes)
+                                    }
+                                    
+                                }
                             }, completion: { (success) in
                                 if (operationType == .collapseZeroExpandAndLoad) {
                                     self.datasource.baseQuery = self.query
@@ -520,7 +534,12 @@ class RVExpandCollapseOperation<T:NSObject>: RVLoadOperation<T> {
                         tableView.beginUpdates()
                         if !self.isCancelled {
                             let paths = self.handleExpand()
-                            tableView.insertRows(at: paths.indexPaths, with: self.datasource.rowAnimation)
+                            if !self.datasource.sectionDatasource {
+                                tableView.insertRows(at: paths.indexPaths, with: self.datasource.rowAnimation)
+                            } else {
+                                tableView.insertSections(paths.sectionIndexes, with: self.datasource.rowAnimation)
+                            }
+                            
                         }
                         tableView.endUpdates()
                         self.finishUp(models: self.datasource.elements, error: nil)
@@ -529,7 +548,12 @@ class RVExpandCollapseOperation<T:NSObject>: RVLoadOperation<T> {
                         collectionView.performBatchUpdates({
                             if !self.isCancelled {
                                 let paths = self.handleExpand()
-                                collectionView.insertItems(at: paths.indexPaths)
+                                if !self.datasource.sectionDatasource {
+                                    collectionView.insertItems(at: paths.indexPaths)
+                                } else {
+                                    collectionView.insertSections(paths.sectionIndexes)
+                                }
+                                
                             }
                         }, completion: { (success) in
                             self.finishUp(models: self.datasource.elements, error: nil)
@@ -870,12 +894,21 @@ class RVLoadOperation<T:NSObject>: RVAsyncOperation<T> {
                     tableView.beginUpdates()
                     if let visibleIndexPaths = tableView.indexPathsForVisibleRows {
                         if visibleIndexPaths.count > 0 {
+                            var section = -1
                             for indexPath in visibleIndexPaths {
                                 //print("In \(self.classForCoder).refreshViews indexPath \(indexPath.section) \(indexPath.row)")
                                 if indexPath.section == self.datasource.section {
                                     if let cell = tableView.cellForRow(at: indexPath) as? RVItemRetrieve {
                                         if let item = self.datasource.element(indexPath: indexPath, scrollView: tableView) as? RVBaseModel {
                                             cell.item = item
+                                        }
+                                    }
+                                }
+                                if section != indexPath.section {
+                                    section = indexPath.section
+                                    if let header = tableView.headerView(forSection: section) as? RVItemRetrieve {
+                                        if let sectionModel = self.datasource.sectionModel as? RVBaseModel {
+                                            header.item = sectionModel
                                         }
                                     }
                                 }
@@ -895,6 +928,7 @@ class RVLoadOperation<T:NSObject>: RVAsyncOperation<T> {
                     }
                 } else if let collectionView = self.scrollView as? UICollectionView {
                     collectionView.performBatchUpdates({
+                        var section = 01
                         let visibleIndexPaths = collectionView.indexPathsForVisibleItems
                         if visibleIndexPaths.count > 0 {
                             for indexPath in visibleIndexPaths {
@@ -904,6 +938,10 @@ class RVLoadOperation<T:NSObject>: RVAsyncOperation<T> {
                                             cell.item = item
                                         }
                                     }
+                                }
+                                if section != indexPath.section {
+                                    section = indexPath.section
+                                    // no collectionView header
                                 }
                             }
                         }
@@ -960,14 +998,28 @@ class RVLoadOperation<T:NSObject>: RVAsyncOperation<T> {
             } else if let tableView = self.scrollView as? UITableView {
                 tableView.beginUpdates()
                 let paths = self.innerCleanup()
-                if (paths.indexPaths.count > 0) && (!self.datasource.collapsed) { tableView.deleteRows(at: paths.indexPaths, with: self.datasource.rowAnimation) }
+                if (paths.indexPaths.count > 0) && (!self.datasource.collapsed) {
+                    if !self.datasource.sectionDatasource {
+                        tableView.deleteRows(at: paths.indexPaths, with: self.datasource.rowAnimation)
+                    } else {
+                        tableView.deleteSections(paths.sectionIndexes, with: self.datasource.rowAnimation)
+                    }
+                   
+                }
                 tableView.endUpdates()
                 callback(models, nil)
                 return
             } else if let collectionView = self.scrollView as? UICollectionView {
                 collectionView.performBatchUpdates({
                     let paths = self.innerCleanup()
-                    if (paths.indexPaths.count > 0 ) && (!self.datasource.collapsed) { collectionView.deleteItems(at: paths.indexPaths) }
+                    if (paths.indexPaths.count > 0 ) && (!self.datasource.collapsed) {
+                        if !self.datasource.sectionDatasource {
+                            collectionView.deleteItems(at: paths.indexPaths)
+                        } else {
+                            collectionView.deleteSections(paths.sectionIndexes)
+                        }
+                        
+                    }
                 }, completion: { (success) in
                     callback(models, nil)
                     return
@@ -1080,17 +1132,31 @@ class RVLoadOperation<T:NSObject>: RVAsyncOperation<T> {
                     }
                     tableView.beginUpdates()
                     if let indexPaths = tableView.indexPathsForVisibleRows { if let indexPath = indexPaths.last { originalRow = indexPath.row } }
+
                     // print("In \(self.classForCoder).insert, subscriptionOperation = \(self.subscriptionOperation)")
                     if (self.subscriptionOperation == .response) || self.referenceMatch {
                         let point = CGPoint(x: 10, y: (tableView.bounds.origin.y + tableView.bounds.height))
                         if let indexPath = tableView.indexPathForRow(at: point) { originalRow = indexPath.row }
                         var indexPaths = [IndexPath]()
+                        var sectionIndexes = IndexSet()
                         //print("In \(self.classForCoder).insert, tableView reference match")
-                        if self.front { indexPaths = self.frontHandler(newModels: sizedModels).indexPaths }
-                        else { indexPaths = self.backHandler(models: sizedModels).indexPaths }
+                        if self.front {
+                            let paths = self.frontHandler(newModels: sizedModels)
+                            indexPaths = paths.indexPaths
+                            sectionIndexes = paths.sectionIndexes
+                        }
+                        else {
+                            let paths = self.backHandler(models: sizedModels)
+                            indexPaths = paths.indexPaths
+                            sectionIndexes = paths.sectionIndexes
+                        }
                         //print("In \(self.classForCoder).insert numberOfIndexPaths = \(indexPaths.count)")
                         if  (!self.datasource.collapsed)  {
-                            tableView.insertRows(at: indexPaths, with: UITableViewRowAnimation.middle)
+                            if !self.datasource.sectionDatasource {
+                               tableView.insertRows(at: indexPaths, with: UITableViewRowAnimation.middle)
+                            } else {
+                                tableView.insertSections(sectionIndexes , with: .top)
+                            }
                             indexPathsCount = indexPaths.count
                         }
                     } else {
@@ -1121,15 +1187,21 @@ class RVLoadOperation<T:NSObject>: RVAsyncOperation<T> {
                     }
                     if (!self.datasource.collapsed) && (self.front) && (originalRow >= 0) && (indexPathsCount > 0) && (self.subscriptionOperation != .response) {
                         tableView.beginUpdates()
-                        let section = self.datasource.section
+                        let section = !self.datasource.sectionDatasource ? self.datasource.section : self.datasource.FAKESECTION
                         if section >= 0 {
                             var indexPath = IndexPath(row: (originalRow + indexPathsCount), section: section)
+                            var sectionIndex = originalRow + indexPathsCount
                             if indexPath.row >= self.datasource.virtualCount { indexPath.row = self.datasource.virtualCount - 1 }
-                            tableView.scrollToRow(at: indexPath, at: UITableViewScrollPosition.bottom, animated: false)
-                            if let indexPaths = tableView.indexPathsForVisibleRows {
-                                if indexPaths.count < 9 {
-                                    tableView.reloadRows(at: indexPaths, with: UITableViewRowAnimation.bottom)
+                            if sectionIndex >= self.datasource.virtualCount { sectionIndex = self.datasource.virtualCount - 1 }
+                            if !self.datasource.sectionDatasource {
+                                tableView.scrollToRow(at: indexPath, at: UITableViewScrollPosition.bottom, animated: false)
+                                if let indexPaths = tableView.indexPathsForVisibleRows {
+                                    if indexPaths.count < 9 {
+                                        tableView.reloadRows(at: indexPaths, with: UITableViewRowAnimation.bottom)
+                                    }
                                 }
+                            } else {
+                                // Neil unclear how to scroll Headers
                             }
                         }
                         tableView.endUpdates()
@@ -1140,8 +1212,13 @@ class RVLoadOperation<T:NSObject>: RVAsyncOperation<T> {
                         let section = self.datasource.section
                         if section >= 0 {
                             if self.datasource.virtualCount > 0 {
-                                let indexPath = IndexPath(row: 0, section: section)
-                                tableView.scrollToRow(at: indexPath, at: .top, animated: false)
+                                if !self.datasource.sectionDatasource {
+                                    let indexPath = IndexPath(row: 0, section: section)
+                                    tableView.scrollToRow(at: indexPath, at: .top, animated: false)
+                                } else {
+                                    // Neil Unclear how to scroll a Header
+                                }
+
                             }
                         }
                         tableView.endUpdates()
@@ -1155,10 +1232,16 @@ class RVLoadOperation<T:NSObject>: RVAsyncOperation<T> {
                 collectionView.performBatchUpdates({
                     if !self.isCancelled {
                         if (self.subscriptionOperation == .none) && self.referenceMatch {
-                            var indexPaths = [IndexPath]()
-                            if self.front { indexPaths = self.frontHandler(newModels: sizedModels).indexPaths }
-                            else { indexPaths = self.backHandler(models: sizedModels).indexPaths }
-                            if  (!self.datasource.collapsed)  { collectionView.insertItems(at: indexPaths) }
+
+                            var paths: (indexPaths: [IndexPath], sectionIndexes: IndexSet)
+                            if self.front { paths = self.frontHandler(newModels: sizedModels) }
+                            else { paths = self.backHandler(models: sizedModels) }
+                            if !self.datasource.sectionDatasource {
+                                if  (!self.datasource.collapsed)  { collectionView.insertItems(at: paths.indexPaths) }
+                            } else if !self.datasource.collapsed {
+                                collectionView.insertSections(paths.sectionIndexes)
+                            }
+                            
                         }
                     }
                 }, completion: { (success) in
