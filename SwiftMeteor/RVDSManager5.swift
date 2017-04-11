@@ -9,10 +9,10 @@
 import UIKit
 class RVDSManager5<S: NSObject>: RVBaseDatasource4<RVBaseDatasource4<S>> {
     let emtpySectionResults = [RVBaseDatasource4<S>]()
-    init(scrollView: UIScrollView?, maxSize: Int = 300, managerType: RVDatasourceType) {
+    init(scrollView: UIScrollView?, maxSize: Int = 300, managerType: RVDatasourceType, sectionDatasourceMode: Bool ) {
         super.init(manager: nil, datasourceType: managerType, maxSize: maxSize)
         self.scrollView = scrollView
-        self.sectionDatasourceMode = true
+        self.sectionDatasourceMode = sectionDatasourceMode
     }
     var numberOfSections: Int { return numberOfElements } // Unique to RVDSManagers
     override func retrieve(query: RVQuery, callback: @escaping ([RVBaseDatasource4<S>], RVError?) -> Void) {
