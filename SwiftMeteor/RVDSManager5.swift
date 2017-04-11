@@ -135,10 +135,15 @@ extension RVDSManager5 {
         }
     }
     func appendSections(datasources: [RVBaseDatasource4<S>], sectionTypesToRemove: [RVDatasourceType] = Array<RVDatasourceType>(), callback: @escaping RVCallback<S>) {
-        let operation = RVManagerAppendSections5( manager: self, datasources: datasources, sectionTypesToRemove: sectionTypesToRemove, callback: callback)
-        queue.addOperation(operation)
+        if !self.sectionMode {
+            let operation = RVManagerAppendSections5( manager: self, datasources: datasources, sectionTypesToRemove: sectionTypesToRemove, callback: callback)
+            queue.addOperation(operation)
+        }
     }
     func restartSectionDatasource(query: RVQuery, callback: @escaping RVCallback<RVBaseDatasource4<S>>) {
+        if !self.sectionMode {
+            print("In \(self.classForCoder).restartSectionDatasource, erroneously attempted to restart a datasource that is not in sectionMode")
+        }
         self.restart(scrollView: self.scrollView, query: query, callback: callback)
     }
     func restart(datasource: RVBaseDatasource4<S>, query: RVQuery, callback: @escaping RVCallback<S>) {
