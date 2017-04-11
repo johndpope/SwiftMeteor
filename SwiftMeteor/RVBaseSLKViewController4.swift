@@ -235,6 +235,7 @@ class RVBaseSLKViewController4: SLKTextViewController {
     override func scrollViewDidScroll(_ scrollView: UIScrollView) {
         if let tableView = scrollView as? UITableView {
             if tableView == self.dsScrollView {
+  
                 if let indexPaths = tableView.indexPathsForVisibleRows {
                     if let first = indexPaths.first {
                         configuration.manager.scrolling(indexPath: first, scrollView: tableView)
@@ -245,8 +246,15 @@ class RVBaseSLKViewController4: SLKTextViewController {
                         //   self.manager4.scrolling(indexPath: last, scrollView: tableView)
                     }
                 }
+
             }
         }
+        super.scrollViewDidScroll(scrollView)
+    }
+    override func scrollViewDidEndDragging(_ scrollView: UIScrollView, willDecelerate decelerate: Bool) {
+        if configuration.manager.dynamicSections {
+        }
+        super.scrollViewDidEndDragging(scrollView, willDecelerate: decelerate)
     }
 }
 // UITableViewDelegate

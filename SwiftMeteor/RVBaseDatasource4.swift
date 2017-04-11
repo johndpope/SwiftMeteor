@@ -77,7 +77,7 @@ class RVBaseDatasource4<T:NSObject>: NSObject {
     fileprivate var lastItemIndex: Int = 0
     fileprivate let TargetBackBufferSize: Int = 20
     fileprivate let TargetFrontBufferSize: Int = 20
-    fileprivate var backBufferSize: Int {
+    var backBufferSize: Int {
         get {
             if TargetBackBufferSize < (self.maxArraySize / 2) { return TargetBackBufferSize }
             else if self.maxArraySize < 50 {
@@ -86,7 +86,7 @@ class RVBaseDatasource4<T:NSObject>: NSObject {
             return self.maxArraySize / 2 - 1
         }
     }
-    fileprivate var frontBufferSize: Int {
+    var frontBufferSize: Int {
         get {
             let remainder = self.maxArraySize - self.backBufferSize
             if remainder >= TargetFrontBufferSize { return TargetFrontBufferSize }
@@ -249,12 +249,12 @@ extension RVBaseDatasource4 {
             var strip = [RVKeys : AnyObject]()
             if let candidate = candidate {
                 if let candidate = candidate as? RVBaseModel {
-                  //   print("In \(self.classForCoder).updateSortTerm, have candidate \(candidate)")
+                    //print("In \(self.classForCoder).updateSortTerm, have candidate \(candidate)")
                     strip = self.stripCandidate(candidate: candidate)
-                } else if let datasource = candidate as? RVBaseDatasource4<T> {
-                    print("In \(self.classForCoder).updateSortTerm, candidate is a RVBaseDatasource4<T>")
+                } else if let datasource = candidate as? RVBaseDatasource4<RVBaseModel> {
+               //     print("In \(self.classForCoder).updateSortTerm, candidate is a RVBaseDatasource4<T>")
                     if let sectionModel = datasource.sectionModel as? RVBaseModel {
-                        print("In \(self.classForCoder).updateSortTerm, have sectionModel")
+                    //    print("In \(self.classForCoder).updateSortTerm, have sectionModel")
                         strip = self.stripCandidate(candidate: sectionModel)
                     } else {
                         print("In \(self.classForCoder).updateSortTerm, do not have sectionModel")
@@ -329,10 +329,12 @@ extension RVBaseDatasource4 {
             self.queue.addOperation(operation)
         }
     }
+    
     func element(indexPath: IndexPath, scrollView: UIScrollView?, updateLast: Bool = true) -> T? {
         if type(of: RVBaseDatasource4<T>.self) == type(of: self) {
             print("IN \(self.instanceType).element, types matched")
         }
+       // print("IN \(self.classForCoder).element \(indexPath)")
         let index = indexPath.row
         if updateLast { self.lastItemIndex = index }
         if index < 0 {

@@ -236,10 +236,10 @@ class RVBaseConfiguration4 {
         }
     }
     func loadDynamicSections(callback: @escaping(RVError?) -> Void) {
-        var (query, error) = self.mainQuery()
+        var (query, error) = self.mainQuery(andTerms: [RVQueryItem](), sortTerm: RVSortTerm(field: .createdAt, order: .ascending))
         query = query.duplicate()
-        query.addSort(field: .createdAt, order: .ascending)
-        query.limit = 3
+        //query.addSort(field: .createdAt, order: .ascending)
+        query.limit = 6
         if let error = error {
             error.append(message: "In \(self.instanceType).loadMain, got error creating Query")
             callback(error)

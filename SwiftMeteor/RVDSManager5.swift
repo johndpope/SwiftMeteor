@@ -9,6 +9,7 @@
 import UIKit
 class RVDSManager5<S: NSObject>: RVBaseDatasource4<RVBaseDatasource4<S>> {
     var dynamicSections: Bool = false
+    var lastSection: Int = -1
     let emtpySectionResults = [RVBaseDatasource4<S>]()
     init(scrollView: UIScrollView?, maxSize: Int = 300, managerType: RVDatasourceType, dynamicSections: Bool ) {
         super.init(manager: nil, datasourceType: managerType, maxSize: maxSize)
@@ -86,8 +87,49 @@ extension RVDSManager5 {
             return nil
         }
     }
+    func grabMoreSections(section: Int) {
+        if section == self.lastSection { return }
+        self.lastSection = section
+        if section < 0 {
+            print("In \(self.instanceType).grabMoreSections, got negative index \(index)")
+            return
+        } else if section >= self.virtualCount {
+            print("In \(self.instanceType).grabMoreSections, index \(index) GTE virtual Count \(self.virtualCount)")
+            return
+        } else {
+            var OKtoRetrieve: Bool = true
+            if self.subscription != nil {
+                if self.subscriptionActive {
+                    if self.elementsCount >= self.maxArraySize {
+                        OKtoRetrieve = false
+                    }
+                }
+            }
+            let physicalIndex = section - offset
+            if physicalIndex < 0 {
+                //print("In \(self.instanceType).item got physical index less than 0 \(physicalIndex). Offset is \(offset)")
+                //print("In \(self.classForCoder).item calling inBack: index = \(index), count: \(elementsCount), offset: \(self.offset), backBuffer: \(self.backBufferSize)")
+                if OKtoRetrieve {inFront(scrollView: scrollView)}
+                return
+            } else if physicalIndex < elementsCount {
+                if (physicalIndex + self.backBufferSize) > elementsCount {
+                    //print("In \(self.classForCoder).item calling inBack:  index = \(index), count: \(elementsCount), offset: \(self.offset), backBuffer: \(self.backBufferSize)")
+                    if OKtoRetrieve {inBack(scrollView: scrollView) }
+                }
+                if physicalIndex < self.frontBufferSize {
+                    // print("In \(self.classForCoder).item calling inFront: index = \(index), count: \(elementsCount), offset: \(self.offset), backBuffer: \(self.backBufferSize)")
+                    if OKtoRetrieve { inFront(scrollView: scrollView) }
+                }
+                return
+            } else {
+                print("In \(self.instanceType).grabMoreSections physicalIndex of \(physicalIndex) exceeds or equals array size \(elementsCount). Offset is \(self.offset)")
+            }
+            
+        }
+    }
     func datasourceInSection(section: Int) -> RVBaseDatasource4<S>? {
         if (section >= 0) && (section < self.virtualCount) {
+            grabMoreSections(section: section)
            // print("In \(self.instanceType).datasourceInSection, sectionIndex: \(section), virtualCount is \(self.virtualCount) ")
             let physical = section - offset
             if (physical >= 0) && (physical < elementsCount) {
