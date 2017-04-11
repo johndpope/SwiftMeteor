@@ -76,6 +76,7 @@ class RVGroupListControllerBySection: RVGroupListController4 {
         }
     }
     override func scrollViewDidScroll(_ scrollView: UIScrollView) {
+        /*
         if let tableView = scrollView as? UITableView {
             if tableView == self.dsScrollView {
                 if let indexPaths = tableView.indexPathsForVisibleRows {
@@ -90,5 +91,6 @@ class RVGroupListControllerBySection: RVGroupListController4 {
                 }
             }
         }
+ */
     }
 }

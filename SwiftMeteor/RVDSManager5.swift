@@ -115,7 +115,21 @@ extension RVDSManager5 {
                 let operation = RVManagerExpandCollapseOperation5<S>( manager: self, operationType: .toggle, datasources: [datasource], callback: callback, all: false)
                 queue.addOperation(operation)
             } else {
-                
+                let (query, error) = self.queryForDatasourceInstance
+                if let error = error {
+                    error.append(message: "In \(self.classForCoder).toggle, got error getting query")
+                    callback([S](), error)
+                    return
+                } else {
+                    if datasource.collapsed {
+                        datasource.restart(scrollView: self.scrollView, query: query, callback: callback)
+                        return
+                    } else {
+                        print("In \(self.classForCoder).toggle, passed. calling datasource collapseZeroAndExpand")
+                        datasource.collapseZeroAndExpand(scrollView: self.scrollView, query: query, callback: callback)
+                    }
+                    
+                }
             }
 
         }
@@ -174,7 +188,6 @@ class RVManagerExpandCollapseOperation5<T: NSObject> : RVAsyncOperation<T> {
         case expand
         case collapse
         case toggle
-        
     }
     weak var manager: RVDSManager5<T>? = nil
     let emptyResponse = [T]()

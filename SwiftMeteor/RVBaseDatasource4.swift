@@ -389,6 +389,11 @@ extension RVBaseDatasource4 {
         self.cancelAllOperations()
         self.queue.addOperation(RVExpandCollapseOperation(datasource: self, scrollView: scrollView, operationType: .collapseZeroExpandAndLoad, query: query, callback: callback))
     }
+    func collapseZeroAndExpand(scrollView: UIScrollView?, query: RVQuery, callback: @escaping RVCallback<T>) {
+        self.unsubscribe{}
+        self.cancelAllOperations()
+        self.queue.addOperation(RVExpandCollapseOperation(datasource: self, scrollView: scrollView, operationType: .collapseZeroAndExpand, query: query, callback: callback))
+    }
     func expand(scrollView: UIScrollView?, callback: @escaping RVCallback<T>) {
         self.queue.addOperation(RVExpandCollapseOperation(datasource: self, scrollView: scrollView, operationType: .expandOnly, callback: callback))
     }
