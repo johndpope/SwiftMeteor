@@ -11,6 +11,8 @@ import UIKit
 class RVGroupListControllerBySection: RVGroupListController4 {
     
     override var instanceConfiguration: RVBaseConfiguration4 { return RVTransactionConfiguration4DynamicSections(scrollView: dsScrollView) }
+    
+    /*
     override func viewDidLoad() {
         self.sectionTest = true
         super.viewDidLoad()
@@ -36,38 +38,8 @@ class RVGroupListControllerBySection: RVGroupListController4 {
         }
         
     }
+*/
 
 
 
-    override func tableView(_ tableView: UITableView, willDisplayHeaderView view: UIView, forSection section: Int) {
-        if let headerCell = view as? RVFirstViewHeaderCell {
-            //print("In \(self.classForCoder).willDisplayHeaderView section \(section)")
-            if let datasource = self.sectionManager.datasourceInSection(section: section) {
-                headerCell.datasource4 = datasource
-                
-                headerCell.configure(model: datasource.sectionModel)
-            }
-            headerCell.delegate = self
-            //headerCell.configure(model: nil)
-            headerCell.transform = tableView.transform
-        }
-    }
-    override func scrollViewDidScroll(_ scrollView: UIScrollView) {
-        /*
-        if let tableView = scrollView as? UITableView {
-            if tableView == self.dsScrollView {
-                if let indexPaths = tableView.indexPathsForVisibleRows {
-                    if let first = indexPaths.first {
-                      //  configuration4.manager.scrolling(indexPath: first, scrollView: tableView)
-                        //  self.manager4.scrolling(indexPath: first, scrollView: tableView)
-                    }
-                    if let last = indexPaths.last {
-                      //  configuration4.manager.scrolling(indexPath: last, scrollView: tableView)
-                        //   self.manager4.scrolling(indexPath: last, scrollView: tableView)
-                    }
-                }
-            }
-        }
- */
-    }
 }

@@ -91,10 +91,16 @@ class RVBaseSLKViewController4: SLKTextViewController {
         updateTableViewInsetHeight()
         putTopViewOnTop()
         
-        standard()
+        //standard()
+        configuration.initializeDatasource { (error) in
+            if let error = error {
+                error.printError()
+            }
+        }
         
         makeTableViewTransparent()
     }
+    /*
     func standard() {
         if !sectionTest {
             let (query, _) = configuration.topQuery()
@@ -121,6 +127,7 @@ class RVBaseSLKViewController4: SLKTextViewController {
     func doSectionTest(callback: @escaping(RVError?) -> Void ) {
         print("In \(self.instanceType).doSectionTest need to override")
     }
+ */
     func makeTableViewTransparent() {
         if let tableView = self.tableView {
             makeTransparent(view: tableView)
@@ -215,10 +222,30 @@ class RVBaseSLKViewController4: SLKTextViewController {
     override func tableView(_ tableView: UITableView, willDisplayHeaderView view: UIView, forSection section: Int) {
         if let headerCell = view as? RVFirstViewHeaderCell {
           //  print("In \(self.classForCoder).willDisplayHeaderView")
-            if let datasource = manager.datasourceInSection(section: section) { headerCell.datasource4 = datasource }
+            if let datasource = manager.datasourceInSection(section: section) {
+                headerCell.datasource4 = datasource
+                headerCell.configure(model: datasource.sectionModel)
+            }
             headerCell.delegate = self
-            headerCell.configure(model: nil)
+          //  headerCell.configure(model: nil)
             headerCell.transform = tableView.transform
+        }
+    }
+    
+    override func scrollViewDidScroll(_ scrollView: UIScrollView) {
+        if let tableView = scrollView as? UITableView {
+            if tableView == self.dsScrollView {
+                if let indexPaths = tableView.indexPathsForVisibleRows {
+                    if let first = indexPaths.first {
+                        configuration.manager.scrolling(indexPath: first, scrollView: tableView)
+                        //  self.manager4.scrolling(indexPath: first, scrollView: tableView)
+                    }
+                    if let last = indexPaths.last {
+                        configuration.manager.scrolling(indexPath: last, scrollView: tableView)
+                        //   self.manager4.scrolling(indexPath: last, scrollView: tableView)
+                    }
+                }
+            }
         }
     }
 }

@@ -143,7 +143,7 @@ extension RVDSManager5 {
         }
     }
     func restartSectionDatasource(query: RVQuery, callback: @escaping RVCallback<RVBaseDatasource4<S>>) {
-        if !self.sectionMode {
+        if !self.dynamicSections {
             print("In \(self.classForCoder).restartSectionDatasource, erroneously attempted to restart a datasource that is not in sectionMode")
         }
         self.restart(scrollView: self.scrollView, query: query, callback: callback)
