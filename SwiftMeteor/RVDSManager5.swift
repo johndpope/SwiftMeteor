@@ -12,7 +12,7 @@ class RVDSManager5<S: NSObject>: RVBaseDatasource4<RVBaseDatasource4<S>> {
     init(scrollView: UIScrollView?, maxSize: Int = 300, managerType: RVDatasourceType) {
         super.init(manager: nil, datasourceType: managerType, maxSize: maxSize)
         self.scrollView = scrollView
-        self.sectionDatasource = true
+        self.sectionDatasourceMode = true
     }
     var numberOfSections: Int { return numberOfElements } // Unique to RVDSManagers
     override func retrieve(query: RVQuery, callback: @escaping ([RVBaseDatasource4<S>], RVError?) -> Void) {
@@ -27,6 +27,7 @@ class RVDSManager5<S: NSObject>: RVBaseDatasource4<RVBaseDatasource4<S>> {
                 for model in models {
                     let datasource = RVBaseDatasource4<S>(manager: self, datasourceType: .main, maxSize: self.maxArraySize)
                     datasource.sectionModel = model
+                    datasource.sectionMode = true
                     datasourceResults.append(datasource)
                 }
                 callback(datasourceResults, nil)
@@ -50,6 +51,7 @@ class RVDSManager5<S: NSObject>: RVBaseDatasource4<RVBaseDatasource4<S>> {
             }
         }
     }
+
 }
 // RVDSManager Unique
 extension RVDSManager5 {
@@ -101,8 +103,13 @@ extension RVDSManager5 {
             callback([S](), error)
             return
         } else {
-            let operation = RVManagerExpandCollapseOperation5<S>( manager: self, operationType: .toggle, datasources: [datasource], callback: callback, all: false)
-            queue.addOperation(operation)
+            if !datasource.sectionMode {
+                let operation = RVManagerExpandCollapseOperation5<S>( manager: self, operationType: .toggle, datasources: [datasource], callback: callback, all: false)
+                queue.addOperation(operation)
+            } else {
+                
+            }
+
         }
     }
     func appendSections(datasources: [RVBaseDatasource4<S>], sectionTypesToRemove: [RVDatasourceType] = Array<RVDatasourceType>(), callback: @escaping RVCallback<S>) {
