@@ -36,33 +36,9 @@ class RVGroupListControllerBySection: RVGroupListController4 {
         }
         
     }
-    
-    override func numberOfSections(in tableView: UITableView) -> Int {
-        return self.sectionManager.numberOfSections
-    }
-    override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return self.sectionManager.numberOfItems(section: section)
-    }
 
-    override func primaryCellForRowAtIndexPath(tableView: UITableView, _ indexPath: IndexPath) -> RVTransactionTableViewCell {
-        // print("In \(self.classForCoder).primaryCell for indexPath \(indexPath.section) \(indexPath.row)")
-        let cell = tableView.dequeueReusableCell(withIdentifier: RVTransactionTableViewCell.identifier) as! RVTransactionTableViewCell
-        if cell.gestureRecognizers?.count == nil {
-            let longPress = UILongPressGestureRecognizer(target: self, action: #selector(RVMemberViewController.didLongPressCell(_:)))
-            cell.addGestureRecognizer(longPress)
-        }
-        if indexPath.section == 0 {
-            self.makeTransparent(view: cell.backgroundView)
-            self.makeTransparent(view: cell)
-        } else {
-            self.makeOpaque(view: cell.backgroundView)
-        }
-        cell.transform = tableView.transform
-        //    cell.item = manager4.item(indexPath: indexPath)
-        cell.item = self.sectionManager.item(indexPath: indexPath, scrollView: tableView)
-        //cell.configureSubviews()
-        return cell
-    }
+
+
     override func tableView(_ tableView: UITableView, willDisplayHeaderView view: UIView, forSection section: Int) {
         if let headerCell = view as? RVFirstViewHeaderCell {
             //print("In \(self.classForCoder).willDisplayHeaderView section \(section)")

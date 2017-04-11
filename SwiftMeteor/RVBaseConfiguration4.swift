@@ -164,7 +164,13 @@ class RVBaseConfiguration4 {
         loadDatasource(datasource: mainDatasource, query: query, callback: callback)
     }
     func loadSearch(query: RVQuery, callback: @escaping(RVError?)->Void) {
-        loadDatasource(datasource: filterDatasource, query: query, callback: callback)
+        if !self.manager.dynamicSections {
+            loadDatasource(datasource: filterDatasource, query: query, callback: callback)
+        } else {
+            print("In \(self.instanceType).loadSearch, with dynamicSections. Need to implement")
+            callback(nil)
+        }
+        
     }
     func loadDatasource(datasource: RVBaseDatasource4<RVBaseModel>, query: RVQuery, callback: @escaping(RVError?)->Void) {
         //print("In \(self.instanceType).loadDatasource before append")

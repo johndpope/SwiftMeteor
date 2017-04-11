@@ -81,7 +81,8 @@ class RVBaseSLKViewController4: SLKTextViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        sectionManager = RVDSManager5Transaction<RVBaseModel>(scrollView: self.dsScrollView, maxSize: 80, managerType: .main, dynamicSections: false)
+       //sectionManager = RVDSManager5Transaction<RVBaseModel>(scrollView: self.dsScrollView, maxSize: 80, managerType: .main, dynamicSections: false)
+        sectionManager = configuration.manager
         commonInit()
         configureNavBar()
         configureSearchController()
@@ -89,6 +90,12 @@ class RVBaseSLKViewController4: SLKTextViewController {
         adjustTableViewInsetForNavBar()
         updateTableViewInsetHeight()
         putTopViewOnTop()
+        
+        standard()
+        
+        makeTableViewTransparent()
+    }
+    func standard() {
         if !sectionTest {
             let (query, _) = configuration.topQuery()
             configuration.loadTop(query: query, callback: { (error) in
@@ -110,8 +117,6 @@ class RVBaseSLKViewController4: SLKTextViewController {
                 }
             })
         }
-
-        makeTableViewTransparent()
     }
     func doSectionTest(callback: @escaping(RVError?) -> Void ) {
         print("In \(self.instanceType).doSectionTest need to override")
