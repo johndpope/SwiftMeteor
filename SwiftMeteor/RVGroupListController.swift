@@ -140,7 +140,7 @@ class RVGroupListController: RVTransactionListViewController {
         }
     }
     override func tableView(_ tableView: UITableView, willDisplayHeaderView view: UIView, forSection section: Int) {
-        print("In \(self.classForCoder).willDisplayHeaderView....")
+        //print("In \(self.classForCoder).willDisplayHeaderView....")
         if let headerCell = view as? RVFirstViewHeaderCell {
             /*
             if let datasource = manager4.datasourceInSection(section: 0) {

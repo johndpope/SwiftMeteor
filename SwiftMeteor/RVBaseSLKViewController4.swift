@@ -209,7 +209,7 @@ class RVBaseSLKViewController4: SLKTextViewController {
     }
     override func tableView(_ tableView: UITableView, willDisplayHeaderView view: UIView, forSection section: Int) {
         if let headerCell = view as? RVFirstViewHeaderCell {
-            print("In \(self.classForCoder).willDisplayHeaderView")
+          //  print("In \(self.classForCoder).willDisplayHeaderView")
             if let datasource = manager.datasourceInSection(section: section) { headerCell.datasource4 = datasource }
             headerCell.delegate = self
             headerCell.configure(model: nil)

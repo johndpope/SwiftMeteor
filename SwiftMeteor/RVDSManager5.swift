@@ -25,7 +25,7 @@ class RVDSManager5<S: NSObject>: RVBaseDatasource4<RVBaseDatasource4<S>> {
             } else {
                 var datasourceResults = [RVBaseDatasource4<S>]()
                 for model in models {
-                    let datasource = RVBaseDatasource4<S>(manager: self, datasourceType: .main, maxSize: self.maxArraySize)
+                    let datasource = self.sectionDatasourceInstance(datasourceType: .main, maxSize: self.maxArraySize)
                     datasource.sectionModel = model
                     datasource.sectionMode = true
                     datasourceResults.append(datasource)
@@ -52,6 +52,14 @@ class RVDSManager5<S: NSObject>: RVBaseDatasource4<RVBaseDatasource4<S>> {
         }
     }
 
+    func sectionDatasourceInstance(datasourceType: RVDatasourceType, maxSize: Int) -> RVBaseDatasource4<S> {
+        print("In \(self.classForCoder).sectionModel. Needs to be overridden")
+        return RVBaseDatasource4<S>(manager: self, datasourceType: datasourceType, maxSize: maxSize)
+    }
+    var queryForDatasourceInstance: (RVQuery, RVError?) {
+        print("In \(self.classForCoder).queryForDatasourceInstance, needs to be overridden")
+        return (RVQuery(), RVError(message: "In \(self.classForCoder).queryForDatasourceInstance, needs to be overridden"))
+    }
 }
 // RVDSManager Unique
 extension RVDSManager5 {

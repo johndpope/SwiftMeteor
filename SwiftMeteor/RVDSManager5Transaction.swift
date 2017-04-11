@@ -27,4 +27,12 @@ class RVDSManager5Transaction<S: NSObject>: RVDSManager5<S> {
             }
         }
     }
+    override func sectionDatasourceInstance(datasourceType: RVDatasourceType, maxSize: Int) -> RVBaseDatasource4<S> {
+        return RVTransactionDatasource44<S>(manager: self, datasourceType: datasourceType, maxSize: maxSize)
+    }
+    override var queryForDatasourceInstance: (RVQuery, RVError?) {
+        let (query, error) = RVTransaction.baseQuery
+        return (query, error)
+    }
+
 }
