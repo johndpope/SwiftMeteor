@@ -17,6 +17,7 @@ enum RVExpandCollapseOperationType {
     case collapseAndZero
     case collapseZeroAndExpand
     case collapseZeroExpandAndLoad
+    case sectionLoadOrUnload
     case toggle
 
 }
@@ -392,7 +393,12 @@ extension RVBaseDatasource4 {
             else { return elements[elementsCount - 1] }
         }
     }
-
+    
+    func sectionLoadOrUnload(scrollView: UIScrollView?, query: RVQuery, callback: @escaping RVCallback<T>) {
+        self.unsubscribe{}
+        self.cancelAllOperations()
+        self.queue.addOperation(RVExpandCollapseOperation(datasource: self, scrollView: scrollView, operationType: .sectionLoadOrUnload, query: query, callback: callback))
+    }
     func restart(scrollView: UIScrollView?, query: RVQuery, callback: @escaping RVCallback<T>) {
         self.unsubscribe{}
         self.cancelAllOperations()
@@ -453,6 +459,16 @@ class RVExpandCollapseOperation<T:NSObject>: RVLoadOperation<T> {
       //   print("In \(self.instanceType).asyncMain operationType: \(self.operationType), query: \(query)")
         var operationType = self.operationType
         if operationType == .toggle { operationType = (self.datasource.collapsed) ? .expandOnly : .collapseOnly }
+        if operationType == .sectionLoadOrUnload {
+           // print("In \(self.classForCoder).asyncMain with operation \(operationType) and count \(self.datasource.virtualCount)")
+            if self.datasource.virtualCount <= 0 {
+                operationType = .collapseZeroExpandAndLoad
+                self.operationType = operationType
+            } else {
+                operationType = .collapseZeroAndExpand
+                self.operationType = operationType
+            }
+        }
         if self.isCancelled {
             self.finishUp(models: self.emptyModels, error: nil)
             return

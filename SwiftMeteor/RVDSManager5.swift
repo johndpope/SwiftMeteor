@@ -121,12 +121,14 @@ extension RVDSManager5 {
                     callback([S](), error)
                     return
                 } else {
+                    datasource.sectionLoadOrUnload(scrollView: self.scrollView, query: query, callback: callback)
+                    /*
                     if datasource.numberOfElements == 0 {
                        // print("In \(self.classForCoder).toggle, passed. calling datasource collapseZeroAndExpand")
                         datasource.restart(scrollView: self.scrollView, query: query, callback: callback)
                     } else {
                         datasource.collapseZeroAndExpand(scrollView: self.scrollView, query: query, callback: callback)
-                    }
+                    }*/
                 }
             }
 
