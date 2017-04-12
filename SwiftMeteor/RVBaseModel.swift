@@ -33,6 +33,7 @@ class RVBaseModel: MeteorDocument {
     var imageUpdated = false
     var locationInitiallyNull = false
     var userProfile: RVUserProfile? = nil
+    var zeroCellModel: Bool = false
     static var loggedInUser: RVUserProfile? { get {return RVCoreInfo2.shared.loggedInUserProfile}}
     static var loggedInUserId: String? {
         get {

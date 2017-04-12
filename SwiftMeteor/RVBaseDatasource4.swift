@@ -383,6 +383,12 @@ extension RVBaseDatasource4 {
             //print("In \(self.classForCoder).item calling inBack: index = \(index), count: \(elementsCount), offset: \(self.offset), backBuffer: \(self.backBufferSize)")
             if OKtoRetrieve {inFront(scrollView: scrollView)}
             if zeroCellModeOn && (index < zeroCellIndex) {
+                if let model = zeroCellModel as? RVBaseModel {
+                    model.zeroCellModel = true
+                    if let model = model as? T {
+                        return model
+                    }
+                }
                 return zeroCellModel
             }
             return nil

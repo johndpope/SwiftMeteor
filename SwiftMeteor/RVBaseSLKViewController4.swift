@@ -210,8 +210,20 @@ class RVBaseSLKViewController4: SLKTextViewController {
             return self.autoCompletionCellForRowAtIndexPath(indexPath)
         }
     }
-    func primaryCellForRowAtIndexPath(tableView: UITableView, _ indexPath: IndexPath) -> RVTransactionTableViewCell {
+    func primaryCellForRowAtIndexPath(tableView: UITableView, _ indexPath: IndexPath) -> UITableViewCell {
        // print("In \(self.classForCoder).primaryCell for indexPath \(indexPath.section) \(indexPath.row)")
+        if let item = manager.item(indexPath: indexPath, scrollView: tableView) {
+            if (indexPath.row == 0) && (item.zeroCellModel) {
+                //print("In \(self.classForCoder).primaryCellForRowAtIndexPath \(indexPath),  item \(item.zeroCellModel)")
+                if let cell = tableView.dequeueReusableCell(withIdentifier: RVZeroTableCell.identifier, for: indexPath) as? RVZeroTableCell {
+                    cell.item = item
+                    cell.transform = tableView.transform
+                    return cell
+                }
+                
+            }
+            
+        }
         let cell = tableView.dequeueReusableCell(withIdentifier: RVTransactionTableViewCell.identifier) as! RVTransactionTableViewCell
         if cell.gestureRecognizers?.count == nil {
             let longPress = UILongPressGestureRecognizer(target: self, action: #selector(RVMemberViewController.didLongPressCell(_:)))
@@ -271,6 +283,15 @@ class RVBaseSLKViewController4: SLKTextViewController {
 extension RVBaseSLKViewController4 {
     override func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
         return 35.0
+    }
+    override func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
+        if let item = manager.item(indexPath: indexPath, scrollView: tableView) {
+            if (indexPath.row == 0) && (item.zeroCellModel) {
+                return 9.0
+            }
+            
+        }
+        return 70.0
     }
 
 }

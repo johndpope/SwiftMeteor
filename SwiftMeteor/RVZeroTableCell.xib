@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="12118" systemVersion="16E195" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES">
+    <device id="retina4_7" orientation="portrait">
+        <adaptation id="fullscreen"/>
+    </device>
+    <dependencies>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="12086"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
+    </dependencies>
+    <objects>
+        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner"/>
+        <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
+        <view contentMode="scaleToFill" id="iN0-l3-epB" customClass="RVZeroTableCell" customModule="SwiftMeteor" customModuleProvider="target">
+            <rect key="frame" x="0.0" y="0.0" width="320" height="9"/>
+            <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+            <subviews>
+                <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="t3Q-mR-dsX" userLabel="OuterView">
+                    <rect key="frame" x="0.0" y="0.0" width="320" height="9"/>
+                    <subviews>
+                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="ZeroCell" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="h4c-Kb-Igd">
+                            <rect key="frame" x="10" y="0.0" width="310" height="9"/>
+                            <fontDescription key="fontDescription" type="system" pointSize="10"/>
+                            <nil key="textColor"/>
+                            <nil key="highlightedColor"/>
+                        </label>
+                    </subviews>
+                    <color key="backgroundColor" red="0.97500573079999997" green="0.94011389710000004" blue="0.68204833379999996" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                    <constraints>
+                        <constraint firstItem="h4c-Kb-Igd" firstAttribute="top" secondItem="t3Q-mR-dsX" secondAttribute="top" id="7uh-mU-8ru"/>
+                        <constraint firstItem="h4c-Kb-Igd" firstAttribute="leading" secondItem="t3Q-mR-dsX" secondAttribute="leading" constant="10" id="XfH-6G-UVu"/>
+                        <constraint firstAttribute="trailing" secondItem="h4c-Kb-Igd" secondAttribute="trailing" id="fdK-4F-9Tu"/>
+                        <constraint firstAttribute="bottom" secondItem="h4c-Kb-Igd" secondAttribute="bottom" id="rir-XM-UhW"/>
+                    </constraints>
+                </view>
+            </subviews>
+            <color key="backgroundColor" red="0.97500573079999997" green="0.94011389710000004" blue="0.68204833379999996" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+            <constraints>
+                <constraint firstAttribute="bottom" secondItem="t3Q-mR-dsX" secondAttribute="bottom" id="L8D-YH-yWl"/>
+                <constraint firstAttribute="trailing" secondItem="t3Q-mR-dsX" secondAttribute="trailing" id="cZD-kr-ZAN"/>
+                <constraint firstItem="t3Q-mR-dsX" firstAttribute="leading" secondItem="iN0-l3-epB" secondAttribute="leading" id="crI-32-QSC"/>
+                <constraint firstItem="t3Q-mR-dsX" firstAttribute="top" secondItem="iN0-l3-epB" secondAttribute="top" id="etY-BT-qb2"/>
+            </constraints>
+            <freeformSimulatedSizeMetrics key="simulatedDestinationMetrics"/>
+            <connections>
+                <outlet property="cellTitleLabel" destination="h4c-Kb-Igd" id="4aI-U4-VtN"/>
+            </connections>
+            <point key="canvasLocation" x="-126" y="72"/>
+        </view>
+    </objects>
+</document>
