@@ -11,12 +11,14 @@ class RVDSManager5<S: NSObject>: RVBaseDatasource4<RVBaseDatasource4<S>> {
 
     var lastSection: Int = -1
     let emtpySectionResults = [RVBaseDatasource4<S>]()
+    var useZeroCell: Bool = false
 
-    init(scrollView: UIScrollView?, maxSize: Int = 300, managerType: RVDatasourceType, dynamicSections: Bool ) {
+    init(scrollView: UIScrollView?, maxSize: Int = 300, managerType: RVDatasourceType, dynamicSections: Bool, useZeroCell: Bool = false ) {
         super.init(manager: nil, datasourceType: managerType, maxSize: maxSize)
         self.scrollView = scrollView
         self.sectionDatasourceMode = true
         self.dynamicSections = dynamicSections
+   //     self.useZeroCell = useZeroCell
     }
     var numberOfSections: Int { return numberOfElements } // Unique to RVDSManagers
     override func retrieve(query: RVQuery, callback: @escaping ([RVBaseDatasource4<S>], RVError?) -> Void) {
@@ -32,6 +34,8 @@ class RVDSManager5<S: NSObject>: RVBaseDatasource4<RVBaseDatasource4<S>> {
                     let datasource = self.sectionDatasourceInstance(datasourceType: self.sectionDatasourceType, maxSize: self.maxArraySize)
                     datasource.sectionModel = model
                     datasource.sectionMode = true
+                    datasource.collapsed = true
+                    if self.useZeroCell { datasource.zeroCellModeOn = true }
                     datasourceResults.append(datasource)
                 }
                 callback(datasourceResults, nil)
@@ -364,7 +368,7 @@ class RVManagerAppendSections5<T: NSObject> : RVManagerRemoveSections5<T> {
                             indexes.append(manager.elements.count + offset)
                             manager.elements.append(datasource)
                         }
-                        //print("In \(self.classForCoder).main number of sections = \(manager.elements.count)")
+                        print("In \(self.classForCoder).asyncMain \(#line) inserting sections: number of sections = \(manager.elements.count)")
                         tableView.insertSections(IndexSet(indexes), with: manager.rowAnimation)
                         tableView.endUpdates()
                         self.ignoreCancel = true
