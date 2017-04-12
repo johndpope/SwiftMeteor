@@ -18,7 +18,7 @@ class RVDSManager5<S: NSObject>: RVBaseDatasource4<RVBaseDatasource4<S>> {
         self.scrollView = scrollView
         self.sectionDatasourceMode = true
         self.dynamicSections = dynamicSections
-   //     self.useZeroCell = useZeroCell
+        self.useZeroCell = useZeroCell
     }
     var numberOfSections: Int { return numberOfElements } // Unique to RVDSManagers
     override func retrieve(query: RVQuery, callback: @escaping ([RVBaseDatasource4<S>], RVError?) -> Void) {
@@ -35,7 +35,7 @@ class RVDSManager5<S: NSObject>: RVBaseDatasource4<RVBaseDatasource4<S>> {
                     datasource.sectionModel = model
                     datasource.sectionMode = true
                     datasource.collapsed = true
-                    if self.useZeroCell { datasource.zeroCellModeOn = true }
+                    if self.useZeroCell && (self.sectionDatasourceType != .filter) { datasource.zeroCellModeOn = true }
                     datasourceResults.append(datasource)
                 }
                 callback(datasourceResults, nil)

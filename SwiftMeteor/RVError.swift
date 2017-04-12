@@ -48,12 +48,16 @@ class RVError: NSError {
             messages += "\(message)\n"
         }
 //        var output = "Need to replace "
-        var output = "--- Error in \(fileName)\(functionName). line: \(lineNumber)\n\(messages)"
+        // in \(fileName)\(functionName). line: \(lineNumber)
+        let line = lineNumber == -1 ? "" : "line: \(lineNumber)"
+        let file = (fileName == "") ? "" : "printed from File: \(fileName)"
+        
+       var output = "--- Error \(file) \(line) \(functionName)\n\(messages)"
  //       var output = "--- at \(RVDateFormatter.ddHHmmsssss.stringFromDate(time)) Error in \(fileName)\(functionName).\(lineNumber)\n\(messages)"
         if let error = self.sourceError {
             output += "\(error)"
         }
-        output += "\n------------------------- End Error Message -----------------------------------"
+        output += "------------------------- End Error Message -----------------------------------\n"
         return output
     }
     func printError() {

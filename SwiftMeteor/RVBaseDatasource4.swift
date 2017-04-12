@@ -299,6 +299,7 @@ extension RVBaseDatasource4 {
         get {
             if self.collapsed {
                // print("In \(self.classForCoder).virtualCount............ collapsed elementsCount = \(self.elementsCount)")
+                if self.zeroCellModeOn { return self.zeroCellIndex }
                 return 0
             } else {
                 return virtualCountIndependentOfCollapse
@@ -322,7 +323,7 @@ extension RVBaseDatasource4 {
             if self.frontOperationActive { return }
             let operation = RVLoadOperation(datasource: self, scrollView: scrollView, front: true, callback: { (models, error) in
                 if let error = error {
-                    error.append(message: "In \(self.classForCoder).inFront, got error")
+                    error.append(message: "In \(self.classForCoder).inFront RVBaseDatasource4 line \(#line) , got error")
                     error.printError()
                 } else {
                     //print("In \(self.classForCoder).inFront, success")
@@ -364,7 +365,7 @@ extension RVBaseDatasource4 {
             return nil
         }
 
-        var OKtoRetrieve: Bool = true
+        var OKtoRetrieve: Bool = !self.collapsed
         if self.subscription != nil {
             if self.subscriptionActive {
                 if self.elementsCount >= self.maxArraySize {
@@ -495,14 +496,14 @@ class RVExpandCollapseOperation<T:NSObject>: RVLoadOperation<T> {
         var operationType = self.operationType
         if operationType == .toggle { operationType = (self.datasource.collapsed) ? .expandOnly : .collapseOnly }
         if operationType == .sectionLoadOrUnload {
-            print("In \(self.classForCoder).asyncMain with operation \(operationType) and count \(self.datasource.virtualCount) collapsed: \(self.datasource.collapsed)")
+          //  print("In \(self.classForCoder).asyncMain with operation \(operationType) and count \(self.datasource.virtualCount) collapsed: \(self.datasource.collapsed)")
             if self.datasource.collapsed {
       //      if self.datasource.virtualCount <= 0 {
                 operationType = .collapseZeroExpandAndLoad
                 self.operationType = operationType
-                print("In \(self.classForCoder).asyncMain with operation \(operationType) and count \(self.datasource.virtualCount) collapsed: \(self.datasource.collapsed)")
+            //    print("In \(self.classForCoder).asyncMain with operation \(operationType) and count \(self.datasource.virtualCount) collapsed: \(self.datasource.collapsed)")
             } else {
-                print("In \(self.classForCoder).asyncMain with operation \(operationType) and count \(self.datasource.virtualCount) collapsed: \(self.datasource.collapsed)")
+            //    print("In \(self.classForCoder).asyncMain with operation \(operationType) and count \(self.datasource.virtualCount) collapsed: \(self.datasource.collapsed)")
                 operationType = .collapseAndZero
                 self.operationType = operationType
             }
@@ -523,7 +524,7 @@ class RVExpandCollapseOperation<T:NSObject>: RVLoadOperation<T> {
                 if (operationType == .collapseZeroAndExpand) || (operationType == .collapseZeroExpandAndLoad) { self.datasource.collapsed = false }
                 if (operationType == .collapseZeroExpandAndLoad) {
                     // print("In \(self.classForCoder).main, about to do InnerMain, collapsed = \(self.datasource.collapsed)")
-                    // print("In \(self.instanceType).asyncMain just before assigning query operationType: \(self.operationType), query: \(self.query)")
+             //       print("In \(self.instanceType).asyncMain  \(#line) just before assigning query operationType: \(self.operationType), query: \(self.query)")
                     self.datasource.baseQuery = self.query
                     self.InnerMain()
                 } else {
@@ -559,7 +560,7 @@ class RVExpandCollapseOperation<T:NSObject>: RVLoadOperation<T> {
                             }
                             if (operationType == .collapseZeroExpandAndLoad) {
                                // print("In \(self.classForCoder).main, about to do InnerMain, collapsed = \(self.datasource.collapsed)")
-                               // print("In \(self.instanceType).asyncMain just before assigning query operationType: \(self.operationType), query: \(self.query)")
+                                //print("In \(self.instanceType).asyncMain line \(#line) just before assigning query operationType: \(self.operationType), query: \(self.query)")
                                 self.datasource.baseQuery = self.query
                                 self.InnerMain()
                             } else {
@@ -625,7 +626,7 @@ class RVExpandCollapseOperation<T:NSObject>: RVLoadOperation<T> {
                             if !self.datasource.sectionDatasourceMode {
                                 tableView.insertRows(at: paths.indexPaths, with: self.datasource.rowAnimation)
                             } else {
-                                print("In \(self.classForCoder).asyncMain \(#line), about to insertSections \(paths.sectionIndexes.count)")
+                             //   print("In \(self.classForCoder).asyncMain \(#line), about to insertSections \(paths.sectionIndexes.count)")
                                 tableView.insertSections(paths.sectionIndexes, with: self.datasource.rowAnimation)
                             }
                             
@@ -794,6 +795,7 @@ class RVLoadOperation<T:NSObject>: RVAsyncOperation<T> {
         super.init(title: "\(title) with front: \(front)", callback: callback, parent: nil)
     }
     override func asyncMain() {
+       // print("In \(self.classForCoder).asyncMain line \(#line)")
         InnerMain()
     }
     func unsubscribeByArea() {
@@ -934,7 +936,7 @@ class RVLoadOperation<T:NSObject>: RVAsyncOperation<T> {
                             self.finishUp(items: models, error: error)
                             return
                         } else if models.count > 0 {
-                            print("In \(self.classForCoder).InnerMain, have \(models.count) models")
+                           // print("In \(self.classForCoder).InnerMain, have \(models.count) models")
                             self.insert(models: models, callback: { (models, error) in
                                 if let error = error {
                                     error.append(message: "In \(self.instanceType).main, got error doing insert")
@@ -978,6 +980,7 @@ class RVLoadOperation<T:NSObject>: RVAsyncOperation<T> {
         else { return innerCleanup2(front: true) }
     }
     func refreshViews(callback: @escaping () -> Void) {
+ //       print("In \(self.classForCoder).refreshViews line #\(#line)")
         if self.isCancelled {
             callback()
             return
