@@ -88,6 +88,7 @@ extension RVDSManager5 {
         }
     }
     func grabMoreSections(section: Int) {
+        if !self.dynamicSections { return }
         if section == self.lastSection { return }
         self.lastSection = section
         if section < 0 {
@@ -194,7 +195,7 @@ extension RVDSManager5 {
         datasource.restart(scrollView: self.scrollView, query: query, callback: callback)
     }
     func scrolling(indexPath: IndexPath, scrollView: UIScrollView) {
-        print("In \(self.classForCoder).scrolling \(indexPath)")
+       // print("In \(self.classForCoder).scrolling \(indexPath)")
         let section = indexPath.section
         if let datasource = self.datasourceInSection(section: section) {
             datasource.scroll(indexPath: indexPath, scrollView: scrollView)

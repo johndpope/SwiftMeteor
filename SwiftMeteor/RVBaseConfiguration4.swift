@@ -167,8 +167,16 @@ class RVBaseConfiguration4 {
         if !self.manager.dynamicSections {
             loadDatasource(datasource: filterDatasource, query: query, callback: callback)
         } else {
-            print("In \(self.instanceType).loadSearch, with dynamicSections. Need to implement")
-            callback(nil)
+            //print("In \(self.instanceType).loadSearch, with dynamicSections. Need to implement")
+            self.manager.restartSectionDatasource(query: query, callback: { (datasources, error) in
+                if let error = error {
+                    error.append(message: "IN \(self.instanceType).doSectionText, have error on restart callback")
+                    callback(error)
+                    return
+                } else {
+                    callback(nil)
+                }
+            })
         }
         
     }
@@ -250,7 +258,7 @@ class RVBaseConfiguration4 {
                     callback(error)
                     return
                 } else {
-                    print("In \(self.instanceType).doSectionTest, successful return")
+                    callback(nil)
                 }
             })
         }
