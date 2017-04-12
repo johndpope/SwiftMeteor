@@ -64,6 +64,7 @@ class RVBaseDatasource4<T:NSObject>: NSObject {
     var subscriptionActive: Bool = false
     var maxArraySize: Int = 300
     var collapsed: Bool = false
+    var expanded: Bool { return !collapsed }
     var subscription: RVSubscription? = nil
     var notificationInstalled: Bool = false
     var elementsCount: Int { return elements.count}
@@ -426,6 +427,11 @@ extension RVBaseDatasource4 {
         }
     }
     
+    func sectionCollapse(scrollView: UIScrollView?, query: RVQuery, callback: @escaping RVCallback<T>) {
+        self.unsubscribe{}
+        self.cancelAllOperations()
+        self.queue.addOperation(RVExpandCollapseOperation(datasource: self, scrollView: scrollView, operationType: .collapseAndZero, query: query, callback: callback))
+    }
     func sectionLoadOrUnload(scrollView: UIScrollView?, query: RVQuery, callback: @escaping RVCallback<T>) {
         self.unsubscribe{}
         self.cancelAllOperations()

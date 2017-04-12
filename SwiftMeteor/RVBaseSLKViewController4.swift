@@ -644,9 +644,9 @@ extension RVBaseSLKViewController4 {
             if let error = error {
                 error.printError()
             } else if let transaction = model as? RVTransaction {
-                print("In \(self.instanceType).expandCollapse, created transaction \(transaction.localId ?? " no LocalId") \(transaction.createdAt?.description ?? " no createdAt")")
+                print("In \(self.instanceType).createTransaction, created transaction \(transaction.localId ?? " no LocalId") \(transaction.createdAt?.description ?? " no createdAt")")
             } else {
-                print("In \(self.instanceType).expandCollapse, no error, but no result ")
+                print("In \(self.instanceType).createTransaction, no error, but no result ")
             }
             callback()
         }

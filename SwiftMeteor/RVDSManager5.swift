@@ -171,6 +171,17 @@ extension RVDSManager5 {
                     callback([S](), error)
                     return
                 } else {
+                  //  print("In \(self.classForCoder).toggle \(#line), doing toggle database collapse = \(datasource.collapsed)")
+                    if datasource.collapsed {
+                        let operation = RVManagerCollapse5<S>(manager: self, datasourcesToCollapse: [RVBaseDatasource4<S>](), datasourceToExclude: datasource, all: true, callback: { (models, error) in
+                            if let error = error {
+                                error.append(message: "In \(self.classForCoder).toggle, line \(#line), got error")
+                                error.printError()
+                            }
+                            
+                        })
+                        self.queue.addOperation(operation)
+                    }
                     datasource.sectionLoadOrUnload(scrollView: self.scrollView, query: query, callback: callback)
                     /*
                     if datasource.numberOfElements == 0 {
@@ -451,6 +462,61 @@ class RVManagerAppendSections5<T: NSObject> : RVManagerRemoveSections5<T> {
         }
     }
     
+}
+class RVManagerCollapse5<T: NSObject>: RVAsyncOperation<T> {
+    var all: Bool = false
+    var datasourcesToCollapse: [RVBaseDatasource4<T>]
+    var datasourceToExclude: RVBaseDatasource4<T>?
+    weak var manager: RVDSManager5<T>? = nil
+    let emptyResponse = [T]()
+    init(title: String = "Collapse Sections", manager: RVDSManager5<T>, datasourcesToCollapse: [RVBaseDatasource4<T>], datasourceToExclude: RVBaseDatasource4<T>? = nil, all: Bool = false, callback: @escaping RVCallback<T>) {
+        self.datasourcesToCollapse = datasourcesToCollapse
+        self.all = all
+        self.manager = manager
+        self.datasourceToExclude = datasourceToExclude
+        super.init(title: title, callback: callback)
+    }
+    override func asyncMain() {
+        if self.isCancelled {
+            self.completeIt(models: self.emptyResponse, error: nil)
+            return
+        }
+        if let manager = self.manager {
+            let datasources = self.all ? manager.elements : datasourcesToCollapse
+            for datasource in datasources {
+                if let exclude = self.datasourceToExclude {
+                    if datasource != exclude {
+                        processCandidate(datasource: datasource)
+                    }
+                } else {
+                    processCandidate(datasource: datasource)
+                }
+            }
+            self.completeIt(models: self.emptyResponse, error: nil)
+            return
+        } else {
+            self.completeIt(models: self.emptyResponse, error: nil)
+        }
+        
+    }
+    func processCandidate(datasource: RVBaseDatasource4<T>) {
+        if let manager = self.manager {
+          //  print("In \(self.classForCoder).processCandidate collapsed: \(datasource.collapsed)")
+            if datasource.collapsed { return }
+            datasource.sectionCollapse(scrollView: manager.scrollView, query: RVQuery(), callback: { (models, error) in
+                if let error = error {
+                    error.append(message: "In \(self.classForCoder).processCandidate line # \(#line), got error")
+                    error.printError()
+                }
+            })
+        }
+    }
+    func completeIt(models: [T] = [T](), error: RVError? = nil) {
+        DispatchQueue.main.async {
+            self.callback(self.emptyResponse, error)
+            self.completeOperation()
+        }
+    }
 }
 class RVManagerRemoveSections5<T: NSObject>: RVAsyncOperation<T> {
     weak var manager: RVDSManager5<T>? = nil
