@@ -37,6 +37,15 @@ class RVBaseDatasource4<T:NSObject>: NSObject {
     var sectionDatasourceMode: Bool = false
     var dynamicSections: Bool = false
     var sectionDatasourceType: RVDatasourceType = .main
+    var zeroCellModeOn: Bool { return false }
+    var zeroCellIndex: Int = 1
+    var zeroCellModel: T? {
+        let model = RVBaseModel()
+        model.title = "Zero Cell"
+        model.createdAt = Date()
+        if let model = model as? T { return model }
+        return nil
+    }
     let LAST_SORT_STRING = "ZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZ"
     var instanceType: String { get { return String(describing: type(of: self)) } }
     let identifier = NSDate().timeIntervalSince1970
@@ -107,9 +116,7 @@ class RVBaseDatasource4<T:NSObject>: NSObject {
     }
     var subscriptionMaxCount: Int = 10
     fileprivate var _subscriptionMaxCount: Int = 0
-    func retrieveModels(query: RVQuery, callback: @escaping ([RVBaseModel], RVError?) -> Void ) {
-        RVBaseModel.bulkQuery(query: query , callback: callback)
-    }
+
     
     func retrieve(query: RVQuery, callback: @escaping RVCallback<T>) {
         print("In RVBaseDatasource4.retrieve, need to override")
@@ -293,9 +300,14 @@ extension RVBaseDatasource4 {
             if self.collapsed {
                // print("In \(self.classForCoder).virtualCount............ collapsed elementsCount = \(self.elementsCount)")
                 return 0
+            } else {
+                if zeroCellModeOn {
+                    return self.elementsCount + self.offset + self.zeroCellIndex
+                } else {
+                    // print("In virtualCount \(self.description) \(self.elements.description) count: \(self.elements.count) offset: \(self.offset)")
+                    return self.elementsCount + self.offset
+                }
             }
-           // print("In virtualCount \(self.description) \(self.elements.description) count: \(self.elements.count) offset: \(self.offset)")
-            return self.elementsCount + self.offset
         }
     }
     func inFront(scrollView: UIScrollView?) {
@@ -346,6 +358,9 @@ extension RVBaseDatasource4 {
             print("In \(self.instanceType).item, index \(index) greater than virtualCount: \(self.virtualCount)")
             return nil
         }
+        if zeroCellModeOn && (index < zeroCellIndex) {
+                return zeroCellModel
+        }
         var OKtoRetrieve: Bool = true
         if self.subscription != nil {
             if self.subscriptionActive {
@@ -354,7 +369,10 @@ extension RVBaseDatasource4 {
                 }
             }
         }
-        let physicalIndex = index - offset
+        var physicalIndex = index - offset
+        if zeroCellModeOn {
+            physicalIndex = physicalIndex - zeroCellIndex
+        }
         if physicalIndex < 0 {
             //print("In \(self.instanceType).item got physical index less than 0 \(physicalIndex). Offset is \(offset)")
             //print("In \(self.classForCoder).item calling inBack: index = \(index), count: \(elementsCount), offset: \(self.offset), backBuffer: \(self.backBufferSize)")
@@ -484,8 +502,9 @@ class RVExpandCollapseOperation<T:NSObject>: RVLoadOperation<T> {
             if self.datasource.collapsed {
              //   print("In \(self.instanceType).asyncMain operationType: \(self.operationType), thinks collapsed, query: \(query), scrollView: \(String(describing: self.scrollView))")
                 if (operationType == .collapseAndZero) || (operationType == .collapseZeroAndExpand) || (operationType == .collapseZeroExpandAndLoad) {
-                    self.datasource.elements = [T]()
-                    self.datasource.offset = 0
+           //         self.datasource.elements = [T]()
+            //        self.datasource.offset = 0
+                    self.datasource.zeroElements()
                 }
                 if (operationType == .collapseZeroAndExpand) || (operationType == .collapseZeroExpandAndLoad) { self.datasource.collapsed = false }
                 self.finishUp(models: self.emptyModels, error: nil)
@@ -547,8 +566,9 @@ class RVExpandCollapseOperation<T:NSObject>: RVLoadOperation<T> {
                             return
                         } else if self.scrollView == nil {
                             if (operationType == .collapseAndZero) || (operationType == .collapseZeroAndExpand) || (self.operationType == .collapseZeroExpandAndLoad) {
-                                self.datasource.elements = [T]()
-                                self.datasource.offset = 0
+                                self.datasource.zeroElements()
+                           //     self.datasource.elements = [T]()
+                          //      self.datasource.offset = 0
                             }
                             if (operationType == .collapseZeroAndExpand) || (operationType == .collapseZeroExpandAndLoad) {
                                 self.datasource.collapsed = false
