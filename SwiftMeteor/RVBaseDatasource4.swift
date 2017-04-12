@@ -301,12 +301,17 @@ extension RVBaseDatasource4 {
                // print("In \(self.classForCoder).virtualCount............ collapsed elementsCount = \(self.elementsCount)")
                 return 0
             } else {
-                if zeroCellModeOn {
-                    return self.elementsCount + self.offset + self.zeroCellIndex
-                } else {
-                    // print("In virtualCount \(self.description) \(self.elements.description) count: \(self.elements.count) offset: \(self.offset)")
-                    return self.elementsCount + self.offset
-                }
+                return virtualCountIndependentOfCollapse
+            }
+        }
+    }
+    var virtualCountIndependentOfCollapse: Int {
+        get {
+            if zeroCellModeOn {
+                return self.elementsCount + self.offset + self.zeroCellIndex
+            } else {
+                // print("In virtualCount \(self.description) \(self.elements.description) count: \(self.elements.count) offset: \(self.offset)")
+                return self.elementsCount + self.offset
             }
         }
     }
@@ -358,9 +363,7 @@ extension RVBaseDatasource4 {
             print("In \(self.instanceType).item, index \(index) greater than virtualCount: \(self.virtualCount)")
             return nil
         }
-        if zeroCellModeOn && (index < zeroCellIndex) {
-                return zeroCellModel
-        }
+
         var OKtoRetrieve: Bool = true
         if self.subscription != nil {
             if self.subscriptionActive {
@@ -377,6 +380,9 @@ extension RVBaseDatasource4 {
             //print("In \(self.instanceType).item got physical index less than 0 \(physicalIndex). Offset is \(offset)")
             //print("In \(self.classForCoder).item calling inBack: index = \(index), count: \(elementsCount), offset: \(self.offset), backBuffer: \(self.backBufferSize)")
             if OKtoRetrieve {inFront(scrollView: scrollView)}
+            if zeroCellModeOn && (index < zeroCellIndex) {
+                return zeroCellModel
+            }
             return nil
         } else if physicalIndex < elementsCount {
             if (physicalIndex + self.backBufferSize) > elementsCount {
@@ -386,6 +392,9 @@ extension RVBaseDatasource4 {
             if physicalIndex < self.frontBufferSize {
                // print("In \(self.classForCoder).item calling inFront: index = \(index), count: \(elementsCount), offset: \(self.offset), backBuffer: \(self.backBufferSize)")
                 if OKtoRetrieve { inFront(scrollView: scrollView) }
+            }
+            if zeroCellModeOn && (index < zeroCellIndex) {
+                return zeroCellModel
             }
             return elements[physicalIndex]
         } else {
@@ -462,7 +471,7 @@ class RVExpandCollapseOperation<T:NSObject>: RVLoadOperation<T> {
         var sectionIndexes = [Int]()
         let section =  !self.datasource.sectionDatasourceMode ? self.datasource.section : self.datasource.FAKESECTION
     //    let lastItem = self.datasource.offset + self.datasource.elementsCount
-        let lastItem = self.datasource.virtualCount
+        let lastItem = self.datasource.virtualCountIndependentOfCollapse
         let firstItem = !self.datasource.zeroCellModeOn ? 0 : self.datasource.zeroCellIndex
         if (section >= 0) && (lastItem > 0) && (lastItem > firstItem) {
             for row in firstItem..<lastItem {
@@ -646,9 +655,12 @@ class RVExpandCollapseOperation<T:NSObject>: RVLoadOperation<T> {
         var indexPaths = [IndexPath]()
         var sectionIndexes = [Int]()
         let section = !self.datasource.sectionDatasourceMode ? self.datasource.section : self.datasource.FAKESECTION
-        let lastItem = self.datasource.offset + self.datasource.elementsCount
-        if (section >= 0) && (lastItem > 0) {
-            for row in 0..<lastItem {
+      //  let lastItem = self.datasource.offset + self.datasource.elementsCount
+        let lastItem = self.datasource.virtualCountIndependentOfCollapse
+        let firstItem = !self.datasource.zeroCellModeOn ? 0 : self.datasource.zeroCellIndex
+        if (section >= 0) && (lastItem > 0) && (lastItem > firstItem) {
+   //     if (section >= 0) && (lastItem > 0) {
+            for row in firstItem..<lastItem {
                 indexPaths.append(IndexPath(row: row, section: section))
                 sectionIndexes.append(row)
             }
@@ -1105,7 +1117,8 @@ class RVLoadOperation<T:NSObject>: RVAsyncOperation<T> {
     }
     func backHandler(models: [T]) -> (indexPaths: [IndexPath], sectionIndexes: IndexSet) {
         let section = !self.datasource.sectionDatasourceMode ? self.datasource.section : self.datasource.FAKESECTION
-        let virtualIndex = datasource.elementsCount + datasource.offset
+        //let virtualIndex = datasource.elementsCount + datasource.offset
+        let virtualIndex = self.datasource.virtualCountIndependentOfCollapse
         var clone = datasource.cloneItems()
         var indexPaths = [IndexPath]()
         var sectionIndexes = [Int]()
@@ -1136,9 +1149,16 @@ class RVLoadOperation<T:NSObject>: RVAsyncOperation<T> {
                 return (indexPaths: indexPaths, sectionIndexes: IndexSet(sectionIndexes))
             } else {
                 for i in 0..<self.datasource.offset { clone.insert(newModels[i], at: 0) }
-                self.datasource.offset = 0
-                let section = self.datasource.section
-                var rowIndex: Int = (self.subscriptionOperation != .response) ? self.datasource.virtualCount : 0
+              //  self.datasource.offset = 0
+                //let section = self.datasource.section
+                let section = !self.datasource.sectionDatasourceMode ? self.datasource.section : self.datasource.FAKESECTION
+                var rowIndex: Int = 0
+              //  var rowIndex: Int = (self.subscriptionOperation != .response) ? self.datasource.virtualCount : 0
+                if (self.subscriptionOperation != .response) {
+                    rowIndex = self.datasource.virtualCount
+                } else {
+                    rowIndex = !self.datasource.zeroCellModeOn ? 0 : self.datasource.zeroCellIndex
+                }
                 for i in (self.datasource.offset)..<newCount {
                     clone.insert(newModels[i], at: 0)
                     if (section >= 0 ) {
@@ -1147,12 +1167,21 @@ class RVLoadOperation<T:NSObject>: RVAsyncOperation<T> {
                     }
                     rowIndex = rowIndex + 1
                 }
+                self.datasource.offset = 0
                 self.datasource.elements = clone
                 return (indexPaths: indexPaths, sectionIndexes: IndexSet(sectionIndexes))
             }
         } else {
-            var rowIndex: Int = (self.subscriptionOperation != .response) ? self.datasource.virtualCount : 0
-            let section = self.datasource.section
+           // var rowIndex: Int = (self.subscriptionOperation != .response) ? self.datasource.virtualCount : 0
+            var rowIndex: Int = 0
+            //  var rowIndex: Int = (self.subscriptionOperation != .response) ? self.datasource.virtualCount : 0
+            if (self.subscriptionOperation != .response) {
+                rowIndex = self.datasource.virtualCount
+            } else {
+                rowIndex = !self.datasource.zeroCellModeOn ? 0 : self.datasource.zeroCellIndex
+            }
+           // let section = self.datasource.section
+            let section = !self.datasource.sectionDatasourceMode ? self.datasource.section : self.datasource.FAKESECTION
             for i in 0..<newCount {
                 clone.insert(newModels[i], at: 0)
                 if (section >= 0 ) {
@@ -1195,6 +1224,7 @@ class RVLoadOperation<T:NSObject>: RVAsyncOperation<T> {
                 }
                 Timer.scheduledTimer(withTimeInterval: delay, repeats: false, block: { (timer) in
                     if self.isCancelled {
+                        tableView.isScrollEnabled = true
                         callback(sizedModels, nil)
                         return
                     }
@@ -1282,7 +1312,8 @@ class RVLoadOperation<T:NSObject>: RVAsyncOperation<T> {
                         if section >= 0 {
                             if self.datasource.virtualCount > 0 {
                                 if !self.datasource.sectionDatasourceMode {
-                                    let indexPath = IndexPath(row: 0, section: section)
+                                    let rowIndex = (!self.datasource.zeroCellModeOn) ? 0 : self.datasource.zeroCellIndex
+                                    let indexPath = IndexPath(row: rowIndex, section: section)
                                     tableView.scrollToRow(at: indexPath, at: .top, animated: false)
                                 } else {
                                     // Neil Unclear how to scroll a Header
