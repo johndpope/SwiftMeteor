@@ -8,10 +8,10 @@
 
 import UIKit
 class RVDSManager5<S: NSObject>: RVBaseDatasource4<RVBaseDatasource4<S>> {
-    var dynamicSections: Bool = false
+
     var lastSection: Int = -1
     let emtpySectionResults = [RVBaseDatasource4<S>]()
-    var sectionDatasourceType: RVDatasourceType = .main
+
     init(scrollView: UIScrollView?, maxSize: Int = 300, managerType: RVDatasourceType, dynamicSections: Bool ) {
         super.init(manager: nil, datasourceType: managerType, maxSize: maxSize)
         self.scrollView = scrollView
@@ -186,14 +186,14 @@ extension RVDSManager5 {
             queue.addOperation(operation)
         }
     }
-    func restartSectionDatasource(query: RVQuery, datasourceType: RVDatasourceType, callback: @escaping RVCallback<RVBaseDatasource4<S>>) {
+    func restartSectionDatasource(sectionsDatasourceType: RVDatasourceType, query: RVQuery, datasourceType: RVDatasourceType, callback: @escaping RVCallback<RVBaseDatasource4<S>>) {
         if !self.dynamicSections {
             print("In \(self.classForCoder).restartSectionDatasource, erroneously attempted to restart a datasource that is not in sectionMode")
         }
-        self.restart(scrollView: self.scrollView, query: query, callback: callback)
+        self.restart(scrollView: self.scrollView, query: query, sectionsDatasourceType: sectionsDatasourceType, callback: callback)
     }
-    func restart(datasource: RVBaseDatasource4<S>, query: RVQuery, callback: @escaping RVCallback<S>) {
-        datasource.restart(scrollView: self.scrollView, query: query, callback: callback)
+    func restart(datasource: RVBaseDatasource4<S>, query: RVQuery, sectionsDatasourceType: RVDatasourceType = .main, callback: @escaping RVCallback<S>) {
+        datasource.restart(scrollView: self.scrollView, query: query, sectionsDatasourceType: sectionsDatasourceType, callback: callback)
     }
     func scrolling(indexPath: IndexPath, scrollView: UIScrollView) {
        // print("In \(self.classForCoder).scrolling \(indexPath)")

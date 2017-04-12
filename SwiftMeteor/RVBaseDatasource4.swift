@@ -35,6 +35,8 @@ class RVBaseDatasource4<T:NSObject>: NSObject {
     let FAKESECTION = 1234567
     var sectionMode: Bool = false
     var sectionDatasourceMode: Bool = false
+    var dynamicSections: Bool = false
+    var sectionDatasourceType: RVDatasourceType = .main
     let LAST_SORT_STRING = "ZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZ"
     var instanceType: String { get { return String(describing: type(of: self)) } }
     let identifier = NSDate().timeIntervalSince1970
@@ -401,10 +403,10 @@ extension RVBaseDatasource4 {
         self.cancelAllOperations()
         self.queue.addOperation(RVExpandCollapseOperation(datasource: self, scrollView: scrollView, operationType: .sectionLoadOrUnload, query: query, callback: callback))
     }
-    func restart(scrollView: UIScrollView?, query: RVQuery, callback: @escaping RVCallback<T>) {
+    func restart(scrollView: UIScrollView?, query: RVQuery, sectionsDatasourceType: RVDatasourceType = .main, callback: @escaping RVCallback<T>) {
         self.unsubscribe{}
         self.cancelAllOperations()
-        self.queue.addOperation(RVExpandCollapseOperation(datasource: self, scrollView: scrollView, operationType: .collapseZeroExpandAndLoad, query: query, callback: callback))
+        self.queue.addOperation(RVExpandCollapseOperation(datasource: self, scrollView: scrollView, operationType: .collapseZeroExpandAndLoad, query: query, sectionsDatasourceType: sectionsDatasourceType, callback: callback))
     }
     func collapseZeroAndExpand(scrollView: UIScrollView?, query: RVQuery, callback: @escaping RVCallback<T>) {
         self.unsubscribe{}
@@ -429,9 +431,11 @@ class RVExpandCollapseOperation<T:NSObject>: RVLoadOperation<T> {
     var operationType: RVExpandCollapseOperationType
     var query: RVQuery
     var emptyModels = [T]()
-    init(datasource: RVBaseDatasource4<T>, scrollView: UIScrollView?, operationType: RVExpandCollapseOperationType, query: RVQuery = RVQuery(), callback: @escaping RVCallback<T>) {
+    var sectionsDatasourceType: RVDatasourceType = .main
+    init(datasource: RVBaseDatasource4<T>, scrollView: UIScrollView?, operationType: RVExpandCollapseOperationType, query: RVQuery = RVQuery(), sectionsDatasourceType: RVDatasourceType = .main, callback: @escaping RVCallback<T>) {
         self.operationType  = operationType
         self.query = query
+        self.sectionsDatasourceType = sectionsDatasourceType
         super.init(title: "RVExpandCollapseOperation", datasource: datasource, scrollView: scrollView, callback: callback)
      //   print("In \(self.instanceType).init query: \(query) and scrollView: \(String(describing: self.scrollView))")
     }
@@ -493,6 +497,10 @@ class RVExpandCollapseOperation<T:NSObject>: RVLoadOperation<T> {
                         self.finishUp(models: self.emptyModels, error: nil)
                         return
                     } else {
+                        if self.datasource.dynamicSections {
+                            print("In \(self.classForCoder).asyncMain, have dynamicSections")
+                            self.datasource.sectionDatasourceType = self.sectionsDatasourceType
+                        }
                         if let tableView = self.scrollView as? UITableView {
                             tableView.beginUpdates()
                             if !self.isCancelled {

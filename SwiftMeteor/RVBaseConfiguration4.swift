@@ -11,6 +11,8 @@ import SlackTextViewController
 
 class RVBaseConfiguration4 {
     var instanceType: String { get { return String(describing: type(of: self)) } }
+    var dynamicSections: Bool = false
+    var sectionDatasourceType: RVDatasourceType = .main
     var configurationName: String   = "RVBaseConfiguration4"
     var navigationBarTitle: String  = "Replace"
     var showSearch: Bool            = true
@@ -146,7 +148,7 @@ class RVBaseConfiguration4 {
                     callback(error)
                     return
                 } else {
-                    self.manager.restart(datasource: top, query: query, callback: { (models, error) in
+                    self.manager.restart(datasource: top, query: query, sectionsDatasourceType: .top, callback: { (models, error ) in
                         if let error = error {
                             error.append(message: "In \(self.instanceType).loadTop \(#line). Got error on datasource restart")
                         }
@@ -173,7 +175,7 @@ class RVBaseConfiguration4 {
             if !self.manager.dynamicSections {
                 loadDatasource(datasource: filterDatasource, query: query, callback: callback)
             } else {
-                self.manager.restartSectionDatasource(query: query, datasourceType: .filter, callback: { (datasources, error) in
+                self.manager.restartSectionDatasource(sectionsDatasourceType: .filter, query: query, datasourceType: .filter, callback: { (datasources, error) in
                     if let error = error {
                         error.append(message: "IN \(self.instanceType).doSectionText, have error on restart callback")
                         callback(error)
@@ -192,7 +194,7 @@ class RVBaseConfiguration4 {
             loadDatasource(datasource: filterDatasource, query: query, callback: callback)
         } else {
             //print("In \(self.instanceType).loadSearch, with dynamicSections. Need to implement")
-            self.manager.restartSectionDatasource(query: query, datasourceType: .filter, callback: { (datasources, error) in
+            self.manager.restartSectionDatasource(sectionsDatasourceType: .filter, query: query, datasourceType: .filter, callback: { (datasources, error) in
                 if let error = error {
                     error.append(message: "IN \(self.instanceType).doSectionText, have error on restart callback")
                     callback(error)
@@ -213,7 +215,7 @@ class RVBaseConfiguration4 {
                 callback(error)
                 return
             } else {
-                self.manager.restart(datasource: datasource, query: query, callback: { (models, error) in
+                self.manager.restart(datasource: datasource, query: query , sectionsDatasourceType: .main, callback: { (models , error ) in
                     if let error = error {
                         error.append(message: "In \(self.instanceType).loadMain \(#line). Got error on datasource restart")
                     }
@@ -277,7 +279,7 @@ class RVBaseConfiguration4 {
             error.append(message: "In \(self.instanceType).loadMain, got error creating Query")
             callback(error)
         } else {
-            self.manager.restartSectionDatasource(query: query, datasourceType: sectionDatasourceType, callback: { (datasources, error) in
+            self.manager.restartSectionDatasource(sectionsDatasourceType: sectionDatasourceType, query: query, datasourceType: sectionDatasourceType, callback: { (datasources, error) in
                 if let error = error {
                     error.append(message: "IN \(self.instanceType).doSectionText, have error on restart callback")
                     callback(error)
