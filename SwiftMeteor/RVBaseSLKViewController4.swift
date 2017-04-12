@@ -278,26 +278,14 @@ extension RVBaseSLKViewController4 {
 extension RVBaseSLKViewController4: RVFirstViewHeaderCellDelegate {
     func expandCollapseButtonTouched(view: RVFirstViewHeaderCell) {
         if let datasource = view.datasource4 {
-            if !sectionTest {
-                manager.toggle(datasource: datasource) { (models, error) in
-                    if let error = error {
-                        error.printError()
-                    } else {
-                        // print("In \(self.classForCoder).expandCollapseButtonTouched. Successful return")
-                    }
+            manager.toggle(datasource: datasource, callback: { (models, error ) in
+                if let error = error {
+                    error.append(message: "In \(self.classForCoder).expandCollapseBUtton line #\(#line), got error")
+                    error.printError()
+                } else {
+                    // print("In \(self.classForCoder).expandCollapseButtonTouched. Successful return")
                 }
-            } else {
-                self.sectionManager.toggle(datasource: datasource, callback: { (models, error) in
-                    if let error = error {
-                        error.append(message: "In \(self.classForCoder).expandCollapseBUtton, got error")
-                        error.printError()
-                    } else {
-                        print("In \(self.classForCoder).expandCollapse, return from sectionManager")
-                    }
-                })
-               
-            }
-
+            })
         }
     }
     override func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
