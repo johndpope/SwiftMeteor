@@ -461,9 +461,11 @@ class RVExpandCollapseOperation<T:NSObject>: RVLoadOperation<T> {
         var indexPaths = [IndexPath]()
         var sectionIndexes = [Int]()
         let section =  !self.datasource.sectionDatasourceMode ? self.datasource.section : self.datasource.FAKESECTION
-        let lastItem = self.datasource.offset + self.datasource.elementsCount
-        if (section >= 0) && (lastItem > 0) {
-            for row in 0..<lastItem {
+    //    let lastItem = self.datasource.offset + self.datasource.elementsCount
+        let lastItem = self.datasource.virtualCount
+        let firstItem = !self.datasource.zeroCellModeOn ? 0 : self.datasource.zeroCellIndex
+        if (section >= 0) && (lastItem > 0) && (lastItem > firstItem) {
+            for row in firstItem..<lastItem {
                 indexPaths.append(IndexPath(row: row, section: section))
                 sectionIndexes.append(row)
             }
