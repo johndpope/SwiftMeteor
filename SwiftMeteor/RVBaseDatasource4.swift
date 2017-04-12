@@ -498,7 +498,7 @@ class RVExpandCollapseOperation<T:NSObject>: RVLoadOperation<T> {
                         return
                     } else {
                         if self.datasource.dynamicSections {
-                            print("In \(self.classForCoder).asyncMain, have dynamicSections")
+                            //print("In \(self.classForCoder).asyncMain, have dynamicSections")
                             self.datasource.sectionDatasourceType = self.sectionsDatasourceType
                         }
                         if let tableView = self.scrollView as? UITableView {

@@ -162,6 +162,20 @@ class RVBaseConfiguration4 {
         }
         
     }
+    func loadMain2(callback: @escaping(RVError?)-> Void) {
+        let (query, error) = self.mainQuery()
+        if let error = error {
+            error.append(message: "In \(self.instanceType).loadMain2, got error creating Query")
+            callback(error)
+        } else {
+            self.loadMain(query: query, callback: { (error) in
+                if let error = error {
+                    error.append(message: "In \(self.instanceType).loadMain, got error")
+                }
+                callback(error)
+            })
+        }
+    }
     func loadMain(query: RVQuery, callback: @escaping(RVError?)->Void) {
         loadDatasource(datasource: mainDatasource, query: query, callback: callback)
     }
@@ -177,7 +191,7 @@ class RVBaseConfiguration4 {
             } else {
                 self.manager.restartSectionDatasource(sectionsDatasourceType: .filter, query: query, datasourceType: .filter, callback: { (datasources, error) in
                     if let error = error {
-                        error.append(message: "IN \(self.instanceType).doSectionText, have error on restart callback")
+                        error.append(message: "IN \(self.instanceType).loadSearch, have error on restart callback")
                         callback(error)
                         return
                     } else {
@@ -186,6 +200,25 @@ class RVBaseConfiguration4 {
                 })
             }
         }
+    }
+    func endSearch(callback: @escaping(RVError? ) -> Void) {
+        if !self.manager.dynamicSections {
+            self.loadMain2 { (error) in
+                if let error = error {
+                    error.append(message: "In \(self.instanceType).endSearch, got error")
+                }
+                callback(error)
+            }
+        } else {
+           
+            self.initializeDatasource(sectionDatasourceType: .main, callback: { (error) in
+                if let error = error {
+                    error.append(message: "In \(self.instanceType).endSearch, got error initializing")
+                }
+                callback(error)
+            })
+        }
+        
     }
     
     func loadSearch(query: RVQuery, callback: @escaping(RVError?)->Void) {

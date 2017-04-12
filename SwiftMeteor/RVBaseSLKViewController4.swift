@@ -162,21 +162,16 @@ class RVBaseSLKViewController4: SLKTextViewController {
  */
     }
     func endSearch() {
-        self.lastSearchTerm = self._lastSearchTerm
-        if !self.configuration.manager.dynamicSections {
-            self.loadMain { (error) in
-                if let error = error {
-                    error.append(message: "In \(self.classForCoder).endSearch, got error")
-                    error.printError()
-                } else {
-                    self.expandTopView()
-                }
+        self.configuration.endSearch { (error) in
+            if let error = error {
+                error.append(message: "In \(self.instanceType).endSearch2, got error ")
+                error.printError()
+            } else {
+                self.expandTopView()
             }
-        } else {
-            print("In \(self.classForCoder).endSearch, dynamicSections need to implement")
         }
-
     }
+
     deinit {
         NotificationCenter.default.removeObserver(self)
         configuration.removeAllSections { (models, error) in
@@ -494,7 +489,7 @@ extension RVBaseSLKViewController4 {
         }
     }
 
-    func loadMain(callback: @escaping(RVError?) -> Void) {
+    func loadMainOld(callback: @escaping(RVError?) -> Void) {
         let (query, error) = self.configuration.mainQuery()
         if let error = error {
             error.append(message: "In \(self.instanceType).loadMain, got error creating Query")
