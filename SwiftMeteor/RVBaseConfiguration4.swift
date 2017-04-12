@@ -163,12 +163,36 @@ class RVBaseConfiguration4 {
     func loadMain(query: RVQuery, callback: @escaping(RVError?)->Void) {
         loadDatasource(datasource: mainDatasource, query: query, callback: callback)
     }
+    func loadSearch(searchText: String, field: RVKeys, order: RVSortOrder = .ascending, callback: @escaping(RVError?)->Void) {
+        let matchTerm = RVQueryItem(term: field, value: searchText.lowercased() as AnyObject, comparison: .regex)
+        let andTerms = [RVQueryItem]()
+        let (query, error) = self.filterQuery(andTerms: andTerms, matchTerm: matchTerm, sortTerm: RVSortTerm(field: field, order: order))
+        if let error = error {
+            error.append(message: "In \(self.instanceType).loadSearch2, got error generating query")
+        } else{
+            if !self.manager.dynamicSections {
+                loadDatasource(datasource: filterDatasource, query: query, callback: callback)
+            } else {
+                self.manager.restartSectionDatasource(query: query, datasourceType: .filter, callback: { (datasources, error) in
+                    if let error = error {
+                        error.append(message: "IN \(self.instanceType).doSectionText, have error on restart callback")
+                        callback(error)
+                        return
+                    } else {
+                        callback(nil)
+                    }
+                })
+            }
+        }
+    }
+    
     func loadSearch(query: RVQuery, callback: @escaping(RVError?)->Void) {
+        print("In \(self.instanceType).loadSearch. don't use this version")
         if !self.manager.dynamicSections {
             loadDatasource(datasource: filterDatasource, query: query, callback: callback)
         } else {
             //print("In \(self.instanceType).loadSearch, with dynamicSections. Need to implement")
-            self.manager.restartSectionDatasource(query: query, callback: { (datasources, error) in
+            self.manager.restartSectionDatasource(query: query, datasourceType: .filter, callback: { (datasources, error) in
                 if let error = error {
                     error.append(message: "IN \(self.instanceType).doSectionText, have error on restart callback")
                     callback(error)
@@ -180,6 +204,7 @@ class RVBaseConfiguration4 {
         }
         
     }
+ 
     func loadDatasource(datasource: RVBaseDatasource4<RVBaseModel>, query: RVQuery, callback: @escaping(RVError?)->Void) {
         //print("In \(self.instanceType).loadDatasource before append")
         manager.appendSections(datasources: [datasource], sectionTypesToRemove: [.main, .filter]) { (models, error) in
@@ -197,7 +222,7 @@ class RVBaseConfiguration4 {
             }
         }
     }
-    func initializeDatasource(callback: @escaping(RVError?) -> Void) {
+    func initializeDatasource(sectionDatasourceType: RVDatasourceType, callback: @escaping(RVError?) -> Void) {
         if !manager.dynamicSections {
             let (query, _) = self.topQuery()
             self.loadTop(query: query, callback: { (error) in
@@ -221,7 +246,7 @@ class RVBaseConfiguration4 {
             })
             return
         } else {
-            loadDynamicSections(callback: { (error) in
+            loadDynamicSections(sectionDatasourceType: sectionDatasourceType, callback: { (error) in
                 if let error = error {
                     error.printError()
                 }
@@ -243,7 +268,7 @@ class RVBaseConfiguration4 {
             })
         }
     }
-    func loadDynamicSections(callback: @escaping(RVError?) -> Void) {
+    func loadDynamicSections(sectionDatasourceType: RVDatasourceType, callback: @escaping(RVError?) -> Void) {
         var (query, error) = self.mainQuery(andTerms: [RVQueryItem](), sortTerm: RVSortTerm(field: .createdAt, order: .ascending))
         query = query.duplicate()
         //query.addSort(field: .createdAt, order: .ascending)
@@ -252,7 +277,7 @@ class RVBaseConfiguration4 {
             error.append(message: "In \(self.instanceType).loadMain, got error creating Query")
             callback(error)
         } else {
-            self.manager.restartSectionDatasource(query: query, callback: { (datasources, error) in
+            self.manager.restartSectionDatasource(query: query, datasourceType: sectionDatasourceType, callback: { (datasources, error) in
                 if let error = error {
                     error.append(message: "IN \(self.instanceType).doSectionText, have error on restart callback")
                     callback(error)

@@ -92,7 +92,7 @@ class RVBaseSLKViewController4: SLKTextViewController {
         putTopViewOnTop()
         
         //standard()
-        configuration.initializeDatasource { (error) in
+        configuration.initializeDatasource(sectionDatasourceType: .main) { (error) in
             if let error = error {
                 error.printError()
             }
@@ -137,6 +137,15 @@ class RVBaseSLKViewController4: SLKTextViewController {
     func performSearch(searchText: String, field: RVKeys, order: RVSortOrder = .ascending) {
         if lastSearchTerm == searchText { return }
         lastSearchTerm = searchText.lowercased()
+        self.configuration.loadSearch(searchText: searchText, field: field, order: order) { (error ) in
+            if let error = error {
+                error.printError()
+            } else {
+                self.zeroTopView()
+            }
+        }
+        
+        /*
         let matchTerm = RVQueryItem(term: field, value: searchText.lowercased() as AnyObject, comparison: .regex)
         let andTerms = [RVQueryItem]()
         let (query, error) = self.configuration.filterQuery(andTerms: andTerms, matchTerm: matchTerm, sortTerm: RVSortTerm(field: field, order: order))
@@ -150,17 +159,23 @@ class RVBaseSLKViewController4: SLKTextViewController {
                 }
             }
         }
+ */
     }
     func endSearch() {
         self.lastSearchTerm = self._lastSearchTerm
-        self.loadMain { (error) in
-            if let error = error {
-                error.append(message: "In \(self.classForCoder).endSearch, got error")
-                error.printError()
-            } else {
-                self.expandTopView()
+        if !self.configuration.manager.dynamicSections {
+            self.loadMain { (error) in
+                if let error = error {
+                    error.append(message: "In \(self.classForCoder).endSearch, got error")
+                    error.printError()
+                } else {
+                    self.expandTopView()
+                }
             }
+        } else {
+            print("In \(self.classForCoder).endSearch, dynamicSections need to implement")
         }
+
     }
     deinit {
         NotificationCenter.default.removeObserver(self)

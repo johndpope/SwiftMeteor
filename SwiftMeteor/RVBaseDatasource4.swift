@@ -253,7 +253,7 @@ extension RVBaseDatasource4 {
                     strip = self.stripCandidate(candidate: candidate)
                 } else if let datasource = candidate as? RVBaseDatasource4<RVBaseModel> {
                //     print("In \(self.classForCoder).updateSortTerm, candidate is a RVBaseDatasource4<T>")
-                    if let sectionModel = datasource.sectionModel as? RVBaseModel {
+                    if let sectionModel = datasource.sectionModel {
                     //    print("In \(self.classForCoder).updateSortTerm, have sectionModel")
                         strip = self.stripCandidate(candidate: sectionModel)
                     } else {
