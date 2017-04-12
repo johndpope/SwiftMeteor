@@ -368,7 +368,7 @@ class RVManagerAppendSections5<T: NSObject> : RVManagerRemoveSections5<T> {
                             indexes.append(manager.elements.count + offset)
                             manager.elements.append(datasource)
                         }
-                        print("In \(self.classForCoder).asyncMain \(#line) inserting sections: number of sections = \(manager.elements.count)")
+                    //    print("In \(self.classForCoder).asyncMain \(#line) inserting sections: number of sections = \(manager.elements.count)")
                         tableView.insertSections(IndexSet(indexes), with: manager.rowAnimation)
                         tableView.endUpdates()
                         self.ignoreCancel = true

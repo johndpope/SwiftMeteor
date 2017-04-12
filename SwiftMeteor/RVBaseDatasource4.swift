@@ -1270,7 +1270,7 @@ class RVLoadOperation<T:NSObject>: RVAsyncOperation<T> {
                             if !self.datasource.sectionDatasourceMode {
                                tableView.insertRows(at: indexPaths, with: UITableViewRowAnimation.middle)
                             } else {
-                                 print("In \(self.classForCoder).insert \(#line), about to insertSections number: \(sectionIndexes.count)")
+                                 //print("In \(self.classForCoder).insert \(#line), about to insertSections number: \(sectionIndexes.count)")
                                 tableView.insertSections(sectionIndexes , with: UITableViewRowAnimation.top)
                             }
                             indexPathsCount = indexPaths.count
