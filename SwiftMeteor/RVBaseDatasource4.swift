@@ -158,7 +158,7 @@ class RVBaseDatasource4<T:NSObject>: NSObject {
         }
     }
     func listenToSubscriptionNotification(subscription: RVSubscription) {
-   //     print("In \(self.classForCoder).listenToSubscription")
+        print("In \(self.classForCoder).listenToSubscription")
         if !notificationInstalled {
             notificationInstalled = true
             NotificationCenter.default.addObserver(self, selector: #selector(RVBaseDatasource4<T>.receiveSubscriptionResponse(notification:)), name: subscription.notificationName, object: nil)
@@ -198,6 +198,7 @@ class RVBaseDatasource4<T:NSObject>: NSObject {
         }
     }
     func receiveSubscriptionResponse(notification: NSNotification) {
+        print("In \(self.classForCoder).receiveSubscription")
         if let userInfo = notification.userInfo {
             if let payload = userInfo[RVPayload.payloadInfoKey] as? RVPayload<T> {
                 print("In \(self.classForCoder).receiveSubscription have payload \(payload.toString())")
@@ -210,9 +211,17 @@ class RVBaseDatasource4<T:NSObject>: NSObject {
                             }
                         })
                         self.queue.addOperation(operation)
+                    } else {
+                        print("In \(self.classForCoder).receiveSubscription payload identifier = \(payload.subscription.identifier) vs. subscriptionIdentifier: \(subscription.identifier)")
                     }
+                } else {
+                    print("In \(self.classForCoder).receiveSubscription but don't have a subscription")
                 }
+            } else {
+                print("In \(self.classForCoder).receiveSubscription no payload \(String(describing: userInfo[RVPayload.payloadInfoKey]))\nT is: \(T.self)")
             }
+        } else {
+            print("In \(self.classForCoder).receivedSubscription, no userInfo")
         }
         
     }
@@ -856,6 +865,14 @@ class RVLoadOperation<T:NSObject>: RVAsyncOperation<T> {
             self.datasource.listenToSubscriptionNotification(subscription: subscription)
             if let reference = reference as? RVBaseModel? {
                 subscription.subscribe(query: query, reference: reference, callback: callback)
+            } else if let referenceDatasource = reference as? RVBaseDatasource4<RVBaseModel> {
+                print("In \(self.classForCoder).initiateSubscription, passed casting Reference: \(reference?.description ?? "No reference") for subscription \(subscription)")
+                let model = subscription.isFront ? referenceDatasource.frontElement : referenceDatasource.backElement
+             //   if let model = model as? RVBaseModel? {
+                    subscription.subscribe(query: query , reference: model , callback: callback)
+             //   }
+                
+            
             } else {
                 print("In \(self.classForCoder).initiateSubscription, failed casting reference to RVBaseModel. Reference: \(reference?.description ?? "No reference"), Generic Type is \(type(of: T.self))")
                 callback()
@@ -1357,10 +1374,10 @@ class RVLoadOperation<T:NSObject>: RVAsyncOperation<T> {
                             if indexPath.row >= self.datasource.virtualCount { indexPath.row = self.datasource.virtualCount - 1 }
                             if sectionIndex >= self.datasource.virtualCount { sectionIndex = self.datasource.virtualCount - 1 }
                             if !self.datasource.sectionDatasourceMode {
-                                tableView.scrollToRow(at: indexPath, at: UITableViewScrollPosition.bottom, animated: false)
+                         //       tableView.scrollToRow(at: indexPath, at: UITableViewScrollPosition.bottom, animated: false) // NEIL TOOK OUT TABLEVIEW SCROLL
                                 if let indexPaths = tableView.indexPathsForVisibleRows {
                                     if indexPaths.count < 9 {
-                                        tableView.reloadRows(at: indexPaths, with: UITableViewRowAnimation.bottom)
+                                     //   tableView.reloadRows(at: indexPaths, with: UITableViewRowAnimation.bottom)  // NEIL TOOK OUT RELOAD
                                     }
                                 }
                             } else {
@@ -1378,7 +1395,7 @@ class RVLoadOperation<T:NSObject>: RVAsyncOperation<T> {
                                 if !self.datasource.sectionDatasourceMode {
                                     let rowIndex = (!self.datasource.zeroCellModeOn) ? 0 : self.datasource.zeroCellIndex
                                     let indexPath = IndexPath(row: rowIndex, section: section)
-                                    tableView.scrollToRow(at: indexPath, at: .top, animated: false)
+                             //       tableView.scrollToRow(at: indexPath, at: .top, animated: false)  // NEIL TOOK OUT TABLEVIEW SCROLL
                                 } else {
                                     // Neil Unclear how to scroll a Header
                                 }

@@ -27,11 +27,13 @@ class RVDSManager5Transaction<S: NSObject>: RVDSManager5<S> {
             }
         }
     }
+    /* Datasource for Rows nested in a Section-Based list */
     override func sectionDatasourceInstance(datasourceType: RVDatasourceType, maxSize: Int) -> RVBaseDatasource4<S> {
         let datasource = RVTransactionDatasource44<S>(manager: self, datasourceType: datasourceType, maxSize: maxSize)
        // datasource.subscription = RVTransactionSubscription(front: true, showResponse: false)
         return datasource
     }
+    /* Query for Rows nested in a Section-Based list */
     override var queryForDatasourceInstance: (RVQuery, RVError?) {
         print("In \(self.classForCoder).queryForDadtasourceInstance")
         let (query, error) = RVTransaction.baseQuery

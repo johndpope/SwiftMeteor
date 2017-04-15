@@ -29,18 +29,57 @@ class RVDSManager5<S: NSObject>: RVBaseDatasource4<RVBaseDatasource4<S>> {
                 callback(self.emtpySectionResults, error)
                 return
             } else {
-                var datasourceResults = [RVBaseDatasource4<S>]()
-                for model in models {
-                    let datasource = self.sectionDatasourceInstance(datasourceType: self.sectionDatasourceType, maxSize: self.maxArraySize)
-                    datasource.sectionModel = model
-                    datasource.sectionMode = true
-                    datasource.collapsed = true
-                    if self.useZeroCell && (self.sectionDatasourceType != .filter) { datasource.zeroCellModeOn = true }
-                    datasourceResults.append(datasource)
-                }
+                let datasourceResults = self.createDatasourceFromModels(models: models)
                 callback(datasourceResults, nil)
             }
         }
+    }
+    func createDatasourceFromModels(models: [S]) -> [RVBaseDatasource4<S>] {
+        var datasourceResults = [RVBaseDatasource4<S>]()
+        for model in models {
+            let datasource = self.sectionDatasourceInstance(datasourceType: self.sectionDatasourceType, maxSize: self.maxArraySize)
+            datasource.sectionModel = model
+            datasource.sectionMode = true
+            datasource.collapsed = true
+            if self.useZeroCell && (self.sectionDatasourceType != .filter) { datasource.zeroCellModeOn = true }
+            datasourceResults.append(datasource)
+        }
+        return datasourceResults
+    }
+    override func receiveSubscriptionResponse(notification: NSNotification) {
+        print("In \(self.classForCoder).receiveSubscription")
+        if let userInfo = notification.userInfo {
+            if let payload = userInfo[RVPayload.payloadInfoKey] as? RVPayload<S> {
+                print("In \(self.classForCoder).receiveSubscription have payload \(payload.toString())")
+                if let subscription = self.subscription {
+                    if subscription.identifier == payload.subscription.identifier {
+                        //print("In \(self.classForCoder).receiveSubscription subscriptions match")
+                        let datasourceResults = self.createDatasourceFromModels(models: payload.models)
+                         //   let datasource = self.createDatasourceFromModel(model: model)
+                            //let operation = RVSubcriptionResponseOperation<RVBaseDatasource4<S>>(datasource: self, subscription: subscription, incomingModels: [RVBaseDatasource4<S>](), callback: { (models , error) in })
+                        
+                            let operation = RVSubcriptionResponseOperation<RVBaseDatasource4<S>>(datasource: self, subscription: subscription, incomingModels: datasourceResults, callback: { (models, error ) in
+                                if let error = error {
+                                    error.printError()
+                                }
+                            })
+ 
+                            self.queue.addOperation(operation)
+                        
+
+                    } else {
+                        print("In \(self.classForCoder).receiveSubscription payload identifier = \(payload.subscription.identifier) vs. subscriptionIdentifier: \(subscription.identifier)")
+                    }
+                } else {
+                    print("In \(self.classForCoder).receiveSubscription but don't have a subscription")
+                }
+            } else {
+                print("In \(self.classForCoder).receiveSubscription no payload \(String(describing: userInfo[RVPayload.payloadInfoKey]))\nT is: \(S.self)")
+            }
+        } else {
+            print("In \(self.classForCoder).receivedSubscription, no userInfo")
+        }
+        
     }
     func retrieveSectionModels(query: RVQuery, callback: @escaping ([S], RVError?) -> Void) {
         print("In \(self.classForCoder).retrieveSectionModels base class RVDSManager5, need to override ")
