@@ -13,7 +13,7 @@ class RVBaseModel: MeteorDocument {
     class func modelFromFields(fields: [String: AnyObject]) -> RVBaseModel { return RVBaseModel(fields: fields) }
     class func collectionType() -> RVModelType { return RVModelType.baseModel }
     func searchCountryForModel() -> RVCountry { return RVCountry.UnitedStates }
-    
+    static let UpdateNotificationName = Notification.Name("RVModelUpdated")
     class var insertMethod: RVMeteorMethods { get { return RVMeteorMethods.InsertBase } }
     class var updateMethod: RVMeteorMethods { get { return RVMeteorMethods.UpdateBase } }
     class var deleteMethod: RVMeteorMethods { get { return RVMeteorMethods.DeleteBase } }
@@ -253,9 +253,16 @@ class RVBaseModel: MeteorDocument {
         if let array = objects[key.rawValue] as? [AnyObject] {return array }
         return nil
     }
+    func updated(key: RVKeys, value: AnyObject?) {
+        print("In \(self.classForCoder).updated: \(key.rawValue) : \(String(describing: value))")
+        let element : AnyObject = value != nil ? value! : NSNull()
+        let userInfo = [key : element]
+        NotificationCenter.default.post(name: RVBaseModel.UpdateNotificationName, object: self, userInfo: userInfo)
+    }
     func updateDictionary(key: RVKeys, dictionary: [String: AnyObject]?, setDirties: Bool = false) {
         if let dictionary = dictionary {
             objects[key.rawValue] = dictionary as AnyObject?
+            self.updated(key: key, value: dictionary as AnyObject)
             if setDirties {
                 dirties[key.rawValue] = dictionary as AnyObject?
                 unsets.removeValue(forKey: key.rawValue)
@@ -263,9 +270,11 @@ class RVBaseModel: MeteorDocument {
         } else {
             if let _ = objects[key.rawValue] as? NSNull {
                 unsetAnyObject(key: key, setDirties: setDirties)
+                 self.updated(key: key, value: nil)
             } else if let _ = objects[key.rawValue] {
                 updateAnyObject(key: key, value: NSNull() as AnyObject, setDirties: true)
             } else {
+                self.updated(key: key, value: nil)
                 if setDirties {
                     dirties.removeValue(forKey: key.rawValue)
                     unsets[key.rawValue] = "" as AnyObject
@@ -278,9 +287,11 @@ class RVBaseModel: MeteorDocument {
            unsetAnyObject(key: key, setDirties: setDirties)
         } else {
             objects[key.rawValue] = value
+            self.updated(key: key, value: value)
             if setDirties {
                 dirties[key.rawValue] = value
                 unsets.removeValue(forKey: key.rawValue)
+                
             }
         }
 
@@ -370,6 +381,7 @@ class RVBaseModel: MeteorDocument {
     }
     func unsetAnyObject(key: RVKeys, setDirties: Bool) {
         objects.removeValue(forKey: key.rawValue)
+        self.updated(key: key, value: nil)
         if setDirties {
             dirties.removeValue(forKey: key.rawValue)
             unsets[key.rawValue] = "" as AnyObject
