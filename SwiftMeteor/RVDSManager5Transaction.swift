@@ -28,9 +28,12 @@ class RVDSManager5Transaction<S: NSObject>: RVDSManager5<S> {
         }
     }
     override func sectionDatasourceInstance(datasourceType: RVDatasourceType, maxSize: Int) -> RVBaseDatasource4<S> {
-        return RVTransactionDatasource44<S>(manager: self, datasourceType: datasourceType, maxSize: maxSize)
+        let datasource = RVTransactionDatasource44<S>(manager: self, datasourceType: datasourceType, maxSize: maxSize)
+       // datasource.subscription = RVTransactionSubscription(front: true, showResponse: false)
+        return datasource
     }
     override var queryForDatasourceInstance: (RVQuery, RVError?) {
+        print("In \(self.classForCoder).queryForDadtasourceInstance")
         let (query, error) = RVTransaction.baseQuery
         query.addSort(field: .createdAt, order: .descending)
         query.addAnd(term: .createdAt, value: Date() as AnyObject, comparison: .lte)

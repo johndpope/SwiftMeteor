@@ -52,6 +52,7 @@ class RVBaseDataSource: NSObject {
     }
 
     func unsubscribe(callback: @escaping () -> Void) {
+        print("In \(self.classForCoder).unsubscribe")
         if let current = self._subscription { current.unsubscribeSelf { callback() } }
         else { callback() }
     }
@@ -1226,6 +1227,7 @@ class RVBaseDataSource: NSObject {
         callback()
     }
     deinit {
+        print("In \(self.classForCoder).deinit, about to unsubscribe")
         if let subscription = self.subscription { subscription.unsubscribeSelf { } }
     }
 }

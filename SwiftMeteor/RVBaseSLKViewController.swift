@@ -594,7 +594,7 @@ extension RVBaseSLKViewController {
       //  self.showCameraMenu()
     }
     func createTransaction(text: String, callback: @escaping()-> Void) {
-        print("In \(self.classForCoder).createTransaction")
+      //  print("In \(self.classForCoder).createTransaction")
         let transaction = RVTransaction()
         if let loggedInUser = RVCoreInfo2.shared.loggedInUserProfile {
             transaction.targetUserProfileId = loggedInUser.localId

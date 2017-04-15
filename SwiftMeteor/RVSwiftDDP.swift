@@ -155,6 +155,9 @@ class RVSwiftDDP: NSObject {
      - parameter callback:   An optional closure to be executed after the connection is established
      */
     func connect(callback: @escaping () -> Void ) {
+        Meteor.unsubscribe(RVModelType.transaction.rawValue) { 
+            
+        }
         Meteor.connect(self.meteorURL) {
             //print("In \(self.classForCoder).connect, connected -----------")
             self.connected = true

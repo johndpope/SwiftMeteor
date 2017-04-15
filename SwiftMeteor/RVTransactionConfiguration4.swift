@@ -12,7 +12,8 @@ class RVTransactionConfiguration4: RVBaseConfiguration4 {
     
     override init(scrollView: UIScrollView? ) {
         super.init(scrollView: scrollView)
-        self.configurationName      = "RVBaseConfiguration4"
+        self.subscription           = RVTransactionSubscription(front: true, showResponse: false)
+        self.configurationName      = "RVTransactionConfiguration4"
         self.navigationBarTitle     = "Replace"
         self.navigationBarColor     = UIColor.facebookBlue()
         self.showSearch             = true
@@ -40,7 +41,9 @@ class RVTransactionConfiguration4: RVBaseConfiguration4 {
         return RVDummyTopDatasource4<RVBaseModel>(manager: self.manager, datasourceType: .top, maxSize: 100)
     }
     override var mainDatasource: RVBaseDatasource4<RVBaseModel> {
-        return RVTransactionDatasource44<RVBaseModel>(manager: self.manager, datasourceType: .main, maxSize: 80)
+        let datasource = RVTransactionDatasource44<RVBaseModel>(manager: self.manager, datasourceType: .main, maxSize: 80)
+        datasource.subscription = self.subscription
+        return datasource 
     }
     override var filterDatasource: RVBaseDatasource4<RVBaseModel> {
         return RVTransactionDatasource44<RVBaseModel>(manager: self.manager, datasourceType: .filter, maxSize: self.mainDatasourceMaxSize)

@@ -24,6 +24,7 @@ class RVBaseConfiguration4 {
     var topAreaMaxHeights: [CGFloat] = [0.0, 0.0, 0.0]
     var topAreaMinHeights: [CGFloat] = [0.0, 0.0, 0.0]
     let LAST_SORT_STRING = "ZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZ"
+    var subscription: RVSubscription? = nil
 
     var searchScopes: [[String : RVKeys]]     = [[RVKeys.title.rawValue: RVKeys.title], [RVKeys.fullName.rawValue: RVKeys.fullName]]
     var defaultSortOrder: RVSortOrder = .ascending
@@ -52,6 +53,7 @@ class RVBaseConfiguration4 {
     
     init(scrollView: UIScrollView? ) {
         /*
+         self.subscription          = nil
         self.configurationName      = "RVBaseConfiguration4"
         self.navigationBarTitle     = "Replace"
         self.navigationBarColor     = UIColor.facebookBlue()
@@ -304,7 +306,8 @@ class RVBaseConfiguration4 {
         }
     }
     func loadDynamicSections(sectionDatasourceType: RVDatasourceType, callback: @escaping(RVError?) -> Void) {
-        var (query, error) = self.mainQuery(andTerms: [RVQueryItem](), sortTerm: RVSortTerm(field: .createdAt, order: .ascending))
+        print("In \(self.instanceType).loadDynamicSections(sectionDatasourceType")
+        var (query, error) = self.mainQuery(andTerms: [RVQueryItem](), sortTerm: RVSortTerm(field: .createdAt, order: .descending))
         query = query.duplicate()
         //query.addSort(field: .createdAt, order: .ascending)
         query.limit = 6

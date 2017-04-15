@@ -120,7 +120,7 @@ class RVBaseDatasource4<T:NSObject>: NSObject {
 
     
     func retrieve(query: RVQuery, callback: @escaping RVCallback<T>) {
-        print("In RVBaseDatasource4.retrieve, need to override")
+      //  print("In RVBaseDatasource4.retrieve, need to override")
         RVBaseModel.bulkQuery(query: query) { (models, error) in
             if let error = error {
                 error.append(message: "In \(self.classForCoder).")
@@ -144,7 +144,7 @@ class RVBaseDatasource4<T:NSObject>: NSObject {
 
     func cancelAllOperations() { self.queue.cancelAllOperations()}
     func unsubscribe(callback: @escaping () -> Void) {
-        //print("In \(self.classForCoder).unsubscribe Need to implement")
+      //  print("In \(self.classForCoder).unsubscribe")
             if let subscription = self.subscription {
                 NotificationCenter.default.removeObserver(self, name: subscription.notificationName, object: nil)
                 notificationInstalled = false
@@ -158,7 +158,7 @@ class RVBaseDatasource4<T:NSObject>: NSObject {
         }
     }
     func listenToSubscriptionNotification(subscription: RVSubscription) {
-        print("In \(self.classForCoder).listenToSubscription")
+   //     print("In \(self.classForCoder).listenToSubscription")
         if !notificationInstalled {
             notificationInstalled = true
             NotificationCenter.default.addObserver(self, selector: #selector(RVBaseDatasource4<T>.receiveSubscriptionResponse(notification:)), name: subscription.notificationName, object: nil)
@@ -166,10 +166,12 @@ class RVBaseDatasource4<T:NSObject>: NSObject {
     }
     func subscribe(scrollView: UIScrollView?, front: Bool) {
         if !self.subscriptionActive {
+         //   print("In \(self.classForCoder).subscribe, passed !subsciprtionActive")
             //subscription.reference = self.items.first
             if let subscription = self.subscription {
+             //    print("In \(self.classForCoder).subscribe, have subscription")
                 if (subscription.isFront && front) || (!subscription.isFront && !front) {
-                    print("Neil check this \(self.classForCoder).subscribe, took out subscriptionOperation flag")
+               //     print("Neil check this \(self.classForCoder).subscribe, took out subscriptionOperation flag")
                     let operation = RVSubscribeOperation<T>(datasource: self, subscription: subscription, callback: { (models, error) in
                         if let error = error {
                             print("In \(self.classForCoder).subscribe, got error)")
@@ -185,8 +187,14 @@ class RVBaseDatasource4<T:NSObject>: NSObject {
                     })
  */
                     self.queue.addOperation(operation)
+                } else {
+           //         print("In \(self.classForCoder).subscribe subscription.isFront: \(subscription.isFront), datasource.isFront \(front)")
                 }
+            } else {
+                print("In \(self.classForCoder).subscribe, not subscription")
             }
+        } else {
+            print("In \(self.classForCoder).subscribe, passed subsciprtionActive")
         }
     }
     func receiveSubscriptionResponse(notification: NSNotification) {
@@ -214,6 +222,7 @@ class RVBaseDatasource4<T:NSObject>: NSObject {
     }
 
     deinit {
+        print("In \(self.classForCoder).deinit")
         self.unsubscribe {}
         self.cancelAllOperations()
     }
@@ -432,25 +441,29 @@ extension RVBaseDatasource4 {
             else { return elements[elementsCount - 1] }
         }
     }
-    
-    func sectionCollapse(scrollView: UIScrollView?, query: RVQuery, callback: @escaping RVCallback<T>) {
+    func shutDown() {
+       // print("In \(self.classForCoder)shutDown()")
         self.unsubscribe{}
         self.cancelAllOperations()
+    }
+    func sectionCollapse(scrollView: UIScrollView?, query: RVQuery, callback: @escaping RVCallback<T>) {
+        print("In \(self.classForCoder).sectionCollapse")
+        self.shutDown()
         self.queue.addOperation(RVExpandCollapseOperation(datasource: self, scrollView: scrollView, operationType: .collapseAndZero, query: query, callback: callback))
     }
     func sectionLoadOrUnload(scrollView: UIScrollView?, query: RVQuery, callback: @escaping RVCallback<T>) {
-        self.unsubscribe{}
-        self.cancelAllOperations()
+        print("In \(self.classForCoder).sectionCollapse")
+        self.shutDown()
         self.queue.addOperation(RVExpandCollapseOperation(datasource: self, scrollView: scrollView, operationType: .sectionLoadOrUnload, query: query, callback: callback))
     }
     func restart(scrollView: UIScrollView?, query: RVQuery, sectionsDatasourceType: RVDatasourceType = .main, callback: @escaping RVCallback<T>) {
-        self.unsubscribe{}
-        self.cancelAllOperations()
+        print("In \(self.classForCoder).sectionCollapse")
+        self.shutDown()
         self.queue.addOperation(RVExpandCollapseOperation(datasource: self, scrollView: scrollView, operationType: .collapseZeroExpandAndLoad, query: query, sectionsDatasourceType: sectionsDatasourceType, callback: callback))
     }
     func collapseZeroAndExpand(scrollView: UIScrollView?, query: RVQuery, callback: @escaping RVCallback<T>) {
-        self.unsubscribe{}
-        self.cancelAllOperations()
+        print("In \(self.classForCoder).sectionCollapse")
+        self.shutDown()
         self.queue.addOperation(RVExpandCollapseOperation(datasource: self, scrollView: scrollView, operationType: .collapseZeroAndExpand, query: query, callback: callback))
     }
     func expand(scrollView: UIScrollView?, callback: @escaping RVCallback<T>) {
@@ -762,6 +775,7 @@ class RVSubcriptionResponseOperation<T:NSObject>: RVLoadOperation<T> {
         }
     }
     func resubscribe(callback: @escaping () -> Void) {
+    //    print("In \(self.classForCoder).resubscribe")
         self.datasource.unsubscribe {
             let operation = RVLoadOperation(title: "Resubscribe", datasource: self.datasource, scrollView: self.scrollView, front: self.front, callback: { (models, error) in
                 if let error = error {
@@ -811,6 +825,7 @@ class RVLoadOperation<T:NSObject>: RVAsyncOperation<T> {
         InnerMain()
     }
     func unsubscribeByArea() {
+       // print("In \(self.classForCoder).unsubscribeByArea")
         if let subscription = self.datasource.subscription {
             if subscription.isFront && self.front {
                 self.datasource.unsubscribe{}
@@ -835,6 +850,7 @@ class RVLoadOperation<T:NSObject>: RVAsyncOperation<T> {
         } else { return false}
     }
     func initiateSubscription(subscription: RVSubscription, query: RVQuery, reference: T?, callback: @escaping () -> Void) {
+    //    print("In \(self.classForCoder).initiateSubscription \(reference)")
         self.datasource.subscriptionActive = true
         DispatchQueue.main.async {
             self.datasource.listenToSubscriptionNotification(subscription: subscription)
@@ -882,6 +898,7 @@ class RVLoadOperation<T:NSObject>: RVAsyncOperation<T> {
                         self.finishUp(items: self.itemsPlug, error: nil)
                         return
                     } else {
+                    //    print("In \(self.classForCoder).InnerMain, about to call unsubscribeByArea self.front = \(self.front)")
                         self.unsubscribeByArea()
                         self.datasource.frontOperationActive = true
                     }
@@ -893,11 +910,12 @@ class RVLoadOperation<T:NSObject>: RVAsyncOperation<T> {
                         self.finishUp(items: self.itemsPlug, error: nil)
                         return
                     } else {
+                 //       print("In \(self.classForCoder).InnerMain about to call unsubscribeByArea self.front is \(self.front)")
                         self.unsubscribeByArea()
                         self.datasource.backOperationActive = true
                     }
                 }
-                //print("In \(self.classForCoder).InnerMain, about to do retrieve. Front: \(self.front)")
+               // print("In \(self.classForCoder).InnerMain, about to do retrieve. Front: \(self.front)")
                 query = query.duplicate()
                 self.reference = self.front ? datasource.frontElement : datasource.backElement
                 var query = datasource.updateSortTerm(query: query, front: self.front, candidate: self.reference)
@@ -947,7 +965,8 @@ class RVLoadOperation<T:NSObject>: RVAsyncOperation<T> {
                             error.append(message: "In \(self.instanceType).main, got error doing innerRetrieve")
                             self.finishUp(items: models, error: error)
                             return
-                        } else if models.count > 0 {
+                        }
+                        else if models.count > 0 {
                            // print("In \(self.classForCoder).InnerMain, have \(models.count) models")
                             self.insert(models: models, callback: { (models, error) in
                                 if let error = error {
@@ -955,16 +974,22 @@ class RVLoadOperation<T:NSObject>: RVAsyncOperation<T> {
                                     self.finishUp(items: models, error: error)
                                     return
                                 } else {
-                                    self.cleanup(models: models, callback: { (models, error) in
-                                        self.refreshViews {
-                                            self.finishUp(items: models, error: nil)
-                                        }
-                                    })
+                                    if models.count > 0 {
+                                        self.cleanup(models: models, callback: { (models, error) in
+                                            self.refreshViews {
+                                                self.finishUp(items: models, error: nil)
+                                            }
+                                        })
+                                    } else {
+                                        self.finishUp(items: models , error: nil)
+                                    }
+
                                     return
                                 }
                             })
                             return
                         } else {
+                            self.checkSubscription()
                             self.finishUp(items: models, error: error)
                             return
                         }
@@ -1144,12 +1169,14 @@ class RVLoadOperation<T:NSObject>: RVAsyncOperation<T> {
         }
     }
     func backHandler(models: [T]) -> (indexPaths: [IndexPath], sectionIndexes: IndexSet) {
+        var indexPaths = [IndexPath]()
+        var sectionIndexes = [Int]()
+        if models.count == 0 { return (indexPaths, IndexSet(sectionIndexes)) }
         let section = !self.datasource.sectionDatasourceMode ? self.datasource.section : self.datasource.FAKESECTION
         //let virtualIndex = datasource.elementsCount + datasource.offset
         let virtualIndex = self.datasource.virtualCountIndependentOfCollapse
         var clone = datasource.cloneItems()
-        var indexPaths = [IndexPath]()
-        var sectionIndexes = [Int]()
+
         for i in 0..<models.count {
             clone.append(models[i])
             if (section >= 0) {
@@ -1163,10 +1190,12 @@ class RVLoadOperation<T:NSObject>: RVAsyncOperation<T> {
     }
     func frontHandler(newModels: [T]) -> (indexPaths: [IndexPath], sectionIndexes: IndexSet) {
         //print("In \(self.classForCoder).frontHandler")
-        var clone = datasource.cloneItems()
- 
         var indexPaths = [IndexPath]()
         var sectionIndexes = [Int]()
+        if newModels.count == 0 { return (indexPaths, IndexSet(sectionIndexes)) }
+        var clone = datasource.cloneItems()
+ 
+
         let newCount = newModels.count
         if self.datasource.offset > 0 {
             print("In \(self.classForCoder).insertFront offset is \(self.datasource.offset) and newCount = \(newCount)")
@@ -1225,9 +1254,21 @@ class RVLoadOperation<T:NSObject>: RVAsyncOperation<T> {
     }
     
     
-    
+    func checkSubscription() {
+        if self.subscriptionOperation == .none {
+            
+            //  if (self.front && self.datasource.offset == 0) || !self.front {
+            if let subscription = self.datasource.subscription {
+                if !subscription.active {
+                    //   print("In \(self.classForCoder).insert. About to call subscribe self.front = \(self.front)")
+                    self.datasource.subscribe(scrollView: self.scrollView, front: self.front)
+                }
+            }
+            //   }
+        }
+    }
     func insert(models: [T], callback: @escaping RVCallback<T>) {
-        //print("In \(self.classForCoder).insert")
+       // print("In \(self.classForCoder).insert with models: \(models.count) \(self.front)")
         DispatchQueue.main.async {
             if self.isCancelled {
                 callback(models, nil)
@@ -1237,7 +1278,7 @@ class RVLoadOperation<T:NSObject>: RVAsyncOperation<T> {
             if self.datasource.datasourceType == .filter {
                 let room = self.datasource.maxArraySize - self.datasource.elementsCount
                 if (models.count <= room) { sizedModels = models }
-                else {
+                else if models.count > 0 {
                     for i in 0..<room { sizedModels.append(models[i]) }
                 }
             } else { sizedModels = models }
@@ -1257,56 +1298,50 @@ class RVLoadOperation<T:NSObject>: RVAsyncOperation<T> {
                         return
                     }
                     tableView.beginUpdates()
-                  //  print("In \(self.classForCoder).insert, have \(models.count) \(String(describing: models.first))")
-                    if let indexPaths = tableView.indexPathsForVisibleRows { if let indexPath = indexPaths.last { originalRow = indexPath.row } }
-
-                    // print("In \(self.classForCoder).insert, subscriptionOperation = \(self.subscriptionOperation)")
-                    if (self.subscriptionOperation == .response) || self.referenceMatch {
-                        let point = CGPoint(x: 10, y: (tableView.bounds.origin.y + tableView.bounds.height))
-                        if let indexPath = tableView.indexPathForRow(at: point) { originalRow = indexPath.row }
-                        var indexPaths = [IndexPath]()
-                        var sectionIndexes = IndexSet()
-                        //print("In \(self.classForCoder).insert, tableView reference match")
-                        if self.front {
-                            let paths = self.frontHandler(newModels: sizedModels)
-                            indexPaths = paths.indexPaths
-                            sectionIndexes = paths.sectionIndexes
-                        }
-                        else {
-                            let paths = self.backHandler(models: sizedModels)
-                            indexPaths = paths.indexPaths
-                            sectionIndexes = paths.sectionIndexes
-                        }
-                        //print("In \(self.classForCoder).insert numberOfIndexPaths = \(indexPaths.count)")
-                        if  (!self.datasource.collapsed)  {
-                            if !self.datasource.sectionDatasourceMode {
-                               tableView.insertRows(at: indexPaths, with: UITableViewRowAnimation.middle)
-                            } else {
-                                 //print("In \(self.classForCoder).insert \(#line), about to insertSections number: \(sectionIndexes.count)")
-                                tableView.insertSections(sectionIndexes , with: UITableViewRowAnimation.top)
-                            }
-                            indexPathsCount = indexPaths.count
-                        }
-                    } else {
-                        print("In \(self.classForCoder).insert, tableView no reference match reference is \(self.reference?.description ?? " no reference")")
-                        /*
-                        if self.subscriptionOperation {
-                            if let subscription = self.datasource.subscription {
-                                subscription.reference = self.front ? self.datasource.frontElement : self.datasource.backElement
-                            }
-                        }
- */
-                    }
-                    if self.subscriptionOperation == .none {
+                    if sizedModels.count >= 0 {
+                        //  print("In \(self.classForCoder).insert, have \(models.count) \(String(describing: models.first))")
+                        if let indexPaths = tableView.indexPathsForVisibleRows { if let indexPath = indexPaths.last { originalRow = indexPath.row } }
                         
-                      //  if (self.front && self.datasource.offset == 0) || !self.front {
-                            if let subscription = self.datasource.subscription {
-                                if !subscription.active {
-                                    self.datasource.subscribe(scrollView: self.scrollView, front: self.front)
-                                }
+                        // print("In \(self.classForCoder).insert, subscriptionOperation = \(self.subscriptionOperation)")
+                        if (self.subscriptionOperation == .response) || self.referenceMatch {
+                            let point = CGPoint(x: 10, y: (tableView.bounds.origin.y + tableView.bounds.height))
+                            if let indexPath = tableView.indexPathForRow(at: point) { originalRow = indexPath.row }
+                            var indexPaths = [IndexPath]()
+                            var sectionIndexes = IndexSet()
+                            //print("In \(self.classForCoder).insert, tableView reference match")
+                            if self.front {
+                                let paths = self.frontHandler(newModels: sizedModels)
+                                indexPaths = paths.indexPaths
+                                sectionIndexes = paths.sectionIndexes
                             }
-                     //   }
+                            else {
+                                let paths = self.backHandler(models: sizedModels)
+                                indexPaths = paths.indexPaths
+                                sectionIndexes = paths.sectionIndexes
+                            }
+                            //print("In \(self.classForCoder).insert numberOfIndexPaths = \(indexPaths.count)")
+                            if  (!self.datasource.collapsed)  {
+                                if (!self.datasource.sectionDatasourceMode) && (indexPaths.count > 0) {
+                                    tableView.insertRows(at: indexPaths, with: UITableViewRowAnimation.middle)
+                                } else if sectionIndexes.count > 0 {
+                                    //print("In \(self.classForCoder).insert \(#line), about to insertSections number: \(sectionIndexes.count)")
+                                    tableView.insertSections(sectionIndexes , with: UITableViewRowAnimation.top)
+                                }
+                                indexPathsCount = indexPaths.count
+                            }
+                        } else {
+                            print("In \(self.classForCoder).insert, tableView no reference match reference is \(self.reference?.description ?? " no reference")")
+                            /*
+                             if self.subscriptionOperation {
+                             if let subscription = self.datasource.subscription {
+                             subscription.reference = self.front ? self.datasource.frontElement : self.datasource.backElement
+                             }
+                             }
+                             */
+                        }
                     }
+
+                    self.checkSubscription()
                     tableView.endUpdates()
                     tableView.isScrollEnabled = originalScrollEnabled
                     if self.isCancelled {
@@ -1396,7 +1431,7 @@ class RVLoadOperation<T:NSObject>: RVAsyncOperation<T> {
     }
     func finishUp(items: [T], error: RVError?) {
         DispatchQueue.main.async {
-            //print("In \(self.classForCoder).finishUp")
+          //  print("In \(self.classForCoder).finishUp")
             self.callback(items, error)
             Timer.scheduledTimer(withTimeInterval: 0.4, repeats: false , block: { (timer) in
                 if (self.front) && ( self.subscriptionOperation == .none) { self.datasource.frontOperationActive = false }

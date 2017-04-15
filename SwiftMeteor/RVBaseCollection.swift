@@ -103,6 +103,7 @@ class RVBaseCollection: AbstractCollection {
     }
 
     deinit {
+        print("In \(self.classForCoder).deinit. about to call unsubscribe")
         self.unsubscribeSelf { }
     }
 }
@@ -180,11 +181,11 @@ print("In \(self.classForCoder).unc subscribe(query: RVQuery)")
      - parameter id: An id string returned from a subscription request
      */
     func unsubscribeSelf(callback: @escaping () -> Void)  {
-        print("In \(self.classForCoder).unsubscribeSelf with subscriptionID: \(self.subscriptionID ?? " no subscriptionId")")
+     //   print("In \(self.classForCoder).unsubscribeSelf with subscriptionID: \(self.subscriptionID ?? " no subscriptionId")")
         if let id = self.subscriptionID {
             self.subscriptionID = nil
             Meteor.unsubscribe(withId: id, callback: {
-               print("In \(self.classForCoder).unsubscribeSelf subscriptionId \(id) had ID and returned from unsubscribing")
+            //   print("In \(self.classForCoder).unsubscribeSelf subscriptionId \(id) had ID and returned from unsubscribing")
             })
         } else {
             callback()

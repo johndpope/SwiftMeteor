@@ -12,10 +12,10 @@ class RVBaseCollectionSubscription: RVBaseCollection, RVSubscription {
     override var notificationName: Notification.Name { return Notification.Name("RVBaseaSubscriptionName.NEEDTOREPLACE") }
     let MaxOperations = 200
     let queue = RVOperationQueue()
-    init(front: Bool = true, showResponse: Bool = false) {
+    init(collection: RVModelType, front: Bool = true, showResponse: Bool = false) {
         self.front = front
         self.showResponse = showResponse
-        super.init(collection: .transaction)
+        super.init(collection: collection)
     }
     override func populate(id: String, fields: NSDictionary) -> RVBaseModel {
         let transaction = RVTransaction(id: id , fields: fields)
@@ -71,7 +71,7 @@ class RVBaseCollectionSubscription: RVBaseCollection, RVSubscription {
     var reference: RVBaseModel? = nil
     
     func subscribe(query: RVQuery, reference: RVBaseModel?, callback: @escaping() -> Void) -> Void {
-        print("In \(self.classForCoder).subscribe ..........")
+      //  print("In \(self.classForCoder).subscribe ..........")
         if self.active { print("In \(self.classForCoder).subscribe, subscription was already active") }
         self._active    = true
         self.reference  = reference
@@ -79,6 +79,7 @@ class RVBaseCollectionSubscription: RVBaseCollection, RVSubscription {
     }
     func unsubscribe(callback: @escaping ()-> Void) -> Void {
         self.queue.cancelAllOperations()
+       // print("In \(self.classForCoder).unsubscribe about to call unsubscribeSelf")
         self.unsubscribeSelf {
             self._active = false
             callback()
