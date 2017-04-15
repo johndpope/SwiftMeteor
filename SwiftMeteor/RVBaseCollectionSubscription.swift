@@ -10,6 +10,7 @@ import Foundation
 import UIKit
 class RVBaseCollectionSubscription: RVBaseCollection, RVSubscription {
     override var notificationName: Notification.Name { return Notification.Name("RVBaseaSubscriptionName.NEEDTOREPLACE") }
+
     let MaxOperations = 200
     let queue = RVOperationQueue()
     init(collection: RVModelType, front: Bool = true, showResponse: Bool = false) {
@@ -51,7 +52,7 @@ class RVBaseCollectionSubscription: RVBaseCollection, RVSubscription {
                 if queue.operationCount > self.MaxOperations {
                     print("In \(self.classForCoder).finishUp \(eventType), queCount > MaxOperations. Count is: \(queue.operationCount). Tossing Operation")
                 } else {
-                    print("In \(self.classForCoder).finishUp, collection: \(collection) eventType: \(eventType), id: \(id)")
+                   // print("In \(self.classForCoder).finishUp, collection: \(collection) eventType: \(eventType), id: \(id)")
                     queue.addOperation(RVModelSubscriptionBroadcast<RVBaseModel>(subscription: self , models: models, eventType: eventType, id: id))
                 }
             } else {
@@ -85,6 +86,7 @@ class RVBaseCollectionSubscription: RVBaseCollection, RVSubscription {
             callback()
         }
     }
+    
     
 }
 class RVModelSubscriptionBroadcast<T: NSObject>: RVAsyncOperation<T> {

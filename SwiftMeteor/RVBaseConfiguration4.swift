@@ -306,7 +306,7 @@ class RVBaseConfiguration4 {
         }
     }
     func loadDynamicSections(sectionDatasourceType: RVDatasourceType, callback: @escaping(RVError?) -> Void) {
-        print("In \(self.instanceType).loadDynamicSections(sectionDatasourceType")
+        //print("In \(self.instanceType).loadDynamicSections(sectionDatasourceType")
         var (query, error) = self.mainQuery(andTerms: [RVQueryItem](), sortTerm: RVSortTerm(field: .createdAt, order: .descending))
         query = query.duplicate()
         //query.addSort(field: .createdAt, order: .ascending)

@@ -147,6 +147,7 @@ class RVBaseDatasource4<T:NSObject>: NSObject {
       //  print("In \(self.classForCoder).unsubscribe")
             if let subscription = self.subscription {
                 NotificationCenter.default.removeObserver(self, name: subscription.notificationName, object: nil)
+                NotificationCenter.default.removeObserver(self, name: subscription.unsubscribeNotificationName, object: nil)
                 notificationInstalled = false
                 subscription.unsubscribe(callback: {
                     self.subscriptionActive = false
@@ -158,10 +159,28 @@ class RVBaseDatasource4<T:NSObject>: NSObject {
         }
     }
     func listenToSubscriptionNotification(subscription: RVSubscription) {
-        print("In \(self.classForCoder).listenToSubscription")
+       // print("In \(self.classForCoder).listenToSubscription")
         if !notificationInstalled {
             notificationInstalled = true
             NotificationCenter.default.addObserver(self, selector: #selector(RVBaseDatasource4<T>.receiveSubscriptionResponse(notification:)), name: subscription.notificationName, object: nil)
+            NotificationCenter.default.addObserver(self, selector: #selector(RVBaseDatasource4<T>.unsubscribeNotification(notification:)), name: subscription.unsubscribeNotificationName, object: nil)
+        }
+    }
+    func unsubscribeNotification(notification: NSNotification) {
+        if let userInfo = notification.userInfo {
+            if let modelType = userInfo[RVBaseCollection.collectionNameKey] as? RVModelType {
+                if let subscription = self.subscription {
+                    if subscription.collection == modelType {
+                        print("In \(self.classForCoder).unsubscribeNotification for \(modelType.rawValue)")
+                        let operation = RVForcedUnsubscribe(datasource: self, scrollView: self.scrollView, callback: { (models, error) in
+                            if let error = error {
+                                error.printError()
+                            }
+                        })
+                        queue.addOperation(operation)
+                    }
+                }
+            }
         }
     }
     func subscribe(scrollView: UIScrollView?, front: Bool) {
@@ -198,10 +217,10 @@ class RVBaseDatasource4<T:NSObject>: NSObject {
         }
     }
     func receiveSubscriptionResponse(notification: NSNotification) {
-        print("In \(self.classForCoder).receiveSubscription")
+      //  print("In \(self.classForCoder).receiveSubscription")
         if let userInfo = notification.userInfo {
             if let payload = userInfo[RVPayload.payloadInfoKey] as? RVPayload<T> {
-                print("In \(self.classForCoder).receiveSubscription have payload \(payload.toString())")
+               // print("In \(self.classForCoder).receiveSubscription have payload \(payload.toString())")
                 if let subscription = self.subscription {
                     if subscription.identifier == payload.subscription.identifier {
                         //print("In \(self.classForCoder).receiveSubscription subscriptions match")
@@ -231,7 +250,7 @@ class RVBaseDatasource4<T:NSObject>: NSObject {
     }
 
     deinit {
-        print("In \(self.classForCoder).deinit")
+        //print("In \(self.classForCoder).deinit")
         self.unsubscribe {}
         self.cancelAllOperations()
     }
@@ -456,22 +475,22 @@ extension RVBaseDatasource4 {
         self.cancelAllOperations()
     }
     func sectionCollapse(scrollView: UIScrollView?, query: RVQuery, callback: @escaping RVCallback<T>) {
-        print("In \(self.classForCoder).sectionCollapse")
+    //    print("In \(self.classForCoder).sectionCollapse")
         self.shutDown()
         self.queue.addOperation(RVExpandCollapseOperation(datasource: self, scrollView: scrollView, operationType: .collapseAndZero, query: query, callback: callback))
     }
     func sectionLoadOrUnload(scrollView: UIScrollView?, query: RVQuery, callback: @escaping RVCallback<T>) {
-        print("In \(self.classForCoder).sectionCollapse")
+    //    print("In \(self.classForCoder).sectionCollapse")
         self.shutDown()
         self.queue.addOperation(RVExpandCollapseOperation(datasource: self, scrollView: scrollView, operationType: .sectionLoadOrUnload, query: query, callback: callback))
     }
     func restart(scrollView: UIScrollView?, query: RVQuery, sectionsDatasourceType: RVDatasourceType = .main, callback: @escaping RVCallback<T>) {
-        print("In \(self.classForCoder).sectionCollapse")
+      //  print("In \(self.classForCoder).sectionCollapse")
         self.shutDown()
         self.queue.addOperation(RVExpandCollapseOperation(datasource: self, scrollView: scrollView, operationType: .collapseZeroExpandAndLoad, query: query, sectionsDatasourceType: sectionsDatasourceType, callback: callback))
     }
     func collapseZeroAndExpand(scrollView: UIScrollView?, query: RVQuery, callback: @escaping RVCallback<T>) {
-        print("In \(self.classForCoder).sectionCollapse")
+     //   print("In \(self.classForCoder).sectionCollapse")
         self.shutDown()
         self.queue.addOperation(RVExpandCollapseOperation(datasource: self, scrollView: scrollView, operationType: .collapseZeroAndExpand, query: query, callback: callback))
     }
@@ -487,9 +506,53 @@ extension RVBaseDatasource4 {
 
 }
 
+
+class RVForcedUnsubscribe<T: NSObject>: RVAsyncOperation<T> {
+    weak var datasource: RVBaseDatasource4<T>? = nil
+    weak var scrollView: UIScrollView? = nil
+    var emptyModels = [T]()
+    init(datasource: RVBaseDatasource4<T>, scrollView: UIScrollView? = nil, callback: @escaping RVCallback<T>) {
+        self.datasource = datasource
+        self.scrollView = scrollView
+        super.init(title: "RVForcedUnsubscribe", callback: callback)
+    }
+    override func asyncMain() {
+        if self.isCancelled {
+            self.finishUp(models: self.emptyModels, error: nil)
+        } else {
+            if let manager = self.datasource {
+                if let tableView = self.scrollView as? UITableView {
+                    tableView.beginUpdates()
+                    manager.unsubscribe {
+                        tableView.endUpdates()
+                        self.finishUp(models: self.emptyModels, error: nil)
+                    }
+                } else if let collectionView = self.scrollView as? UICollectionView {
+                    collectionView.performBatchUpdates({
+                        manager.unsubscribe {
+                            
+                        }
+                    }, completion: { (success) in
+                        self.finishUp(models: self.emptyModels, error: nil)
+                    })
+                } else {
+                    manager.unsubscribe {
+                        self.finishUp(models: self.emptyModels, error: nil)
+                    }
+                }
+            } else {
+                self.finishUp(models: self.emptyModels, error: nil)
+            }
+        }
+    }
+    func finishUp(models: [T], error: RVError?) {
+        DispatchQueue.main.async {
+            self.callback(models, error)
+            self.completeOperation()
+        }
+    }
+}
 class RVExpandCollapseOperation<T:NSObject>: RVLoadOperation<T> {
-
-
     var operationType: RVExpandCollapseOperationType
     var query: RVQuery
     var emptyModels = [T]()
@@ -866,7 +929,7 @@ class RVLoadOperation<T:NSObject>: RVAsyncOperation<T> {
             if let reference = reference as? RVBaseModel? {
                 subscription.subscribe(query: query, reference: reference, callback: callback)
             } else if let referenceDatasource = reference as? RVBaseDatasource4<RVBaseModel> {
-                print("In \(self.classForCoder).initiateSubscription, passed casting Reference: \(reference?.description ?? "No reference") for subscription \(subscription)")
+               // print("In \(self.classForCoder).initiateSubscription, passed casting Reference: \(reference?.description ?? "No reference") for subscription \(subscription)")
                 let model = subscription.isFront ? referenceDatasource.frontElement : referenceDatasource.backElement
              //   if let model = model as? RVBaseModel? {
                     subscription.subscribe(query: query , reference: model , callback: callback)

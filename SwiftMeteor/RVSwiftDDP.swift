@@ -116,7 +116,9 @@ class RVSwiftDDP: NSObject {
         return Meteor.subscribe(collectionName.rawValue, params: params, callback: callback)
     }
     func unsubscribe(collectionName: String, callback: @escaping() -> Void ) -> [String] {
-        return Meteor.unsubscribe(collectionName, callback: callback)
+        return Meteor.unsubscribe(collectionName) {
+            callback()
+        }
     }
     func unsubscribe(subscriptionId: String, callback: @escaping() -> Void ) {
         return Meteor.unsubscribe(withId: subscriptionId, callback: callback)

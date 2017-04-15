@@ -16,6 +16,8 @@ class RVBaseCollection: AbstractCollection {
         case removed    = "removed"
     }
     var notificationName: Notification.Name { return Notification.Name("BaseSubscriptionNeedsToBeOverridden") }
+    var unsubscribeNotificationName = Notification.Name("RVSubscriptionUnsubscribed")
+    static let collectionNameKey = "CollectionNameKey"
     var collection: RVModelType
     var query: RVQuery = RVQuery()
     var instanceType: String { get { return String(describing: type(of: self)) } }
@@ -24,11 +26,13 @@ class RVBaseCollection: AbstractCollection {
     var listeners = [String]()
     public typealias basicCallback = () -> Void
     init(collection: RVModelType) {
-        if let type = Meteor.collection(collection.rawValue) {
-            print("Warning. Collection of type: \(collection.rawValue) already subscribed, yet attempting to subscribe again \(type)")
-        }
+
         self.collection = collection
-        super.init(name: collection.rawValue)    }
+        super.init(name: collection.rawValue)
+        if let type = Meteor.collection(collection.rawValue) {
+            print("Warning. In \(self.classForCoder).init Collection of type: \(collection.rawValue) already subscribed, yet initiating a new potential subscription \(type)")
+        }
+    }
     /*
     func findRecord(id: String) -> RVBaseModel? {
         let elements = self.elements
@@ -108,11 +112,13 @@ class RVBaseCollection: AbstractCollection {
     }
 }
 extension RVBaseCollection {
+    /*
     func checkIfSubscribed() {
         if let type = Meteor.collection(collection.rawValue) {
-            print("Warning. Collection of type: \(collection.rawValue) already subscribed, yet attempting to subscribe again \(type)")
+            print("Warning. In \(self.classForCoder).checkIfSubscribed, Collection of type: \(collection.rawValue) already subscribed, yet attempting to subscribe again \(type)")
         }
     }
+ */
     /**
     Sends a subscription request to the server.
     
@@ -157,7 +163,7 @@ print("In \(self.classForCoder).unc subscribe(query: RVQuery)")
      - parameter callback:   The closure to be executed when the server sends a 'ready' message.
      */
     func subscribe(query:RVQuery, callback: @escaping () -> ()) -> String {
-        print("---------- IN \(self.classForCoder).subscribe(query....")
+      //  print("---------- IN \(self.classForCoder).subscribe(query....")
         self.query = query
         let (filters, projection) = query.query()
         self.subscriptionID = Meteor.subscribe(collection.rawValue, params: [filters as AnyObject, projection as AnyObject], callback: callback)
@@ -173,7 +179,10 @@ print("In \(self.classForCoder).unc subscribe(query: RVQuery)")
     func unsubscribeAll(callback: @escaping () -> Void) -> [String] {
         self.subscriptionID = nil
         print("In \(self.classForCoder).unsubscribe ")
-        return Meteor.unsubscribe(collection.rawValue, callback: callback)
+        return Meteor.unsubscribe(collection.rawValue) {
+            NotificationCenter.default.post(name: self.unsubscribeNotificationName, object: nil, userInfo: [RVBaseCollection.collectionNameKey: self.collection])
+            callback()
+        }
     }
     
     /**

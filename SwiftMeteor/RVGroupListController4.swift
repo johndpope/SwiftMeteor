@@ -7,15 +7,15 @@
 //
 
 import UIKit
-import SwiftDDP
+
 
 class RVGroupListController4: RVBaseSLKViewController4 {
     
  
     override var instanceConfiguration: RVBaseConfiguration4 { return RVTransactionConfiguration4(scrollView: dsScrollView) }
     override func viewDidLoad() {
-        Meteor.unsubscribe(RVModelType.transaction.rawValue) { 
-            
+        let _ = RVSwiftDDP.sharedInstance.unsubscribe(collectionName: RVModelType.transaction.rawValue) {
+            print("In \(self.classForCoder).viewDidLoad, returned from unsubscribing")
         }
         if let tableView = self.tableView {
             tableView.separatorStyle = .singleLine
@@ -27,5 +27,6 @@ class RVGroupListController4: RVBaseSLKViewController4 {
         }
         if let tableView = self.tableView { tableView.register(RVFirstViewHeaderCell.self, forHeaderFooterViewReuseIdentifier: RVFirstViewHeaderCell.identifier) }
         super.viewDidLoad()
+        
     }
 }
