@@ -9,6 +9,8 @@
 import Foundation
 enum RVTop: String {
     case main = "main"
+    case loggedOut = "loggedOut"
+    case leftMenu = "leftMenu"
 }
 class RVStatePath8 {
     var instanceType: String { get { return String(describing: type(of: self)) } }
@@ -18,6 +20,7 @@ class RVStatePath8 {
     var crud:       RVCrud      = .list
     var parameters: [RVKeys: AnyObject] = [RVKeys: AnyObject]()
     var model:      RVBaseModel? = nil
+    var mainControllerIdentifier: String? = nil
     var path: String {
         return "\(top.rawValue)\(self.separator)\(modelType.rawValue)\(self.separator)\(crud.rawValue)"
     }
@@ -56,6 +59,10 @@ class RVStatePath8 {
             default:
                 state = defaultState
             }
+        case .loggedOut:
+            state = defaultState // PLUG
+        case .leftMenu:
+            state = defaultState // Plug
         }
         return state
     }
