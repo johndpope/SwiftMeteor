@@ -17,6 +17,7 @@ class RVBaseSLKViewController8: SLKTextViewController {
     var deck: RVViewDeck8 { get { return RVViewDeck8.shared }}
     @IBOutlet weak var transparentTableViewBackground: UIView!
     @IBOutlet weak var searchControllerContainerView: UIView!
+    @IBOutlet weak var TopOuterViewTopConstraint: NSLayoutConstraint!
     @IBOutlet weak var TopOuterView:            UIView!
     @IBOutlet weak var TopTopView:              UIView!
     @IBOutlet weak var TopMiddleView:           UIView!
@@ -24,9 +25,11 @@ class RVBaseSLKViewController8: SLKTextViewController {
     @IBOutlet weak var TopTopHeightConstraint:    NSLayoutConstraint!
     @IBOutlet weak var TopMiddleHeightConstraint: NSLayoutConstraint!
     @IBOutlet weak var TopBottomHeightConstraint: NSLayoutConstraint!
+    var searchSectionTableViewOffset: CGFloat = 0.0
+    var topOuterViewOriginalTopConstraint: CGFloat = 0.0
     var tableViewInsetAdditionalHeight: CGFloat = 0.0
     let navBarHeight: CGFloat = 62.0
-    var _lastSearchTerm: String = "Dummy Value"
+    let _lastSearchTerm: String = "Dummy Value"
     var lastSearchTerm: String  = "Dummy Value"
     var SLKIsInverted: Bool                             { return configuration.SLKIsInverted }
     var SLKbounces: Bool                                { return configuration.SLKbounces }
@@ -89,6 +92,7 @@ class RVBaseSLKViewController8: SLKTextViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        if let constraint = TopOuterViewTopConstraint { self.topOuterViewOriginalTopConstraint = constraint.constant }
         self.searchControllerContainerView.isHidden = true
         //sectionManager = RVDSManager5Transaction<RVBaseModel>(scrollView: self.dsScrollView, maxSize: 80, managerType: .main, dynamicSections: false)
         sectionManager = configuration.manager
@@ -146,11 +150,12 @@ class RVBaseSLKViewController8: SLKTextViewController {
     func performSearch(searchText: String, field: RVKeys, order: RVSortOrder = .ascending) {
         if lastSearchTerm == searchText { return }
         lastSearchTerm = searchText.lowercased()
+        
         self.configuration.loadSearch(searchText: searchText, field: field, order: order) { (error ) in
             if let error = error {
                 error.printError()
             } else {
-                self.zeroTopView()
+
             }
         }
         
@@ -171,6 +176,8 @@ class RVBaseSLKViewController8: SLKTextViewController {
          */
     }
     func endSearch() {
+        self.searchSectionTableViewOffset = 0.0
+        if let constraint = self.TopOuterViewTopConstraint { constraint.constant = self.topOuterViewOriginalTopConstraint }
         self.configuration.endSearch { (error) in
             if let error = error {
                 error.append(message: "In \(self.instanceType).endSearch2, got error ")
@@ -178,6 +185,7 @@ class RVBaseSLKViewController8: SLKTextViewController {
             } else {
                 self.expandTopView()
                 self.searchControllerContainerView.isHidden = true
+                self.lastSearchTerm = self._lastSearchTerm
             }
         }
     }
@@ -464,7 +472,9 @@ extension RVBaseSLKViewController8 {
         if let constraint = constraint { constraint.constant = newValue }
     }
     func showTopView() { if let view = TopOuterView { view.isHidden = false } }
-    func hideTopView() { if let view = TopOuterView { view.isHidden = true } }
+    func hideTopView() {
+        if let view = TopOuterView { view.isHidden = true }
+    }
     func putTopViewOnTop() {
         if let outerView = TopOuterView {
             self.view.bringSubview(toFront: outerView)
@@ -473,10 +483,11 @@ extension RVBaseSLKViewController8 {
     }
     func updateTableViewInsetHeight() {
         if let tableView = self.dsScrollView as? UITableView {
-            let height = totalTopHeight - tableViewInsetAdditionalHeight
-            tableViewInsetAdditionalHeight = totalTopHeight
+         //   print("In \(self.classForCoder).updateTableVIewInsetHeight searchSectionTableViewOffset = \(self.searchSectionTableViewOffset)")
+            let height = totalTopHeight + self.searchSectionTableViewOffset - tableViewInsetAdditionalHeight
+            tableViewInsetAdditionalHeight = (totalTopHeight + self.searchSectionTableViewOffset )
             let inset = tableView.contentInset
-            tableView.contentInset = UIEdgeInsets(top: inset.top + height, left: inset.left, bottom: inset.bottom, right: inset.right)
+            tableView.contentInset = UIEdgeInsets(top: inset.top + height , left: inset.left, bottom: inset.bottom, right: inset.right)
             // print("in \(instanceType) topAreaHeight = \(topAreaHeight) height = \(height), original top was: \(inset.top) and is now \(tableView.contentInset.top), additionalHeight : \(tableViewInsetAdditionalHeight)")
         } else {
             print("In \(self.classForCoder).updateTableViewInsetHeight no tableView")
@@ -527,6 +538,7 @@ extension RVBaseSLKViewController8 {
 extension RVBaseSLKViewController8: UISearchResultsUpdating {
     func updateSearchResults(for searchController: UISearchController) {
         if searchController.isActive {
+           // print("In \(self.classForCoder).updateSearchResults, is Active")
             let searchBar = searchController.searchBar
             let searchText = searchBar.text != nil ? searchBar.text! : ""
             var searchKey = RVKeys.title
@@ -541,6 +553,13 @@ extension RVBaseSLKViewController8: UISearchResultsUpdating {
             } else {
                 searchBar.placeholder = "Search"
             }
+            if self.searchScopes.count > 1 {
+                let offset: CGFloat = 42.0
+                self.searchSectionTableViewOffset = offset
+                if let constraint = self.TopOuterViewTopConstraint { constraint.constant = constraint.constant + offset }
+            }
+            self.compressTopView()
+         //   self.zeroTopView()
             performSearch(searchText: searchText, field: searchKey, order: self.defaultSortOrder )
         } else {
             endSearch()

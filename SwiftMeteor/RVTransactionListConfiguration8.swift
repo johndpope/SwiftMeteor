@@ -13,8 +13,8 @@ class RVTransactionListConfiguration8: RVBaseConfiguration8 {
     override init(scrollView: UIScrollView? ) {
         super.init(scrollView: scrollView)
         self.subscription           = RVTransactionSubscription(front: true, showResponse: false)
-        self.configurationName      = "RVTransactionConfiguration4"
-        self.navigationBarTitle     = "Replace"
+        self.configurationName      = "RVTransactionListConfiguration8"
+        self.navigationBarTitle     = "Transactions"
         self.navigationBarColor     = UIColor.facebookBlue()
         self.showSearch             = true
         self.showTopView            = true
@@ -22,8 +22,9 @@ class RVTransactionListConfiguration8: RVBaseConfiguration8 {
         self.defaultSortOrder       = .ascending
         self.installSearchControllerInTableView = false
         self.searchBarPlaceholder   = "... Search"
-        self.topAreaMaxHeights          = [30.0, 40.0, 20.0]
-        self.topAreaMinHeights          = [10.0, 5.0, 2.0]
+        self.topAreaMaxHeights          = [30.0, 0.0, 0.0]
+        self.topAreaMinHeights          = [30.0, 0.0, 0.0]
+
         self.mainDatasourceMaxSize      = 300
         self.filterDatasourceMaxSize    = 300
         self.searchScopes               = [[RVKeys.title.rawValue: RVKeys.title], [RVKeys.fullName.rawValue: RVKeys.fullName]]

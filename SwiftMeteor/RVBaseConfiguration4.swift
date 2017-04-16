@@ -26,6 +26,14 @@ class RVBaseConfiguration4 {
     var topAreaMinHeights: [CGFloat] = [0.0, 0.0, 0.0]
     let LAST_SORT_STRING = "ZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZ"
     var subscription: RVSubscription? = nil
+    
+    var topTopMinimumHeight: CGFloat = 0.0
+    var topMiddleMinimumHeight: CGFloat = 0.0
+    var topBottomMinimumHeight: CGFloat = 0.0
+    
+    var topTopMaximumHeight: CGFloat = 0.0
+    var topMiddleMaximumHeight: CGFloat = 0.0
+    var topBottomMaximumHeight: CGFloat = 0.0
 
     var searchScopes: [[String : RVKeys]]     = [[RVKeys.title.rawValue: RVKeys.title], [RVKeys.fullName.rawValue: RVKeys.fullName]]
     var defaultSortOrder: RVSortOrder = .ascending
