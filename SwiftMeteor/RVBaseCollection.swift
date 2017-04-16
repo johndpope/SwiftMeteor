@@ -29,9 +29,9 @@ class RVBaseCollection: AbstractCollection {
 
         self.collection = collection
         super.init(name: collection.rawValue)
-        if let type = Meteor.collection(collection.rawValue) {
-            print("Warning. In \(self.classForCoder).init Collection of type: \(collection.rawValue) already subscribed, yet initiating a new potential subscription \(type)")
-        }
+//        if let type = Meteor.collection(collection.rawValue) {
+//            print("Warning. In \(self.classForCoder).init Collection of type: \(collection.rawValue) already subscribed, yet initiating a new potential subscription \(type)")
+//        }
     }
     /*
     func findRecord(id: String) -> RVBaseModel? {
@@ -112,27 +112,28 @@ class RVBaseCollection: AbstractCollection {
     }
 }
 extension RVBaseCollection {
-    /*
-    func checkIfSubscribed() {
+    
+    func checkIfSubscribed(instanceType: String) {
         if let type = Meteor.collection(collection.rawValue) {
-            print("Warning. In \(self.classForCoder).checkIfSubscribed, Collection of type: \(collection.rawValue) already subscribed, yet attempting to subscribe again \(type)")
+            print("Warning. In \(instanceType).checkIfSubscribed, Collection of type: \(collection.rawValue) already subscribed, yet attempting to subscribe again \(type)")
         }
     }
- */
+ 
     /**
     Sends a subscription request to the server.
     
     - parameter name:       The name of the subscription.
     */
     func subscribe() -> String {
-
-        print("In \(self.classForCoder).subscribe()")
+        checkIfSubscribed(instanceType: "\(self.instanceType)")
+    //    print("In \(self.classForCoder).subscribe()")
         let (filters, projections) = self.query.query()
         self.subscriptionID = Meteor.subscribe(collection.rawValue, params: [filters as AnyObject, projections as AnyObject])
         return self.subscriptionID!
     }
     func subscribe(callback: @escaping()-> Void) -> String {
-        print("In \(self.classForCoder).subscribe(callback: @escaping()-> Void")
+      //  print("In \(self.classForCoder).subscribe(callback: @escaping()-> Void")
+        checkIfSubscribed(instanceType: "\(self.instanceType)")
         let (filters, projections) = self.query.query()
         self.subscriptionID = Meteor.subscribe(collection.rawValue, params: [filters as AnyObject, projections as AnyObject], callback: callback)
         return self.subscriptionID!
@@ -146,7 +147,8 @@ extension RVBaseCollection {
      - parameter params:     An object containing method arguments, if any.
      */
     func subscribe(query: RVQuery) -> String {
-print("In \(self.classForCoder).unc subscribe(query: RVQuery)")
+        checkIfSubscribed(instanceType: "\(self.instanceType)")
+      //  print("In \(self.classForCoder).subscribe(query: RVQuery)")
         self.query = query
         let (filters, projection) = query.query()
         self.subscriptionID = Meteor.subscribe(collection.rawValue, params: [filters as AnyObject, projection as AnyObject])
@@ -163,6 +165,7 @@ print("In \(self.classForCoder).unc subscribe(query: RVQuery)")
      - parameter callback:   The closure to be executed when the server sends a 'ready' message.
      */
     func subscribe(query:RVQuery, callback: @escaping () -> ()) -> String {
+        checkIfSubscribed(instanceType: "\(self.instanceType)")
       //  print("---------- IN \(self.classForCoder).subscribe(query....")
         self.query = query
         let (filters, projection) = query.query()
@@ -178,7 +181,7 @@ print("In \(self.classForCoder).unc subscribe(query: RVQuery)")
      */
     func unsubscribeAll(callback: @escaping () -> Void) -> [String] {
         self.subscriptionID = nil
-        print("In \(self.classForCoder).unsubscribe ")
+        print("In \(self.classForCoder).unsubscribeAll")
         return Meteor.unsubscribe(collection.rawValue) {
             NotificationCenter.default.post(name: self.unsubscribeNotificationName, object: nil, userInfo: [RVBaseCollection.collectionNameKey: self.collection])
             callback()

@@ -1,5 +1,5 @@
 //
-//  RVBaseListController8.swift
+//  RVBaseCollectionSubscription8.swift
 //  SwiftMeteor
 //
 //  Created by Neil Weintraut on 4/15/17.
@@ -7,7 +7,7 @@
 //
 
 import Foundation
-class RVBaseListController8:  RVBaseSLKViewController4 {
-    
 
+class RVBaseCollectionSubscription8: RVBaseCollectionSubscription {
+    
 }
