@@ -10,6 +10,7 @@ import UIKit
 import SlackTextViewController
 
 class RVBaseConfiguration4 {
+    var NOTOPDATASOURCE: Bool = true // NEIL PLUG
     var instanceType: String { get { return String(describing: type(of: self)) } }
     var dynamicSections: Bool = false
     var sectionDatasourceType: RVDatasourceType = .main
@@ -142,6 +143,10 @@ class RVBaseConfiguration4 {
         }
     }
     func loadTop(query: RVQuery, callback: @escaping(RVError?)->Void) {
+        if NOTOPDATASOURCE {
+            callback(nil)
+            return
+        }
         //print("In \(self.instanceType).loadTop query: \(query)")
         if let top = self.topDatasource {
             manager.appendSections(datasources: [top], sectionTypesToRemove: [.top, .main, .filter]) { (models, error) in
