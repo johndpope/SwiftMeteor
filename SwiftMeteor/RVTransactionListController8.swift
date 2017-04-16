@@ -11,7 +11,7 @@ import UIKit
 class RVTransactionListController8: RVBaseListController8  {
     static let identifier = "RVTransactionListController8"
     
-    override var instanceConfiguration: RVBaseConfiguration4 { return RVTransactionConfiguration4(scrollView: dsScrollView) }
+    override var instanceConfiguration: RVBaseConfiguration8 { return RVTransactionListConfiguration8(scrollView: dsScrollView) }
     override func viewDidLoad() {
         let _ = RVSwiftDDP.sharedInstance.unsubscribe(collectionName: RVModelType.transaction.rawValue) {
             print("In \(self.classForCoder).viewDidLoad, returned from unsubscribing")

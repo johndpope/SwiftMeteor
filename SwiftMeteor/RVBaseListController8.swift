@@ -7,7 +7,7 @@
 //
 
 import Foundation
-class RVBaseListController8:  RVBaseSLKViewController4 {
+class RVBaseListController8:  RVBaseSLKViewController8 {
     
 
 }

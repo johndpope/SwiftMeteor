@@ -35,26 +35,11 @@ class RVBaseModel: MeteorDocument {
     var userProfile: RVUserProfile? = nil
     var zeroCellModel: Bool = false
     var initialized: Bool = false
-    static var loggedInUser: RVUserProfile? { get {return RVCoreInfo2.shared.loggedInUserProfile}}
-    static var loggedInUserId: String? {
-        get {
-            if let loggedInUser = RVBaseModel.loggedInUser { return loggedInUser.localId }
-            return nil
-        }
-    }
-    static var appDomain: RVDomain? { get { return RVCoreInfo2.shared.domain }}
-    static var appDomainId: String? {
-        get {
-            if let appDomain = RVBaseModel.appDomain { return appDomain.localId }
-            return nil
-        }
-    }
-    static var addDomainId: String? {
-        get {
-            if let appDomain = RVBaseModel.appDomain { return appDomain.localId }
-            return nil
-        }
-    }
+    static var coreInfo: RVBaseCoreInfo8    { return RVBaseCoreInfo8.sharedInstance }
+    static var loggedInUser: RVUserProfile? { return coreInfo.loggedInUserProfile}
+    static var loggedInUserId: String?      { return coreInfo.loggedInUserProfileId }
+    static var appDomain: RVDomain?         { return coreInfo.domain }
+    static var appDomainId: String?         { return coreInfo.domainId }
 
     init() {
         let id = RVSwiftDDP.sharedInstance.getId()
@@ -73,12 +58,12 @@ class RVBaseModel: MeteorDocument {
         self.archived = false
         self.searchCountry = self.searchCountryForModel()
         self.everywhere = false
-        if let domain = RVCoreInfo2.shared.domain {
+        if let domain = RVBaseModel.appDomain {
             self.domainId = domain.localId
         } else {
             if self.modelType != .domain { print("In \(instanceType).init, don't have domain, model") }
         }
-        if let profile = RVCoreInfo.sharedInstance.userProfile {
+        if let profile = RVBaseModel.loggedInUser {
             self.setOwner(owner: profile)
         }
         checkEmbeddeds()
@@ -183,13 +168,11 @@ class RVBaseModel: MeteorDocument {
             if let rvImage = newValue {
                 self.imageUpdated = true
                 rvImage.setParent(parent: self)
-                if let userProfile = RVCoreInfo.sharedInstance.userProfile {
+                if let userProfile = RVBaseModel.loggedInUser {
                     rvImage.setOwner(owner: userProfile)
                     rvImage.fullName = userProfile.fullName
                 }
-                if let domain = RVCoreInfo.sharedInstance.domain {
-                    rvImage.domainId = domain.localId
-                }
+                rvImage.domainId = RVBaseModel.appDomainId
                // rvImage.parentField = .image
                 self._image = updateEmbeddedImage(current: self.image, newImage: rvImage)
                 objects.removeValue(forKey: RVKeys.image.rawValue)
@@ -663,10 +646,9 @@ class RVBaseModel: MeteorDocument {
         set {
             if let location = newValue {
                 location.setParent(parent: self)
-                if let domain = RVCoreInfo.sharedInstance.domain {
-                    location.domainId = domain.localId
-                }
-                if let userProfile = RVCoreInfo.sharedInstance.userProfile {
+                location.domainId = RVBaseModel.appDomainId
+
+                if let userProfile = RVBaseModel.loggedInUser {
                     location.fullName = userProfile.fullName
                     location.setOwner(owner: userProfile)
                 }
@@ -752,8 +734,8 @@ class RVBaseModel: MeteorDocument {
         set {updateString(key: .domainId, value: newValue, setDirties: true) }
     }
 
-    func setDomainId() { self.domainId = RVCoreInfo.sharedInstance.domainId }
-    func getAppDomainId()-> String? { return RVCoreInfo.sharedInstance.domainId }
+    func setDomainId() { self.domainId = RVBaseModel.appDomainId }
+    func getAppDomainId()-> String? { return RVBaseModel.appDomainId }
     func setParent(parent:RVBaseModel) {
         self.parentId = parent.localId
         self.parentModelType = parent.modelType
@@ -941,7 +923,7 @@ extension RVBaseModel {
             callback(nil, RVError(message: "In \(self.classForCoder).create, no loggedInUser"))
             return
         }
-        if let domainID = RVCoreInfo2.shared.domainId { self.domainId = domainID }
+        if let domainID = RVBaseModel.appDomainId { self.domainId = domainID }
         else {
             callback(nil, RVError(message: "In \(self.classForCoder).create, no domainId"))
             return
@@ -1073,7 +1055,7 @@ extension RVBaseModel {
         return "\(RVMeteorMethod.Prefix)\(collectionType().rawValue)\(RVMeteorMethod.Separator)\(request.rawValue)"
     }
     class func bulkQuery(query: RVQuery, callback: @escaping(_ items: [RVBaseModel], _ error: RVError?)-> Void) {
-        if let appDomainId = RVBaseModel.addDomainId {
+        if let appDomainId = RVBaseModel.appDomainId {
             query.addAnd(term: .domainId, value: appDomainId as AnyObject, comparison: .eq)
         }
 
@@ -1105,7 +1087,7 @@ extension RVBaseModel {
         }
     }
     class func deleteAll( callback: @escaping(_ error: RVError?) -> Void ) {
-        Meteor.call(meteorMethod(request: .deleteAll), params: [[RVKeys.specialCode.rawValue: RVCoreInfo.sharedInstance.specialCode]]) { (result, error: DDPError?) in
+        Meteor.call(meteorMethod(request: .deleteAll), params: [[RVKeys.specialCode.rawValue: RVBaseModel.coreInfo.specialCode]]) { (result, error: DDPError?) in
             DispatchQueue.main.async {
                 if let error = error {
                     let rvError = RVError(message: "In RVBaseModel.deleteAll() got DDPError", sourceError: error, lineNumber: #line, fileName: "")
