@@ -8,7 +8,7 @@
 
 import UIKit
 import SwiftDDP
-class RVLoginViewController: RVBaseBaseViewController {
+class RVLoginViewController: RVBaseViewController8 {
     
     @IBAction func loginButtonTouched(_ sender: UIButton) {
         self.hideLoginFailure()
@@ -105,8 +105,7 @@ class RVLoginViewController: RVBaseBaseViewController {
         hideView(view: emailMessageLabel)
         hideView(view: loginFailureView)
         hideButtons()
-        addLogInOutListeners()
-        
+       // addLogInOutListeners()
     }
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
@@ -138,6 +137,7 @@ class RVLoginViewController: RVBaseBaseViewController {
             }
         }
     }
+    /*
     func addLogInOutListeners() {
        // print("In \(self.classForCoder).addLogInOutListeners Installing Listeners")
         var listener = RVSwiftDDP.sharedInstance.addListener(listener: self, eventType: .userDidLogin) { (_ info: [String: AnyObject]? ) -> Bool in
@@ -163,6 +163,7 @@ class RVLoginViewController: RVBaseBaseViewController {
         }
         self.listeners = [RVListener]()
     }
+ */
 
     //http://swiftdeveloperblog.com/email-address-validation-in-swift/
     func validateEmail(email: String) -> Bool  {

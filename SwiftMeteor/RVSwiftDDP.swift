@@ -287,7 +287,7 @@ class RVSwiftDDP: NSObject {
 extension RVSwiftDDP: SwiftDDPDelegate {
     func ddpUserDidLogin(_ user:String) {
         // print("In \(self.instanceType).ddpUserDidLogin(), User did login as user \(user)")
-        RVCoreInfo2.shared.completeLogin(username: user) { (error) in
+        RVBaseCoreInfo8.sharedInstance.completeLogin(username: user) { (error) in
             if let error = error {
                 error.append(message: "In \(self.instanceType).ddpUserDidLogin, got error")
                 error.printError()
@@ -330,7 +330,7 @@ extension RVSwiftDDP: SwiftDDPDelegate {
     func ddpUserDidLogout(_ user:String) {
     //    print("In \(self.instanceType).ddpUserDidLogout(), User \(user) did logout")
         //self.username = nil
-        RVCoreInfo2.shared.logoutModels()
+        RVBaseCoreInfo8.shared.logoutModels()
        // RVStateDispatcher4.shared.changeState(newState: RVBaseAppState4(appState: .loggedOut))
         /*
         RVCoreInfo.sharedInstance.clearLogin()

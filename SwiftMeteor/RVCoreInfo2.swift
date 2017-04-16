@@ -84,7 +84,7 @@ class RVCoreInfo2 {
         //print("In \(self.instanceType).connected")
         self.getDomain2 { (error) in
             if let error = error { error.printError() }
-            else {print("In \(self.instanceType).connected, have domain: \(self.domain!.localId ?? " no domain.localId") \(self.domain!.domainName.rawValue)") }
+            else {print("In \(self.instanceType).connected, have domain: \(self.domain!.localId ?? " no domain.localId") with domainName: \(self.domain!.domainName.rawValue)") }
         }
     }
     @objc func userLoggedIn(notification: NSNotification) {
@@ -150,20 +150,20 @@ class RVCoreInfo2 {
                 self.loggedInUserProfile = profile
                 self.username = username
                 print("In \(self.instanceType).completeLogin, have profile \(profile.localId!), username: \(username)")
-                RVStateDispatcher4.shared.changeState(newState: RVBaseAppState4(appState: .transactionList))
+              //  RVStateDispatcher4.shared.changeState(newState: RVBaseAppState4(appState: .transactionList))
                 self.getRootGroup(callback: { (error) in
                     if let error = error {
                         self.rootGroup = nil
                         error.append(message: "In \(self.instanceType).completeLogin, got error getting RootGroup")
                         DispatchQueue.main.async {
                             callback(error)
-                            RVAppStateManager.shared.changeState(newState: RVUserLoggedIn(), callback: {
-                                
-                            })
+                            //RVStateDispatcher8.shared.changeState(newState: RVTransactionListState8())
+                          //  RVAppStateManager.shared.changeState(newState: RVUserLoggedIn(), callback: { })
                         }
                         return
                     } else {
                         DispatchQueue.main.async {
+                            RVStateDispatcher8.shared.changeState(newState: RVTransactionListState8())
                             callback(nil)
                         }
                     }

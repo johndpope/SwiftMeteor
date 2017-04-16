@@ -17,9 +17,11 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -> Bool {
-        let _ = RVCoreInfo2.shared
+       // let _ = RVCoreInfo2.shared
+        let _ = RVBaseCoreInfo8.sharedInstance
        // RVViewDeck.sharedInstance.initialize(appDelegate: self)
         RVViewDeck4.shared.initialize(appDelegate: self)
+        RVViewDeck8.shared.initialize(appDelegate: self)
         return true
     }
 

@@ -92,6 +92,7 @@ class RVViewDeck8: NSObject {
         }
     }
     func changeState(newState: RVBaseAppState8, previousState: RVBaseAppState8, callback: @escaping()-> Void) {
+        print("In \(self.classForCoder).changeState \(newState)")
         let newPath = newState.path
         let previousPath = previousState.path
         if newPath.top != previousPath.top {
