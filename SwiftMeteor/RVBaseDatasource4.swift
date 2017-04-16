@@ -1457,7 +1457,7 @@ class RVLoadOperation<T:NSObject>: RVAsyncOperation<T> {
                             if self.datasource.virtualCount > 0 {
                                 if !self.datasource.sectionDatasourceMode {
                                     let rowIndex = (!self.datasource.zeroCellModeOn) ? 0 : self.datasource.zeroCellIndex
-                                    let indexPath = IndexPath(row: rowIndex, section: section)
+                                    _ = IndexPath(row: rowIndex, section: section)
                              //       tableView.scrollToRow(at: indexPath, at: .top, animated: false)  // NEIL TOOK OUT TABLEVIEW SCROLL
                                 } else {
                                     // Neil Unclear how to scroll a Header

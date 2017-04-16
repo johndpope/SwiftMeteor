@@ -7,7 +7,8 @@
 //
 
 import UIKit
-class RVLeftMenuNavController4: RVBaseNavigationController {
+class RVLeftMenuNavController4: RVBaseNavigationController, RVIdentifierProtocol {
     static let identifier = "RVLeftMenuNavController4"
+    var staticIdentifier: String { get { return RVLeftMenuNavController4.identifier }}
     
 }

@@ -6,11 +6,12 @@
 //  Copyright © 2017 Neil Weintraut. All rights reserved.
 //
 
-import Foundation
+import UIKit
+
 enum RVTop: String {
-    case main = "main"
-    case loggedOut = "loggedOut"
-    case leftMenu = "leftMenu"
+    case main       = "main"
+    case loggedOut  = "loggedOut"
+    case leftMenu   = "leftMenu"
 }
 class RVStatePath8 {
     var instanceType: String { get { return String(describing: type(of: self)) } }
@@ -33,8 +34,8 @@ class RVStatePath8 {
     }
     var state: RVBaseAppState8 {
         var instanceType: String { get { return String(describing: type(of: self)) } }
-        let defaultState = RVBaseAppState8(appState: RVAppState4.defaultState)
-        var state = RVBaseAppState8(appState: RVAppState4.defaultState)
+        let defaultState = RVBaseAppState8()
+        var state = RVBaseAppState8()
         switch(top) {
         case .main:
             switch (modelType) {
@@ -67,3 +68,5 @@ class RVStatePath8 {
         return state
     }
 }
+
+

@@ -7,6 +7,8 @@
 //
 
 import Foundation
-class RVBaseAppState8: RVBaseAppState4 {
-    
+class RVBaseAppState8 {
+    var path: RVStatePath8 = RVStatePath8(modelType: .baseModel, crud: .read)
+    init() {
+    }
 }
