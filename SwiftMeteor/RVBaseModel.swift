@@ -34,6 +34,7 @@ class RVBaseModel: MeteorDocument {
     var locationInitiallyNull = false
     var userProfile: RVUserProfile? = nil
     var zeroCellModel: Bool = false
+    var initialized: Bool = false
     static var loggedInUser: RVUserProfile? { get {return RVCoreInfo2.shared.loggedInUserProfile}}
     static var loggedInUserId: String? {
         get {
@@ -60,7 +61,7 @@ class RVBaseModel: MeteorDocument {
         super.init(id: id, fields: self.objects as NSDictionary? )
         self.localId = id
         initializeProperties()
-
+        self.initialized = true
     }
     func initializeProperties() {
         self.modelType = type(of: self).collectionType()
@@ -129,6 +130,7 @@ class RVBaseModel: MeteorDocument {
 
         checkModelType()
         checkEmbeddeds()
+        self.initialized = true
     }
     required init(id: String, fields: NSDictionary?) {
         //super.init(id: id, fields: fields )
@@ -141,6 +143,7 @@ class RVBaseModel: MeteorDocument {
         self.localId = id
         checkModelType()
         checkEmbeddeds()
+        self.initialized = true
     }
 
     override  func fields() -> NSDictionary  {
@@ -254,6 +257,7 @@ class RVBaseModel: MeteorDocument {
         return nil
     }
     func updated(key: RVKeys, value: AnyObject?) {
+        if !self.initialized { return }
         print("In \(self.classForCoder).updated: \(key.rawValue) : \(String(describing: value))")
         let element : AnyObject = value != nil ? value! : NSNull()
         let userInfo = [key : element]
