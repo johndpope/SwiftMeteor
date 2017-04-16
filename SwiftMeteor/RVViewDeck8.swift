@@ -31,6 +31,7 @@ class RVViewDeck8: NSObject {
     static let shared: RVViewDeck8 = { return RVViewDeck8()  }()
     var core: RVBaseCoreInfo8 { return RVBaseCoreInfo8.sharedInstance }
     var deckController: IIViewDeckController = IIViewDeckController()
+    var statePriorToMenu: RVBaseAppState8? = nil
     
     var leftViewController: UIViewController! {
         get { return deckController.leftViewController }
@@ -91,21 +92,30 @@ class RVViewDeck8: NSObject {
             self.closeSide()
         }
     }
-    func changeState(newState: RVBaseAppState8, previousState: RVBaseAppState8, callback: @escaping()-> Void) {
-        print("In \(self.classForCoder).changeState \(newState)")
-        let newPath = newState.path
-        let previousPath = previousState.path
-        if newPath.top != previousPath.top {
-            switch (newPath.top) {
-            case .leftMenu:
-                self.toggleSide(side: .left)
-            case .loggedOut:
-                evaluateNewController(targetTop: .loggedOut)
-                self.toggleSide(side: .center)
-            case .main:
-                evaluateNewController(targetTop: .main)
-                self.toggleSide(side: .center)
+    func returnToCenter(callback: @escaping ()-> Void ) {
+        if let prior = self.statePriorToMenu { RVStateDispatcher8.shared.changeState(newState: prior, returnToCenter: true) }
+    }
+    func viewDeckChangeState(newState: RVBaseAppState8, previousState: RVBaseAppState8, returnToCenter: Bool, callback: @escaping()-> Void) {
+      //  print("In \(self.classForCoder).viewDeckChangeState \(newState) and previousState is: \(previousState)")
+        if !returnToCenter {
+            let newPath = newState.path
+            let previousPath = previousState.path
+            if newPath.top != previousPath.top {
+                switch (newPath.top) {
+                case .leftMenu:
+                   // print("In \(self.classForCoder).viewDeckChangeState, previousState is \(previousState)")
+                    self.statePriorToMenu = previousState
+                    self.toggleSide(side: .left)
+                case .loggedOut:
+                    evaluateNewController(targetTop: .loggedOut)
+                    self.toggleSide(side: .center)
+                case .main:
+                    evaluateNewController(targetTop: .main)
+                    self.toggleSide(side: .center)
+                }
             }
+        } else {
+            self.toggleSide(side: .center)
         }
         finishup(newState: newState, previousState: previousState, callback: callback)
     }

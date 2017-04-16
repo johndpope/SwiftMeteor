@@ -149,7 +149,10 @@ class RVCoreInfo2 {
             } else if let profile = profile {
                 self.loggedInUserProfile = profile
                 self.username = username
-                print("In \(self.instanceType).completeLogin, have profile \(profile.localId!), username: \(username)")
+              //  print("In \(self.instanceType).completeLogin, have profile \(profile.localId!), username: \(username)")
+                let _ = RVSwiftDDP.sharedInstance.unsubscribe(collectionName: RVModelType.transaction.rawValue, callback: {
+                   // print("In \(self.instanceType).completeLogin # \(#line), logged out \(RVModelType.transaction.rawValue)")
+                })
               //  RVStateDispatcher4.shared.changeState(newState: RVBaseAppState4(appState: .transactionList))
                 self.getRootGroup(callback: { (error) in
                     if let error = error {

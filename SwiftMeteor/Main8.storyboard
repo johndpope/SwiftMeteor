@@ -55,7 +55,20 @@
                             <constraint firstAttribute="trailing" secondItem="9jl-Ny-ilQ" secondAttribute="trailing" id="lmT-cz-91p"/>
                         </constraints>
                     </view>
-                    <navigationItem key="navigationItem" id="tFh-0s-qPY"/>
+                    <navigationItem key="navigationItem" id="tFh-0s-qPY">
+                        <barButtonItem key="leftBarButtonItem" title="Menu" id="YiR-cC-EBK">
+                            <color key="tintColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                            <connections>
+                                <action selector="menuButtonTouched:" destination="nhk-dW-ASo" id="x4z-7y-MTC"/>
+                            </connections>
+                        </barButtonItem>
+                        <barButtonItem key="rightBarButtonItem" systemItem="search" id="uz2-34-AZf">
+                            <color key="tintColor" cocoaTouchSystemColor="tableCellGroupedBackgroundColor"/>
+                            <connections>
+                                <action selector="searchButtonTouched:" destination="nhk-dW-ASo" id="Vm1-DG-BSz"/>
+                            </connections>
+                        </barButtonItem>
+                    </navigationItem>
                     <connections>
                         <outlet property="searchControllerContainerView" destination="9jl-Ny-ilQ" id="fWU-1C-Abv"/>
                     </connections>

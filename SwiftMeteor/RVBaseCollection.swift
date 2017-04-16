@@ -26,7 +26,6 @@ class RVBaseCollection: AbstractCollection {
     var listeners = [String]()
     public typealias basicCallback = () -> Void
     init(collection: RVModelType) {
-
         self.collection = collection
         super.init(name: collection.rawValue)
 //        if let type = Meteor.collection(collection.rawValue) {
@@ -115,7 +114,11 @@ extension RVBaseCollection {
     
     func checkIfSubscribed(instanceType: String) {
         if let type = Meteor.collection(collection.rawValue) {
-            print("Warning. In \(instanceType).checkIfSubscribed, Collection of type: \(collection.rawValue) already subscribed, yet attempting to subscribe again \(type)")
+            if let type = type as? RVBaseCollectionSubscription {
+                if let id = type.subscriptionID {
+                    print("Warning. In \(instanceType).checkIfSubscribed, Collection of type: \(collection.rawValue) already subscribed, yet attempting to subscribe again \(type) existingSubscriptionID = \(id)")
+                }
+            }
         }
     }
  
@@ -152,6 +155,7 @@ extension RVBaseCollection {
         self.query = query
         let (filters, projection) = query.query()
         self.subscriptionID = Meteor.subscribe(collection.rawValue, params: [filters as AnyObject, projection as AnyObject])
+         print("---------- IN \(self.classForCoder).subscribe(query) with subscriptionId \(self.subscriptionID!)")
         return self.subscriptionID!
     }
     
@@ -170,6 +174,7 @@ extension RVBaseCollection {
         self.query = query
         let (filters, projection) = query.query()
         self.subscriptionID = Meteor.subscribe(collection.rawValue, params: [filters as AnyObject, projection as AnyObject], callback: callback)
+       //  print("---------- IN \(self.classForCoder).subscribe(query, callback) with subscriptionId \(self.subscriptionID!)")
         return self.subscriptionID!
     }
     

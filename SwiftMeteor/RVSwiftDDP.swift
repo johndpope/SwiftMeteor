@@ -171,7 +171,8 @@ class RVSwiftDDP: NSObject {
         print("In \(self.classForCoder).logout")
         if Meteor.client.user() == nil {
             print("In \(self.classForCoder).logout, already logged out")
-            RVStateDispatcher4.shared.changeState(newState: RVBaseAppState4(appState: .loggedOut))
+            RVStateDispatcher8.shared.changeState(newState: RVLoggedOutState8())
+           // RVStateDispatcher4.shared.changeState(newState: RVBaseAppState4(appState: .loggedOut))
             callback(nil)
             logoutListeners.notifyListeners()
             NotificationCenter.default.post(name: NSNotification.Name(rawValue: RVNotification.userDidLogout.rawValue), object: nil, userInfo: nil)
@@ -189,7 +190,8 @@ class RVSwiftDDP: NSObject {
                 //print("In \(self.classForCoder).logout, no error but no result")
                 callback(nil)
             }
-            RVStateDispatcher4.shared.changeState(newState: RVBaseAppState4(appState: .loggedOut))
+            RVStateDispatcher8.shared.changeState(newState: RVLoggedOutState8())
+           // RVStateDispatcher4.shared.changeState(newState: RVBaseAppState4(appState: .loggedOut))
         }
     }
     func addListener(listener: NSObject, eventType: RVSwiftEvent, callback: @escaping (_ info: [String: AnyObject]?) -> Bool) -> RVListener?  {

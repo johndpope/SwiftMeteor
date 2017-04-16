@@ -54,7 +54,7 @@ class RVBaseSLKViewController8: SLKTextViewController {
     var instanceConfiguration: RVBaseConfiguration8 { return RVBaseConfiguration8(scrollView: dsScrollView) }
     // var configuration:      RVBaseConfiguration8 = RVBaseConfiguration8(scrollView: nil)
     var manager:            RVDSManager5<RVBaseModel> { get { return configuration.manager }}
-    let searchController    = UISearchController(searchResultsController: nil)
+    var searchController: UISearchController!
     var searchScopes:       [[String: RVKeys]] { get { return configuration.searchScopes } }
     var defaultSortOrder:   RVSortOrder { get { return configuration.defaultSortOrder }}
     
@@ -75,19 +75,26 @@ class RVBaseSLKViewController8: SLKTextViewController {
         }
     }
     @IBAction func searchButtonTouched(_ sender: UIBarButtonItem) {
+        self.searchControllerContainerView.isHidden = false
+        if self.searchController == nil {
+            self.searchController = UISearchController(searchResultsController: nil)
+            self.configureSearchController()
+        }
         searchController.isActive = true
     }
     @IBAction func menuButtonTouched(_ sender: UIBarButtonItem) {
-        RVStateDispatcher4.shared.changeState(newState: RVBaseAppState4(appState: .leftMenu))
+        RVStateDispatcher8.shared.changeState(newState: RVLeftMenuAppState8())
+//        RVStateDispatcher4.shared.changeState(newState: RVBaseAppState4(appState: .leftMenu))
     }
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        self.searchControllerContainerView.isHidden = true
         //sectionManager = RVDSManager5Transaction<RVBaseModel>(scrollView: self.dsScrollView, maxSize: 80, managerType: .main, dynamicSections: false)
         sectionManager = configuration.manager
         commonInit()
         configureNavBar()
-        configureSearchController()
+       // configureSearchController()
         configureSLK()
         adjustTableViewInsetForNavBar()
         updateTableViewInsetHeight()
@@ -170,6 +177,7 @@ class RVBaseSLKViewController8: SLKTextViewController {
                 error.printError()
             } else {
                 self.expandTopView()
+                self.searchControllerContainerView.isHidden = true
             }
         }
     }

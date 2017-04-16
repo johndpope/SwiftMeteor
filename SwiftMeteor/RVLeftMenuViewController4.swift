@@ -8,8 +8,16 @@
 
 import UIKit
 class RVLeftMenuViewController4: RVBaseViewController44 {
+    var deck: RVViewDeck8 { return RVViewDeck8.shared }
     static let identifier = "RVLeftMenuViewController4"
     let actions = ["Logout"]
+    
+    @IBAction func menuButtonTouched(_ sender: UIBarButtonItem) {
+        deck.returnToCenter {
+            
+        }
+    }
+    
 }
 extension RVLeftMenuViewController4: UITableViewDataSource {
     func numberOfSections(in tableView: UITableView) -> Int {

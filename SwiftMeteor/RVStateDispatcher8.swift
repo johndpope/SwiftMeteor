@@ -15,30 +15,37 @@ class RVStateDispatcher8 {
 
     fileprivate let queue = RVOperationQueue()
     static var shared: RVStateDispatcher8 = { return RVStateDispatcher8() }()
-    func changeState(newState: RVBaseAppState8) {
-        queue.addOperation(RVChangeStateOperation8<RVBaseModel>(newState: newState))
+    func changeState(newState: RVBaseAppState8, returnToCenter: Bool = false) {
+        queue.addOperation(RVChangeStateOperation8<RVBaseModel>(newState: newState, returnToCenter: returnToCenter))
     }
 }
 
 class RVChangeStateOperation8<T: NSObject>: RVAsyncOperation<T> {
     private var newState: RVBaseAppState8
     private var deck: RVViewDeck8 { get { return RVViewDeck8.shared }}
+    private var returnToCenter: Bool = false
     
-    init(newState: RVBaseAppState8) {
+    init(newState: RVBaseAppState8, returnToCenter: Bool ) {
         self.newState = newState
+        self.returnToCenter = returnToCenter
         super.init(title: "Change State to \(newState)", callback: {(models: [T], error: RVError?) in })
     }
     override func asyncMain() {
         DispatchQueue.main.async {
             if self.isCancelled {
-                self.completeOperation()
-                return
+                DispatchQueue.main.async {
+                    self.callback([T](), nil)
+                    self.completeOperation()
+                    return
+                }
             } else {
                 DispatchQueue.main.async {
-                    let previousState = RVStateDispatcher8.shared.previousState
+                   // let previousState = RVStateDispatcher8.shared.previousState
                     RVStateDispatcher8.shared.previousState = RVStateDispatcher8.shared.currentState
                     RVStateDispatcher8.shared.currentState = self.newState
-                    self.deck.changeState(newState: self.newState, previousState: previousState) {  self.completeOperation() }
+                    self.deck.viewDeckChangeState(newState: self.newState, previousState: RVStateDispatcher8.shared.previousState, returnToCenter: self.returnToCenter) {  self.completeOperation() }
+                    self.callback([T](), nil)
+                    self.completeOperation()
                 }
             }
         }

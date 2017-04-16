@@ -71,6 +71,9 @@
                     <navigationItem key="navigationItem" title="Menu" id="xUP-mN-yeH">
                         <barButtonItem key="leftBarButtonItem" title="Center" id="ANu-6X-SG0">
                             <color key="tintColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                            <connections>
+                                <action selector="menuButtonTouched:" destination="UTw-tN-4bE" id="3c5-qg-h33"/>
+                            </connections>
                         </barButtonItem>
                     </navigationItem>
                 </viewController>
