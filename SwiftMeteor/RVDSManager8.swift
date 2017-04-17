@@ -6,7 +6,7 @@
 //  Copyright © 2017 Neil Weintraut. All rights reserved.
 //
 
-import Foundation
+import UIKit
 class RVDSManager8<S: NSObject>: RVDSManager5<S> {
     
 }
