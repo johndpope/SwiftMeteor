@@ -19,19 +19,41 @@ class RVMainTabBarController8: UITabBarController, RVIdentifierProtocol {
     var instanceType: String { get { return String(describing: type(of: self)) } }
     var deck: RVViewDeck4 { get { return RVViewDeck4.shared }}
     var priorTabIndex: Int = 0
+    let transactionTab = 0
+    let groupTab = 1
     override func viewDidLoad() {
         super.viewDidLoad()
         self.delegate = self
+        NotificationCenter.default.addObserver(self, selector: #selector(RVMainTabBarController8.appStateChanged(notification:)), name: NSNotification.Name(RVNotification.AppStateChanged.rawValue), object: nil)
     }
+    func appStateChanged(notification: Notification) {
+        // print("In \(self.classForCoder).appStateChanged")
+        if let userInfo = notification.userInfo as? [String : AnyObject] {
+         //   let previouState = userInfo[RVViewDeck8.previousStateKey]
+            var newIndex = -1
+            if let newState =  userInfo[RVViewDeck8.newStateKey] as? RVBaseAppState8 {
+                switch (newState.path.modelType) {
+                case .transaction:
+                    newIndex = transactionTab
+                case .Group:
+                    newIndex = groupTab
+                default:
+                    break
+                }
+                if newIndex >= 0 {
+                    if newIndex != self.selectedIndex {
+                        self.selectedIndex = newIndex
+                    }
+                }
+            }
+        }
     
-}
-extension RVMainTabBarController8: RVAppStateChangeProtocol {
-    internal func updateState(callback: @escaping (RVError?) -> Void) {
-        let match = myCurrentAppState == currentAppState ? true : false
-        print("In \(self.classForCoder).updateState and match to prior is : \(match)")
-        callback(nil)
+    }
+    deinit {
+        NotificationCenter.default.removeObserver(self)
     }
 }
+
 
 extension RVMainTabBarController8: UITabBarControllerDelegate {
     func tabBarController(_ tabBarController: UITabBarController, shouldSelect viewController: UIViewController) -> Bool {
@@ -41,15 +63,11 @@ extension RVMainTabBarController8: UITabBarControllerDelegate {
         if self.priorTabIndex == self.selectedIndex { return }
         self.priorTabIndex = self.selectedIndex
         if self.selectedIndex == 0 {
-            print("In \(self.classForCoder).didSelect, changing to transactionList")
-            deck.changeIntraState(currentState: coreInfo.currentAppState, newIntraState: .transactionList, callback: {
-                print("In \(self.classForCoder).didSelect return from changeIntraState \(self.coreInfo.currentAppState.appState)")
-            })
+           // print("In \(self.classForCoder).didSelect, changing to transactionList")
+            RVStateDispatcher8.shared.changeState(newState: RVTransactionListState8())
         } else if self.selectedIndex == 1 {
-            print("In \(self.classForCoder).didSelect, changing to groupList")
-            deck.changeIntraState(currentState: coreInfo.currentAppState, newIntraState: .groupList, callback: {
-                print("In \(self.classForCoder).didSelect return from changeIntraState \(self.coreInfo.currentAppState.appState)")
-            })
+           // print("In \(self.classForCoder).didSelect, changing to groupList")
+            RVStateDispatcher8.shared.changeState(newState: RVGroupListState8())
         }
         
     }

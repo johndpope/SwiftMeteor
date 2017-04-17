@@ -97,6 +97,8 @@
 		284708701E58EE6C000BBCCE /* RVPrivateChat.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2847086F1E58EE6C000BBCCE /* RVPrivateChat.swift */; };
 		284708731E58EF93000BBCCE /* RVMemberToMemberChatState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 284708721E58EF93000BBCCE /* RVMemberToMemberChatState.swift */; };
 		284708751E58F314000BBCCE /* RVEJSON.swift in Sources */ = {isa = PBXBuildFile; fileRef = 284708741E58F314000BBCCE /* RVEJSON.swift */; };
+		28472CA71EA45D030089F7F4 /* RVGroupListController8.swift in Sources */ = {isa = PBXBuildFile; fileRef = 28472CA61EA45D030089F7F4 /* RVGroupListController8.swift */; };
+		28472CA91EA475510089F7F4 /* RVGroupListState8.swift in Sources */ = {isa = PBXBuildFile; fileRef = 28472CA81EA475510089F7F4 /* RVGroupListState8.swift */; };
 		284965DA1E9D7AC400543F0B /* RVTransactionConfiguration4DynamicSections.swift in Sources */ = {isa = PBXBuildFile; fileRef = 284965D91E9D7AC400543F0B /* RVTransactionConfiguration4DynamicSections.swift */; };
 		284B31A41E406A5300E2118D /* RVMessageAuthorViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 284B31A31E406A5300E2118D /* RVMessageAuthorViewController.swift */; };
 		284E84A21DFD30F600A9F33A /* RVAWS.swift in Sources */ = {isa = PBXBuildFile; fileRef = 284E84A11DFD30F600A9F33A /* RVAWS.swift */; };
@@ -361,6 +363,8 @@
 		2847086F1E58EE6C000BBCCE /* RVPrivateChat.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RVPrivateChat.swift; sourceTree = "<group>"; };
 		284708721E58EF93000BBCCE /* RVMemberToMemberChatState.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RVMemberToMemberChatState.swift; sourceTree = "<group>"; };
 		284708741E58F314000BBCCE /* RVEJSON.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RVEJSON.swift; sourceTree = "<group>"; };
+		28472CA61EA45D030089F7F4 /* RVGroupListController8.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RVGroupListController8.swift; sourceTree = "<group>"; };
+		28472CA81EA475510089F7F4 /* RVGroupListState8.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RVGroupListState8.swift; sourceTree = "<group>"; };
 		284965D91E9D7AC400543F0B /* RVTransactionConfiguration4DynamicSections.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RVTransactionConfiguration4DynamicSections.swift; sourceTree = "<group>"; };
 		284B31A31E406A5300E2118D /* RVMessageAuthorViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RVMessageAuthorViewController.swift; sourceTree = "<group>"; };
 		284E84A11DFD30F600A9F33A /* RVAWS.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RVAWS.swift; sourceTree = "<group>"; };
@@ -728,6 +732,8 @@
 		282D255A1EA3114C0048148F /* Group Scene */ = {
 			isa = PBXGroup;
 			children = (
+				28472CA61EA45D030089F7F4 /* RVGroupListController8.swift */,
+				28472CA81EA475510089F7F4 /* RVGroupListState8.swift */,
 			);
 			name = "Group Scene";
 			sourceTree = "<group>";
@@ -1531,6 +1537,7 @@
 				28D7372F1E7F7BB90096E0A3 /* RVLeftMenuNavController4.swift in Sources */,
 				284FBAD41DEC142B00446C86 /* RVMainTabViewController.swift in Sources */,
 				2806BAF81E6D03F2005CA637 /* RVBaseAppState2.swift in Sources */,
+				28472CA71EA45D030089F7F4 /* RVGroupListController8.swift in Sources */,
 				28873F381E8F365300C497F0 /* RVSubscription.swift in Sources */,
 				28F5C0B41E32BBD00012E52A /* RVClientRole.swift in Sources */,
 				28CFAC1D1E91BD4C007116F8 /* RVBaseCollectionSubscription.swift in Sources */,
@@ -1610,6 +1617,7 @@
 				286CA3311E3289F000B081B8 /* RVDomain.swift in Sources */,
 				289A45F91E482D4A001BBB29 /* RVMenuAppState.swift in Sources */,
 				28875A071E81C7FB00876A5E /* RVGroupListConfiguration.swift in Sources */,
+				28472CA91EA475510089F7F4 /* RVGroupListState8.swift in Sources */,
 				2834609F1E4680920009D606 /* RVDateToHumanMapper.swift in Sources */,
 				2842903B1E88D7DD00672B46 /* RVTransactionDatasource4.swift in Sources */,
 				2857BFFF1E57AEA200865FDC /* RVSlackMessage.swift in Sources */,
