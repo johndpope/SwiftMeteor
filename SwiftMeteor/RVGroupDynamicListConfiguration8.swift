@@ -29,7 +29,7 @@ class RVGroupDynamicListConfiguration8: RVBaseConfiguration8 {
         self.mainDatasourceMaxSize      = 300
         self.filterDatasourceMaxSize    = 300
         self.searchScopes               = [[RVKeys.title.rawValue: RVKeys.title], [RVKeys.fullName.rawValue: RVKeys.fullName]]
-        self.manager = RVDSManager8DynamicList(scrollView: scrollView, maxSize: 80, managerType: .main, dynamicSections: true, useZeroCell: true)
+        self.manager = RVDSManagerDynamicGroupList8(scrollView: scrollView, maxSize: 80, managerType: .main, dynamicSections: true, useZeroCell: true)
         self.manager.subscription = RVTransactionSubscription(front: true, showResponse: false)
         
     }

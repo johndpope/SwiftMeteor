@@ -1,13 +1,13 @@
 //
-//  RVDSManager8DynamicList.swift
+//  RVDSManagerDynamicGroupList8.swift
 //  SwiftMeteor
 //
 //  Created by Neil Weintraut on 4/17/17.
 //  Copyright © 2017 Neil Weintraut. All rights reserved.
 //
 
-import Foundation
-class RVDSManager8DynamicList<S: NSObject>: RVDSManager8<S> {
+import UIKit
+class RVDSManagerDynamicGroupList8<S: NSObject>: RVDSManager8<S> {
     override func retrieveSectionModels(query: RVQuery, callback: @escaping ([S], RVError?) -> Void) {
         RVTransaction.bulkQuery(query: query) { (models, error) in
             if let error = error {
@@ -39,5 +39,5 @@ class RVDSManager8DynamicList<S: NSObject>: RVDSManager8<S> {
         query.addAnd(term: .createdAt, value: Date() as AnyObject, comparison: .lte)
         return (query, error)
     }
-        
+    
 }
