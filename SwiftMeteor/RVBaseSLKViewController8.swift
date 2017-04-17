@@ -181,14 +181,16 @@ class RVBaseSLKViewController8: SLKTextViewController {
     func endSearch() {
         self.searchSectionTableViewOffset = 0.0
         topOuterViewAdditionalTop = 0.0
+        self.searchControllerContainerView.isHidden = true
         self.updateOuterTopTopConstraint()
         self.configuration.endSearch(mainAndTerms: self.andTerms) { (error) in
+          //  print("In \(self.classForCoder).returned from endSearch")
             if let error = error {
                 error.append(message: "In \(self.instanceType).endSearch2, got error ")
                 error.printError()
             } else {
                 self.expandTopView()
-                self.searchControllerContainerView.isHidden = true
+              //  self.searchControllerContainerView.isHidden = true
                 self.lastSearchTerm = self._lastSearchTerm
             }
         }
@@ -360,11 +362,11 @@ extension RVBaseSLKViewController8 {
         NotificationCenter.default.addObserver(self, selector: #selector(RVBaseSLKViewController8.stateDidChange(_:)), name: NSNotification.Name(RVNotification.AppStateChanged.rawValue), object: nil)
     }
     func stateDidChange(_ notification: NSNotification) {
-        print("In \(self.instanceType).stateDidChange")
+       // print("In \(self.instanceType).stateDidChange")
         if let userInfo = notification.userInfo as? [String:AnyObject] {
-            if let appState = userInfo["newAppState"] as? RVBaseAppState4 {
-                print("and appState is \(appState.appState)")
-            }
+      //      if let appState = userInfo["newAppState"] as? RVBaseAppState4 {
+      //          print("and appState is \(appState.appState)")
+      //      }
         }
     }
     func textInputbarDidMove(_ note: Notification) {
@@ -496,6 +498,7 @@ extension RVBaseSLKViewController8 {
             let height = totalTopHeight + self.searchSectionTableViewOffset - tableViewInsetAdditionalHeight
             tableViewInsetAdditionalHeight = (totalTopHeight + self.searchSectionTableViewOffset )
             let inset = tableView.contentInset
+          //  print("In \(self.classForCoder).updateTableViewInsetHeight. finalTop = \(inset.top + height), height = \(height), insert.top = \(inset.top)")
             tableView.contentInset = UIEdgeInsets(top: inset.top + height , left: inset.left, bottom: inset.bottom, right: inset.right)
             // print("in \(instanceType) topAreaHeight = \(topAreaHeight) height = \(height), original top was: \(inset.top) and is now \(tableView.contentInset.top), additionalHeight : \(tableViewInsetAdditionalHeight)")
         } else {

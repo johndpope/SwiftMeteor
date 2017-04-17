@@ -9,8 +9,7 @@
 import UIKit
 
 class RVGroupListController8: RVTransactionListController8 {
-
-
-
     
+    override var instanceConfiguration: RVBaseConfiguration8 { return RVTransactionDynamicListConfiguration8(scrollView: dsScrollView) }
+ 
 }

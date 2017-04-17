@@ -217,11 +217,13 @@ class RVBaseConfiguration4 {
         }
     }
     func endSearch(mainAndTerms: [RVQueryItem], callback: @escaping(RVError? ) -> Void) {
+       // print("In \(self.instanceType).endSerach")
         if !self.manager.dynamicSections {
             self.loadMain2(andTerms: mainAndTerms) { (error) in
                 if let error = error {
                     error.append(message: "In \(self.instanceType).endSearch, got error")
                 }
+           //     print("In \(self.instanceType).endSerach have callback")
                 callback(error)
             }
         } else {
@@ -230,6 +232,7 @@ class RVBaseConfiguration4 {
                 if let error = error {
                     error.append(message: "In \(self.instanceType).endSearch, got error initializing")
                 }
+            //    print("In \(self.instanceType).endSerach have callback")
                 callback(error)
             })
         }
@@ -300,6 +303,7 @@ class RVBaseConfiguration4 {
                 if let error = error {
                     error.printError()
                 }
+                callback(nil)
             })
         }
     }
