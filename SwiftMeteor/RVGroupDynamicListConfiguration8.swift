@@ -1,20 +1,21 @@
 //
-//  RVTransactionListConfiguration8.swift
+//  RVGroupDynamicListConfiguration8.swift
 //  SwiftMeteor
 //
-//  Created by Neil Weintraut on 4/16/17.
+//  Created by Neil Weintraut on 4/17/17.
 //  Copyright © 2017 Neil Weintraut. All rights reserved.
 //
 
 import UIKit
-class RVTransactionListConfiguration8: RVBaseConfiguration8 {
+class RVGroupDynamicListConfiguration8: RVBaseConfiguration8 {
+
     
     
     override init(scrollView: UIScrollView? ) {
         super.init(scrollView: scrollView)
         self.subscription           = RVTransactionSubscription(front: true, showResponse: false)
-        self.configurationName      = "RVTransactionListConfiguration8"
-        self.navigationBarTitle     = "Transactions"
+        self.configurationName      = "RVGroupDynamicListConfiguration8"
+        self.navigationBarTitle     = "Groups"
         self.navigationBarColor     = UIColor.facebookBlue()
         self.showSearch             = true
         self.showTopView            = true
@@ -24,10 +25,12 @@ class RVTransactionListConfiguration8: RVBaseConfiguration8 {
         self.searchBarPlaceholder   = "... Search"
         self.topAreaMaxHeights          = [30.0, 0.0, 0.0]
         self.topAreaMinHeights          = [30.0, 0.0, 0.0]
-
+        
         self.mainDatasourceMaxSize      = 300
         self.filterDatasourceMaxSize    = 300
         self.searchScopes               = [[RVKeys.title.rawValue: RVKeys.title], [RVKeys.fullName.rawValue: RVKeys.fullName]]
+        self.manager = RVDSManager5Transaction(scrollView: scrollView, maxSize: 80, managerType: .main, dynamicSections: true, useZeroCell: true)
+        self.manager.subscription = RVTransactionSubscription(front: true, showResponse: false)
         
     }
     override func configureSLK() {
