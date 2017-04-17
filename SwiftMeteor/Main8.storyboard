@@ -59,6 +59,9 @@
                                                     <segment title="All"/>
                                                     <segment title="Unread Only"/>
                                                 </segments>
+                                                <connections>
+                                                    <action selector="AllUnreadSegementedControlChanged:" destination="nhk-dW-ASo" eventType="valueChanged" id="vdZ-3N-UNr"/>
+                                                </connections>
                                             </segmentedControl>
                                         </subviews>
                                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>

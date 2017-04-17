@@ -24,6 +24,7 @@ class RVBaseSLKViewController4: SLKTextViewController {
     @IBOutlet weak var TopTopHeightConstraint:    NSLayoutConstraint!
     @IBOutlet weak var TopMiddleHeightConstraint: NSLayoutConstraint!
     @IBOutlet weak var TopBottomHeightConstraint: NSLayoutConstraint!
+    var andTerms = [RVQueryItem]()
     var tableViewInsetAdditionalHeight: CGFloat = 0.0
     let navBarHeight: CGFloat = 62.0
     var _lastSearchTerm: String = "Dummy Value"
@@ -92,7 +93,7 @@ class RVBaseSLKViewController4: SLKTextViewController {
         putTopViewOnTop()
         
         //standard()
-        configuration.initializeDatasource(sectionDatasourceType: .main) { (error) in
+        configuration.initializeDatasource(sectionDatasourceType: .main, mainAndTerms: self.andTerms) { (error) in
             if let error = error {
                 error.printError()
             }
@@ -137,7 +138,8 @@ class RVBaseSLKViewController4: SLKTextViewController {
     func performSearch(searchText: String, field: RVKeys, order: RVSortOrder = .ascending) {
         if lastSearchTerm == searchText { return }
         lastSearchTerm = searchText.lowercased()
-        self.configuration.loadSearch(searchText: searchText, field: field, order: order) { (error ) in
+        let andTerms = [RVQueryItem]()
+        self.configuration.loadSearch(searchText: searchText, field: field, order: order, andTerms: andTerms) { (error ) in
             if let error = error {
                 error.printError()
             } else {
@@ -162,7 +164,7 @@ class RVBaseSLKViewController4: SLKTextViewController {
  */
     }
     func endSearch() {
-        self.configuration.endSearch { (error) in
+        self.configuration.endSearch(mainAndTerms: self.andTerms) { (error) in
             if let error = error {
                 error.append(message: "In \(self.instanceType).endSearch2, got error ")
                 error.printError()

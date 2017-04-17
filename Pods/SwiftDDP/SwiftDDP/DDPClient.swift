@@ -327,7 +327,7 @@ open class DDPClient: NSObject {
         case .Nosub: documentQueue.addOperation() {
             if let id = message.id {
                 self.nosub(id, error: message.error)
-                print("In \(self.classForCoder) .Nosub subscriptionId: \(id)")
+               // print("In \(self.classForCoder) .Nosub subscriptionId: \(id)")
             }
             }
             

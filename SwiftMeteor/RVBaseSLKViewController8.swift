@@ -27,7 +27,10 @@ class RVBaseSLKViewController8: SLKTextViewController {
     @IBOutlet weak var TopBottomHeightConstraint: NSLayoutConstraint!
     var searchSectionTableViewOffset: CGFloat = 0.0
     var topOuterViewOriginalTopConstraint: CGFloat = 0.0
+   // var topOuterViewTopAmountChanged: CGFloat = 0.0
+    var topOuterViewAdditionalTop: CGFloat = 0.0
     var tableViewInsetAdditionalHeight: CGFloat = 0.0
+    
     let navBarHeight: CGFloat = 62.0
     let _lastSearchTerm: String = "Dummy Value"
     var lastSearchTerm: String  = "Dummy Value"
@@ -37,6 +40,7 @@ class RVBaseSLKViewController8: SLKTextViewController {
     var SLKisKeyboardPanningEnabled: Bool               { return configuration.SLKisKeyboardPanningEnabled }
     var SLKshouldScrollToBottomAfterKeyboardShows: Bool { return configuration.SLKshouldScrollToBottomAfterKeyboardShows }
     var SLKshowTextInputBar: Bool                       { return configuration.SLKshowTextInputBar }
+    var andTerms = [RVQueryItem]()
     // SLK Stuff
     var pipWindow: UIWindow? // for SLK
     var users: Array = ["Allen", "Anna", "Alicia", "Arnold", "Armando", "Antonio", "Brad", "Catalaya", "Christoph", "Emerson", "Eric", "Everyone", "Steve"]
@@ -105,7 +109,7 @@ class RVBaseSLKViewController8: SLKTextViewController {
         putTopViewOnTop()
         
         //standard()
-        configuration.initializeDatasource(sectionDatasourceType: .main) { (error) in
+        configuration.initializeDatasource(sectionDatasourceType: .main, mainAndTerms: self.andTerms) { (error) in
             if let error = error {
                 error.printError()
             }
@@ -150,8 +154,7 @@ class RVBaseSLKViewController8: SLKTextViewController {
     func performSearch(searchText: String, field: RVKeys, order: RVSortOrder = .ascending) {
         if lastSearchTerm == searchText { return }
         lastSearchTerm = searchText.lowercased()
-        
-        self.configuration.loadSearch(searchText: searchText, field: field, order: order) { (error ) in
+        self.configuration.loadSearch(searchText: searchText, field: field, order: order, andTerms: self.andTerms) { (error ) in
             if let error = error {
                 error.printError()
             } else {
@@ -177,8 +180,9 @@ class RVBaseSLKViewController8: SLKTextViewController {
     }
     func endSearch() {
         self.searchSectionTableViewOffset = 0.0
-        if let constraint = self.TopOuterViewTopConstraint { constraint.constant = self.topOuterViewOriginalTopConstraint }
-        self.configuration.endSearch { (error) in
+        topOuterViewAdditionalTop = 0.0
+        self.updateOuterTopTopConstraint()
+        self.configuration.endSearch(mainAndTerms: self.andTerms) { (error) in
             if let error = error {
                 error.append(message: "In \(self.instanceType).endSearch2, got error ")
                 error.printError()
@@ -481,6 +485,11 @@ extension RVBaseSLKViewController8 {
             outerView.isHidden = false
         }
     }
+    func updateOuterTopTopConstraint() {
+        if let constraint = self.TopOuterViewTopConstraint {
+            constraint.constant = topOuterViewOriginalTopConstraint + topOuterViewAdditionalTop
+        }
+    }
     func updateTableViewInsetHeight() {
         if let tableView = self.dsScrollView as? UITableView {
          //   print("In \(self.classForCoder).updateTableVIewInsetHeight searchSectionTableViewOffset = \(self.searchSectionTableViewOffset)")
@@ -538,6 +547,8 @@ extension RVBaseSLKViewController8 {
 extension RVBaseSLKViewController8: UISearchResultsUpdating {
     func updateSearchResults(for searchController: UISearchController) {
         if searchController.isActive {
+            doFilterSearch(searchController: searchController)
+            /*
            // print("In \(self.classForCoder).updateSearchResults, is Active")
             let searchBar = searchController.searchBar
             let searchText = searchBar.text != nil ? searchBar.text! : ""
@@ -561,9 +572,35 @@ extension RVBaseSLKViewController8: UISearchResultsUpdating {
             self.compressTopView()
          //   self.zeroTopView()
             performSearch(searchText: searchText, field: searchKey, order: self.defaultSortOrder )
+ */
         } else {
             endSearch()
         }
+    }
+    func doFilterSearch(searchController: UISearchController) {
+        let searchBar = searchController.searchBar
+        let searchText = searchBar.text != nil ? searchBar.text! : ""
+        var searchKey = RVKeys.title
+        if searchBar.selectedScopeButtonIndex < searchScopes.count {
+            let scope = searchScopes[searchBar.selectedScopeButtonIndex]
+            if let (title, key) = scope.first {
+                searchKey = key
+                searchBar.placeholder = "Search by \(title)"
+            } else {
+                searchBar.placeholder = "Search"
+            }
+        } else {
+            searchBar.placeholder = "Search"
+        }
+        if self.searchScopes.count > 1 {
+            let offset: CGFloat = 42.0
+            self.searchSectionTableViewOffset = offset
+            topOuterViewAdditionalTop = offset
+            self.updateOuterTopTopConstraint()
+        }
+        self.compressTopView()
+        //   self.zeroTopView()
+        performSearch(searchText: searchText, field: searchKey, order: self.defaultSortOrder )
     }
     func configureSearchController() {
         //print("In \(self.classForCoder).configureSearchController")
