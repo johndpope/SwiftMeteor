@@ -139,6 +139,7 @@ class RVCoreInfo: NSObject {
                         self.domain = domain
                         self.userProfile = profile
                         self.username = username
+                         print("In \(self.classForCoder).completeLogin, about to get RootGroup")
                         RVGroup.getRootGroup(callback: { (group , error) in
                             if let error = error {
                                 error.append(message: "In \(self.classForCoder).completeLogin, error getting Root Group")

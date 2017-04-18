@@ -363,11 +363,11 @@ extension RVBaseSLKViewController8 {
     }
     func stateDidChange(_ notification: NSNotification) {
        // print("In \(self.instanceType).stateDidChange")
-        if let userInfo = notification.userInfo as? [String:AnyObject] {
+     //   if let userInfo = notification.userInfo as? [String:AnyObject] {
       //      if let appState = userInfo["newAppState"] as? RVBaseAppState4 {
       //          print("and appState is \(appState.appState)")
       //      }
-        }
+     //   }
     }
     func textInputbarDidMove(_ note: Notification) {
         guard let pipWindow = self.pipWindow else { return }

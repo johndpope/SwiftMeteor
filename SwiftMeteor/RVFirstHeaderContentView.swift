@@ -21,7 +21,10 @@ class RVFirstHeaderContentView: UIView {
     func configure(model: RVBaseModel?, collapsed: Bool, section: Int) {
         if let model = model {
             //print("In \(self.classForCoder).configure, have model")
-            setLabelText(label: headerLabel, text: "\(model.title!)")
+            if let title = model.title {
+                setLabelText(label: headerLabel, text: title)
+            }
+            
         }
         
         if collapsed {

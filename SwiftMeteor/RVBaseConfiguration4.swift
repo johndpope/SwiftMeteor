@@ -327,7 +327,7 @@ class RVBaseConfiguration4 {
         var (query, error) = self.mainQuery(andTerms: [RVQueryItem](), sortTerm: RVSortTerm(field: .createdAt, order: .descending))
         query = query.duplicate()
         //query.addSort(field: .createdAt, order: .ascending)
-        query.limit = 6
+        query.limit = 60
         if let error = error {
             error.append(message: "In \(self.instanceType).loadMain, got error creating Query")
             callback(error)

@@ -175,7 +175,7 @@ extension RVLeftMenuController {
                         }
                     })
                 } else if string == "RootGroup" {
-                    
+                    print("In \(self.classForCoder).didSelectRow.... for RootGroup")
                     RVGroup.getRootGroup(callback: { (group , error) in
                         if let error = error {
                             error.printError()

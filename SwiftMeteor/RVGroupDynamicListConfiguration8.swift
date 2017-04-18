@@ -10,10 +10,9 @@ import UIKit
 class RVGroupDynamicListConfiguration8: RVBaseConfiguration8 {
 
     
-    
     override init(scrollView: UIScrollView? ) {
         super.init(scrollView: scrollView)
-        self.subscription           = RVTransactionSubscription(front: true, showResponse: false)
+        self.subscription           = RVGroupListSubscription8(front: true, showResponse: false)
         self.configurationName      = "RVGroupDynamicListConfiguration8"
         self.navigationBarTitle     = "Groups"
         self.navigationBarColor     = UIColor.facebookBlue()
@@ -30,7 +29,7 @@ class RVGroupDynamicListConfiguration8: RVBaseConfiguration8 {
         self.filterDatasourceMaxSize    = 300
         self.searchScopes               = [[RVKeys.title.rawValue: RVKeys.title], [RVKeys.fullName.rawValue: RVKeys.fullName]]
         self.manager = RVDSManagerDynamicGroupList8(scrollView: scrollView, maxSize: 80, managerType: .main, dynamicSections: true, useZeroCell: true)
-        self.manager.subscription = RVTransactionSubscription(front: true, showResponse: false)
+        self.manager.subscription = RVGroupListSubscription8(front: true, showResponse: false)
         
     }
     override func configureSLK() {
@@ -45,12 +44,12 @@ class RVGroupDynamicListConfiguration8: RVBaseConfiguration8 {
         return RVDummyTopDatasource4<RVBaseModel>(manager: self.manager, datasourceType: .top, maxSize: 100)
     }
     override var mainDatasource: RVBaseDatasource4<RVBaseModel> {
-        let datasource = RVTransactionListDatasource8<RVBaseModel>(manager: self.manager, datasourceType: .main, maxSize: 80)
+        let datasource = RVGroupListDatasource8<RVBaseModel>(manager: self.manager, datasourceType: .main, maxSize: 80)
         datasource.subscription = self.subscription
         return datasource
     }
     override var filterDatasource: RVBaseDatasource4<RVBaseModel> {
-        return RVTransactionListDatasource8<RVBaseModel>(manager: self.manager, datasourceType: .filter, maxSize: self.mainDatasourceMaxSize)
+        return RVGroupListDatasource8<RVBaseModel>(manager: self.manager, datasourceType: .filter, maxSize: self.mainDatasourceMaxSize)
     }
     override func baseTopQuery() -> (RVQuery, RVError?) {
         let query = RVQuery()
@@ -58,10 +57,17 @@ class RVGroupDynamicListConfiguration8: RVBaseConfiguration8 {
         return (query, nil)
     }
     override func baseMainQuery() -> (RVQuery, RVError?) {
-        return RVTransaction.baseQuery
+        let (query, error) = RVGroup.baseQuery
+   //     query.addAnd(term: .special, value: RVSpecial.root.rawValue as AnyObject , comparison: .eq)
+        if let root = core.rootGroup {
+            if let rootId = root.localId {
+                query.addAnd(term: .parentId, value: rootId as AnyObject , comparison: .eq)
+            }
+        }
+        return (query, error)
     }
     override func baseFilterQuery() -> (RVQuery, RVError?) {
-        return RVTransaction.baseQuery
+        return RVGroup.baseQuery
     }
     
     

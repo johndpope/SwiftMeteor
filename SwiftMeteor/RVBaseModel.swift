@@ -216,6 +216,7 @@ class RVBaseModel: MeteorDocument {
             return RVModelType.unknown
         }
         set {
+            if (newValue != RVModelType.userProfile) { print("In \(self.classForCoder). ownerModelType being improperly set to : \(newValue.rawValue)") }
             updateString(key: .ownerModelType, value: newValue.rawValue, setDirties: true)
         }
     }
@@ -241,7 +242,7 @@ class RVBaseModel: MeteorDocument {
     }
     func updated(key: RVKeys, value: AnyObject?) {
         if !self.initialized { return }
-        print("In \(self.classForCoder).updated: \(key.rawValue) : \(String(describing: value))")
+       // print("In \(self.classForCoder).updated: \(key.rawValue) : \(String(describing: value))")
         let element : AnyObject = value != nil ? value! : NSNull()
         let userInfo = [key : element]
         NotificationCenter.default.post(name: RVBaseModel.UpdateNotificationName, object: self, userInfo: userInfo)
@@ -746,7 +747,21 @@ class RVBaseModel: MeteorDocument {
     }
     func setOwner(owner: RVBaseModel){
         self.ownerId = owner.localId
+        if let rawValue = owner.objects[RVKeys.modelType.rawValue] as? String {
+            if rawValue == "userProfile" {
+                owner.modelType = RVModelType.userProfile
+                owner.updateById(callback: { (model , error ) in
+                    if let error = error {
+                        error.append(message: "In \(self.classForCoder).setOwner")
+                        error.printError()
+                    } 
+                })
+            }
+        }
         self.ownerModelType = owner.modelType
+        if owner.modelType != RVModelType.userProfile {
+            print("In \(self.classForCoder).setOwner, ownerModelTYpe is \(owner.modelType.rawValue)")
+        }
     }
     class var baseQuery: (RVQuery, RVError?) {
        // let query = RVQuery()
@@ -803,10 +818,14 @@ extension RVBaseModel {
             if let error = error {
                 let rvError = RVError(message: "In \(classForCoder()).findInstance \(#line) got DDPError for id: \(id)", sourceError: error)
                 callback(nil, rvError)
-            } else if let fields = result as? [String : AnyObject] {
+            } else if var fields = result as? [String : AnyObject] {
  
                  //   print("In RVBaseModel.retrieve.... Image is \(fields ["image"])")
-                
+                if let rawValue = fields[RVKeys.modelType.rawValue] as? String {
+                    if rawValue == "userProfile" {
+                        fields[RVKeys.modelType.rawValue] = RVModelType.userProfile.rawValue as AnyObject
+                    }
+                }
                 callback(modelFromFields(fields: fields), nil)
             } else {
                 print("In RVBaseModel.findInstance \(#line), no error but no result for id = \(id)")
@@ -814,6 +833,21 @@ extension RVBaseModel {
             }
         }
     }
+    /*
+    class func deleteAll(callback: @escaping (_ error: RVError?) -> Void ) {
+        Meteor.call(meteorMethod(request: .deleteAll), params: [Any]()) { (results, error) in
+
+            if let error = error {
+                let rvError = RVError(message: "In \(self.classForCoder()).deleteAll, got DDP Error", sourceError: error, lineNumber: #line)
+                callback(error: rvError)
+            } else {
+                callback(nil)
+            }
+            
+        }
+ 
+    }
+ */
     
     class func findOne(query: RVQuery, callback: @escaping(_ domain: RVBaseModel?, _ error: RVError?) -> Void) {
         //print("In \(self.classForCoder()).findOne, findOne method is: \(self.findOneMethod.rawValue)")
@@ -824,7 +858,12 @@ extension RVBaseModel {
                 let rvError = RVError(message: "In \(classForCoder()).findOne, got error", sourceError: error, lineNumber: #line, fileName: "")
                 callback(nil, rvError)
                 return
-            } else if let fields = result as? [String: AnyObject] {
+            } else if var fields = result as? [String: AnyObject] {
+                if let rawValue = fields[RVKeys.modelType.rawValue] as? String {
+                    if rawValue == "userProfile" {
+                        fields[RVKeys.modelType.rawValue] = RVModelType.userProfile.rawValue as AnyObject
+                    }
+                }
                 callback(modelFromFields(fields: fields), nil)
                 return
             } else {
@@ -942,9 +981,14 @@ extension RVBaseModel {
                 if let error = error {
                     let rvError = RVError(message: "In \(self.instanceType).insert \(#line) got DDPError for id: \(self.localId ?? " no localId")", sourceError: error)
                     callback(nil, rvError)
-                } else if let result = result as? [String: AnyObject] {
+                } else if var field = result as? [String: AnyObject] {
                   //  print("In \(self.instanceType).created line \(#line) of RVBaseModel, successfully created \(self.localId)")
-                    callback(type(of: self).modelFromFields(fields: result),  nil)
+                    if let rawValue = field[RVKeys.modelType.rawValue] as? String {
+                        if rawValue == "userProfile" {
+                            field[RVKeys.modelType.rawValue] = RVModelType.userProfile.rawValue as AnyObject
+                        }
+                    }
+                    callback(type(of: self).modelFromFields(fields: field),  nil)
                 } else {
                     print("In \(self.instanceType).insert \(#line), no error but no casted result. id = \(self.localId ?? "No localId"). Result if any: \(result ?? "No result")")
                     callback(nil, nil)
@@ -1038,8 +1082,13 @@ extension RVBaseModel {
                         let rvError = RVError(message: "In \(self.instanceType).updateById \(#line) got DDPError for id: \(self.localId ?? "NO LocalID")", sourceError: error)
                         callback(nil, rvError)
                         return
-                    } else if let fields = result as? [String : AnyObject] {
+                    } else if var fields = result as? [String : AnyObject] {
                         // print("In \(self.instanceType).updateById result is \(result)\n------------------")
+                        if let rawValue = fields[RVKeys.modelType.rawValue] as? String {
+                            if rawValue == "userProfile" {
+                                fields[RVKeys.modelType.rawValue] = RVModelType.userProfile.rawValue as AnyObject
+                            }
+                        }
                         callback(type(of: self).modelFromFields(fields: fields), nil)
                         return
                     } else {

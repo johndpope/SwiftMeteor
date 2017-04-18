@@ -18,7 +18,9 @@ class RVGroup: RVInterest {
     override class var deleteAllMethod: RVMeteorMethods { get { return RVMeteorMethods.GroupDeleteAll}}
     override class var bulkQueryMethod: RVMeteorMethods { get { return RVMeteorMethods.GroupList } }
 
-    override class func modelFromFields(fields: [String: AnyObject]) -> RVBaseModel { return RVGroup(fields: fields) }
+    override class func modelFromFields(fields: [String: AnyObject]) -> RVBaseModel {
+        return RVGroup(fields: fields)
+    }
     fileprivate var allSubgroup: RVBaseModel? = nil
     var allSubgroupId: String? {
         get { return getString(key: .allSubgroupId) }
@@ -37,6 +39,22 @@ class RVGroup: RVInterest {
         self.allSubgroupId = allSubgroup.localId
         self.allSubgroupModelType = allSubgroup.modelType
         self.allSubgroup = allSubgroup
+    }
+    override class var baseQuery: (RVQuery, RVError?) {
+        get {
+            let query = RVQuery()
+            var error: RVError? = nil
+            query.addAnd(term: .modelType, value: RVModelType.Group.rawValue as AnyObject, comparison: .eq)
+         //   query.addAnd(term: .deleted, value: false as AnyObject, comparison: .eq)
+            query.limit = 20
+
+            if let domainId = RVBaseModel.appDomainId {
+                query.addAnd(term: .domainId, value: domainId as AnyObject, comparison: .eq)
+            } else {
+                error = RVError(message: "In \(self.classForCoder).basicQuery, no domainId")
+            }
+            return (query, error)
+        }
     }
 
 }
@@ -72,6 +90,7 @@ extension RVGroup {
         group.createRootGroup(callback: callback)
     }
     func retrieveAllSubgroup(callback: @escaping(_ allSubgroup: RVBaseModel?, _ error: RVError?)-> Void) {
+        print("In \(self.classForCoder).retrieveAllSubgroup")
         if let allSubgroup = self.allSubgroup {
             callback(allSubgroup, nil)
             return
@@ -104,10 +123,12 @@ extension RVGroup {
         }
     }
 override func create(callback: @escaping (RVBaseModel?, RVError?) -> Void) {
+    print("In \(self.classForCoder).create override where allSubgroup is created")
     let allSubgroup = RVGroup()
     allSubgroup.setParent(parent: self)
     allSubgroup.title = self.title
     allSubgroup.special = .all
+    print("IN \(self.classForCoder).create about to get loggedInUser. and modelType is: \(RVBaseModel.loggedInUser!.objects[RVKeys.modelType.rawValue])")
     if let owner = RVBaseModel.loggedInUser {
         self.setOwner(owner: owner)
         allSubgroup.setOwner(owner: owner)

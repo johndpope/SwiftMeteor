@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		2802252C1E1C5C6F00D5FB60 /* RVFirstHeaderContentView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 2802252B1E1C5C6F00D5FB60 /* RVFirstHeaderContentView.xib */; };
 		2802252E1E1C5C9500D5FB60 /* RVFirstHeaderContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2802252D1E1C5C9500D5FB60 /* RVFirstHeaderContentView.swift */; };
+		2803A1861EA53DB80066C0F9 /* RVGroupListSubscription8.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2803A1851EA53DB80066C0F9 /* RVGroupListSubscription8.swift */; };
 		2806BAEB1E6BCB43005CA637 /* TransactionList.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 2806BAEA1E6BCB43005CA637 /* TransactionList.storyboard */; };
 		2806BAED1E6BCBFE005CA637 /* RVBaseViewController4.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2806BAEC1E6BCBFE005CA637 /* RVBaseViewController4.swift */; };
 		2806BAEF1E6BCC37005CA637 /* RVTransactionViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2806BAEE1E6BCC37005CA637 /* RVTransactionViewController.swift */; };
@@ -281,6 +282,7 @@
 		07BD65EBD12BB5752CC9715C /* Pods-SwiftMeteor.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SwiftMeteor.debug.xcconfig"; path = "Pods/Target Support Files/Pods-SwiftMeteor/Pods-SwiftMeteor.debug.xcconfig"; sourceTree = "<group>"; };
 		2802252B1E1C5C6F00D5FB60 /* RVFirstHeaderContentView.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = RVFirstHeaderContentView.xib; sourceTree = "<group>"; };
 		2802252D1E1C5C9500D5FB60 /* RVFirstHeaderContentView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RVFirstHeaderContentView.swift; sourceTree = "<group>"; };
+		2803A1851EA53DB80066C0F9 /* RVGroupListSubscription8.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RVGroupListSubscription8.swift; sourceTree = "<group>"; };
 		2806BAEA1E6BCB43005CA637 /* TransactionList.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = TransactionList.storyboard; sourceTree = "<group>"; };
 		2806BAEC1E6BCBFE005CA637 /* RVBaseViewController4.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RVBaseViewController4.swift; sourceTree = "<group>"; };
 		2806BAEE1E6BCC37005CA637 /* RVTransactionViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RVTransactionViewController.swift; sourceTree = "<group>"; };
@@ -752,6 +754,7 @@
 				286F1D631EA532DC00EA2979 /* RVGroupDynamicListConfiguration8.swift */,
 				286F1D691EA53A4C00EA2979 /* RVGroupListDatasource8.swift */,
 				286F1D6B1EA53B1000EA2979 /* RVDSManagerDynamicGroupList8.swift */,
+				2803A1851EA53DB80066C0F9 /* RVGroupListSubscription8.swift */,
 			);
 			name = "Group Scene";
 			sourceTree = "<group>";
@@ -1575,6 +1578,7 @@
 				2896DAF91E9AABED00E5CE44 /* RVDSManager5.swift in Sources */,
 				2813FAF61E20A9B8007E9428 /* RVTaskTableViewCell.swift in Sources */,
 				286CA3231E327BCA00B081B8 /* RVGMaps.swift in Sources */,
+				2803A1861EA53DB80066C0F9 /* RVGroupListSubscription8.swift in Sources */,
 				28201A441E1DE819008D8E59 /* RVMainLandingTableViewCell.swift in Sources */,
 				28B0CFA71E3C5E46000C74DC /* PHPhotoLibrary+Extension.swift in Sources */,
 				28875A091E81F0E600876A5E /* RVBaseDatasource4.swift in Sources */,

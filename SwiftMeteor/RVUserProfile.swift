@@ -201,7 +201,7 @@ class RVUserProfile: RVInterest {
         profile.parentModelType = RVModelType.task
         profile.domainId = "domainId###"
         profile.schemaVersion = 15
-        profile.special = RVSpecial.root
+     //   profile.special = RVSpecial.root
         profile.deleted = false
         profile.cellPhone = "6503946345"
         profile.homePhone = "6508515212"

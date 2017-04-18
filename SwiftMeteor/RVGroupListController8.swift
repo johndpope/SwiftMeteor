@@ -47,5 +47,43 @@ class RVGroupListController8: RVBaseListController8  {
         super.viewDidLoad()
         
     }
+    
+    // Notifies the view controller when the right button's action has been triggered, manually or by using the keyboard return key.
+    override func didPressRightButton(_ sender: Any!) {
+        
+        if !setupSLKDatasource {
+            super.didPressRightButton(sender)
+            return
+        }
+        print("In \(self.classForCoder).didPressRightBUtton. should not be here")
+        // This little trick validates any pending auto-correction or auto-spelling just after hitting the 'Send' button
+        self.textView.refreshFirstResponder()
+        RVGroup.deleteAll { (error) in
+            if let error = error {
+                error.printError()
+            } else {
+                print("In \(self.classForCoder), successfully deleted all groups")
+            }
+        }
+        /*
+        self.createTransaction(text: self.textView.text) {
+            let indexPath = IndexPath(row: 0, section: 0)
+            //let rowAnimation: UITableViewRowAnimation = self.isInverted ? .bottom : .top
+            let scrollPosition: UITableViewScrollPosition = self.isInverted ? .bottom : .top
+            
+            //        self.tableView.beginUpdates()
+            //        self.messages.insert(message, at: 0)
+            //        self.tableView.insertRows(at: [indexPath], with: rowAnimation)
+            //        self.tableView.endUpdates()
+            if let _ = self.tableView?.cellForRow(at: indexPath) {
+                self.tableView?.scrollToRow(at: indexPath, at: scrollPosition, animated: true)
+            }
+            // Fixes the cell from blinking (because of the transform, when using translucent cells)
+            // See https://github.com/slackhq/SlackTextViewController/issues/94#issuecomment-69929927
+            //   self.tableView?.reloadRows(at: [indexPath], with: .automatic)
+        }
+ */
+        super.didPressRightButton(sender)
+    }
  
 }

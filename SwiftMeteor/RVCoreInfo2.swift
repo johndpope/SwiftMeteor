@@ -154,6 +154,7 @@ class RVCoreInfo2 {
                    // print("In \(self.instanceType).completeLogin # \(#line), logged out \(RVModelType.transaction.rawValue)")
                 })
               //  RVStateDispatcher4.shared.changeState(newState: RVBaseAppState4(appState: .transactionList))
+                 print("In \(self.instanceType).completeLogin, about to get RootGroup")
                 self.getRootGroup(callback: { (error) in
                     if let error = error {
                         self.rootGroup = nil
@@ -266,6 +267,13 @@ class RVCoreInfo2 {
                     group.domainId = domainId
                     group.special = .root
                     group.title = RVSpecial.root.rawValue
+                    if let loggedInUser = RVBaseModel.loggedInUser {
+                        print("In \(self.instanceType).getRootGroup, loggedInUser is \(String(describing: loggedInUser.email)), and ownerModelType \(loggedInUser.objects[RVKeys.modelType.rawValue])")
+                        group.setOwner(owner: loggedInUser)
+                    } else {
+                        print("In \(self.instanceType).getRootGroup #\(#line), no loggedInUser")
+                    }
+                    
                     group.create(callback: { (group , error ) in
                         if let error = error {
                             error.append(message: "In \(self.instanceType).getRootGroup, got error creating Root Group")
@@ -376,6 +384,7 @@ class RVCoreInfo2Logger: Operation {
                     } else if let domain = domain {
                         RVCoreInfo2.shared.domain = domain
                         self.loadState = .Group
+                        print("In \(self.classForCoder).main, about to get RootGroup")
                         RVGroup.getRootGroup(callback: { (group , error) in
                             if self.isCancelled { return }
                             if let error = error {

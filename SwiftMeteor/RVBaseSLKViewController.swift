@@ -636,9 +636,9 @@ extension RVBaseSLKViewController {
             //        self.messages.insert(message, at: 0)
             //        self.tableView.insertRows(at: [indexPath], with: rowAnimation)
             //        self.tableView.endUpdates()
-            
-            self.tableView?.scrollToRow(at: indexPath, at: scrollPosition, animated: true)
-            
+            if let _ = self.tableView?.cellForRow(at: indexPath) {
+                self.tableView?.scrollToRow(at: indexPath, at: scrollPosition, animated: true)
+            }
             // Fixes the cell from blinking (because of the transform, when using translucent cells)
             // See https://github.com/slackhq/SlackTextViewController/issues/94#issuecomment-69929927
          //   self.tableView?.reloadRows(at: [indexPath], with: .automatic)

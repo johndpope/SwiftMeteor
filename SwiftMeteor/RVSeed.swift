@@ -130,6 +130,7 @@ class RVSeed {
         }
     }
     class func createTaskRoot(callback: @escaping(_ root: RVTask?, _ error: RVError?) -> Void) {
+        print("in RVSeed.createTaskRoot")
         let query = RVQuery()
         query.limit = 1
         query.addAnd(term: .title, value: "Root" as AnyObject, comparison: .eq )
