@@ -42,6 +42,7 @@ class RVViewDeck8: NSObject {
         set { deckController.centerViewController = newValue}
     }
     func initialize(appDelegate: AppDelegate) {
+        let _ = core
         let window = UIWindow(frame: UIScreen.main.bounds)
         appDelegate.window = window
         window.tintColor = UIColor(red: 0.071, green: 0.42, blue: 0.694, alpha: 1.0)
@@ -52,7 +53,6 @@ class RVViewDeck8: NSObject {
         UISearchBar.appearance().barTintColor = UIColor.facebookBlue()
         UISearchBar.appearance().tintColor = UIColor.white
         UITextField.appearance(whenContainedInInstancesOf: [UISearchBar.self]).tintColor = UIColor.facebookBlue()
-        let _ = RVBaseCoreInfo8.sharedInstance
     }
     func generateControllerStack() -> IIViewDeckController {
         var leftController = UIViewController()
@@ -185,7 +185,7 @@ extension RVViewDeck8: IIViewDeckControllerDelegate {
      @param side               The side that did close. Either `IIViewDeckSideLeft` or `IIViewDeckSideRight`.
      */
     func viewDeckController(_ viewDeckController: IIViewDeckController, didClose side: IIViewDeckSide) {
-        // print("In \(self.classForCoder).viewDeckController.didClose side \(side), openSide is \(self.deckController.openSide) username is \(RVCoreInfo.sharedInstance.username)")
+
         switch(self.deckController.openSide) {
         default:
             let _ = 0

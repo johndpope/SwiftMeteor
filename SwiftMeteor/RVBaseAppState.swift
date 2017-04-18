@@ -61,7 +61,7 @@ class RVBaseAppState {
     var showSearchBar: Bool = true
     var tableViewInteractive: Bool = true
     var navigationBarTitle: String = "Title Goes Here" 
-    var navigationBarColor: UIColor { get { return RVCoreInfo.sharedInstance.navigationBarColor }}
+    var navigationBarColor: UIColor { get { return RVBaseCoreInfo8.sharedInstance.navigationBarColor }}
     var scopes = [[String: RVKeys]]()
     var segmentViewFields: [RVMainViewControllerState.State] = []
     var manager: RVDSManager = RVDSManager(scrollView: nil)

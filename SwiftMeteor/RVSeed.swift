@@ -167,6 +167,7 @@ class RVSeed {
                                 } else  {
                                     if let task = models.first as? RVTask {
                                         callback(task, nil)
+                                        print("IN RVSeed.createTaskRoot. Needs fixing")
                                         RVCoreInfo.sharedInstance.rootTask = task
                                     } else {
                                         print("In RVSeed.createTaskRoot, createdTask but on retrieve, no error, have models array does not have a RVTask object")

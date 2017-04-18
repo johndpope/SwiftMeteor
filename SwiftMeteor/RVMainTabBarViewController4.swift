@@ -9,7 +9,7 @@
 import UIKit
 class RVMainTabBarViewController4: UITabBarController {
     static let identifier = "RVMainTabBarViewController4"
-    var coreInfo: RVCoreInfo2 { get { return RVCoreInfo2.shared }}
+    var coreInfo: RVCoreInfo2 { get { return RVBaseCoreInfo8.shared }}
     var currentAppState: RVBaseAppState4 { get { return coreInfo.currentAppState }}
     var priorAppState: RVBaseAppState4   { get { return coreInfo.priorAppState }}
     var myCurrentAppState: RVBaseAppState4 = RVBaseAppState4(appState: .defaultState)

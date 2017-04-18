@@ -47,4 +47,49 @@ class RVTransactionListController8: RVBaseListController8  {
         super.viewDidLoad()
         
     }
+    
+    // Notifies the view controller when the right button's action has been triggered, manually or by using the keyboard return key.
+    override func didPressRightButton(_ sender: Any!) {
+        
+        self.createTransaction(text: self.textView.text) {
+            let indexPath = IndexPath(row: 0, section: 0)
+            //let rowAnimation: UITableViewRowAnimation = self.isInverted ? .bottom : .top
+            let scrollPosition: UITableViewScrollPosition = self.isInverted ? .bottom : .top
+            
+            //        self.tableView.beginUpdates()
+            //        self.messages.insert(message, at: 0)
+            //        self.tableView.insertRows(at: [indexPath], with: rowAnimation)
+            //        self.tableView.endUpdates()
+            
+            self.tableView?.scrollToRow(at: indexPath, at: scrollPosition, animated: true)
+            
+            // Fixes the cell from blinking (because of the transform, when using translucent cells)
+            // See https://github.com/slackhq/SlackTextViewController/issues/94#issuecomment-69929927
+            //   self.tableView?.reloadRows(at: [indexPath], with: .automatic)
+        }
+        super.didPressRightButton(sender)
+    }
+    func createTransaction(text: String, callback: @escaping()-> Void) {
+        print("In \(self.classForCoder).createTransaction")
+        let transaction = RVTransaction()
+        if let loggedInUser = self.userProfile {
+            transaction.targetUserProfileId = loggedInUser.localId
+            transaction.entityId = loggedInUser.localId
+            transaction.entityModelType = .userProfile
+            transaction.entityTitle = loggedInUser.fullName
+        }
+        transaction.title = text
+        transaction.everywhere = true
+        transaction.transactionType = .updated
+        transaction.create { (model, error) in
+            if let error = error {
+                error.printError()
+            } else if let transaction = model as? RVTransaction {
+                print("In \(self.instanceType).createTransaction, created transaction \(transaction.localId ?? " no LocalId") \(transaction.createdAt?.description ?? " no createdAt")")
+            } else {
+                print("In \(self.instanceType).createTransaction, no error, but no result ")
+            }
+            callback()
+        }
+    }
 }

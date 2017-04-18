@@ -70,7 +70,7 @@ extension RVWatchGroupView {
             } else if let defaultImage = defaultImage {
                 imageView.image = defaultImage
             } else {
-                imageView.image = RVCoreInfo.sharedInstance.watchGroupImagePlaceholder
+                imageView.image = RVBaseModel.coreInfo.watchGroupImagePlaceholder
             }
         }
     }

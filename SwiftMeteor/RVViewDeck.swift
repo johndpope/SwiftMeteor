@@ -71,6 +71,7 @@ class RVViewDeck: NSObject {
         callback()
     }
     func initialize(appDelegate: AppDelegate) {
+        print("In \(self.classForCoder).initialize SHOULD NOT BE USED ANY MORE")
         RVCoreInfo.sharedInstance.appState = RVLoggedoutState()
         let window = UIWindow(frame: UIScreen.main.bounds)
         appDelegate.window = window
@@ -179,7 +180,6 @@ extension RVViewDeck: IIViewDeckControllerDelegate {
      @param side               The side that did close. Either `IIViewDeckSideLeft` or `IIViewDeckSideRight`.
      */
     func viewDeckController(_ viewDeckController: IIViewDeckController, didClose side: IIViewDeckSide) {
-       // print("In \(self.classForCoder).viewDeckController.didClose side \(side), openSide is \(self.deckController.openSide) username is \(RVCoreInfo.sharedInstance.username)")
         switch(self.deckController.openSide) {
         default:
             let _ = 0

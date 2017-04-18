@@ -718,29 +718,7 @@ extension RVBaseSLKViewController8 {
         print("IN \(self.classForCoder).needToImplement show camera")
         //  self.showCameraMenu()
     }
-    func createTransaction(text: String, callback: @escaping()-> Void) {
-        print("In \(self.classForCoder).createTransaction")
-        let transaction = RVTransaction()
-        if let loggedInUser = self.userProfile {
-            transaction.targetUserProfileId = loggedInUser.localId
-            transaction.entityId = loggedInUser.localId
-            transaction.entityModelType = .userProfile
-            transaction.entityTitle = loggedInUser.fullName
-        }
-        transaction.title = text
-        transaction.everywhere = true
-        transaction.transactionType = .updated
-        transaction.create { (model, error) in
-            if let error = error {
-                error.printError()
-            } else if let transaction = model as? RVTransaction {
-                print("In \(self.instanceType).createTransaction, created transaction \(transaction.localId ?? " no LocalId") \(transaction.createdAt?.description ?? " no createdAt")")
-            } else {
-                print("In \(self.instanceType).createTransaction, no error, but no result ")
-            }
-            callback()
-        }
-    }
+
     // Notifies the view controller when the right button's action has been triggered, manually or by using the keyboard return key.
     override func didPressRightButton(_ sender: Any!) {
         
@@ -752,7 +730,7 @@ extension RVBaseSLKViewController8 {
         // This little trick validates any pending auto-correction or auto-spelling just after hitting the 'Send' button
         self.textView.refreshFirstResponder()
         
-        self.createTransaction(text: self.textView.text) {
+     /*   self.createTransaction(text: self.textView.text) {
             let indexPath = IndexPath(row: 0, section: 0)
             //let rowAnimation: UITableViewRowAnimation = self.isInverted ? .bottom : .top
             let scrollPosition: UITableViewScrollPosition = self.isInverted ? .bottom : .top
@@ -768,6 +746,7 @@ extension RVBaseSLKViewController8 {
             // See https://github.com/slackhq/SlackTextViewController/issues/94#issuecomment-69929927
             //   self.tableView?.reloadRows(at: [indexPath], with: .automatic)
         }
+ */
         super.didPressRightButton(sender)
     }
     

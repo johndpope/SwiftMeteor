@@ -24,24 +24,7 @@ class RVWatchGroupMembersState: RVWatchGroupInfoState {
         } else {
             loadMain(callback: callback)
         }
-        /*
-        if let domain = RVCoreInfo.sharedInstance.domain {
-            stack = [domain]
-            self.loadMain()
-        } else {
-            RVCoreInfo.sharedInstance.getDomain(callback: { (domain , error) in
-                if let error = error {
-                    error.append(message: "In \(self.instanceType).initialize, error getting domain")
-                    error.printError()
-                } else if let domain = domain {
-                    self.stack = [domain]
-                    self.loadMain()
-                } else {
-                    print("In \(self.instanceType).initialize, no error but no domain")
-                }
-            })
-        }
- */
+
     }
     override func loadMain(callback: @escaping (_ error: RVError?) -> Void) {
         // self.clearAndCreateWatchGroups()

@@ -61,7 +61,7 @@ class RVBaseSLKViewController4: SLKTextViewController {
 
     var installSearchControllerInTableView: Bool { get { return configuration.installSearchControllerInTableView }}
     var searchBarPlaceholder: String { get { return configuration.searchBarPlaceholder }}
-    var coreInfo: RVCoreInfo2 { get { return RVCoreInfo2.shared }}
+    var coreInfo: RVCoreInfo2 { get { return RVBaseCoreInfo8.sharedInstance }}
     var stack = [RVBaseModel]() { didSet { _priorStack = oldValue } }
     private var _priorStack = [RVBaseModel]()
     var sameStack: Bool {

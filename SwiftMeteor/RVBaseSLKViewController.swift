@@ -40,7 +40,7 @@ class RVBaseSLKViewController: SLKTextViewController {
     var searchScopes: [[String: RVKeys]] { get {return [[RVKeys.title.rawValue: RVKeys.title], [RVKeys.fullName.rawValue: RVKeys.fullName]]}}
     var installSearchControllerInTableView: Bool { get { return false }}
     var searchBarPlaceholder: String { get { return "Search..." }}
-    var coreInfo: RVCoreInfo2 { get {return RVCoreInfo2.shared }}
+    var coreInfo: RVCoreInfo2 { get {return RVBaseCoreInfo8.sharedInstance }}
 
 
     
@@ -596,7 +596,7 @@ extension RVBaseSLKViewController {
     func createTransaction(text: String, callback: @escaping()-> Void) {
       //  print("In \(self.classForCoder).createTransaction")
         let transaction = RVTransaction()
-        if let loggedInUser = RVCoreInfo2.shared.loggedInUserProfile {
+        if let loggedInUser = RVBaseCoreInfo8.sharedInstance.loggedInUserProfile {
             transaction.targetUserProfileId = loggedInUser.localId
             transaction.entityId = loggedInUser.localId
             transaction.entityModelType = .userProfile

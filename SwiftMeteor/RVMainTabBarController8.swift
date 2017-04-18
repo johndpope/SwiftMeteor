@@ -12,7 +12,7 @@ import UIKit
 class RVMainTabBarController8: UITabBarController, RVIdentifierProtocol {
     static let identifier = "RVMainTabBarController8"
     var staticIdentifier: String { get { return RVMainTabBarController8.identifier }}
-    var coreInfo: RVCoreInfo2 { get { return RVCoreInfo2.shared }}
+    var coreInfo: RVCoreInfo2 { get { return RVBaseCoreInfo8.sharedInstance }}
     var currentAppState: RVBaseAppState4 { get { return coreInfo.currentAppState }}
     var priorAppState: RVBaseAppState4   { get { return coreInfo.priorAppState }}
     var myCurrentAppState: RVBaseAppState4 = RVBaseAppState4(appState: .defaultState)

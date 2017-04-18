@@ -11,6 +11,19 @@ import UIKit
 class RVGroupListController8: RVBaseListController8  {
     static let identifier = "RVGroupListController8"
     
+    var parentModel: RVBaseModel? {
+        get {
+            if self.stack.count > 0 {
+                return self.stack.last
+            } else if let root = coreInfo.rootGroup {
+                self.stack.append(root)
+                return root
+            } else {
+                return nil
+            }
+        }
+    }
+    
     override var instanceConfiguration: RVBaseConfiguration8 { return RVGroupDynamicListConfiguration8(scrollView: dsScrollView) }
     
     @IBAction func AllUnreadSegementedControlChanged(_ sender: UISegmentedControl) {
@@ -47,24 +60,31 @@ class RVGroupListController8: RVBaseListController8  {
         super.viewDidLoad()
         
     }
+    func createGroup(text: String, callback: @escaping()-> Void) {
+        let group = RVGroup()
+        group.special = .regular
+        group.title = text
+        group.everywhere = true
+        if let parentModel = self.parentModel {
+            group.setParent(parent: parentModel)
+        } else {
+            print("In \(self.classForCoder).createdGroup with title \(text), no parent model")
+        }
+        group.create { (model, error) in
+            if let error = error {
+                error.append(message: "IN \(self.classForCoder).createGroup, got error ")
+                error.printError()
+            }
+            callback()
+        }
+    }
     
     // Notifies the view controller when the right button's action has been triggered, manually or by using the keyboard return key.
     override func didPressRightButton(_ sender: Any!) {
-        
-        if !setupSLKDatasource {
-            super.didPressRightButton(sender)
-            return
+        self.createGroup(text: self.textView.text) { 
+            
         }
-        print("In \(self.classForCoder).didPressRightBUtton. should not be here")
-        // This little trick validates any pending auto-correction or auto-spelling just after hitting the 'Send' button
-        self.textView.refreshFirstResponder()
-        RVGroup.deleteAll { (error) in
-            if let error = error {
-                error.printError()
-            } else {
-                print("In \(self.classForCoder), successfully deleted all groups")
-            }
-        }
+
         /*
         self.createTransaction(text: self.textView.text) {
             let indexPath = IndexPath(row: 0, section: 0)

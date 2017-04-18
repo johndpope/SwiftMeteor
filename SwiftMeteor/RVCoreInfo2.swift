@@ -9,6 +9,8 @@
 import UIKit
 
 class RVCoreInfo2 {
+    var loginCredentials: [String: AnyObject]? = nil
+    var watchGroupImagePlaceholder: UIImage { get { return UIImage(named: "JNW.png")! } }
     var currentAppState: RVBaseAppState4 = RVBaseAppState4(appState: .loggedOut) {
         didSet {
            // print("........... In \(self.instanceType).currentAppState oldValue = \(oldValue.appState), new value = \(currentAppState.appState)")
@@ -21,7 +23,7 @@ class RVCoreInfo2 {
     }
     var instanceType: String { get { return String(describing: type(of: self)) } }
     static let shared: RVCoreInfo2 = {
-        return RVCoreInfo2()
+        return RVBaseCoreInfo8.sharedInstance
     }()
 
     //var domain: RVDomain? { get { return core.domain } }
@@ -268,7 +270,7 @@ class RVCoreInfo2 {
                     group.special = .root
                     group.title = RVSpecial.root.rawValue
                     if let loggedInUser = RVBaseModel.loggedInUser {
-                        print("In \(self.instanceType).getRootGroup, loggedInUser is \(String(describing: loggedInUser.email)), and ownerModelType \(loggedInUser.objects[RVKeys.modelType.rawValue])")
+                        print("In \(self.instanceType).getRootGroup, loggedInUser is \(String(describing: loggedInUser.email)), and ownerModelType \(String(describing: loggedInUser.objects[RVKeys.modelType.rawValue]))")
                         group.setOwner(owner: loggedInUser)
                     } else {
                         print("In \(self.instanceType).getRootGroup #\(#line), no loggedInUser")

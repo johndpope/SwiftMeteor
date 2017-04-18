@@ -10,7 +10,7 @@ import UIKit
 import ViewDeck
 class RVViewDeck4: RVViewDeck {
     static let shared: RVViewDeck4 = { return RVViewDeck4()  }()
-    var core: RVCoreInfo2 { get { return RVCoreInfo2.shared }}
+    var core: RVBaseCoreInfo8 { get { return RVBaseCoreInfo8.sharedInstance }}
     func instantiateController(storyBoard: String, controller: String) -> UIViewController {
         return UIStoryboard(name: storyBoard, bundle: nil).instantiateViewController(withIdentifier: controller)
     }
@@ -23,6 +23,7 @@ class RVViewDeck4: RVViewDeck {
         set { deckController.centerViewController = newValue}
     }
     override func initialize(appDelegate: AppDelegate) {
+        print("IN \(self.classForCoder).initialize. SHOULD NOT BE USED ANY MORE")
         let window = UIWindow(frame: UIScreen.main.bounds)
         appDelegate.window = window
         window.tintColor = UIColor(red: 0.071, green: 0.42, blue: 0.694, alpha: 1.0)
@@ -33,7 +34,7 @@ class RVViewDeck4: RVViewDeck {
         UISearchBar.appearance().barTintColor = UIColor.facebookBlue()
         UISearchBar.appearance().tintColor = UIColor.white
         UITextField.appearance(whenContainedInInstancesOf: [UISearchBar.self]).tintColor = UIColor.facebookBlue()
-        let _ = RVCoreInfo2.shared
+        let _ = RVBaseCoreInfo8.sharedInstance
     }
     override func generateControllerStack() -> IIViewDeckController {
         let leftController = RVControllers.shared.getController(appState: .leftMenu)

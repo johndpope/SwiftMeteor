@@ -70,10 +70,10 @@ class RVBaseConfiguration {
     var queryFunctions = QueryElement()
     var installSearchController:    Bool   = true
     var installRefreshControl:      Bool   = true
-    var loggedInUserProfile:        RVUserProfile?  { get { return RVCoreInfo2.shared.loggedInUserProfile }}
-    var loggedInUserProfileId:      String?         { get { return RVCoreInfo2.shared.loggedInUserProfileId }}
-    var domain:                     RVDomain?       { get { return RVCoreInfo2.shared.domain }}
-    var domainId:                   String?         { get { return RVCoreInfo2.shared.domainId }}
+    var loggedInUserProfile:        RVUserProfile?  { get { return RVBaseCoreInfo8.sharedInstance.loggedInUserProfile }}
+    var loggedInUserProfileId:      String?         { get { return RVBaseCoreInfo8.sharedInstance.loggedInUserProfileId }}
+    var domain:                     RVDomain?       { get { return RVBaseCoreInfo8.sharedInstance.domain }}
+    var domainId:                   String?         { get { return RVBaseCoreInfo8.sharedInstance.domainId }}
     func configure(stack: [RVBaseModel], callback: @escaping () -> Void) {
         self.stack = stack
         configureUI()

@@ -237,7 +237,7 @@ class RVUserProfile: RVInterest {
     }
     class func getOrCreateUsersUserProfile(callback: @escaping (_ profile: RVUserProfile?, _ error: RVError?) -> Void ) {
         let profile = RVUserProfile()
-        profile.username = RVCoreInfo.sharedInstance.username
+        profile.username = RVBaseCoreInfo8.sharedInstance.username
         var fields = profile.dirties
         fields.removeValue(forKey: RVKeys.createdAt.rawValue)
         fields.removeValue(forKey: RVKeys.updatedAt.rawValue)

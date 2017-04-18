@@ -15,7 +15,7 @@ class RVBaseBaseViewController: UIViewController {
         set { RVCoreInfo.sharedInstance.appState = newValue }
     }
     var listeners = [RVListener]()
-    var userProfile: RVUserProfile? { get { return RVCoreInfo.sharedInstance.userProfile }}
+    var userProfile: RVUserProfile? { get { return RVBaseCoreInfo8.sharedInstance.loggedInUserProfile }}
     func hideView(view: UIView?) { if let view = view { view.isHidden = true } }
     func showView(view: UIView?) {
         if let view = view { view.isHidden = false}

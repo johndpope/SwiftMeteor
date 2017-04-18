@@ -51,11 +51,7 @@ class RVBaseAppState2: RVBaseAppState {
     var installedTime: Date = Date()
     var uninstalledTime: Date = Date()
 
-    //typealias queryFunction = (_ params: [String: AnyObject]) -> (RVQuery)
-    //typealias QueryElement = [RVBaseDataSource.DatasourceType : queryFunction]
-    // var queryFunctions = QueryElement()
-    // var navigationBarTitle: String = "Replace RVCoreInfo2"
-    //var loaded: Bool = false
+
 
     func install(callback: @escaping() -> Void) {
         self.installedTime = Date()

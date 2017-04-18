@@ -36,6 +36,7 @@ class RVBaseModel: MeteorDocument {
     var zeroCellModel: Bool = false
     var initialized: Bool = false
     static var coreInfo: RVBaseCoreInfo8    { return RVBaseCoreInfo8.sharedInstance }
+
     static var loggedInUser: RVUserProfile? { return coreInfo.loggedInUserProfile}
     static var loggedInUserId: String?      { return coreInfo.loggedInUserProfileId }
     static var appDomain: RVDomain?         { return coreInfo.domain }

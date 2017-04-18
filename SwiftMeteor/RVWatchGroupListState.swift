@@ -50,10 +50,11 @@ class RVWatchGroupListState: RVMainViewControllerState {
     }
     override func initialize(scrollView: UIScrollView?, callback: @escaping (_ error: RVError?) -> Void) {
         self.manager = RVDSManager(scrollView: scrollView)
-        if let domain = RVCoreInfo.sharedInstance.domain {
+        if let domain = RVBaseCoreInfo8.sharedInstance.domain {
             stack = [domain]
             self.loadMain(callback: callback)
         } else {
+            print("In \(self.instanceType).initialize. This needs to be redone vis-a-vs coreinfo")
             RVCoreInfo.sharedInstance.getDomain(callback: { (domain , error) in
                 if let error = error {
                     error.append(message: "In \(self.instanceType).initialize, error getting domain")

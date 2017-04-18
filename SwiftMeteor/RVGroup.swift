@@ -86,7 +86,7 @@ extension RVGroup {
         group.title = "Root Group"
         group.regularDescription = "Root Group"
         group.setLoggedInUserAsOwner()
-        if let domain = RVCoreInfo.sharedInstance.domain { group.domainId = domain.localId }
+        group.domainId = self.appDomainId
         group.createRootGroup(callback: callback)
     }
     func retrieveAllSubgroup(callback: @escaping(_ allSubgroup: RVBaseModel?, _ error: RVError?)-> Void) {
@@ -126,9 +126,10 @@ override func create(callback: @escaping (RVBaseModel?, RVError?) -> Void) {
     print("In \(self.classForCoder).create override where allSubgroup is created")
     let allSubgroup = RVGroup()
     allSubgroup.setParent(parent: self)
-    allSubgroup.title = self.title
+    let title = self.title == nil ? "No Title" : self.title!
+    allSubgroup.title = "\(title) All Subgroup"
     allSubgroup.special = .all
-    print("IN \(self.classForCoder).create about to get loggedInUser. and modelType is: \(RVBaseModel.loggedInUser!.objects[RVKeys.modelType.rawValue])")
+  //  print("IN \(self.classForCoder).create about to get loggedInUser. and modelType is: \(RVBaseModel.loggedInUser!.objects[RVKeys.modelType.rawValue])")
     if let owner = RVBaseModel.loggedInUser {
         self.setOwner(owner: owner)
         allSubgroup.setOwner(owner: owner)
@@ -138,7 +139,7 @@ override func create(callback: @escaping (RVBaseModel?, RVError?) -> Void) {
         callback(nil, error)
         return
     }
-    if let domainId = RVCoreInfo2.shared.domainId {
+    if let domainId = RVBaseModel.appDomainId {
         self.domainId = domainId
         allSubgroup.domainId = domainId
     } else {

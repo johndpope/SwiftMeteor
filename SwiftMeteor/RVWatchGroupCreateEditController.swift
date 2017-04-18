@@ -136,7 +136,7 @@ class RVWatchGroupCreateEditController: RVBaseTableViewController {
                 if let userProfile = self.userProfile {
                     if let domain = self.domain {
                         lockTableView()
-                        if self.newImage == nil { self.newImage = RVCoreInfo.sharedInstance.watchGroupImagePlaceholder }
+                        if self.newImage == nil { self.newImage = RVBaseCoreInfo8.sharedInstance.watchGroupImagePlaceholder }
                         let group = RVWatchGroup()
                         group.title = title
                         group.setOwner(owner: userProfile)

@@ -256,7 +256,8 @@ class RVSwiftDDP: NSObject {
                 return
             } else if let result = result as? [String : AnyObject] {
                 print("In \(self.classForCoder).loginWithUsername, no error got result")
-                RVCoreInfo.sharedInstance.loginCredentials = result
+                RVBaseCoreInfo8.sharedInstance.loginCredentials = result
+            //    RVCoreInfo.sharedInstance.loginCredentials = result
                 callback(result, nil)
             } else {
                 print("In \(self.classForCoder).loginWithUsername, no error but no result")
@@ -295,7 +296,7 @@ extension RVSwiftDDP: SwiftDDPDelegate {
                 error.printError()
                 return
             } else {
-                //print("In \(self.classForCoder).ddpUserDidLogin, success with RVCoreInfo2")
+
             }
         }
         /*
@@ -333,21 +334,7 @@ extension RVSwiftDDP: SwiftDDPDelegate {
     //    print("In \(self.instanceType).ddpUserDidLogout(), User \(user) did logout")
         //self.username = nil
         RVBaseCoreInfo8.shared.logoutModels()
-       // RVStateDispatcher4.shared.changeState(newState: RVBaseAppState4(appState: .loggedOut))
-        /*
-        RVCoreInfo.sharedInstance.clearLogin()
-        if RVViewDeck.sharedInstance.sideBeingShown == RVViewDeck.Side.left {
-            print("In \(self.classForCoder).ddpUserDidLogout. about to toggleView Deck to center")
-            appState.unwind {
-                self.appState = RVLoggedoutState(stack: [RVBaseModel]())
-                RVViewDeck.sharedInstance.centerViewController = RVViewDeck.sharedInstance.instantiateController(controller: .WatchGroupList)
-                RVViewDeck.sharedInstance.toggleSide(side: .center, animated: false)
-            }
 
-        } else {
-            print("In \(self.classForCoder).ddpUserDidLogout on viewDeck side \(RVViewDeck.sharedInstance.sideBeingShown.description), not toggling")
-        }
- */
         logoutListeners.notifyListeners()
         NotificationCenter.default.post(name: NSNotification.Name(rawValue: RVNotification.userDidLogout.rawValue), object: nil, userInfo: ["user": user])
         
