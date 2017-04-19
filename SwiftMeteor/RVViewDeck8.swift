@@ -27,6 +27,8 @@ enum RVViewDeckSide {
 class RVViewDeck8: NSObject {
     static let previousStateKey: String = "previousStateKey"
     static let newStateKey: String = "newStateKey"
+    static let MeteorConnected: Notification.Name = Notification.Name("MeteorConnected")
+    static let MeteorDisconnected: Notification.Name = Notification.Name("MeteorDisconnected")
     var instanceType: String { get { return String(describing: type(of: self)) } }
     static let shared: RVViewDeck8 = { return RVViewDeck8()  }()
     var core: RVBaseCoreInfo8 { return RVBaseCoreInfo8.sharedInstance }
@@ -67,6 +69,7 @@ class RVViewDeck8: NSObject {
     }
     func ddpDisconnected(notification: NSNotification) {
         print("In \(self.classForCoder).ddpDisconnected")
+        
     }
     func generateControllerStack() -> IIViewDeckController {
         var leftController = UIViewController()
@@ -126,6 +129,7 @@ class RVViewDeck8: NSObject {
                 case .main:
                     evaluateNewController(targetTop: .main)
                     self.toggleSide(side: .center)
+
                 }
             }
         } else {

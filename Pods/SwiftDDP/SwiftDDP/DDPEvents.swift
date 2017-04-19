@@ -42,7 +42,11 @@ public struct DDPEvents {
     */
     
     internal var onWebsocketClose:    ((_ code:Int, _ reason:String, _ clean:Bool) -> ())? = { code, reason, clean in
-        NotificationCenter.default.post(name: Notification.Name(rawValue: DDP_WEBSOCKET_CLOSE), object: nil)
+        DispatchQueue.main.async {
+            print("In DDPEvents.onWebsocketClose")
+            NotificationCenter.default.post(name: Notification.Name(rawValue: DDP_WEBSOCKET_CLOSE), object: nil)
+        }
+        
     }
     
     /**

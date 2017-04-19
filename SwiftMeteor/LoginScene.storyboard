@@ -18,11 +18,11 @@
                         <viewControllerLayoutGuide type="bottom" id="5Rb-wz-kW7"/>
                     </layoutGuides>
                     <view key="view" contentMode="scaleToFill" id="i1T-Nb-KWp">
-                        <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
+                        <rect key="frame" x="0.0" y="0.0" width="320" height="667"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="Qgx-Va-ePB" userLabel="EmailView">
-                                <rect key="frame" x="0.0" y="64" width="375" height="114"/>
+                                <rect key="frame" x="0.0" y="64" width="320" height="114"/>
                                 <subviews>
                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Email" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="rkJ-3b-7a5">
                                         <rect key="frame" x="8" y="12" width="50" height="23"/>
@@ -31,13 +31,13 @@
                                         <nil key="highlightedColor"/>
                                     </label>
                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Email error message" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="hbh-V1-vwV">
-                                        <rect key="frame" x="8" y="83" width="359" height="21"/>
+                                        <rect key="frame" x="8" y="83" width="304" height="21"/>
                                         <fontDescription key="fontDescription" type="boldSystem" pointSize="17"/>
                                         <color key="textColor" red="1" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
                                         <nil key="highlightedColor"/>
                                     </label>
                                     <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" placeholder="Enter your email here" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="vqn-2S-9hN">
-                                        <rect key="frame" x="8" y="41" width="359" height="34"/>
+                                        <rect key="frame" x="8" y="41" width="304" height="34"/>
                                         <constraints>
                                             <constraint firstAttribute="height" constant="34" id="rqo-u7-VnF"/>
                                         </constraints>
@@ -63,10 +63,10 @@
                                 </constraints>
                             </view>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="ZKX-tO-t6f" userLabel="PasswordView">
-                                <rect key="frame" x="0.0" y="178" width="375" height="116"/>
+                                <rect key="frame" x="0.0" y="178" width="320" height="116"/>
                                 <subviews>
                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Password error message" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="1yW-3Z-mM7">
-                                        <rect key="frame" x="8" y="83" width="359" height="21"/>
+                                        <rect key="frame" x="8" y="83" width="304" height="21"/>
                                         <fontDescription key="fontDescription" type="boldSystem" pointSize="17"/>
                                         <color key="textColor" red="1" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
                                         <nil key="highlightedColor"/>
@@ -78,7 +78,7 @@
                                         <nil key="highlightedColor"/>
                                     </label>
                                     <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" placeholder="Password" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="8UQ-Bj-UrY">
-                                        <rect key="frame" x="8" y="39" width="359" height="34"/>
+                                        <rect key="frame" x="8" y="39" width="304" height="34"/>
                                         <constraints>
                                             <constraint firstAttribute="height" relation="greaterThanOrEqual" constant="34" id="Tzh-MO-ZW8"/>
                                             <constraint firstAttribute="height" constant="34" id="uR4-54-0eE"/>
@@ -105,10 +105,10 @@
                                 </constraints>
                             </view>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="AMV-cK-ddM" userLabel="LoginButtonView">
-                                <rect key="frame" x="0.0" y="294" width="375" height="126"/>
+                                <rect key="frame" x="0.0" y="294" width="320" height="126"/>
                                 <subviews>
                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="ETX-gL-MCU">
-                                        <rect key="frame" x="41" y="12" width="294" height="56"/>
+                                        <rect key="frame" x="13" y="12" width="294" height="56"/>
                                         <color key="backgroundColor" red="0.20392156859999999" green="0.7843137255" blue="0.44705882349999998" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                         <constraints>
                                             <constraint firstAttribute="width" constant="294" id="5tn-uz-hZg"/>
@@ -124,7 +124,7 @@
                                         </connections>
                                     </button>
                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="y9s-XV-bpa">
-                                        <rect key="frame" x="118" y="82" width="140" height="30"/>
+                                        <rect key="frame" x="90" y="82" width="140" height="30"/>
                                         <constraints>
                                             <constraint firstAttribute="width" constant="140" id="OY1-FO-8Kh"/>
                                             <constraint firstAttribute="height" constant="30" id="eV8-gm-l37"/>
@@ -146,10 +146,10 @@
                                 </constraints>
                             </view>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="7YG-Or-Erm" userLabel="RegisterButtonView">
-                                <rect key="frame" x="0.0" y="300" width="375" height="80"/>
+                                <rect key="frame" x="0.0" y="300" width="320" height="80"/>
                                 <subviews>
                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="wuR-Ta-bMQ">
-                                        <rect key="frame" x="40" y="12" width="294" height="56"/>
+                                        <rect key="frame" x="13" y="12" width="294" height="56"/>
                                         <color key="backgroundColor" red="0.50196081400000003" green="1" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
                                         <constraints>
                                             <constraint firstAttribute="height" constant="56" id="aSY-kA-Lhk"/>
@@ -173,10 +173,10 @@
                                 </constraints>
                             </view>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="K7S-gO-smj" userLabel="LoginFailureView">
-                                <rect key="frame" x="0.0" y="380" width="375" height="207"/>
+                                <rect key="frame" x="0.0" y="380" width="320" height="207"/>
                                 <subviews>
                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Login Failure :-(" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="KlA-5s-I0Z">
-                                        <rect key="frame" x="128" y="93" width="119" height="21"/>
+                                        <rect key="frame" x="101" y="93" width="119" height="21"/>
                                         <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                         <color key="textColor" red="1" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
                                         <nil key="highlightedColor"/>
@@ -238,6 +238,8 @@
             <objects>
                 <navigationController storyboardIdentifier="LoginNavigationController" automaticallyAdjustsScrollViewInsets="NO" id="sLf-NG-Nky" customClass="RVLoginNavController8" customModule="SwiftMeteor" customModuleProvider="target" sceneMemberID="viewController">
                     <toolbarItems/>
+                    <freeformSimulatedSizeMetrics key="simulatedDestinationMetrics"/>
+                    <size key="freeformSize" width="320" height="667"/>
                     <navigationBar key="navigationBar" contentMode="scaleToFill" barStyle="black" id="0DL-SE-W8Z">
                         <rect key="frame" x="0.0" y="0.0" width="375" height="44"/>
                         <autoresizingMask key="autoresizingMask"/>
