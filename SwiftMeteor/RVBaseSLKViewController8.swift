@@ -97,12 +97,15 @@ class RVBaseSLKViewController8: SLKTextViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         if let constraint = TopOuterViewTopConstraint { self.topOuterViewOriginalTopConstraint = constraint.constant }
+        initialize()
+    }
+    func initialize() {
         self.searchControllerContainerView.isHidden = true
         //sectionManager = RVDSManager5Transaction<RVBaseModel>(scrollView: self.dsScrollView, maxSize: 80, managerType: .main, dynamicSections: false)
         sectionManager = configuration.manager
         commonInit()
         configureNavBar()
-       // configureSearchController()
+        // configureSearchController()
         configureSLK()
         adjustTableViewInsetForNavBar()
         updateTableViewInsetHeight()
@@ -360,8 +363,13 @@ extension RVBaseSLKViewController8 {
         NotificationCenter.default.addObserver(self.tableView!, selector: #selector(UITableView.reloadData), name: NSNotification.Name.UIContentSizeCategoryDidChange, object: nil)
         NotificationCenter.default.addObserver(self,  selector: #selector(RVBaseSLKViewController8.textInputbarDidMove(_:)), name: NSNotification.Name.SLKTextInputbarDidMove, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(RVBaseSLKViewController8.stateDidChange(_:)), name: NSNotification.Name(RVNotification.AppStateChanged.rawValue), object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(RVBaseSLKViewController8.reconnectedNotification(notification:)), name: RVBaseCoreInfo8.reconnectedNotification, object: nil)
+        
     }
-    func stateDidChange(_ notification: NSNotification) {
+    func reconnectedNotification(notification: Notification) {
+        print("In \(self.classForCoder).reconnnectedNotification #\(#line). Need to override ")
+    }
+    func stateDidChange(_ notification: Notification) {
        // print("In \(self.instanceType).stateDidChange")
      //   if let userInfo = notification.userInfo as? [String:AnyObject] {
       //      if let appState = userInfo["newAppState"] as? RVBaseAppState4 {

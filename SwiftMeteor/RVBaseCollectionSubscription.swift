@@ -30,7 +30,10 @@ class RVBaseCollectionSubscription: RVBaseCollection, RVSubscription {
         return false
     }
     override public func documentWasAdded(_ collection: String, id: String, fields: NSDictionary?) {
-        if isSubscriptionCancelled { return }
+        if isSubscriptionCancelled {
+            print("In \(self.classForCoder).documentWasAdded, subscriptionCancelled")
+            return
+        }
         finishUp(collection: collection, id: id, fields: fields, cleared: nil, eventType: .added)
     }
     override public func documentWasChanged(_ collection: String, id: String, fields: NSDictionary?, cleared: [String]?) {
@@ -90,9 +93,11 @@ class RVBaseCollectionSubscription: RVBaseCollection, RVSubscription {
     func unsubscribe(callback: @escaping ()-> Void) -> Void {
         self.queue.cancelAllOperations()
        // print("In \(self.classForCoder).unsubscribe about to call unsubscribeSelf")
-        self.unsubscribeSelf {
-            self._active = false
-            callback()
+        DispatchQueue.main.async {
+            self.unsubscribeSelf {
+                self._active = false
+              //  callback()
+            }
         }
     }
     

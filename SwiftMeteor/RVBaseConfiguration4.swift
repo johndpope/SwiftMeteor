@@ -276,6 +276,7 @@ class RVBaseConfiguration4 {
         }
     }
     func initializeDatasource(sectionDatasourceType: RVDatasourceType, mainAndTerms: [RVQueryItem], callback: @escaping(RVError?) -> Void) {
+    //    if let subscription = self.subscription { subscription.unsubscribe {} }
         if !manager.dynamicSections {
             let (query, _) = self.topQuery()
             self.loadTop(query: query, callback: { (error) in

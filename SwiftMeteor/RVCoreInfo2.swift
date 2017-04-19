@@ -7,8 +7,10 @@
 //
 
 import UIKit
+import SwiftDDP
 
 class RVCoreInfo2 {
+    static let reconnectedNotification = Notification.Name("AppReconnected")
     var loginCredentials: [String: AnyObject]? = nil
     var watchGroupImagePlaceholder: UIImage { get { return UIImage(named: "JNW.png")! } }
     var currentAppState: RVBaseAppState4 = RVBaseAppState4(appState: .loggedOut) {
@@ -66,6 +68,7 @@ class RVCoreInfo2 {
     var appState: RVBaseAppState2 = RVLoggedOutState2()
     var loggedIn: Bool {
         get {
+            if !RVSwiftDDP.sharedInstance.connected { return false }
             if domain == nil { return false }
             if loggedInUserProfile == nil { return false }
             if rootGroup == nil { return false }
@@ -86,6 +89,15 @@ class RVCoreInfo2 {
         print("In \(self.instanceType).connected")
         if self.loggedIn {
             print("In \(self.instanceType).connected, already logged in -----------------")
+            for (key, _) in RVSwiftDDP.sharedInstance.subscriptionsCancelled {
+                let model = key
+                RVSwiftDDP.sharedInstance.subscriptionsCancelled[model] = false
+              //  Meteor.unsubscribe(model.rawValue, callback: { RVSwiftDDP.sharedInstance.subscriptionsCancelled[model] = false})
+            }
+            DispatchQueue.main.async {
+                NotificationCenter.default.post(name: RVBaseCoreInfo8.reconnectedNotification, object: self , userInfo: nil)
+            }
+            
         } else {
             self.getDomain2 { (error) in
                 if let error = error { error.printError() }

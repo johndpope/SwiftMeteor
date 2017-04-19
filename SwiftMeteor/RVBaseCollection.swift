@@ -197,15 +197,19 @@ extension RVBaseCollection {
      Sends an unsubscribe request to the server using a subscription id. This allows fine-grained control of subscriptions. For example, you can unsubscribe to specific combinations of subscriptions and subscription parameters.
      - parameter id: An id string returned from a subscription request
      */
-    func unsubscribeSelf(callback: @escaping () -> Void)  {
+    func unsubscribeSelf(completionHandler: @escaping () -> Void)  {
      //   print("In \(self.classForCoder).unsubscribeSelf with subscriptionID: \(self.subscriptionID ?? " no subscriptionId")")
         if let id = self.subscriptionID {
             self.subscriptionID = nil
             Meteor.unsubscribe(withId: id, callback: {
-            //   print("In \(self.classForCoder).unsubscribeSelf subscriptionId \(id) had ID and returned from unsubscribing")
+               print("In \(self.classForCoder).unsubscribeSelf subscriptionId \(id) had ID and returned from unsubscribing")
+                DispatchQueue.main.async {
+                    completionHandler()
+                }
+                
             })
         } else {
-            callback()
+            completionHandler()
         }
     }
     /**

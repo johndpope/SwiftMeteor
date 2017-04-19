@@ -29,7 +29,12 @@ class RVTransactionListController8: RVBaseListController8  {
         }
         self.endSearch()
     }
-
+    override func reconnectedNotification(notification: Notification) {
+        DispatchQueue.main.async {
+            print("IN \(self.classForCoder).reconnectedNotification, doing initialize()")
+            self.initialize()
+        }
+    }
     override var instanceConfiguration: RVBaseConfiguration8 { return RVTransactionListConfiguration8(scrollView: dsScrollView) }
     override func viewDidLoad() {
         let _ = RVSwiftDDP.sharedInstance.unsubscribe(collectionName: RVModelType.transaction.rawValue) {
