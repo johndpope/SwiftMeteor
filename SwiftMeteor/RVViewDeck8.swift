@@ -56,10 +56,7 @@ class RVViewDeck8: NSObject {
         UISearchBar.appearance().tintColor = UIColor.white
         UITextField.appearance(whenContainedInInstancesOf: [UISearchBar.self]).tintColor = UIColor.facebookBlue()
 
-        if !RVSwiftDDP.sharedInstance.connected {RVSwiftDDP.sharedInstance.connect {
-            print("In \(self.instanceType).initialize, return from connected")
-            }
-        }
+        if !RVSwiftDDP.sharedInstance.connected {RVSwiftDDP.sharedInstance.connect() }
     }
     /*
     func ddpConnected(notification: NSNotification) {

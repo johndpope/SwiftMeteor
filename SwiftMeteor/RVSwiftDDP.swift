@@ -44,6 +44,9 @@ class RVSwiftDDP: NSObject {
         case DDP_USER_DID_LOGIN = "DDP_USER_DID_LOGIN"  // Notification Name
         case DDP_USER_DID_LOGOUT = "DDP_USER_DID_LOGOUT"// Notification Name
     }
+    var disconnectedTimer: Timer = Timer.scheduledTimer(withTimeInterval: 4.0, repeats: true) { (timer) in
+        UILabel.showMessage("Attempting to Connect", ofSize: 24.0, of: UIColor.candyGreen(), in: UIViewController.top().view, forDuration: 2.0)
+    }
     var instanceType: String { get { return String(describing: type(of: self)) } }
     var appState: RVBaseAppState {
         get { return RVCoreInfo.sharedInstance.appState }
@@ -79,8 +82,23 @@ class RVSwiftDDP: NSObject {
         //  NotificationCenter.default.post(name: NSNotification.Name("DDP Disconnected"), object: self, userInfo: nil)
     }
     @objc func ddpDisconnected(notification: NSNotification) {
-        print("IN \(self.classForCoder).ddpDisconnected \(notification.userInfo?.description ?? " No userInfo")")
-        self.connected = false
+        if self.connected {
+            self.connected = false
+            for (key, _) in self.subscriptionsCancelled { self.subscriptionsCancelled[key] = true }
+            print("IN \(self.classForCoder).ddpDisconnected \(notification.userInfo?.description ?? " No userInfo")")
+            self.disconnectedTimer = Timer.scheduledTimer(withTimeInterval: 4.0, repeats: true) { (timer) in
+                UILabel.showMessage("Attempting to Connect", ofSize: 24.0, of: UIColor.candyGreen(), in: UIViewController.top().view, forDuration: 2.0)
+            }
+            
+            Timer.scheduledTimer(withTimeInterval: 10.0, repeats: true) { (timer) in
+                print("TImer fired")
+                if !self.connected {
+                    RVSwiftDDP.sharedInstance.connect()
+                } else {
+                    timer.invalidate()
+                }
+            }
+        }
     }
     @objc func ddpFailed(notification: NSNotification) {
         print("IN \(self.classForCoder).ddpFailed \(notification.userInfo?.description ?? " No userInfo")")
@@ -165,27 +183,50 @@ class RVSwiftDDP: NSObject {
      - parameter url:        The url of a Meteor server
      - parameter callback:   An optional closure to be executed after the connection is established
      */
-    func connect(callback: @escaping () -> Void ) {
-        self.connected = false
-        Timer.scheduledTimer(withTimeInterval: 3.0, repeats: true) { (timer) in
-            if !self.connected {
-                print("In \(self.classForCoder). attempting to connect")
-                for (key, _) in self.subscriptionsCancelled { self.subscriptionsCancelled[key] = true }
-                UILabel.showMessage("Attempting to Connect", ofSize: 24.0, of: UIColor.candyGreen(), in: UIViewController.top().view, forDuration: 2.0)
-                Meteor.connect(self.meteorURL) {
-                    print("In \(self.classForCoder).connect, connected -----------")
+    func connect() {
+        if !self.connected {
+            let time = Date()
+            print("In \(self.classForCoder). attempting to connect at time \(time)")
+            for (key, _) in self.subscriptionsCancelled { self.subscriptionsCancelled[key] = true }
+            Meteor.connect(self.meteorURL, callback: {
+                self.disconnectedTimer.invalidate()
+                if !self.connected {
+                    print("In \(self.classForCoder).connect, connected with attempt time of \(time) -----------")
                     self.connected = true
                     for (key, _) in self.subscriptionsCancelled {
                         let model = key
                         Meteor.unsubscribe(model.rawValue, callback: { self.subscriptionsCancelled[model] = false})
                     }
-                    callback()
                     NotificationCenter.default.post(name: NSNotification.Name(rawValue: RVNotification.connected.rawValue), object: nil, userInfo: nil)
+                }
+            })
+        }
+        
+/*
+        Timer.scheduledTimer(withTimeInterval: 3.0, repeats: true) { (timer) in
+        
+            if !self.connected {
+                
+                
+                let time = Date()
+                print("In \(self.classForCoder). attempting to connect at time \(time)")
+                for (key, _) in self.subscriptionsCancelled { self.subscriptionsCancelled[key] = true }
+                UILabel.showMessage("Attempting to Connect", ofSize: 24.0, of: UIColor.candyGreen(), in: UIViewController.top().view, forDuration: 2.0)
+                Meteor.connect(self.meteorURL) {
+                    print("In \(self.classForCoder).connect, connected with attempt time of \(time) -----------")
+                    self.connected = true
+                    for (key, _) in self.subscriptionsCancelled {
+                        let model = key
+                        Meteor.unsubscribe(model.rawValue, callback: { self.subscriptionsCancelled[model] = false})
+                    }
+                    NotificationCenter.default.post(name: NSNotification.Name(rawValue: RVNotification.connected.rawValue), object: nil, userInfo: nil)
+                    timer.invalidate()
                 }
             } else {
                 timer.invalidate()
             }
         }
+ */
     }
     func logout(callback: @escaping(_ error: RVError?)-> Void) {
         print("In \(self.classForCoder).logout")

@@ -73,7 +73,7 @@ class RVCoreInfo2 {
         }
     }
     init() {
-        NotificationCenter.default.addObserver(self, selector: #selector(RVCoreInfo2.connected), name: NSNotification.Name(rawValue: RVNotification.connected.rawValue), object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(RVCoreInfo2.connected(notification:)), name: NSNotification.Name(rawValue: RVNotification.connected.rawValue), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(RVCoreInfo2.userLoggedIn(notification:)), name: NSNotification.Name(rawValue: RVNotification.userDidLogin.rawValue), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(RVCoreInfo2.userLoggedOut(notification:)), name: NSNotification.Name(rawValue: RVNotification.userDidLogout.rawValue), object: nil)
     }
@@ -84,10 +84,15 @@ class RVCoreInfo2 {
     }
     @objc func connected(notification: NSNotification) {
         print("In \(self.instanceType).connected")
-        self.getDomain2 { (error) in
-            if let error = error { error.printError() }
-            else {print("In \(self.instanceType).connected, have domain: \(self.domain!.localId ?? " no domain.localId") with domainName: \(self.domain!.domainName.rawValue)") }
+        if self.loggedIn {
+            print("In \(self.instanceType).connected, already logged in -----------------")
+        } else {
+            self.getDomain2 { (error) in
+                if let error = error { error.printError() }
+                else {print("In \(self.instanceType).connected, have domain: \(self.domain!.localId ?? " no domain.localId") with domainName: \(self.domain!.domainName.rawValue)") }
+            }
         }
+
     }
     @objc func userLoggedIn(notification: NSNotification) {
         print("In \(self.instanceType).userLoggedIn notification observer")
@@ -149,6 +154,7 @@ class RVCoreInfo2 {
                 }
                 return
             } else if let profile = profile {
+                self.loggedInSuccess = true
                 self.loggedInUserProfile = profile
                 self.username = username
               //  print("In \(self.instanceType).completeLogin, have profile \(profile.localId!), username: \(username)")

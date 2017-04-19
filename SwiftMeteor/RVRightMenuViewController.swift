@@ -152,11 +152,7 @@ class RVRightMenuViewController: RVBaseViewController {
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         if !RVSwiftDDP.sharedInstance.connected {
-            RVSwiftDDP.sharedInstance.connect {
-                //print("In \(self.instanceType).initialize, returned from connecting with Meteor")
-            }
-        } else {
-        }
+            RVSwiftDDP.sharedInstance.connect()        } 
 
 
         print("In \(self.classForCoder).viewDidAppear \(self.presentingViewController?.description ?? " no presentingVIewController")")
