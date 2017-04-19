@@ -78,12 +78,12 @@ class RVCoreInfo2 {
         NotificationCenter.default.addObserver(self, selector: #selector(RVCoreInfo2.userLoggedOut(notification:)), name: NSNotification.Name(rawValue: RVNotification.userDidLogout.rawValue), object: nil)
     }
     func logoutModels() {
-        self.loggedInUserProfile = nil
-        self.rootGroup = nil
-        self.loggedInSuccess = false
+        self.loggedInUserProfile    = nil
+        self.rootGroup              = nil
+        self.loggedInSuccess        = false
     }
     @objc func connected(notification: NSNotification) {
-        //print("In \(self.instanceType).connected")
+        print("In \(self.instanceType).connected")
         self.getDomain2 { (error) in
             if let error = error { error.printError() }
             else {print("In \(self.instanceType).connected, have domain: \(self.domain!.localId ?? " no domain.localId") with domainName: \(self.domain!.domainName.rawValue)") }

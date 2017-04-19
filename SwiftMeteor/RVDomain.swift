@@ -36,16 +36,18 @@ class RVDomain: RVBaseModel {
         let fields = self.dirties
         self.dirties = [String:AnyObject]()
         Meteor.call(RVMeteorMethods.domainCreate.rawValue, params: [fields]) { (result, error) in
-            if let error = error {
-                let rvError = RVError(message: "In \(self.instanceType).findOrCreate, got DDP error", sourceError: error , lineNumber: #line, fileName: "")
-                callback(nil, rvError)
-                return
-            } else if let fields = result as? [String: AnyObject] {
-                callback(RVDomain(fields: fields), nil)
-                return
-            } else {
-                print("In \(self.instanceType).findOrCreate, no error but no result")
-                callback(nil, nil)
+            DispatchQueue.main.async {
+                if let error = error {
+                    let rvError = RVError(message: "In \(self.instanceType).findOrCreate, got DDP error", sourceError: error , lineNumber: #line, fileName: "")
+                    callback(nil, rvError)
+                    return
+                } else if let fields = result as? [String: AnyObject] {
+                    callback(RVDomain(fields: fields), nil)
+                    return
+                } else {
+                    print("In \(self.instanceType).findOrCreate, no error but no result")
+                    callback(nil, nil)
+                }
             }
         }
     }

@@ -157,14 +157,20 @@ class RVSwiftDDP: NSObject {
      - parameter callback:   An optional closure to be executed after the connection is established
      */
     func connect(callback: @escaping () -> Void ) {
-        Meteor.unsubscribe(RVModelType.transaction.rawValue) { 
-            
-        }
-        Meteor.connect(self.meteorURL) {
-            //print("In \(self.classForCoder).connect, connected -----------")
-            self.connected = true
-            callback()
-            NotificationCenter.default.post(name: NSNotification.Name(rawValue: RVNotification.connected.rawValue), object: nil, userInfo: nil)
+
+        Timer.scheduledTimer(withTimeInterval: 3.0, repeats: true) { (timer) in
+            if !self.connected {
+                print("In \(self.classForCoder). attempting to connect")
+                Meteor.connect(self.meteorURL) {
+                    print("In \(self.classForCoder).connect, connected -----------")
+                    self.connected = true
+                    Meteor.unsubscribe(RVModelType.transaction.rawValue) {}
+                    callback()
+                    NotificationCenter.default.post(name: NSNotification.Name(rawValue: RVNotification.connected.rawValue), object: nil, userInfo: nil)
+                }
+            } else {
+                timer.invalidate()
+            }
         }
     }
     func logout(callback: @escaping(_ error: RVError?)-> Void) {
@@ -288,6 +294,7 @@ class RVSwiftDDP: NSObject {
     }
 }
 extension RVSwiftDDP: SwiftDDPDelegate {
+    // Called as delegate by DDPClient
     func ddpUserDidLogin(_ user:String) {
         // print("In \(self.instanceType).ddpUserDidLogin(), User did login as user \(user)")
         RVBaseCoreInfo8.sharedInstance.completeLogin(username: user) { (error) in
@@ -330,6 +337,7 @@ extension RVSwiftDDP: SwiftDDPDelegate {
         }
  */
     }
+    // Called as delegate by DDPClient
     func ddpUserDidLogout(_ user:String) {
     //    print("In \(self.instanceType).ddpUserDidLogout(), User \(user) did logout")
         //self.username = nil

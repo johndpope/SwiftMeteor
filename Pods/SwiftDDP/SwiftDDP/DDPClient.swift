@@ -190,6 +190,8 @@ open class DDPClient: NSObject {
             //Use backoff to slow reconnection retries
             backOff.createBackoff({
                 log.info("Web socket connection closed with code \(code). Clean: \(clean). \(reason)")
+                print("In \(self.classForCoder).connect. indicating Meteor Server shut down")
+                NotificationCenter.default.post(name: NSNotification.Name("DDP Disconnected"), object: self, userInfo: nil)
                 let event = self.socket.event
                 self.socket = WebSocket(url)
                 self.socket.event = event
@@ -260,14 +262,15 @@ open class DDPClient: NSObject {
     // Parse DDP messages and dispatch to the appropriate function
     internal func ddpMessageHandler(_ message: DDPMessage) throws {
         
-        log.debug("Received message: \(message.json)")
+      //  log.warning("Received message: \(message.json)")
         
         switch message.type {
             
         case .Connected:
+         //   print("In \(self.classForCoder).ddpMessageHandler, passed connected")
             self.connection = (true, message.session!)
             self.events.onConnected.execute(message.session!)
-            
+            NotificationCenter.default.post(name: NSNotification.Name("DDP Connected"), object: self, userInfo: nil)
         case .Result: callbackQueue.addOperation() {
             if let id = message.id,                              // Message has id
                 let completion = self.resultCallbacks[id],          // There is a callback registered for the message
@@ -339,7 +342,9 @@ open class DDPClient: NSObject {
             self.didReceiveErrorMessage(DDPError(json: message.json))
             }
             
-        default: log.error("Unhandled message: \(message.json)")
+        default:
+            log.error("In \(self.classForCoder).ddpMessageHandler Unhandled message: \(message.json)")
+           // NotificationCenter.default.post(name: NSNotification.Name("DDP Disconnected"), object: self, userInfo: nil)
             
         }
     }

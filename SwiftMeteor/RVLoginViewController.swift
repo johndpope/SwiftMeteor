@@ -109,7 +109,7 @@ class RVLoginViewController: RVBaseViewController8 {
     }
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
-        if !RVSwiftDDP.sharedInstance.connected {RVSwiftDDP.sharedInstance.connect {}}
+       // if !RVSwiftDDP.sharedInstance.connected {RVSwiftDDP.sharedInstance.connect {} }
         // print("In \(self.classForCoder).viewDidAppear \(self.presentingViewController)")
     }
     @IBOutlet weak var emailTextField: UITextField!

@@ -53,6 +53,20 @@ class RVViewDeck8: NSObject {
         UISearchBar.appearance().barTintColor = UIColor.facebookBlue()
         UISearchBar.appearance().tintColor = UIColor.white
         UITextField.appearance(whenContainedInInstancesOf: [UISearchBar.self]).tintColor = UIColor.facebookBlue()
+        NotificationCenter.default.addObserver(self, selector: #selector(RVViewDeck8.ddpConnected(notification:)), name: NSNotification.Name("DDP Connected"), object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(RVViewDeck8.ddpDisconnected(notification:)), name: NSNotification.Name("DDP Disconnected"), object: nil)
+        // NotificationCenter.default.post(name: NSNotification.Name("DDP Connected"), object: self, userInfo: nil)
+        //  NotificationCenter.default.post(name: NSNotification.Name("DDP Disconnected"), object: self, userInfo: nil)
+        if !RVSwiftDDP.sharedInstance.connected {RVSwiftDDP.sharedInstance.connect {
+            print("In \(self.instanceType).initialize, return from connected")
+            }
+        }
+    }
+    func ddpConnected(notification: NSNotification) {
+        print("In \(self.classForCoder).ddpConnected ")
+    }
+    func ddpDisconnected(notification: NSNotification) {
+        print("In \(self.classForCoder).ddpDisconnected")
     }
     func generateControllerStack() -> IIViewDeckController {
         var leftController = UIViewController()

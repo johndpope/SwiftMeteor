@@ -63,13 +63,14 @@ public struct DDPEvents {
     */
     
     // public var onConnected:         (session:String) -> () = {session in log.info("connected with session: \(session)")}
-    public var onConnected: Completion = Completion(cCallback: {session in log.info("connected with session: \(session)")})
+    public var onConnected: Completion = Completion(cCallback: {session in
+        log.info("In DDPEvents.onCOnnected connected with session: \(session)")})
     /**
     onDisconnected executes when the client is disconnected
     */
     
     public var onDisconnected:      () -> () = {
-        log.debug("disconnected")
+        log.debug("In DDPEvents.onDisconnected, disconnected")
         NotificationCenter.default.post(name: Notification.Name(rawValue: DDP_DISCONNECTED), object: nil)
         
     }
