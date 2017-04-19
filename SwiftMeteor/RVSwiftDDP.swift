@@ -82,16 +82,14 @@ class RVSwiftDDP: NSObject {
         //  NotificationCenter.default.post(name: NSNotification.Name("DDP Disconnected"), object: self, userInfo: nil)
     }
     @objc func ddpDisconnected(notification: NSNotification) {
+        // print("IN \(self.classForCoder).ddpDisconnected \(notification.userInfo?.description ?? " No userInfo")")
         if self.connected {
             self.connected = false
             for (key, _) in self.subscriptionsCancelled { self.subscriptionsCancelled[key] = true }
-            print("IN \(self.classForCoder).ddpDisconnected \(notification.userInfo?.description ?? " No userInfo")")
             self.disconnectedTimer = Timer.scheduledTimer(withTimeInterval: 4.0, repeats: true) { (timer) in
                 UILabel.showMessage("Attempting to Connect", ofSize: 24.0, of: UIColor.candyGreen(), in: UIViewController.top().view, forDuration: 2.0)
             }
-            
             Timer.scheduledTimer(withTimeInterval: 10.0, repeats: true) { (timer) in
-                print("TImer fired")
                 if !self.connected {
                     RVSwiftDDP.sharedInstance.connect()
                 } else {
@@ -140,6 +138,7 @@ class RVSwiftDDP: NSObject {
     }
     /* Returns ID of the Subscription */
     func subscribe(collectionName: RVModelType, params: [Any]?, callback: @escaping() -> Void) -> String {
+      //  print("In \(self.classForCoder).subscribe(collectionName: \(collectionName)")
         return Meteor.subscribe(collectionName.rawValue, params: params, callback: callback)
     }
     func unsubscribe(collectionName: String, callback: @escaping() -> Void ) -> [String] {

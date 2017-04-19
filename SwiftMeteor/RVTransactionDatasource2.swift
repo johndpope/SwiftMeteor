@@ -13,7 +13,7 @@ class RVTransactionDatasource2: RVBaseDatasource2 {
         query.limit = 70
         return query
     }
-//    override var subscription: RVBaseCollection? { get { return RVTransactionCollection() } }
+
         override var subscription: RVBaseCollection? { get { return nil } }
     override func bulkQuery(query: RVQuery, callback: @escaping (_ models: [RVBaseModel]?, _ error: RVError?) -> Void) {
         RVTransaction.bulkQuery(query: query, callback: callback)

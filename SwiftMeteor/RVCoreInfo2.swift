@@ -143,6 +143,10 @@ class RVCoreInfo2 {
         
     }
     func completeLogin(username: String, callback: @escaping(_ error: RVError?) -> Void) {
+        if self.loggedIn {
+            print("IN \(self.instanceType).completeLogin, user \(username) is already loggedIn")
+            return
+        }
         loggedInSuccess = false
         RVUserProfile.getOrCreateUsersUserProfile(callback: { (profile, error) in
             if let error = error {
@@ -158,9 +162,9 @@ class RVCoreInfo2 {
                 self.loggedInUserProfile = profile
                 self.username = username
               //  print("In \(self.instanceType).completeLogin, have profile \(profile.localId!), username: \(username)")
-                let _ = RVSwiftDDP.sharedInstance.unsubscribe(collectionName: RVModelType.transaction.rawValue, callback: {
+             //   let _ = RVSwiftDDP.sharedInstance.unsubscribe(collectionName: RVModelType.transaction.rawValue, callback: {
                    // print("In \(self.instanceType).completeLogin # \(#line), logged out \(RVModelType.transaction.rawValue)")
-                })
+            //    })
               //  RVStateDispatcher4.shared.changeState(newState: RVBaseAppState4(appState: .transactionList))
                  print("In \(self.instanceType).completeLogin, about to get RootGroup")
                 self.getRootGroup(callback: { (error) in

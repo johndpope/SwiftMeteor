@@ -171,7 +171,7 @@ class RVBaseDatasource4<T:NSObject>: NSObject {
             if let modelType = userInfo[RVBaseCollection.collectionNameKey] as? RVModelType {
                 if let subscription = self.subscription {
                     if subscription.collection == modelType {
-                        print("In \(self.classForCoder).unsubscribeNotification for \(modelType.rawValue)")
+                      //  print("In \(self.classForCoder).unsubscribeNotification for \(modelType.rawValue)")
                         let operation = RVForcedUnsubscribe(datasource: self, scrollView: self.scrollView, callback: { (models, error) in
                             if let error = error {
                                 error.printError()
@@ -185,7 +185,7 @@ class RVBaseDatasource4<T:NSObject>: NSObject {
     }
     func subscribe(scrollView: UIScrollView?, front: Bool) {
         if !self.subscriptionActive {
-         //   print("In \(self.classForCoder).subscribe, passed !subsciprtionActive")
+          //  print("In \(self.classForCoder).subscribe, passed !subsciprtionActive --------------")
             //subscription.reference = self.items.first
             if let subscription = self.subscription {
              //    print("In \(self.classForCoder).subscribe, have subscription")
@@ -847,7 +847,7 @@ class RVSubcriptionResponseOperation<T:NSObject>: RVLoadOperation<T> {
         }
     }
     func resubscribe(callback: @escaping () -> Void) {
-    //    print("In \(self.classForCoder).resubscribe")
+        //print("In \(self.classForCoder).resubscribe")
         self.datasource.unsubscribe {
             let operation = RVLoadOperation(title: "Resubscribe", datasource: self.datasource, scrollView: self.scrollView, front: self.front, callback: { (models, error) in
                 if let error = error {
@@ -922,16 +922,18 @@ class RVLoadOperation<T:NSObject>: RVAsyncOperation<T> {
         } else { return false}
     }
     func initiateSubscription(subscription: RVSubscription, query: RVQuery, reference: T?, callback: @escaping () -> Void) {
-    //    print("In \(self.classForCoder).initiateSubscription \(reference)")
+        print("In \(self.classForCoder).initiateSubscription \(String(describing: reference))")
         self.datasource.subscriptionActive = true
         DispatchQueue.main.async {
             self.datasource.listenToSubscriptionNotification(subscription: subscription)
             if let reference = reference as? RVBaseModel? {
+             //   print("In \(self.classForCoder).initiateSubscripton with reference #\(#line)")
                 subscription.subscribe(query: query, reference: reference, callback: callback)
             } else if let referenceDatasource = reference as? RVBaseDatasource4<RVBaseModel> {
                // print("In \(self.classForCoder).initiateSubscription, passed casting Reference: \(reference?.description ?? "No reference") for subscription \(subscription)")
                 let model = subscription.isFront ? referenceDatasource.frontElement : referenceDatasource.backElement
              //   if let model = model as? RVBaseModel? {
+               // print("In \(self.classForCoder).initiateSubscripton after model #\(#line)")
                     subscription.subscribe(query: query , reference: model , callback: callback)
              //   }
                 
@@ -1340,7 +1342,7 @@ class RVLoadOperation<T:NSObject>: RVAsyncOperation<T> {
             //  if (self.front && self.datasource.offset == 0) || !self.front {
             if let subscription = self.datasource.subscription {
                 if !subscription.active {
-                    //   print("In \(self.classForCoder).insert. About to call subscribe self.front = \(self.front)")
+                //    print("In \(self.classForCoder).insert. About to call subscribe self.front = \(self.front)")
                     self.datasource.subscribe(scrollView: self.scrollView, front: self.front)
                 }
             }

@@ -67,6 +67,7 @@ class RVMemberToMemberChatState: RVBaseAppState {
         queryFunctions[.filter] = filterQuery
     }
     override func subscribe(callback: @escaping ()-> Void) {
+      //  print("In \(self.instanceType).subscribe")
         if let datasource = self.mainDatasource {
         
             let query = datasource.basicQuery()

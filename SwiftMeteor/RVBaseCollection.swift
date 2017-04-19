@@ -129,7 +129,7 @@ extension RVBaseCollection {
     */
     func subscribe() -> String {
         checkIfSubscribed(instanceType: "\(self.instanceType)")
-    //    print("In \(self.classForCoder).subscribe()")
+        //print("In \(self.classForCoder).subscribe()")
         let (filters, projections) = self.query.query()
         self.subscriptionID = Meteor.subscribe(collection.rawValue, params: [filters as AnyObject, projections as AnyObject])
         return self.subscriptionID!
@@ -155,7 +155,7 @@ extension RVBaseCollection {
         self.query = query
         let (filters, projection) = query.query()
         self.subscriptionID = Meteor.subscribe(collection.rawValue, params: [filters as AnyObject, projection as AnyObject])
-         print("---------- IN \(self.classForCoder).subscribe(query) with subscriptionId \(self.subscriptionID!)")
+        // print("---------- IN \(self.classForCoder).subscribe(query) with subscriptionId \(self.subscriptionID!)")
         return self.subscriptionID!
     }
     
@@ -174,7 +174,7 @@ extension RVBaseCollection {
         self.query = query
         let (filters, projection) = query.query()
         self.subscriptionID = Meteor.subscribe(collection.rawValue, params: [filters as AnyObject, projection as AnyObject], callback: callback)
-       //  print("---------- IN \(self.classForCoder).subscribe(query, callback) with subscriptionId \(self.subscriptionID!)")
+      //  print("---------- IN \(self.classForCoder).subscribe(query, callback) with subscriptionId \(self.subscriptionID!)")
         return self.subscriptionID!
     }
     
@@ -186,7 +186,7 @@ extension RVBaseCollection {
      */
     func unsubscribeAll(callback: @escaping () -> Void) -> [String] {
         self.subscriptionID = nil
-        print("In \(self.classForCoder).unsubscribeAll")
+      //  print("In \(self.classForCoder).unsubscribeAll")
         return Meteor.unsubscribe(collection.rawValue) {
             NotificationCenter.default.post(name: self.unsubscribeNotificationName, object: nil, userInfo: [RVBaseCollection.collectionNameKey: self.collection])
             callback()

@@ -81,7 +81,7 @@ class RVBaseCollectionSubscription: RVBaseCollection, RVSubscription {
     var reference: RVBaseModel? = nil
     
     func subscribe(query: RVQuery, reference: RVBaseModel?, callback: @escaping() -> Void) -> Void {
-      //  print("In \(self.classForCoder).subscribe ..........")
+     //   print("In \(self.classForCoder).subscribe ..........")
         if self.active { print("In \(self.classForCoder).subscribe, subscription was already active") }
         self._active    = true
         self.reference  = reference

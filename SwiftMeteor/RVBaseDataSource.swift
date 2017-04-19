@@ -31,10 +31,10 @@ class RVBaseDataSource: NSObject {
     }
     func subscribe(callback: @escaping(RVError?) -> Void) {
         if filterMode { return }
-        //print("In \(self.classForCoder).subscribe... for datasourceType \(datasourceType).")
+      //  print("In \(self.classForCoder).subscribe... for datasourceType \(datasourceType).")
         if let query = self.subscriptionQuery() {
             self.unsubscribe {
-                //print("In \(self.classForCoder).subscribe... after Unsubscribe")
+              //  print("In \(self.classForCoder).subscribe... after Unsubscribe")
                 if let subscription = self.internalSubscription {
                     let _ = subscription.subscribe(query: query, callback: {
                         callback(nil)
@@ -52,7 +52,7 @@ class RVBaseDataSource: NSObject {
     }
 
     func unsubscribe(callback: @escaping () -> Void) {
-        print("In \(self.classForCoder).unsubscribe")
+      //  print("In \(self.classForCoder).unsubscribe")
         if let current = self._subscription { current.unsubscribeSelf { callback() } }
         else { callback() }
     }
@@ -1117,7 +1117,9 @@ class RVBaseDataSource: NSObject {
                     callback(error)
                 } else {
                     //callback(nil)
+                    print("In \(self.classForCoder).start about to subscribe")
                     Timer.scheduledTimer(withTimeInterval: 1.5, repeats: false, block: { (timer: Timer) in
+                     //   print("In \(self.classForCoder).start subscribing")
                         self.subscribe(callback: { (error) in })
                     })
                     callback(error)
