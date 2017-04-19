@@ -58,7 +58,7 @@ class RVSwiftDDP: NSObject {
     var loginListeners = RVListeners()
     var logoutListeners = RVListeners()
     var connected: Bool = false
-    
+    var subscriptionsCancelled: [RVModelType: Bool] = [.transaction: true, .Group: true]
     static let sharedInstance: RVSwiftDDP = {
         return RVSwiftDDP()
     }()
@@ -72,9 +72,15 @@ class RVSwiftDDP: NSObject {
         NotificationCenter.default.addObserver(self, selector: #selector(RVSwiftDDP.ddpFailed), name: NSNotification.Name(rawValue: DDP_FAILED), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(RVSwiftDDP.ddpWebsocketError), name: NSNotification.Name(rawValue: DDP_WEBSOCKET_ERROR), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(RVSwiftDDP.ddpWebsocketClose), name: NSNotification.Name(rawValue: DDP_WEBSOCKET_CLOSE), object: nil)
+        
+        NotificationCenter.default.addObserver(self, selector: #selector(RVSwiftDDP.ddpConnected(notification:)), name: NSNotification.Name("DDP Connected"), object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(RVSwiftDDP.ddpDisconnected(notification:)), name: NSNotification.Name("DDP Disconnected"), object: nil)
+        // NotificationCenter.default.post(name: NSNotification.Name("DDP Connected"), object: self, userInfo: nil)
+        //  NotificationCenter.default.post(name: NSNotification.Name("DDP Disconnected"), object: self, userInfo: nil)
     }
     @objc func ddpDisconnected(notification: NSNotification) {
         print("IN \(self.classForCoder).ddpDisconnected \(notification.userInfo?.description ?? " No userInfo")")
+        self.connected = false
     }
     @objc func ddpFailed(notification: NSNotification) {
         print("IN \(self.classForCoder).ddpFailed \(notification.userInfo?.description ?? " No userInfo")")
@@ -84,6 +90,9 @@ class RVSwiftDDP: NSObject {
     }
     @objc func ddpWebsocketClose(notification: NSNotification) {
         print("IN \(self.classForCoder).ddpWebsocketClose \(notification.userInfo?.description ?? " no userInfo")")
+    }
+    func ddpConnected(notification: NSNotification) {
+        print("In \(self.classForCoder).ddpConnected ")
     }
     func getId() -> String {
         return Meteor.client.getId()
@@ -157,15 +166,19 @@ class RVSwiftDDP: NSObject {
      - parameter callback:   An optional closure to be executed after the connection is established
      */
     func connect(callback: @escaping () -> Void ) {
-
+        self.connected = false
         Timer.scheduledTimer(withTimeInterval: 3.0, repeats: true) { (timer) in
             if !self.connected {
                 print("In \(self.classForCoder). attempting to connect")
+                for (key, _) in self.subscriptionsCancelled { self.subscriptionsCancelled[key] = true }
                 UILabel.showMessage("Attempting to Connect", ofSize: 24.0, of: UIColor.candyGreen(), in: UIViewController.top().view, forDuration: 2.0)
                 Meteor.connect(self.meteorURL) {
                     print("In \(self.classForCoder).connect, connected -----------")
                     self.connected = true
-                    Meteor.unsubscribe(RVModelType.transaction.rawValue) {}
+                    for (key, _) in self.subscriptionsCancelled {
+                        let model = key
+                        Meteor.unsubscribe(model.rawValue, callback: { self.subscriptionsCancelled[model] = false})
+                    }
                     callback()
                     NotificationCenter.default.post(name: NSNotification.Name(rawValue: RVNotification.connected.rawValue), object: nil, userInfo: nil)
                 }

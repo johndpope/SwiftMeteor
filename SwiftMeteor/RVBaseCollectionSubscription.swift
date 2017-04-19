@@ -23,13 +23,22 @@ class RVBaseCollectionSubscription: RVBaseCollection, RVSubscription {
         // print("In \(self.instanceType).populate, have transaction \(transaction.createdAt!) TopParentId: \(transaction.topParentId)")
         return transaction
     }
+    var isSubscriptionCancelled: Bool {
+        if let test = RVSwiftDDP.sharedInstance.subscriptionsCancelled[self.collection] {
+            return test
+        }
+        return false
+    }
     override public func documentWasAdded(_ collection: String, id: String, fields: NSDictionary?) {
+        if isSubscriptionCancelled { return }
         finishUp(collection: collection, id: id, fields: fields, cleared: nil, eventType: .added)
     }
     override public func documentWasChanged(_ collection: String, id: String, fields: NSDictionary?, cleared: [String]?) {
+        if isSubscriptionCancelled { return }
         finishUp(collection: collection, id: id, fields: fields, cleared: cleared, eventType: .changed)
     }
     override public func documentWasRemoved(_ collection: String, id: String) {
+        if isSubscriptionCancelled { return }
         finishUp(collection: collection, id: id, fields: nil, cleared: nil, eventType: .removed)
     }
 
