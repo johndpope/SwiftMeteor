@@ -161,6 +161,7 @@ class RVSwiftDDP: NSObject {
         Timer.scheduledTimer(withTimeInterval: 3.0, repeats: true) { (timer) in
             if !self.connected {
                 print("In \(self.classForCoder). attempting to connect")
+                UILabel.showMessage("Attempting to Connect", ofSize: 24.0, of: UIColor.candyGreen(), in: UIViewController.top().view, forDuration: 2.0)
                 Meteor.connect(self.meteorURL) {
                     print("In \(self.classForCoder).connect, connected -----------")
                     self.connected = true
