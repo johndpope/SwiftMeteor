@@ -29,13 +29,13 @@ class RVAppStateManager {
         if !installing {
             installing = true
             topState.uninstall {
-                NotificationCenter.default.post(name: NSNotification.Name(RVNotification.StateUninstalled.rawValue), object: nil, userInfo: ["UninstalledState": RVAppStateManager.shared.topState])
+                NotificationCenter.default.post(name: RVNotification.StateUninstalled, object: nil, userInfo: ["UninstalledState": RVAppStateManager.shared.topState])
                 RVAppStateManager.shared.pushState(newState: newState)
                 newState.uninstall(callback: {
                     newState.install {
                         RVAppStateManager.shared.installing = false
                         callback()
-                        NotificationCenter.default.post(name: NSNotification.Name(RVNotification.StateInstalled.rawValue), object: nil, userInfo: ["InstalledState": RVAppStateManager.shared.topState])
+                        NotificationCenter.default.post(name: RVNotification.StateInstalled, object: nil, userInfo: ["InstalledState": RVAppStateManager.shared.topState])
                     }
                 })
             }

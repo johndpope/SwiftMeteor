@@ -24,7 +24,7 @@ class RVMainTabBarController8: UITabBarController, RVIdentifierProtocol {
     override func viewDidLoad() {
         super.viewDidLoad()
         self.delegate = self
-        NotificationCenter.default.addObserver(self, selector: #selector(RVMainTabBarController8.appStateChanged(notification:)), name: NSNotification.Name(RVNotification.AppStateChanged.rawValue), object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(RVMainTabBarController8.appStateChanged(notification:)), name: RVNotification.AppStateChanged, object: nil)
     }
     func appStateChanged(notification: Notification) {
         // print("In \(self.classForCoder).appStateChanged")

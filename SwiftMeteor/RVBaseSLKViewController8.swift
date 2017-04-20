@@ -363,7 +363,7 @@ extension RVBaseSLKViewController8 {
         self.autoCompletionView.register(RVMessageTableViewCell.classForCoder(), forCellReuseIdentifier: RVMessageTableViewCell.AutoCompletionCellIdentifier)
         NotificationCenter.default.addObserver(self.tableView!, selector: #selector(UITableView.reloadData), name: NSNotification.Name.UIContentSizeCategoryDidChange, object: nil)
         NotificationCenter.default.addObserver(self,  selector: #selector(RVBaseSLKViewController8.textInputbarDidMove(_:)), name: NSNotification.Name.SLKTextInputbarDidMove, object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(RVBaseSLKViewController8.stateDidChange(_:)), name: NSNotification.Name(RVNotification.AppStateChanged.rawValue), object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(RVBaseSLKViewController8.stateDidChange(_:)), name: RVNotification.AppStateChanged, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(RVBaseSLKViewController8.reconnectedNotification(notification:)), name: RVBaseCoreInfo8.reconnectedNotification, object: nil)
         
     }

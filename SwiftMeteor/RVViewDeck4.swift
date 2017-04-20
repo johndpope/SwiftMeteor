@@ -63,7 +63,7 @@ class RVViewDeck4: RVViewDeck {
         finishup(newState: newState, callback: callback)
     }
     func finishup(newState: RVBaseAppState4, callback: @escaping() -> Void) {
-        NotificationCenter.default.post(name: NSNotification.Name(RVNotification.AppStateChanged.rawValue), object: self, userInfo: ["newAppState": newState])
+        NotificationCenter.default.post(name: RVNotification.AppStateChanged, object: self, userInfo: ["newAppState": newState])
         callback()
     }
     func changeIntraState(currentState: RVBaseAppState4, newIntraState: RVAppState4, callback: @escaping () -> Void) {

@@ -76,9 +76,9 @@ class RVCoreInfo2 {
         }
     }
     init() {
-        NotificationCenter.default.addObserver(self, selector: #selector(RVCoreInfo2.connected(notification:)), name: NSNotification.Name(rawValue: RVNotification.connected.rawValue), object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(RVCoreInfo2.userLoggedIn(notification:)), name: NSNotification.Name(rawValue: RVNotification.userDidLogin.rawValue), object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(RVCoreInfo2.userLoggedOut(notification:)), name: NSNotification.Name(rawValue: RVNotification.userDidLogout.rawValue), object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(RVCoreInfo2.connected(notification:)), name: RVNotification.connected, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(RVCoreInfo2.userLoggedIn(notification:)), name: RVNotification.userDidLogin, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(RVCoreInfo2.userLoggedOut(notification:)), name: RVNotification.userDidLogout, object: nil)
     }
     func logoutModels() {
         self.loggedInUserProfile    = nil

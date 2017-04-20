@@ -337,7 +337,7 @@ extension RVBaseSLKViewController4 {
         self.autoCompletionView.register(RVMessageTableViewCell.classForCoder(), forCellReuseIdentifier: RVMessageTableViewCell.AutoCompletionCellIdentifier)
         NotificationCenter.default.addObserver(self.tableView!, selector: #selector(UITableView.reloadData), name: NSNotification.Name.UIContentSizeCategoryDidChange, object: nil)
         NotificationCenter.default.addObserver(self,  selector: #selector(RVBaseSLKViewController4.textInputbarDidMove(_:)), name: NSNotification.Name.SLKTextInputbarDidMove, object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(RVBaseSLKViewController4.stateDidChange(_:)), name: NSNotification.Name(RVNotification.AppStateChanged.rawValue), object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(RVBaseSLKViewController4.stateDidChange(_:)), name: RVNotification.AppStateChanged, object: nil)
     }
     func stateDidChange(_ notification: NSNotification) {
         print("In \(self.instanceType).stateDidChange")

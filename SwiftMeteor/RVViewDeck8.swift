@@ -134,7 +134,7 @@ class RVViewDeck8: NSObject {
         finishup(newState: newState, previousState: previousState, callback: callback)
     }
     func finishup(newState: RVBaseAppState8, previousState: RVBaseAppState8, callback: @escaping() -> Void) {
-        NotificationCenter.default.post(name: NSNotification.Name(RVNotification.AppStateChanged.rawValue), object: self, userInfo: [RVViewDeck8.previousStateKey: previousState, RVViewDeck8.newStateKey: newState])
+        NotificationCenter.default.post(name: RVNotification.AppStateChanged, object: self, userInfo: [RVViewDeck8.previousStateKey: previousState, RVViewDeck8.newStateKey: newState])
         DispatchQueue.main.async {
             callback()
         }

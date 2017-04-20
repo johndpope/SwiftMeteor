@@ -8,15 +8,7 @@
 
 import Foundation
 import SwiftDDP
-enum RVNotification: String {
-    case userDidLogin = "RVUserDidLogin"
-    case userDidLogout = "RVUserDidLogout"
-    case collectionDidChange = "RVCollectionDidChange"
-    case connected = "Connected"
-    case StateUninstalled = "StateUninstalled"
-    case StateInstalled = "StateInstalled"
-    case AppStateChanged = "AppStateChanged"
-}
+
 enum RVSwiftEvent: String {
     case userDidLogin = "RVUserDidLogin"
     case userDidLogout = "RVUserDidLogout"
@@ -111,7 +103,11 @@ class RVSwiftDDP: NSObject {
     var logoutListeners = RVListeners()
     var connected: Bool = false
     var subscriptionsCancelled: [RVModelType: Bool] = [.transaction: true, .Group: true]
-    var ignoreSubscriptions: Bool = true
+    var ignoreSubscriptions: Bool = true {
+        didSet {
+            
+        }
+    }
     static let sharedInstance: RVSwiftDDP = {
         return RVSwiftDDP()
     }()
@@ -168,7 +164,7 @@ class RVSwiftDDP: NSObject {
                 self.subscriptionsCancelled[model] = false
                 
             }
-            NotificationCenter.default.post(name: NSNotification.Name(rawValue: RVNotification.connected.rawValue), object: nil, userInfo: nil)
+            NotificationCenter.default.post(name: RVNotification.connected, object: nil, userInfo: nil)
         }
     }
     func getId() -> String {
@@ -252,7 +248,7 @@ class RVSwiftDDP: NSObject {
                        
                     }
  
-                    NotificationCenter.default.post(name: NSNotification.Name(rawValue: RVNotification.connected.rawValue), object: nil, userInfo: nil)
+                    NotificationCenter.default.post(name: RVNotification.connected, object: nil, userInfo: nil)
                 }
             })
         }
@@ -265,7 +261,7 @@ class RVSwiftDDP: NSObject {
            // RVStateDispatcher4.shared.changeState(newState: RVBaseAppState4(appState: .loggedOut))
             callback(nil)
             logoutListeners.notifyListeners()
-            NotificationCenter.default.post(name: NSNotification.Name(rawValue: RVNotification.userDidLogout.rawValue), object: nil, userInfo: nil)
+            NotificationCenter.default.post(name: RVNotification.userDidLogout, object: nil, userInfo: nil)
             return
         }
         Meteor.logout { (result, error) in
@@ -374,7 +370,7 @@ class RVSwiftDDP: NSObject {
                 print("\(key) : \(value)")
             }
         }
-        NotificationCenter.default.post(name: NSNotification.Name(rawValue: RVNotification.collectionDidChange.rawValue), object: nil, userInfo: notification.userInfo)
+        NotificationCenter.default.post(name: RVNotification.collectionDidChange, object: nil, userInfo: notification.userInfo)
     }
 }
 extension RVSwiftDDP: SwiftDDPDelegate {
@@ -398,7 +394,7 @@ extension RVSwiftDDP: SwiftDDPDelegate {
         RVBaseCoreInfo8.shared.logoutModels()
 
         logoutListeners.notifyListeners()
-        NotificationCenter.default.post(name: NSNotification.Name(rawValue: RVNotification.userDidLogout.rawValue), object: nil, userInfo: ["user": user])
+        NotificationCenter.default.post(name: RVNotification.userDidLogout, object: nil, userInfo: ["user": user])
         
     }
 }
