@@ -47,9 +47,11 @@ class RVTransactionListController8: RVBaseListController8  {
     }
     override var instanceConfiguration: RVBaseConfiguration8 { return RVTransactionListConfiguration8(scrollView: dsScrollView) }
     override func viewDidLoad() {
+        /*
         let _ = RVSwiftDDP.sharedInstance.unsubscribe(collectionName: RVModelType.transaction.rawValue) {
            // print("In \(self.classForCoder).viewDidLoad, returned from unsubscribing")
         }
+ */
         if let tableView = self.tableView {
             tableView.separatorStyle = .singleLine
             let nib = UINib(nibName: RVTransactionTableViewCell.identifier, bundle: nil)

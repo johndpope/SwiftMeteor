@@ -61,27 +61,25 @@ class RVSwiftDDP: NSObject {
     func subscribe(subscription: RVBaseCollectionSubscription8, params: [AnyObject], callback: @escaping () -> Void ) -> Void {
         if let id = subscription.subscriptionID {
             print("In \(self.classForCoder).subscribe attempting to subscribe when already subscribed. id: \(id)")
-            Meteor.unsubscribe(withId: id)
+            self.unsubscribe(id: id)
         }
-        subscription.subscriptionID = Meteor.subscribe(subscription.modelType.rawValue, params: params) {
-            DispatchQueue.main.async {callback()}
-        }
-        //return subscription.subscriptionID!
+        subscription.subscriptionID = self.subscribe(collectionName: subscription.modelType, params: params, callback: callback)
     }
-    func subscribe(collectionName: String, params: [AnyObject], callback: @escaping () -> Void ) -> String {
-        return Meteor.subscribe(collectionName, params: params) {
-            DispatchQueue.main.async {callback()}
-        }
+    /* Returns ID of the Subscription */
+    func subscribe(collectionName: RVModelType, params: [Any]?, callback: @escaping () -> Void ) -> String {
+        return Meteor.subscribe(collectionName.rawValue, params: params) { DispatchQueue.main.async {callback()} }
     }
     func subscribe(collectionName: String, params: [AnyObject]) -> String {
         return Meteor.subscribe(collectionName, params: params)
     }
-    func unsubscribe(id: String?, callback: @escaping () -> Void) {
-        if let id = id {
+    
+    func unsubscribe(subscriptionId: String?, callback: @escaping () -> Void) {
+        if let id = subscriptionId {
             Meteor.unsubscribe(withId: id, callback: { DispatchQueue.main.async { callback() } })
             return
         } else { callback() }
     }
+    func unsubscribe(id: String?) { if let id = id { Meteor.unsubscribe(withId: id) } }
     func meteorCall(method: String, params: [Any], callback: @escaping (Any?, RVError?) -> Void ) {
         Meteor.call(method, params: params) { (result: Any?, error: DDPError?) in
             DispatchQueue.main.async {
@@ -95,7 +93,6 @@ class RVSwiftDDP: NSObject {
         }
     }
 
-    func unsubscribe(id: String?) { if let id = id { Meteor.unsubscribe(withId: id) } }
     var disconnectedTimer: Timer = Timer.scheduledTimer(withTimeInterval: 4.0, repeats: true) { (timer) in
         UILabel.showMessage("Attempting to Connect", ofSize: 24.0, of: UIColor.candyGreen(), in: UIViewController.top().view, forDuration: 2.0)
     }
@@ -188,21 +185,8 @@ class RVSwiftDDP: NSObject {
             })
         }
     }
-    /* Returns ID of the Subscription */
-    func subscribe(collectionName: RVModelType, params: [Any]?, callback: @escaping() -> Void) -> String {
-      //  print("In \(self.classForCoder).subscribe(collectionName: \(collectionName)")
-        return Meteor.subscribe(collectionName.rawValue, params: params, callback: callback)
-    }
-    func unsubscribe(collectionName: String, callback: @escaping() -> Void ) -> [String] {
-        print("IN \(self.classForCoder).unsubscribe. NOt clear why here")
-        return Meteor.unsubscribe(collectionName) {
-            callback()
-        }
-    }
-    func unsubscribe(subscriptionId: String, callback: @escaping() -> Void ) {
-         print("IN \(self.classForCoder).unsubscribe. NOt clear why here")
-        return Meteor.unsubscribe(withId: subscriptionId, callback: callback)
-    }
+
+
     
     func handleSignup(result: Any?, error: DDPError?, callback: @escaping(_ error: RVError?) -> Void ){
         if let error = error {
@@ -251,38 +235,13 @@ class RVSwiftDDP: NSObject {
                     for (key, _) in self.subscriptionsCancelled {
                         let model = key
                         self.subscriptionsCancelled[model] = false
-                       // Meteor.unsubscribe(model.rawValue, callback: { self.subscriptionsCancelled[model] = false})
+                       
                     }
                     NotificationCenter.default.post(name: NSNotification.Name(rawValue: RVNotification.connected.rawValue), object: nil, userInfo: nil)
                 }
             })
         }
         
-/*
-        Timer.scheduledTimer(withTimeInterval: 3.0, repeats: true) { (timer) in
-        
-            if !self.connected {
-                
-                
-                let time = Date()
-                print("In \(self.classForCoder). attempting to connect at time \(time)")
-                for (key, _) in self.subscriptionsCancelled { self.subscriptionsCancelled[key] = true }
-                UILabel.showMessage("Attempting to Connect", ofSize: 24.0, of: UIColor.candyGreen(), in: UIViewController.top().view, forDuration: 2.0)
-                Meteor.connect(self.meteorURL) {
-                    print("In \(self.classForCoder).connect, connected with attempt time of \(time) -----------")
-                    self.connected = true
-                    for (key, _) in self.subscriptionsCancelled {
-                        let model = key
-                        Meteor.unsubscribe(model.rawValue, callback: { self.subscriptionsCancelled[model] = false})
-                    }
-                    NotificationCenter.default.post(name: NSNotification.Name(rawValue: RVNotification.connected.rawValue), object: nil, userInfo: nil)
-                    timer.invalidate()
-                }
-            } else {
-                timer.invalidate()
-            }
-        }
- */
     }
     func logout(callback: @escaping(_ error: RVError?)-> Void) {
         print("In \(self.classForCoder).logout")
@@ -417,36 +376,6 @@ extension RVSwiftDDP: SwiftDDPDelegate {
 
             }
         }
-        /*
-        RVCoreInfo.sharedInstance.completeLogin(username: user) { (success, error) in
-            if let error = error {
-                error.append(message: "In \(self.classForCoder).ddpUserDidLogin user: \(user), got error")
-                error.printError()
-                return
-            } else if success {
-                RVCoreInfo.sharedInstance.appState = RVLoggedInState()
-               // print("In \(self.classForCoder).ddpUserDidLogin, about to notify [\(self.loginListeners.listeners.count)] listeners and publish notification \(RVNotification.userDidLogin.rawValue)")
-                self.loginListeners.notifyListeners()
-                NotificationCenter.default.post(name: NSNotification.Name(rawValue: RVNotification.userDidLogin.rawValue), object: nil, userInfo: ["user": user])
-                print("IN \(self.classForCoder) about to subscribe")
-                self.messages = RVMessageCollection2()
-                self.messages.query = RVQuery()
-                Meteor.unsubscribe(withId: RVModelType.transaction.rawValue)
-                /*
-                self.transactions = RVTransactionCollection()
-                let query = RVQuery()
-                query.addAnd(term: .topParentId, value: "88" as AnyObject, comparison: .eq)
-                self.transactions.query = query 
-                let id = self.transactions.subscribe {
-                    print("In \(self.classForCoder).ddpUserDidLogin")
-                }
-                print("In \(self.classForCoder), transaction id = \(id)")
- */
-            } else {
-                print("In \(self.classForCoder).ddpUserDidLogin, no error but failure")
-            }
-        }
- */
     }
     // Called as delegate by DDPClient
     func ddpUserDidLogout(_ user:String) {

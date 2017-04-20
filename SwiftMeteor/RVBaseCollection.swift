@@ -24,6 +24,16 @@ class RVBaseCollection: AbstractCollection {
     var elements = [RVBaseModel]()
     var subscriptionID: String? = nil
     var listeners = [String]()
+    let MaxOperations = 200
+    let queue = RVOperationQueue()
+    var _active: Bool = false
+    var active: Bool { get { return _active } }
+    var showResponse: Bool = false
+    var front: Bool = false
+    var isFront: Bool { return front }
+    var identifier: TimeInterval = Date().timeIntervalSince1970
+    var reference: RVBaseModel? = nil
+    
     public typealias basicCallback = () -> Void
     init(collection: RVModelType) {
         self.collection = collection
@@ -110,42 +120,13 @@ extension RVBaseCollection {
             }
         }
     }
- 
-    /**
-    Sends a subscription request to the server.
-    
-    - parameter name:       The name of the subscription.
-    */
-    func subscribe() -> String {
-        checkIfSubscribed(instanceType: "\(self.instanceType)")
-        //print("In \(self.classForCoder).subscribe()")
-        let (filters, projections) = self.query.query()
-        self.subscriptionID = RVSwiftDDP.sharedInstance.subscribe(collectionName: collection.rawValue, params: [filters as AnyObject, projections as AnyObject])
-        return self.subscriptionID!
+    func subscribe(query: RVQuery, reference: RVBaseModel?, callback: @escaping() -> Void) -> Void {
+        //   print("In \(self.classForCoder).subscribe ..........")
+        if self.active { print("In \(self.classForCoder).subscribe, subscription was already active") }
+        self._active    = true
+        self.reference  = reference
+        let _ = self.subscribe(query: query, callback: callback)
     }
-    func subscribe(callback: @escaping()-> Void) -> String {
-      //  print("In \(self.classForCoder).subscribe(callback: @escaping()-> Void")
-        checkIfSubscribed(instanceType: "\(self.instanceType)")
-        let (filters, projections) = self.query.query()
-        self.subscriptionID = RVSwiftDDP.sharedInstance.subscribe(collectionName: collection.rawValue, params: [filters as AnyObject, projections as AnyObject], callback: callback)
-        return self.subscriptionID!
-    }
-
-    
-    /**
-     Sends a subscription request to the server.
-     
-     - parameter name:       The name of the subscription.
-     - parameter params:     An object containing method arguments, if any.
-     */
-    func subscribe(query: RVQuery) -> String {
-        checkIfSubscribed(instanceType: "\(self.instanceType)")
-        self.query = query
-        let (filters, projection) = query.query()
-        self.subscriptionID = RVSwiftDDP.sharedInstance.subscribe(collectionName: collection.rawValue, params:  [filters as AnyObject, projection as AnyObject])
-        return self.subscriptionID!
-    }
-    
     /**
      Sends a subscription request to the server. If a callback is passed, the callback asynchronously
      runs when the client receives a 'ready' message indicating that the initial subset of documents contained
@@ -160,7 +141,7 @@ extension RVBaseCollection {
       //  print("---------- IN \(self.classForCoder).subscribe(query....")
         self.query = query
         let (filters, projection) = query.query()
-        self.subscriptionID = RVSwiftDDP.sharedInstance.subscribe(collectionName: collection.rawValue, params: [filters as AnyObject, projection as AnyObject], callback: callback)
+        self.subscriptionID = RVSwiftDDP.sharedInstance.subscribe(collectionName: collection, params: [filters as AnyObject, projection as AnyObject], callback: callback)
       //  print("---------- IN \(self.classForCoder).subscribe(query, callback) with subscriptionId \(self.subscriptionID!)")
         return self.subscriptionID!
     }
@@ -175,7 +156,7 @@ extension RVBaseCollection {
      //   print("In \(self.classForCoder).unsubscribeSelf with subscriptionID: \(self.subscriptionID ?? " no subscriptionId")")
         if let id = self.subscriptionID {
             self.subscriptionID = nil
-            RVSwiftDDP.sharedInstance.unsubscribe(id: id, callback: completionHandler)
+            RVSwiftDDP.sharedInstance.unsubscribe(subscriptionId: id, callback: completionHandler)
 
         } else {
             completionHandler()
@@ -188,7 +169,17 @@ extension RVBaseCollection {
      - parameter callback:   The closure to be executed when the method has been executed
      */
     func unsubscribe(id: String, callback: @escaping() -> Void ) {
-        RVSwiftDDP.sharedInstance.unsubscribe(id: id , callback: callback)
+        RVSwiftDDP.sharedInstance.unsubscribe(subscriptionId: id , callback: callback)
+    }
+    func unsubscribe(callback: @escaping ()-> Void) -> Void {
+        self.queue.cancelAllOperations()
+        // print("In \(self.classForCoder).unsubscribe about to call unsubscribeSelf")
+        DispatchQueue.main.async {
+            self.unsubscribeSelf {
+                self._active = false
+                //  callback()
+            }
+        }
     }
     
 }
