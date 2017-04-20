@@ -26,8 +26,10 @@ open class AbstractCollection: NSObject, MeteorCollectionType {
     open let client = Meteor.client
     
     public init(name:String) {
+
         self.name = name
         super.init()
+        print("In \(self.classForCoder) AbstractCollection root init creating subscription \(name) and current entry in collections is:  \(String(describing: Meteor.collections[name]))")
         Meteor.collections[name] = self
     }
     

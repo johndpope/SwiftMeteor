@@ -30,7 +30,7 @@ class RVBaseSLKViewController8: SLKTextViewController {
    // var topOuterViewTopAmountChanged: CGFloat = 0.0
     var topOuterViewAdditionalTop: CGFloat = 0.0
     var tableViewInsetAdditionalHeight: CGFloat = 0.0
-    
+    var doingSearch: Bool = false
     let navBarHeight: CGFloat = 62.0
     let _lastSearchTerm: String = "Dummy Value"
     var lastSearchTerm: String  = "Dummy Value"
@@ -186,6 +186,7 @@ class RVBaseSLKViewController8: SLKTextViewController {
         topOuterViewAdditionalTop = 0.0
         self.searchControllerContainerView.isHidden = true
         self.updateOuterTopTopConstraint()
+        self.doingSearch = false
         self.configuration.endSearch(mainAndTerms: self.andTerms) { (error) in
           //  print("In \(self.classForCoder).returned from endSearch")
             if let error = error {
@@ -589,6 +590,18 @@ extension RVBaseSLKViewController8: UISearchResultsUpdating {
         }
     }
     func doFilterSearch(searchController: UISearchController) {
+        self.doingSearch = true
+        if self.searchScopes.count > 1 {
+            let offset: CGFloat = 42.0
+            self.searchSectionTableViewOffset = offset
+            topOuterViewAdditionalTop = offset
+            self.updateOuterTopTopConstraint()
+        }
+        self.compressTopView()
+        //   self.zeroTopView()
+        doSearchInner()
+    }
+    func doSearchInner() {
         let searchBar = searchController.searchBar
         let searchText = searchBar.text != nil ? searchBar.text! : ""
         var searchKey = RVKeys.title
@@ -603,14 +616,6 @@ extension RVBaseSLKViewController8: UISearchResultsUpdating {
         } else {
             searchBar.placeholder = "Search"
         }
-        if self.searchScopes.count > 1 {
-            let offset: CGFloat = 42.0
-            self.searchSectionTableViewOffset = offset
-            topOuterViewAdditionalTop = offset
-            self.updateOuterTopTopConstraint()
-        }
-        self.compressTopView()
-        //   self.zeroTopView()
         performSearch(searchText: searchText, field: searchKey, order: self.defaultSortOrder )
     }
     func configureSearchController() {

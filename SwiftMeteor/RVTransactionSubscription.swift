@@ -11,6 +11,7 @@ import UIKit
 class RVTransactionSubscription: RVBaseCollectionSubscription {
     override var notificationName: Notification.Name { return Notification.Name("TransactionSubscription") }
     init(front: Bool = true, showResponse: Bool = false) {
+      //  super.init(modelType: .transaction, isFront: front, showResponse: showResponse)
         super.init(collection: .transaction)
     }
     override func populate(id: String, fields: NSDictionary) -> RVBaseModel {

@@ -53,7 +53,10 @@ class RVBaseDataSource: NSObject {
 
     func unsubscribe(callback: @escaping () -> Void) {
       //  print("In \(self.classForCoder).unsubscribe")
-        if let current = self._subscription { current.unsubscribeSelf { callback() } }
+        if let current = self._subscription { current.unsubscribeSelf {
+            self._subscription = nil
+            callback() }
+        }
         else { callback() }
     }
     var subscription: RVBaseCollection? { get { return nil } }

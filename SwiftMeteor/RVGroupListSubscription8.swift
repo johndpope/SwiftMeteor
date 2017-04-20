@@ -10,6 +10,7 @@ import UIKit
 class RVGroupListSubscription8: RVBaseCollectionSubscription {
     override var notificationName: Notification.Name { return Notification.Name("GroupSubscription") }
     init(front: Bool = true, showResponse: Bool = false) {
+     //   super.init(modelType: .Group, isFront: front, showResponse: showResponse)
         super.init(collection: .Group)
     }
     override func populate(id: String, fields: NSDictionary) -> RVBaseModel {

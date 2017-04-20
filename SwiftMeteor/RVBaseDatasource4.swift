@@ -150,6 +150,7 @@ class RVBaseDatasource4<T:NSObject>: NSObject {
                 NotificationCenter.default.removeObserver(self, name: subscription.unsubscribeNotificationName, object: nil)
                 notificationInstalled = false
                 subscription.unsubscribe(callback: {
+                    print("In \(self.classForCoder).unsubscribe")
                     self.subscriptionActive = false
                     callback()
                 })

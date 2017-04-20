@@ -184,6 +184,7 @@ extension RVBaseCollection {
      - parameter name:       The name of the subscription.
      
      */
+    /*
     func unsubscribeAll(callback: @escaping () -> Void) -> [String] {
         self.subscriptionID = nil
       //  print("In \(self.classForCoder).unsubscribeAll")
@@ -192,6 +193,7 @@ extension RVBaseCollection {
             callback()
         }
     }
+ */
     
     /**
      Sends an unsubscribe request to the server using a subscription id. This allows fine-grained control of subscriptions. For example, you can unsubscribe to specific combinations of subscriptions and subscription parameters.

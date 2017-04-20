@@ -86,7 +86,7 @@ class RVCoreInfo2 {
         self.loggedInSuccess        = false
     }
     @objc func connected(notification: NSNotification) {
-        print("In \(self.instanceType).connected")
+        print("In \(self.instanceType).connected notification handler")
         if self.loggedIn {
             print("In \(self.instanceType).connected, already logged in -----------------")
             for (key, _) in RVSwiftDDP.sharedInstance.subscriptionsCancelled {
@@ -178,7 +178,7 @@ class RVCoreInfo2 {
                    // print("In \(self.instanceType).completeLogin # \(#line), logged out \(RVModelType.transaction.rawValue)")
             //    })
               //  RVStateDispatcher4.shared.changeState(newState: RVBaseAppState4(appState: .transactionList))
-                 print("In \(self.instanceType).completeLogin, about to get RootGroup")
+              //   print("In \(self.instanceType).completeLogin, about to get RootGroup")
                 self.getRootGroup(callback: { (error) in
                     if let error = error {
                         self.rootGroup = nil
@@ -408,7 +408,7 @@ class RVCoreInfo2Logger: Operation {
                     } else if let domain = domain {
                         RVCoreInfo2.shared.domain = domain
                         self.loadState = .Group
-                        print("In \(self.classForCoder).main, about to get RootGroup")
+                     //   print("In \(self.classForCoder).main, about to get RootGroup")
                         RVGroup.getRootGroup(callback: { (group , error) in
                             if self.isCancelled { return }
                             if let error = error {

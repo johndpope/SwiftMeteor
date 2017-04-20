@@ -303,7 +303,12 @@ class RVQuery {
             orQuery.append(or.query() as AnyObject )
         }
         if orQuery.count > 0 { filters[RVLogic.or.rawValue] = orQuery as AnyObject }
-
+        if filters.count <= 0 {
+            print("In \(self.instanceType).query(), filters is empty")
+        }
+        if projections.count <= 0 {
+            print("In \(self.instanceType).query(), projections is empty")
+        }
         return (filters, projections)
     }
     

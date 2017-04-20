@@ -51,7 +51,7 @@ open class Meteor {
         
     open static let client = Meteor.Client()          // Client is a singleton object
     
-    internal static var collections = [String:MeteorCollectionType]()
+    open static var collections = [String:MeteorCollectionType]()
     
     /**
     returns a Meteor collection, if it exists
@@ -390,7 +390,7 @@ open class Meteor {
         */
         
         open override func documentWasAdded(_ collection:String, id:String, fields:NSDictionary?) {
-            // print("In \(self.classForCoder).documentWasAdded, Collection is: \(collection) with fields: \(fields)")
+          //  print("In \(self.classForCoder).documentWasAdded, Collection is: \(collection) with fields: \(String(describing: fields))")
             if let meteorCollection = Meteor.collections[collection] {
                 meteorCollection.documentWasAdded(collection, id: id, fields: fields)
             }

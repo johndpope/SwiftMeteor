@@ -71,7 +71,7 @@ class RVBaseCollectionSubscription: RVBaseCollection, RVSubscription {
                 print("In \(self.classForCoder).finishUp, collectionName sent: \(collection), not equal to collection \(self.collection.rawValue). id: \(id) and subID = \(self.subscriptionID ?? "No subscriptionID")")
             }
         } else {
-            print("In \(self.classForCoder).finishUp for collection: \(collection) got eventType: \(eventType) for id \(id), when subscriptionID id nil")
+           // print("In \(self.classForCoder).finishUp for collection: \(collection) got eventType: \(eventType) for id \(id), when subscriptionID id nil")
         }
 
     }
@@ -103,6 +103,7 @@ class RVBaseCollectionSubscription: RVBaseCollection, RVSubscription {
     
     
 }
+/*
 class RVModelSubscriptionBroadcast<T: NSObject>: RVAsyncOperation<T> {
     var models: [T]
     var eventType: RVEventType
@@ -176,3 +177,4 @@ class RVModelSubscriptionBroadcast<T: NSObject>: RVAsyncOperation<T> {
         }
     }
 }
+ */
