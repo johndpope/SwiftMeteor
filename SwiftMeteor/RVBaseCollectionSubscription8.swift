@@ -27,6 +27,7 @@ class RVBaseCollectionSubscription8: NSObject, MeteorCollectionType, RVSubscript
     open var name:String { return modelType.rawValue }
     open let client = Meteor.client
     var isFront: Bool = false
+    var ignore: Bool = true
     var showResponse: Bool = false
     var notificationName: Notification.Name { return Notification.Name("RVBaseaSubscriptionName.NEEDTOREPLACE") }
     var unsubscribeNotificationName: Notification.Name  { return Notification.Name("RVBaseaUnsubscribeName.NEEDTOREPLACE") }
@@ -114,6 +115,7 @@ class RVBaseCollectionSubscription8: NSObject, MeteorCollectionType, RVSubscript
         if self.active { print("In \(self.classForCoder).subscribe, subscription was already active") }
         self._active    = true
         let (filters, projections) = self.query.query()
+        self.ignore = false
         RVSwiftDDP.sharedInstance.subscribe(subscription: self , params: [filters as AnyObject , projections as AnyObject ], callback: callback)
     }
 

@@ -111,6 +111,7 @@ class RVSwiftDDP: NSObject {
     var logoutListeners = RVListeners()
     var connected: Bool = false
     var subscriptionsCancelled: [RVModelType: Bool] = [.transaction: true, .Group: true]
+    var ignoreSubscriptions: Bool = true
     static let sharedInstance: RVSwiftDDP = {
         return RVSwiftDDP()
     }()
@@ -134,7 +135,8 @@ class RVSwiftDDP: NSObject {
         // print("IN \(self.classForCoder).ddpDisconnected \(notification.userInfo?.description ?? " No userInfo")")
         if self.connected {
             self.connected = false
-            for (key, _) in self.subscriptionsCancelled { self.subscriptionsCancelled[key] = true }
+            self.ignoreSubscriptions = true
+            //for (key, _) in self.subscriptionsCancelled { self.subscriptionsCancelled[key] = true }
             self.disconnectedTimer = Timer.scheduledTimer(withTimeInterval: 4.0, repeats: true) { (timer) in
                 UILabel.showMessage("Attempting to Connect", ofSize: 24.0, of: UIColor.candyGreen(), in: UIViewController.top().view, forDuration: 2.0)
             }
@@ -158,6 +160,16 @@ class RVSwiftDDP: NSObject {
     }
     func ddpConnected(notification: NSNotification) {
         print("In \(self.classForCoder).ddpConnected ")
+        if !self.connected {
+            self.connected = true
+            self.ignoreSubscriptions = false
+            for (key, _) in self.subscriptionsCancelled {
+                let model = key
+                self.subscriptionsCancelled[model] = false
+                
+            }
+            NotificationCenter.default.post(name: NSNotification.Name(rawValue: RVNotification.connected.rawValue), object: nil, userInfo: nil)
+        }
     }
     func getId() -> String {
         return Meteor.client.getId()
@@ -232,16 +244,18 @@ class RVSwiftDDP: NSObject {
                 if !self.connected {
                     print("In \(self.classForCoder).connect, connected with attempt time of \(time) -----------")
                     self.connected = true
+                    self.ignoreSubscriptions = false
+                    
                     for (key, _) in self.subscriptionsCancelled {
                         let model = key
                         self.subscriptionsCancelled[model] = false
                        
                     }
+ 
                     NotificationCenter.default.post(name: NSNotification.Name(rawValue: RVNotification.connected.rawValue), object: nil, userInfo: nil)
                 }
             })
         }
-        
     }
     func logout(callback: @escaping(_ error: RVError?)-> Void) {
         print("In \(self.classForCoder).logout")

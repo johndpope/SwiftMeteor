@@ -45,6 +45,7 @@ class RVBaseCollectionSubscription: RVBaseCollection, RVSubscription {
 
 
     func finishUp(collection: String, id: String, fields: NSDictionary?, cleared: [String]?, eventType: RVEventType) {
+    
         if self.subscriptionID != nil {
             if self.collection.rawValue == collection {
                 var models = [RVBaseModel]()

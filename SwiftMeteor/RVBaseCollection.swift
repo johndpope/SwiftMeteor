@@ -31,6 +31,13 @@ class RVBaseCollection: AbstractCollection {
     var showResponse: Bool = false
     var front: Bool = false
     var isFront: Bool { return front }
+    var _ignore: Bool = true
+    var ignore: Bool {
+        get {
+           return RVSwiftDDP.sharedInstance.ignoreSubscriptions || _ignore 
+        }
+        set { _ignore = newValue }
+    }
     var identifier: TimeInterval = Date().timeIntervalSince1970
     var reference: RVBaseModel? = nil
     
@@ -139,6 +146,7 @@ extension RVBaseCollection {
         self.query = query
         if self.active { print("In \(self.classForCoder).subscribe, subscription was already active") }
         self._active    = true
+        self.ignore = false
         let (filters, projection) = query.query()
         self.subscriptionID = RVSwiftDDP.sharedInstance.subscribe(collectionName: collection, params: [filters as AnyObject, projection as AnyObject], callback: callback)
       //  print("---------- IN \(self.classForCoder).subscribe(query, callback) with subscriptionId \(self.subscriptionID!)")
