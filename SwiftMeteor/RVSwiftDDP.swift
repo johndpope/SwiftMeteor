@@ -105,7 +105,9 @@ class RVSwiftDDP: NSObject {
     var subscriptionsCancelled: [RVModelType: Bool] = [.transaction: true, .Group: true]
     var ignoreSubscriptions: Bool = true {
         didSet {
-            
+            if ignoreSubscriptions {
+                NotificationCenter.default.post(name: RVNotification.ignoreSubscription, object: self , userInfo: nil)
+            }
         }
     }
     static let sharedInstance: RVSwiftDDP = {

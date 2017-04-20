@@ -36,8 +36,20 @@ class RVBaseCollection: AbstractCollection {
         get {
            return RVSwiftDDP.sharedInstance.ignoreSubscriptions || _ignore 
         }
-        set { _ignore = newValue }
+        set {
+            _ignore = newValue
+            if newValue {
+                NotificationCenter.default.addObserver(self, selector: #selector(RVBaseCollectionSubscription8.ignoreIncoming(notification:)), name: RVNotification.ignoreSubscription, object: nil)
+            } else {
+                NotificationCenter.default.removeObserver(self , name: RVNotification.ignoreSubscription, object: nil)
+            }
+        }
     }
+    
+    func ignoreIncoming(notification: Notification) {
+        self.ignore = true
+    }
+    
     var identifier: TimeInterval = Date().timeIntervalSince1970
     var reference: RVBaseModel? = nil
     
@@ -113,6 +125,7 @@ class RVBaseCollection: AbstractCollection {
 
     deinit {
         print("In \(self.instanceType).deinit. about to call unsubscribe")
+        NotificationCenter.default.removeObserver(self)
         if let id = self.subscriptionID { RVSwiftDDP.sharedInstance.unsubscribe(id: id) }
     }
 }

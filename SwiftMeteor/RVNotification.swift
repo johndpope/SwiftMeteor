@@ -15,4 +15,5 @@ class RVNotification {
     static let StateUninstalled     = Notification.Name("StateUninstalled")
     static let StateInstalled       = Notification.Name("StateInstalled")
     static let AppStateChanged      = Notification.Name("AppStateChanged")
+    static let ignoreSubscription   = Notification.Name("IgnoreSubscription")
 }

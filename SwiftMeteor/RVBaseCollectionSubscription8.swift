@@ -27,7 +27,19 @@ class RVBaseCollectionSubscription8: NSObject, MeteorCollectionType, RVSubscript
     open var name:String { return modelType.rawValue }
     open let client = Meteor.client
     var isFront: Bool = false
-    var ignore: Bool = true
+    var ignore: Bool = true {
+        didSet {
+            if ignore {
+                NotificationCenter.default.addObserver(self, selector: #selector(RVBaseCollectionSubscription8.ignoreIncoming(notification:)), name: RVNotification.ignoreSubscription, object: nil)
+            } else {
+                NotificationCenter.default.removeObserver(self , name: RVNotification.ignoreSubscription, object: nil)
+            }
+            
+        }
+    }
+    func ignoreIncoming(notification: Notification) {
+        self.ignore = true
+    }
     var showResponse: Bool = false
     var notificationName: Notification.Name { return Notification.Name("RVBaseaSubscriptionName.NEEDTOREPLACE") }
     var unsubscribeNotificationName: Notification.Name  { return Notification.Name("RVBaseaUnsubscribeName.NEEDTOREPLACE") }
