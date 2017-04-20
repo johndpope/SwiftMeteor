@@ -106,7 +106,7 @@ class RVBaseCollection: AbstractCollection {
 
     deinit {
         print("In \(self.instanceType).deinit. about to call unsubscribe")
-        self.unsubscribeSelf { }
+        if let id = self.subscriptionID { RVSwiftDDP.sharedInstance.unsubscribe(id: id) }
     }
 }
 extension RVBaseCollection {
@@ -147,21 +147,7 @@ extension RVBaseCollection {
     }
     
     
-    
-    /**
-     Sends an unsubscribe request to the server using a subscription id. This allows fine-grained control of subscriptions. For example, you can unsubscribe to specific combinations of subscriptions and subscription parameters.
-     - parameter id: An id string returned from a subscription request
-     */
-    func unsubscribeSelf(completionHandler: @escaping () -> Void)  {
-     //   print("In \(self.classForCoder).unsubscribeSelf with subscriptionID: \(self.subscriptionID ?? " no subscriptionId")")
-        if let id = self.subscriptionID {
-            self.subscriptionID = nil
-            RVSwiftDDP.sharedInstance.unsubscribe(subscriptionId: id, callback: completionHandler)
 
-        } else {
-            completionHandler()
-        }
-    }
     /**
      Sends an unsubscribe request to the server using a subscription id. This allows fine-grained control of subscriptions. For example, you can unsubscribe to specific combinations of subscriptions and subscription parameters. If a callback is passed, the callback asynchronously
      runs when the unsubscribe transaction is complete.
@@ -173,12 +159,16 @@ extension RVBaseCollection {
     }
     func unsubscribe(callback: @escaping ()-> Void) -> Void {
         self.queue.cancelAllOperations()
-        // print("In \(self.classForCoder).unsubscribe about to call unsubscribeSelf")
+        print("In \(self.classForCoder).unsubscribe Suspect")
         DispatchQueue.main.async {
-            self.unsubscribeSelf {
-                self._active = false
-                //  callback()
+            if let id = self.subscriptionID {
+                RVSwiftDDP.sharedInstance.unsubscribe(subscriptionId: id, callback: {
+                     self._active = false
+                    print("In \(self.classForCoder).unsubscribe. Looking to do callback but cauess crash ................")
+                    //callback()
+                })
             }
+
         }
     }
     

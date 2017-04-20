@@ -52,11 +52,14 @@ class RVBaseDataSource: NSObject {
 
     func unsubscribe(callback: @escaping () -> Void) {
         print("In \(self.classForCoder).unsubscribe #\(#line). SHould not be here" )
+        /*
         if let current = self._subscription { current.unsubscribeSelf {
             self._subscription = nil
             callback() }
         }
+ 
         else { callback() }
+        */
     }
     var subscription: RVBaseCollection? { get { return nil } }
     var delegate: RVDatasourceDelegate? = nil
@@ -1231,7 +1234,11 @@ class RVBaseDataSource: NSObject {
         callback()
     }
     deinit {
-        print("In \(self.classForCoder).deinit, about to unsubscribe")
-        if let subscription = self.subscription { subscription.unsubscribeSelf { } }
+        print("In \(self.classForCoder).deinit, about to unsubscribe. Should NOT BE HERE ------------------")
+        if let _ = self.subscription {
+            /*
+            subscription.unsubscribeSelf { }
+ */
+        }
     }
 }
