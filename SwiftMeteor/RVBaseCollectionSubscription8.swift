@@ -48,11 +48,13 @@ class RVBaseCollectionSubscription8: NSObject, MeteorCollectionType, RVSubscript
         self.showResponse   = showResponse
         super.init()
         if let existing: MeteorCollectionType = RVSwiftDDP.sharedInstance.existingMeteorSubscription(modelType: self.modelType) {
-            if let existing = existing as? RVBaseCollectionSubscription8 {
+            if let _ = existing as? RVBaseCollectionSubscription8 {
                 print("In \(self.classForCoder).init unsubscring \(modelType.rawValue) because got new subscription")
+                /*
                 self.unsubscribe(subscription: existing, callback: {
                     RVSwiftDDP.sharedInstance.addSubscription(subscription: self)
                 })
+ */
                 return
             } else {
                 print("In \(self.classForCoder).init have a MeteorCollectionpType that is not a RVBaseCollactionSubscription8")
@@ -66,18 +68,18 @@ class RVBaseCollectionSubscription8: NSObject, MeteorCollectionType, RVSubscript
     func unsubscribe(subscription: RVBaseCollectionSubscription8, callback: @escaping () -> Void) {
         if let id = self.subscriptionID {
             subscription.subscriptionID = nil
-            subscription._active        = false
+         //   subscription._active        = false
             RVSwiftDDP.sharedInstance.unsubscribe(subscriptionId: id , callback: callback)
             return
         } else {
-            subscription._active        = false
+          //  subscription._active        = false
             callback()
         }
     }
     fileprivate func unsubscribe() {
         RVSwiftDDP.sharedInstance.unsubscribe(id: self.subscriptionID)
         self.subscriptionID = nil
-        self._active        = false
+       // self._active        = false
     }
     deinit {
         if let existing = RVSwiftDDP.sharedInstance.removeSubscription(subscription: self) { existing.unsubscribe() }
@@ -96,7 +98,7 @@ class RVBaseCollectionSubscription8: NSObject, MeteorCollectionType, RVSubscript
         print("In \(self.classForCoder).subscribe need to implement")
         //   print("In \(self.classForCoder).subscribe ..........")
         if self.active { print("In \(self.classForCoder).subscribe, subscription was already active") }
-        self._active    = true
+      //  self._active    = true
         self.reference  = reference
         self.subscribe(query: query, callback: callback)
     }

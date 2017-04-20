@@ -51,7 +51,7 @@ class RVBaseDataSource: NSObject {
     }
 
     func unsubscribe(callback: @escaping () -> Void) {
-      //  print("In \(self.classForCoder).unsubscribe")
+        print("In \(self.classForCoder).unsubscribe #\(#line). SHould not be here" )
         if let current = self._subscription { current.unsubscribeSelf {
             self._subscription = nil
             callback() }

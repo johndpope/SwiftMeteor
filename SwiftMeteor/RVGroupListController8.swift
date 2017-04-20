@@ -45,11 +45,6 @@ class RVGroupListController8: RVBaseListController8  {
     }
     
     override func viewDidLoad() {
-        /*
-        let _ = RVSwiftDDP.sharedInstance.unsubscribe(collectionName: RVModelType.Group.rawValue) {
-            // print("In \(self.classForCoder).viewDidLoad, returned from unsubscribing")
-        }
- */
         if let tableView = self.tableView {
             tableView.separatorStyle = .singleLine
             let nib = UINib(nibName: RVTransactionTableViewCell.identifier, bundle: nil)

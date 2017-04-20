@@ -14,11 +14,6 @@ class RVGroupListController4: RVBaseSLKViewController4 {
  
     override var instanceConfiguration: RVBaseConfiguration4 { return RVTransactionConfiguration4(scrollView: dsScrollView) }
     override func viewDidLoad() {
-        /*
-        let _ = RVSwiftDDP.sharedInstance.unsubscribe(collectionName: RVModelType.transaction.rawValue) {
-            print("In \(self.classForCoder).viewDidLoad, returned from unsubscribing")
-        }
- */
         if let tableView = self.tableView {
             tableView.separatorStyle = .singleLine
             let nib = UINib(nibName: RVTransactionTableViewCell.identifier, bundle: nil)
