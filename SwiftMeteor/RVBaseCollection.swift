@@ -28,19 +28,8 @@ class RVBaseCollection: AbstractCollection {
     init(collection: RVModelType) {
         self.collection = collection
         super.init(name: collection.rawValue)
-//        if let type = Meteor.collection(collection.rawValue) {
-//            print("Warning. In \(self.classForCoder).init Collection of type: \(collection.rawValue) already subscribed, yet initiating a new potential subscription \(type)")
-//        }
     }
-    /*
-    func findRecord(id: String) -> RVBaseModel? {
-        let elements = self.elements
-        if let index = elements.index(where: {element in return element._id == id}) {
-            return elements[index]
-        }
-        return nil
-    }
- */
+
     func populate(id: String, fields: NSDictionary) -> RVBaseModel { return RVBaseModel(id: id, fields: fields) }
     func addListener(name: String) {
         if let _ = listeners.index(where: {notification in return notification == name}) {
@@ -131,14 +120,16 @@ extension RVBaseCollection {
         checkIfSubscribed(instanceType: "\(self.instanceType)")
         //print("In \(self.classForCoder).subscribe()")
         let (filters, projections) = self.query.query()
-        self.subscriptionID = Meteor.subscribe(collection.rawValue, params: [filters as AnyObject, projections as AnyObject])
+        self.subscriptionID = RVSwiftDDP.sharedInstance.subscribe(collectionName: collection.rawValue, params: [filters as AnyObject, projections as AnyObject])
+      //  self.subscriptionID = Meteor.subscribe(collection.rawValue, params: [filters as AnyObject, projections as AnyObject])
         return self.subscriptionID!
     }
     func subscribe(callback: @escaping()-> Void) -> String {
       //  print("In \(self.classForCoder).subscribe(callback: @escaping()-> Void")
         checkIfSubscribed(instanceType: "\(self.instanceType)")
         let (filters, projections) = self.query.query()
-        self.subscriptionID = Meteor.subscribe(collection.rawValue, params: [filters as AnyObject, projections as AnyObject], callback: callback)
+        self.subscriptionID = RVSwiftDDP.sharedInstance.subscribe(collectionName: collection.rawValue, params: [filters as AnyObject, projections as AnyObject], callback: callback)
+   //     self.subscriptionID = Meteor.subscribe(collection.rawValue, params: [filters as AnyObject, projections as AnyObject], callback: callback)
         return self.subscriptionID!
     }
 
@@ -154,7 +145,8 @@ extension RVBaseCollection {
       //  print("In \(self.classForCoder).subscribe(query: RVQuery)")
         self.query = query
         let (filters, projection) = query.query()
-        self.subscriptionID = Meteor.subscribe(collection.rawValue, params: [filters as AnyObject, projection as AnyObject])
+        self.subscriptionID = RVSwiftDDP.sharedInstance.subscribe(collectionName: collection.rawValue, params:  [filters as AnyObject, projection as AnyObject])
+      //  self.subscriptionID = Meteor.subscribe(collection.rawValue, params: [filters as AnyObject, projection as AnyObject])
         // print("---------- IN \(self.classForCoder).subscribe(query) with subscriptionId \(self.subscriptionID!)")
         return self.subscriptionID!
     }
@@ -173,27 +165,13 @@ extension RVBaseCollection {
       //  print("---------- IN \(self.classForCoder).subscribe(query....")
         self.query = query
         let (filters, projection) = query.query()
-        self.subscriptionID = Meteor.subscribe(collection.rawValue, params: [filters as AnyObject, projection as AnyObject], callback: callback)
+        self.subscriptionID = RVSwiftDDP.sharedInstance.subscribe(collectionName: collection.rawValue, params: [filters as AnyObject, projection as AnyObject], callback: callback)
+   //     self.subscriptionID = Meteor.subscribe(collection.rawValue, params: [filters as AnyObject, projection as AnyObject], callback: callback)
       //  print("---------- IN \(self.classForCoder).subscribe(query, callback) with subscriptionId \(self.subscriptionID!)")
         return self.subscriptionID!
     }
     
     
-    /**
-     Sends an unsubscribe request to the server. Unsubscibes to all subscriptions with the provided name.
-     - parameter name:       The name of the subscription.
-     
-     */
-    /*
-    func unsubscribeAll(callback: @escaping () -> Void) -> [String] {
-        self.subscriptionID = nil
-      //  print("In \(self.classForCoder).unsubscribeAll")
-        return Meteor.unsubscribe(collection.rawValue) {
-            NotificationCenter.default.post(name: self.unsubscribeNotificationName, object: nil, userInfo: [RVBaseCollection.collectionNameKey: self.collection])
-            callback()
-        }
-    }
- */
     
     /**
      Sends an unsubscribe request to the server using a subscription id. This allows fine-grained control of subscriptions. For example, you can unsubscribe to specific combinations of subscriptions and subscription parameters.
@@ -203,6 +181,8 @@ extension RVBaseCollection {
      //   print("In \(self.classForCoder).unsubscribeSelf with subscriptionID: \(self.subscriptionID ?? " no subscriptionId")")
         if let id = self.subscriptionID {
             self.subscriptionID = nil
+            RVSwiftDDP.sharedInstance.unsubscribe(id: id, callback: completionHandler)
+            /*
             Meteor.unsubscribe(withId: id, callback: {
                print("In \(self.classForCoder).unsubscribeSelf subscriptionId \(id) had ID and returned from unsubscribing")
                 DispatchQueue.main.async {
@@ -210,6 +190,7 @@ extension RVBaseCollection {
                 }
                 
             })
+ */
         } else {
             completionHandler()
         }

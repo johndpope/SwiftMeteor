@@ -58,7 +58,7 @@ class RVSwiftDDP: NSObject {
         }
         return nil
     }
-    func subscribe(subscription: RVBaseCollectionSubscription8, params: [AnyObject], callback: @escaping () -> Void ) {
+    func subscribe(subscription: RVBaseCollectionSubscription8, params: [AnyObject], callback: @escaping () -> Void ) -> Void {
         if let id = subscription.subscriptionID {
             print("In \(self.classForCoder).subscribe attempting to subscribe when already subscribed. id: \(id)")
             Meteor.unsubscribe(withId: id)
@@ -66,6 +66,15 @@ class RVSwiftDDP: NSObject {
         subscription.subscriptionID = Meteor.subscribe(subscription.modelType.rawValue, params: params) {
             DispatchQueue.main.async {callback()}
         }
+        //return subscription.subscriptionID!
+    }
+    func subscribe(collectionName: String, params: [AnyObject], callback: @escaping () -> Void ) -> String {
+        return Meteor.subscribe(collectionName, params: params) {
+            DispatchQueue.main.async {callback()}
+        }
+    }
+    func subscribe(collectionName: String, params: [AnyObject]) -> String {
+        return Meteor.subscribe(collectionName, params: params)
     }
     func unsubscribe(id: String?, callback: @escaping () -> Void) {
         if let id = id {
