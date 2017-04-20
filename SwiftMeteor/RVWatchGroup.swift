@@ -7,7 +7,7 @@
 //
 
 import Foundation
-import SwiftDDP
+
 
 class RVWatchGroup: RVInterest {
     override class func collectionType() -> RVModelType { return RVModelType.watchgroup }

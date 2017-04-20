@@ -7,7 +7,7 @@
 //
 
 import Foundation
-import SwiftDDP
+
 class RVGroup: RVInterest {
     override class func collectionType() -> RVModelType { return RVModelType.Group }
     override class var insertMethod: RVMeteorMethods { get { return RVMeteorMethods.GroupCreate } }
@@ -66,10 +66,14 @@ extension RVGroup {
         //let (tdirties, _) = createTransaction(title: "").returnDirtiesAndUnsets()
         if dirties.count <= 0 {print("In \(self.classForCoder).create, dirtiess count is erroneously zero")}
         //print("DIrties = \(dirties)")
-        Meteor.call(RVMeteorMethods.GroupRoot.rawValue, params: [dirties]) { (result, error) in
+        RVSwiftDDP.sharedInstance.MeteorCall(method: RVMeteorMethods.GroupRoot, params: [dirties]) { (result, error ) in
+            
+        //}
+        //Meteor.call(RVMeteorMethods.GroupRoot.rawValue, params: [dirties]) { (result, error) in
             DispatchQueue.main.async {
-                if let error = error {
-                    let rvError = RVError(message: "In \(self.classForCoder).createRootGroup ", sourceError: error, lineNumber: #line, fileName: "")
+                if let rvError = error {
+                    rvError.append(message: "In \(self.classForCoder).createRootGroup ")
+                   // let rvError = RVError(message: "In \(self.classForCoder).createRootGroup ", sourceError: error, lineNumber: #line, fileName: "")
                     callback(nil, rvError)
                     return
                 } else if let fields = result as? [String: AnyObject]  {

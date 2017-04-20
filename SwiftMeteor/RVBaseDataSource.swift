@@ -7,7 +7,6 @@
 //
 
 import UIKit
-import SwiftDDP
 
 protocol RVDatasourceDelegate: class {
     func exceededMaxArrayLengthWhileInFilterMode() -> Void
@@ -110,7 +109,7 @@ class RVBaseDataSource: NSObject {
         //        query.sortOrder = .descending
         //        query.sortTerm = .createdAt
         query.addSort(field: .createdAt, order: .descending)
-        query.addAnd(term: .createdAt, value: EJSON.convertToEJSONDate(Date()) as AnyObject, comparison: .lte)
+        query.addAnd(term: .createdAt, value: RVEJSON.convertToEJSONDate(Date()) as AnyObject, comparison: .lte)
 
     
        // query.addOr(term: .owner, value: "Goober" as AnyObject, comparison: .eq)
@@ -145,7 +144,7 @@ class RVBaseDataSource: NSObject {
                         case .createdAt:
                             if let candidateCreatedAt = candidate.createdAt {
                                 if let queryTerm = query.findAndTerm(term: sort.field) {
-                                    queryTerm.value = EJSON.convertToEJSONDate(candidateCreatedAt) as AnyObject
+                                    queryTerm.value = RVEJSON.convertToEJSONDate(candidateCreatedAt) as AnyObject
                                 }
                             }
                         case .commentLowercase:
@@ -186,7 +185,7 @@ class RVBaseDataSource: NSObject {
                         case .createdAt:
 
                                 if let queryTerm = query.findAndTerm(term: sort.field) {
-                                    queryTerm.value = EJSON.convertToEJSONDate(query.decadeAgo) as AnyObject
+                                    queryTerm.value = RVEJSON.convertToEJSONDate(query.decadeAgo) as AnyObject
                                 }
                         case .handleLowercase, .title, .fullName, .commentLowercase:
 
@@ -236,7 +235,7 @@ class RVBaseDataSource: NSObject {
                             case .createdAt:
                                 if let candidateCreatedAt = candidate.createdAt {
                                     if let queryTerm = query.findAndTerm(term: sort.field) {
-                                        queryTerm.value = EJSON.convertToEJSONDate(candidateCreatedAt) as AnyObject
+                                        queryTerm.value = RVEJSON.convertToEJSONDate(candidateCreatedAt) as AnyObject
                                     }
                                 }
                             case .commentLowercase:
@@ -423,7 +422,7 @@ class RVBaseDataSource: NSObject {
                                 case .createdAt:
                                     if let candidateCreatedAt = candidate.createdAt {
                                         if let queryTerm = query.findAndTerm(term: sort.field) {
-                                            queryTerm.value = EJSON.convertToEJSONDate(candidateCreatedAt) as AnyObject as AnyObject
+                                            queryTerm.value = RVEJSON.convertToEJSONDate(candidateCreatedAt) as AnyObject as AnyObject
                                         }
                                     }
                                 case .commentLowercase, .comment:

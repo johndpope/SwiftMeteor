@@ -7,7 +7,7 @@
 //
 
 import Foundation
-import SwiftDDP
+
 /*
 class  RVBaseModel2: MeteorDocument {
     var collection: RVModelType

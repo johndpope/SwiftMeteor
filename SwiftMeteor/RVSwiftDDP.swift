@@ -221,12 +221,14 @@ class RVSwiftDDP: NSObject {
     }
     func MeteorCall(method: RVMeteorMethods, params: [Any]?, callback: @escaping(_ any: Any?, _ error: RVError?) -> Void ) {
         Meteor.call(method.rawValue, params: params) { (any: Any? , error: DDPError?) in
-            if let error = error {
-                let rvError = RVError(message: "In \(self.classForCoder).MeteorCall", sourceError: error, lineNumber: #line, fileName: "")
-                callback(nil , rvError)
-                return
-            } else {
-                callback(any, nil)
+            DispatchQueue.main.async {
+                if let error = error {
+                    let rvError = RVError(message: "In \(self.classForCoder).MeteorCall", sourceError: error, lineNumber: #line, fileName: "")
+                    callback(nil , rvError)
+                    return
+                } else {
+                    callback(any, nil)
+                }
             }
         }
     }

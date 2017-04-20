@@ -7,7 +7,7 @@
 //
 
 import Foundation
-import SwiftDDP
+
 
 class RVMeteorUser {
     private var _userId: String? = nil
@@ -19,9 +19,13 @@ class RVMeteorUser {
         if let id = self._userId {
             callback(id, nil)
         } else {
-            Meteor.call(RVMeteorMethods.GetMeteorUserId.rawValue, params: nil, callback: { (result, error: DDPError?) in
-                if let error = error {
-                    let rvError = RVError(message: "In RVUser.userId got Meteor Error", sourceError: error)
+            RVSwiftDDP.sharedInstance.MeteorCall(method: RVMeteorMethods.GetMeteorUserId, params: nil, callback: { (result, error) in
+                
+            
+            // Meteor.call(RVMeteorMethods.GetMeteorUserId.rawValue, params: nil, callback: { (result, error: DDPError?) in
+                if let rvError = error {
+                    rvError.append(message: "In RVUser.userId got Meteor Error")
+                //    let rvError = RVError(message: "In RVUser.userId got Meteor Error", sourceError: error)
                     callback(nil, rvError)
                     return
                 } else if let result = result as? [String : String] {

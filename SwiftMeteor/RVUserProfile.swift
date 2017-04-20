@@ -7,7 +7,7 @@
 //
 
 import UIKit
-import SwiftDDP
+
 class RVUserProfile: RVInterest {
     override class func collectionType() -> RVModelType { return RVModelType.userProfile }
     override class var insertMethod: RVMeteorMethods { get { return RVMeteorMethods.userProfileCreate } }
@@ -120,13 +120,13 @@ class RVUserProfile: RVInterest {
     var lastLogin: Date? {
         get {
             if let dateDictionary = getDictionary(key: .lastLogin) as? [String : Double] {
-                return EJSON.convertToNSDate(dateDictionary as NSDictionary)
+                return RVEJSON.convertToNSDate(dateDictionary as NSDictionary)
             }
             return nil
         }
         set {
             if let date = newValue {
-                let dateDictionary: [String: Double] = EJSON.convertToEJSONDate(date)
+                let dateDictionary: [String: Double] = RVEJSON.convertToEJSONDate(date)
                 updateDictionary(key: .updatedAt, dictionary: dateDictionary as [String : AnyObject]?, setDirties: true)
             } else {
                 updateDictionary(key: .updatedAt, dictionary: nil, setDirties: true)
@@ -221,10 +221,13 @@ class RVUserProfile: RVInterest {
             callback(nil, error)
             return
         } else {
-            Meteor.call(RVMeteorMethods.userProfileFind.rawValue, params: [id], callback: { (result, error) in
+            RVSwiftDDP.sharedInstance.MeteorCall(method: RVMeteorMethods.userProfileFind, params: [id], callback: { (result, error) in
+
+//            Meteor.call(RVMeteorMethods.userProfileFind.rawValue, params: [id], callback: { (result, error) in
                 if let error = error {
-                    let rvError = RVError(message: "In RVUserProfile.findById, got error", sourceError: error, lineNumber: #line, fileName: "")
-                    callback(nil, rvError)
+                   // let rvError = RVError(message: "In RVUserProfile.findById, got error", sourceError: error, lineNumber: #line, fileName: "")
+                    error.append(message: "In RVUserProfile.findById, got error")
+                    callback(nil, error)
                     return
                 } else if let fields = result as? [String : AnyObject] {
                     callback(RVUserProfile(fields: fields), nil)
@@ -242,10 +245,13 @@ class RVUserProfile: RVInterest {
         fields.removeValue(forKey: RVKeys.createdAt.rawValue)
         fields.removeValue(forKey: RVKeys.updatedAt.rawValue)
         profile.dirties = [String : AnyObject]()
-        Meteor.call(RVMeteorMethods.getOrCreateUserUserProfile.rawValue, params: [fields]) {(result, error: DDPError?) in
+        RVSwiftDDP.sharedInstance.MeteorCall(method: RVMeteorMethods.getOrCreateUserUserProfile, params: [fields]) { (result, error) in
+
+//        Meteor.call(RVMeteorMethods.getOrCreateUserUserProfile.rawValue, params: [fields]) {(result, error: DDPError?) in
             if let error = error {
-                let rvError = RVError(message: "In RVUserProfile.getOrCreateUsersUserProfile \(#line) got DDPError for id: \(profile.localId ?? "No localId")", sourceError: error)
-                callback(nil, rvError)
+                error.append(message:  "In RVUserProfile.getOrCreateUsersUserProfile \(#line) got DDPError for id: \(profile.localId ?? "No localId")")
+             //   let rvError = RVError(message: "In RVUserProfile.getOrCreateUsersUserProfile \(#line) got DDPError for id: \(profile.localId ?? "No localId")", sourceError: error)
+                callback(nil, error)
             } else if let fields = result as? [String: AnyObject] {
                 if let _ = fields["newProfile"] as? Bool {
                     print("In \(type(of: self)).getOrCreate, have a new Profile")
@@ -283,10 +289,13 @@ class RVUserProfile: RVInterest {
 }
 extension RVUserProfile {
     class func clearAll() {
-        Meteor.call("userProfile.clear", params: nil) { (result, error: DDPError?) in
+        RVSwiftDDP.sharedInstance.meteorCall(method: "userProfile.clear", params: [Any]()) { (result, error ) in
+
+//        Meteor.call("userProfile.clear", params: nil) { (result, error: DDPError?) in
             if let error = error {
-                let rvError = RVError(message: "In RVUserProfile.clearAll() got DDPError", sourceError: error, lineNumber: #line, fileName: "")
-                rvError.printError()
+                error.append(message: "In RVUserProfile.clearAll() got DDPError")
+            //    let rvError = RVError(message: "In RVUserProfile.clearAll() got DDPError", sourceError: error, lineNumber: #line, fileName: "")
+                error.printError()
             } else if let result = result {
                 print("In RVUserProfile.clearAll(), result is \(result)")
             } else {

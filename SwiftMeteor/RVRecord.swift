@@ -7,7 +7,6 @@
 //
 
 import Foundation
-import SwiftDDP
 
 class RVRecord {
     var value: AnyObject?

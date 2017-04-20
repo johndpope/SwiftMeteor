@@ -6,8 +6,7 @@
 //  Copyright © 2017 Neil Weintraut. All rights reserved.
 //
 
-import Foundation
-import SwiftDDP
+import UIKit
 
 class RVCoreInfo: NSObject {
     static let sharedInstance: RVCoreInfo = { return RVCoreInfo() }()
