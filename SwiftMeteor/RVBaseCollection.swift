@@ -166,23 +166,12 @@ extension RVBaseCollection {
         return self.subscriptionID!
     }
     
-    
-
-    /**
-     Sends an unsubscribe request to the server using a subscription id. This allows fine-grained control of subscriptions. For example, you can unsubscribe to specific combinations of subscriptions and subscription parameters. If a callback is passed, the callback asynchronously
-     runs when the unsubscribe transaction is complete.
-     - parameter id: An id string returned from a subscription request
-     - parameter callback:   The closure to be executed when the method has been executed
-     */
-    func unsubscribe(id: String, callback: @escaping() -> Void ) {
-        self._active = false
-        RVSwiftDDP.sharedInstance.unsubscribe(subscriptionId: id , callback: callback)
-    }
     func unsubscribe() {
         if let _  = self.subscriptionID {
             self.queue.cancelAllOperations()
             self.subscriptionID = nil
             self._active = false
+            self.ignore = true
             if let id = self.subscriptionID {
                 RVSwiftDDP.sharedInstance.unsubscribe(id: id)
             }
@@ -190,13 +179,12 @@ extension RVBaseCollection {
     }
     
     func unsubscribe(callback: @escaping ()-> Void) -> Void {
-        print("In \(self.classForCoder).unsubscribe for modelType: \(self.collection.rawValue)  Suspect")
         if let id = self.subscriptionID {
             self.queue.cancelAllOperations()
-            print("In \(self.classForCoder).unsubscribe with id: \(id)  Suspect")
             if let id = self.subscriptionID {
                 self.subscriptionID = nil
                 self._active = false
+                self.ignore = true
                 callback()
                 RVSwiftDDP.sharedInstance.unsubscribe(subscriptionId: id, callback: {
                     print("In \(self.classForCoder).unsubscribe. Looking to do callback for \(id) but cauess crash ................")

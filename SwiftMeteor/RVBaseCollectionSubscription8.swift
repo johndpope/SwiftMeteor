@@ -27,19 +27,19 @@ class RVBaseCollectionSubscription8: NSObject, MeteorCollectionType, RVSubscript
     open var name:String { return modelType.rawValue }
     open let client = Meteor.client
     var isFront: Bool = false
-    var ignore: Bool = true {
-        didSet {
-            if ignore {
+    var _ignore: Bool = true
+    var ignore: Bool {
+        get { return RVSwiftDDP.sharedInstance.ignoreSubscriptions || _ignore }
+        set {
+            _ignore = newValue
+            if newValue {
                 NotificationCenter.default.addObserver(self, selector: #selector(RVBaseCollectionSubscription8.ignoreIncoming(notification:)), name: RVNotification.ignoreSubscription, object: nil)
             } else {
                 NotificationCenter.default.removeObserver(self , name: RVNotification.ignoreSubscription, object: nil)
             }
-            
         }
     }
-    func ignoreIncoming(notification: Notification) {
-        self.ignore = true
-    }
+    func ignoreIncoming(notification: Notification) { self.ignore = true }
     var showResponse: Bool = false
     var notificationName: Notification.Name { return Notification.Name("RVBaseaSubscriptionName.NEEDTOREPLACE") }
     var unsubscribeNotificationName: Notification.Name  { return Notification.Name("RVBaseaUnsubscribeName.NEEDTOREPLACE") }
@@ -80,9 +80,14 @@ class RVBaseCollectionSubscription8: NSObject, MeteorCollectionType, RVSubscript
     }
     func unsubscribe(subscription: RVBaseCollectionSubscription8, callback: @escaping () -> Void) {
         subscription._active        = false
+        subscription.ignore         = true
+        subscription.queue.cancelAllOperations()
         if let id = self.subscriptionID {
             subscription.subscriptionID = nil
-            RVSwiftDDP.sharedInstance.unsubscribe(subscriptionId: id , callback: callback)
+            callback()
+            RVSwiftDDP.sharedInstance.unsubscribe(subscriptionId: id, callback: {
+                callback()
+            })
             return
         } else {
             callback()
@@ -94,6 +99,7 @@ class RVBaseCollectionSubscription8: NSObject, MeteorCollectionType, RVSubscript
             RVSwiftDDP.sharedInstance.unsubscribe(id: self.subscriptionID)
             self.subscriptionID = nil
             self._active        = false
+            self.ignore         = true
         }
 
     }
@@ -102,6 +108,7 @@ class RVBaseCollectionSubscription8: NSObject, MeteorCollectionType, RVSubscript
     
     
     deinit {
+        NotificationCenter.default.removeObserver(self)
         if let existing = RVSwiftDDP.sharedInstance.removeSubscription(subscription: self) { existing.unsubscribe() }
     }
     
@@ -157,7 +164,10 @@ class RVBaseCollectionSubscription8: NSObject, MeteorCollectionType, RVSubscript
      - parameter cleared:                    Optional array of strings (field names to delete)
      */
     
-    open func documentWasChanged(_ collection:String, id:String, fields:NSDictionary?, cleared:[String]?) {}
+    open func documentWasChanged(_ collection:String, id:String, fields:NSDictionary?, cleared:[String]?) {
+        if isSubscriptionCancelled { return }
+        finishUp(collection: collection, id: id, fields: fields, cleared: cleared, eventType: .changed)
+    }
     
     /**
      Invoked when a document has been removed on the server.
@@ -166,11 +176,15 @@ class RVBaseCollectionSubscription8: NSObject, MeteorCollectionType, RVSubscript
      - parameter id:             the string unique id that identifies the document on the server
      */
     
-    open func documentWasRemoved(_ collection:String, id:String) {}
+    open func documentWasRemoved(_ collection:String, id:String) {
+        if isSubscriptionCancelled { return }
+        finishUp(collection: collection, id: id, fields: nil, cleared: nil, eventType: .removed)
+    }
     
     func finishUp(collection: String, id: String, fields: NSDictionary?, cleared: [String]?, eventType: RVEventType) {
+        
         if self.subscriptionID != nil {
-            if self.modelType.rawValue == collection {
+            if self.collection.rawValue == collection {
                 var models = [RVBaseModel]()
                 if cleared != nil {
                     print("In \(self.classForCoder).finishUp, clearedArray is not null..... not implemented")
