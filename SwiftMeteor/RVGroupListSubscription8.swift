@@ -15,7 +15,7 @@ class RVGroupListSubscription8: RVBaseCollectionSubscription {
     }
     override func populate(id: String, fields: NSDictionary) -> RVBaseModel {
         let group = RVGroup(id: id , fields: fields)
-        print("In \(self.instanceType).populate, have transaction \(group.createdAt!) TopParentId: \(String(describing: group.topParentId))")
+        print("In \(self.instanceType).populate, have Group \(group.createdAt!) parentId: \(String(describing: group.parentId))")
         return group
     }
 }

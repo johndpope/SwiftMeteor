@@ -66,21 +66,28 @@ class RVBaseCollectionSubscription8: NSObject, MeteorCollectionType, RVSubscript
         self.unsubscribe(subscription: self, callback: callback)
     }
     func unsubscribe(subscription: RVBaseCollectionSubscription8, callback: @escaping () -> Void) {
+        subscription._active        = false
         if let id = self.subscriptionID {
             subscription.subscriptionID = nil
-         //   subscription._active        = false
             RVSwiftDDP.sharedInstance.unsubscribe(subscriptionId: id , callback: callback)
             return
         } else {
-          //  subscription._active        = false
             callback()
         }
     }
-    fileprivate func unsubscribe() {
-        RVSwiftDDP.sharedInstance.unsubscribe(id: self.subscriptionID)
-        self.subscriptionID = nil
-       // self._active        = false
+    func unsubscribe() {
+        if let _ = self.subscriptionID {
+            self.queue.cancelAllOperations()
+            RVSwiftDDP.sharedInstance.unsubscribe(id: self.subscriptionID)
+            self.subscriptionID = nil
+            self._active        = false
+        }
+
     }
+    
+
+    
+    
     deinit {
         if let existing = RVSwiftDDP.sharedInstance.removeSubscription(subscription: self) { existing.unsubscribe() }
     }
@@ -97,12 +104,15 @@ class RVBaseCollectionSubscription8: NSObject, MeteorCollectionType, RVSubscript
     func subscribe(query: RVQuery, reference: RVBaseModel?, callback: @escaping() -> Void) -> Void {
         print("In \(self.classForCoder).subscribe need to implement")
         //   print("In \(self.classForCoder).subscribe ..........")
+        self.query = query
         if self.active { print("In \(self.classForCoder).subscribe, subscription was already active") }
-      //  self._active    = true
+        self._active    = true
         self.reference  = reference
         self.subscribe(query: query, callback: callback)
     }
     fileprivate func subscribe(query:RVQuery, callback: @escaping () -> Void) {
+        if self.active { print("In \(self.classForCoder).subscribe, subscription was already active") }
+        self._active    = true
         let (filters, projections) = self.query.query()
         RVSwiftDDP.sharedInstance.subscribe(subscription: self , params: [filters as AnyObject , projections as AnyObject ], callback: callback)
     }

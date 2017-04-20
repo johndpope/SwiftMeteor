@@ -63,6 +63,7 @@ class RVGroupListController8: RVBaseListController8  {
         group.title = text
         group.everywhere = true
         if let parentModel = self.parentModel {
+           // print("In \(self.classForCoder).createGroup, have parent. TYpe: \(parentModel.modelType.rawValue) ID is: \(String(describing: parentModel.localId))")
             group.setParent(parent: parentModel)
         } else {
             print("In \(self.classForCoder).createdGroup with title \(text), no parent model")

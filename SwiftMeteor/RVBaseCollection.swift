@@ -121,9 +121,6 @@ extension RVBaseCollection {
         }
     }
     func subscribe(query: RVQuery, reference: RVBaseModel?, callback: @escaping() -> Void) -> Void {
-        //   print("In \(self.classForCoder).subscribe ..........")
-        if self.active { print("In \(self.classForCoder).subscribe, subscription was already active") }
-        self._active    = true
         self.reference  = reference
         let _ = self.subscribe(query: query, callback: callback)
     }
@@ -140,6 +137,8 @@ extension RVBaseCollection {
         checkIfSubscribed(instanceType: "\(self.instanceType)")
       //  print("---------- IN \(self.classForCoder).subscribe(query....")
         self.query = query
+        if self.active { print("In \(self.classForCoder).subscribe, subscription was already active") }
+        self._active    = true
         let (filters, projection) = query.query()
         self.subscriptionID = RVSwiftDDP.sharedInstance.subscribe(collectionName: collection, params: [filters as AnyObject, projection as AnyObject], callback: callback)
       //  print("---------- IN \(self.classForCoder).subscribe(query, callback) with subscriptionId \(self.subscriptionID!)")
@@ -155,21 +154,43 @@ extension RVBaseCollection {
      - parameter callback:   The closure to be executed when the method has been executed
      */
     func unsubscribe(id: String, callback: @escaping() -> Void ) {
+        self._active = false
         RVSwiftDDP.sharedInstance.unsubscribe(subscriptionId: id , callback: callback)
     }
-    func unsubscribe(callback: @escaping ()-> Void) -> Void {
-        self.queue.cancelAllOperations()
-        print("In \(self.classForCoder).unsubscribe Suspect")
-        DispatchQueue.main.async {
+    func unsubscribe() {
+        if let _  = self.subscriptionID {
+            self.queue.cancelAllOperations()
+            self.subscriptionID = nil
+            self._active = false
             if let id = self.subscriptionID {
-                RVSwiftDDP.sharedInstance.unsubscribe(subscriptionId: id, callback: {
-                     self._active = false
-                    print("In \(self.classForCoder).unsubscribe. Looking to do callback but cauess crash ................")
-                    //callback()
-                })
+                RVSwiftDDP.sharedInstance.unsubscribe(id: id)
             }
-
         }
     }
+    
+    func unsubscribe(callback: @escaping ()-> Void) -> Void {
+        print("In \(self.classForCoder).unsubscribe for modelType: \(self.collection.rawValue)  Suspect")
+        if let id = self.subscriptionID {
+            self.queue.cancelAllOperations()
+            print("In \(self.classForCoder).unsubscribe with id: \(id)  Suspect")
+            if let id = self.subscriptionID {
+                self.subscriptionID = nil
+                self._active = false
+                callback()
+                RVSwiftDDP.sharedInstance.unsubscribe(subscriptionId: id, callback: {
+                    print("In \(self.classForCoder).unsubscribe. Looking to do callback for \(id) but cauess crash ................")
+                    //callback()
+                })
+                return
+            } else {
+                callback()
+                return
+            }
+        } else {
+            callback()
+        }
+
+    }
+ 
     
 }

@@ -368,7 +368,20 @@ extension RVBaseSLKViewController8 {
         
     }
     func reconnectedNotification(notification: Notification) {
-        print("In \(self.classForCoder).reconnnectedNotification #\(#line). Need to override ")
+        DispatchQueue.main.async {
+            print("IN \(self.classForCoder).reconnectedNotification, doing initialize()")
+            if self.doingSearch {
+                self.doSearchInner()
+            } else {
+                self.configuration.endSearch(mainAndTerms: self.andTerms, callback: { (error ) in
+                    if let error = error {
+                        error.append(message: "In \(self.instanceType).endSearch2, got error ")
+                        error.printError()
+                    }
+                })
+            }
+            
+        }
     }
     func stateDidChange(_ notification: Notification) {
        // print("In \(self.instanceType).stateDidChange")

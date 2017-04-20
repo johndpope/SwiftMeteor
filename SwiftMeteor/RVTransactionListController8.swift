@@ -29,22 +29,7 @@ class RVTransactionListController8: RVBaseListController8  {
         }
         self.endSearch()
     }
-    override func reconnectedNotification(notification: Notification) {
-        DispatchQueue.main.async {
-            print("IN \(self.classForCoder).reconnectedNotification, doing initialize()")
-            if self.doingSearch {
-                self.doSearchInner()
-            } else {
-                self.configuration.endSearch(mainAndTerms: self.andTerms, callback: { (error ) in
-                    if let error = error {
-                        error.append(message: "In \(self.instanceType).endSearch2, got error ")
-                        error.printError()
-                    }
-                })
-            }
-        
-        }
-    }
+
     override var instanceConfiguration: RVBaseConfiguration8 { return RVTransactionListConfiguration8(scrollView: dsScrollView) }
     override func viewDidLoad() {
 
