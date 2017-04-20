@@ -82,6 +82,19 @@ class RVSwiftDDP: NSObject {
             return
         } else { callback() }
     }
+    func meteorCall(method: String, params: [Any], callback: @escaping (Any?, RVError?) -> Void ) {
+        Meteor.call(method, params: params) { (result: Any?, error: DDPError?) in
+            DispatchQueue.main.async {
+                if let error = error {
+                    let rvError = RVError(message: "In \(self.classForCoder).meteorCall, got Meteor Error", sourceError: error , lineNumber: #line)
+                    callback(nil, rvError)
+                } else {
+                    callback(result, nil)
+                }
+            }
+        }
+    }
+
     func unsubscribe(id: String?) { if let id = id { Meteor.unsubscribe(withId: id) } }
     var disconnectedTimer: Timer = Timer.scheduledTimer(withTimeInterval: 4.0, repeats: true) { (timer) in
         UILabel.showMessage("Attempting to Connect", ofSize: 24.0, of: UIColor.candyGreen(), in: UIViewController.top().view, forDuration: 2.0)

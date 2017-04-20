@@ -59,7 +59,7 @@ class RVBaseCollection: AbstractCollection {
     }
     
     override public func documentWasAdded(_ collection: String, id: String, fields: NSDictionary?) {
-       print("\(self.classForCoder).documentWasAdded for collection: \(collection), id: \(id)")
+       print("\(self.instanceType).documentWasAdded for collection: \(collection), id: \(id)")
         if let fields = fields {
             let document = populate(id: id, fields: fields)
             RVTransactionBroadcast.shared.documentWasAdded(document: document)
@@ -95,7 +95,7 @@ class RVBaseCollection: AbstractCollection {
     }
 
     deinit {
-        print("In \(self.classForCoder).deinit. about to call unsubscribe")
+        print("In \(self.instanceType).deinit. about to call unsubscribe")
         self.unsubscribeSelf { }
     }
 }
@@ -121,7 +121,6 @@ extension RVBaseCollection {
         //print("In \(self.classForCoder).subscribe()")
         let (filters, projections) = self.query.query()
         self.subscriptionID = RVSwiftDDP.sharedInstance.subscribe(collectionName: collection.rawValue, params: [filters as AnyObject, projections as AnyObject])
-      //  self.subscriptionID = Meteor.subscribe(collection.rawValue, params: [filters as AnyObject, projections as AnyObject])
         return self.subscriptionID!
     }
     func subscribe(callback: @escaping()-> Void) -> String {
@@ -129,7 +128,6 @@ extension RVBaseCollection {
         checkIfSubscribed(instanceType: "\(self.instanceType)")
         let (filters, projections) = self.query.query()
         self.subscriptionID = RVSwiftDDP.sharedInstance.subscribe(collectionName: collection.rawValue, params: [filters as AnyObject, projections as AnyObject], callback: callback)
-   //     self.subscriptionID = Meteor.subscribe(collection.rawValue, params: [filters as AnyObject, projections as AnyObject], callback: callback)
         return self.subscriptionID!
     }
 
@@ -142,12 +140,9 @@ extension RVBaseCollection {
      */
     func subscribe(query: RVQuery) -> String {
         checkIfSubscribed(instanceType: "\(self.instanceType)")
-      //  print("In \(self.classForCoder).subscribe(query: RVQuery)")
         self.query = query
         let (filters, projection) = query.query()
         self.subscriptionID = RVSwiftDDP.sharedInstance.subscribe(collectionName: collection.rawValue, params:  [filters as AnyObject, projection as AnyObject])
-      //  self.subscriptionID = Meteor.subscribe(collection.rawValue, params: [filters as AnyObject, projection as AnyObject])
-        // print("---------- IN \(self.classForCoder).subscribe(query) with subscriptionId \(self.subscriptionID!)")
         return self.subscriptionID!
     }
     
@@ -166,7 +161,6 @@ extension RVBaseCollection {
         self.query = query
         let (filters, projection) = query.query()
         self.subscriptionID = RVSwiftDDP.sharedInstance.subscribe(collectionName: collection.rawValue, params: [filters as AnyObject, projection as AnyObject], callback: callback)
-   //     self.subscriptionID = Meteor.subscribe(collection.rawValue, params: [filters as AnyObject, projection as AnyObject], callback: callback)
       //  print("---------- IN \(self.classForCoder).subscribe(query, callback) with subscriptionId \(self.subscriptionID!)")
         return self.subscriptionID!
     }
@@ -182,15 +176,7 @@ extension RVBaseCollection {
         if let id = self.subscriptionID {
             self.subscriptionID = nil
             RVSwiftDDP.sharedInstance.unsubscribe(id: id, callback: completionHandler)
-            /*
-            Meteor.unsubscribe(withId: id, callback: {
-               print("In \(self.classForCoder).unsubscribeSelf subscriptionId \(id) had ID and returned from unsubscribing")
-                DispatchQueue.main.async {
-                    completionHandler()
-                }
-                
-            })
- */
+
         } else {
             completionHandler()
         }
@@ -202,7 +188,7 @@ extension RVBaseCollection {
      - parameter callback:   The closure to be executed when the method has been executed
      */
     func unsubscribe(id: String, callback: @escaping() -> Void ) {
-        return Meteor.unsubscribe(withId: id, callback: callback)
+        RVSwiftDDP.sharedInstance.unsubscribe(id: id , callback: callback)
     }
     
 }

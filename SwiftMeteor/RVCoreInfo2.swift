@@ -92,7 +92,6 @@ class RVCoreInfo2 {
             for (key, _) in RVSwiftDDP.sharedInstance.subscriptionsCancelled {
                 let model = key
                 RVSwiftDDP.sharedInstance.subscriptionsCancelled[model] = false
-              //  Meteor.unsubscribe(model.rawValue, callback: { RVSwiftDDP.sharedInstance.subscriptionsCancelled[model] = false})
             }
             DispatchQueue.main.async {
                 NotificationCenter.default.post(name: RVBaseCoreInfo8.reconnectedNotification, object: self , userInfo: nil)
