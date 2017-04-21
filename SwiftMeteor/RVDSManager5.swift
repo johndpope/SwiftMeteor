@@ -53,7 +53,8 @@ class RVDSManager5<S: NSObject>: RVBaseDatasource4<RVBaseDatasource4<S>> {
                 print("In \(self.classForCoder).receiveSubscription have payload \(payload.toString())")
                 if let subscription = self.subscription {
                     if subscription.identifier == payload.subscription.identifier {
-                        //print("In \(self.classForCoder).receiveSubscription subscriptions match")
+                        print("In \(self.classForCoder).receiveSubscription subscriptions match")
+                        
                         let datasourceResults = self.createDatasourceFromModels(models: payload.models)
                          //   let datasource = self.createDatasourceFromModel(model: model)
                             //let operation = RVSubcriptionResponseOperation<RVBaseDatasource4<S>>(datasource: self, subscription: subscription, incomingModels: [RVBaseDatasource4<S>](), callback: { (models , error) in })

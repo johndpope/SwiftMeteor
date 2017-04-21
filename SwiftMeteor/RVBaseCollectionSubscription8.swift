@@ -114,7 +114,10 @@ class RVBaseCollectionSubscription8: NSObject, MeteorCollectionType, RVSubscript
     
     deinit {
         NotificationCenter.default.removeObserver(self)
-        if let id = self.subscriptionID { RVSwiftDDP.sharedInstance.unsubscribe(id: id) }
+        if let id = self.subscriptionID {
+            let _ = Meteor.collections.removeValue(forKey: self.modelType.rawValue)
+            RVSwiftDDP.sharedInstance.unsubscribe(id: id)
+        }
         //if let existing = RVSwiftDDP.sharedInstance.removeSubscription(subscription: self) { existing.unsubscribe() }
     }
     
