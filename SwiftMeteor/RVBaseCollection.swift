@@ -48,9 +48,6 @@ class RVBaseCollection: AbstractCollection {
     func ignoreIncoming(notification: Notification) { self.ignore = true }
     func populate(id: String, fields: NSDictionary) -> RVBaseModel { return RVBaseModel(id: id, fields: fields) }
     var isSubscriptionCancelled: Bool {
-        if let test = RVSwiftDDP.sharedInstance.subscriptionsCancelled[self.collection] {
-            return test
-        }
         return false
     }
     public typealias basicCallback = () -> Void

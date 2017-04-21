@@ -48,9 +48,6 @@ class RVBaseCollectionSubscription8: NSObject, MeteorCollectionType, RVSubscript
     func ignoreIncoming(notification: Notification) { self.ignore = true }
     func populate(id: String, fields: NSDictionary) -> RVBaseModel { return RVBaseModel(id: id, fields: fields) }
     var isSubscriptionCancelled: Bool {
-        if let test = RVSwiftDDP.sharedInstance.subscriptionsCancelled[self.collection] {
-            return test
-        }
         return false
     }
     // baseCallback
@@ -131,11 +128,7 @@ class RVBaseCollectionSubscription8: NSObject, MeteorCollectionType, RVSubscript
      - parameter callback:   The closure to be executed when the server sends a 'ready' message.
      */
     func subscribe(query: RVQuery, reference: RVBaseModel?, callback: @escaping() -> Void) -> Void {
-        print("In \(self.classForCoder).subscribe need to implement")
-        //   print("In \(self.classForCoder).subscribe ..........")
         self.query = query
-        if self.active { print("In \(self.classForCoder).subscribe, subscription was already active") }
-        self._active    = true
         self.reference  = reference
         self.subscribe(query: query, callback: callback)
     }
