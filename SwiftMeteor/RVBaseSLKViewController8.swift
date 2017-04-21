@@ -43,11 +43,11 @@ class RVBaseSLKViewController8: SLKTextViewController {
     var andTerms = [RVQueryItem]()
     // SLK Stuff
     var pipWindow: UIWindow? // for SLK
-    var users: Array = ["Allen", "Anna", "Alicia", "Arnold", "Armando", "Antonio", "Brad", "Catalaya", "Christoph", "Emerson", "Eric", "Everyone", "Steve"]
+    var users: Array = ["Allen", "Anna", "Alicia", "Arnold", "Armando", "Antonio", "Brad", "Catalaya", "Christoph", "Emerson", "Eric", "Everyone", "Steve"] 
     var commands: Array = ["msg", "call", "text", "skype", "kick", "invite"]
     var channels: Array = ["General", "Random", "iOS", "Bugs", "Sports", "Android", "UI", "SSB"]
     var emojis: Array = ["-1", "m", "man", "machine", "block-a", "block-b", "bowtie", "boar", "boat", "book", "bookmark", "neckbeard", "metal", "fu", "feelsgood"]
-    var setupSLKDatasource: Bool = true
+    var setupSLKDatasource: Bool = false
     var searchResult: [String]? // for SLKTextViewController, not sure why
     var _configuration: RVBaseConfiguration8? = nil
     var configuration: RVBaseConfiguration8 {
@@ -95,7 +95,23 @@ class RVBaseSLKViewController8: SLKTextViewController {
         RVStateDispatcher8.shared.changeState(newState: RVLeftMenuAppState8())
 //        RVStateDispatcher4.shared.changeState(newState: RVBaseAppState4(appState: .leftMenu))
     }
-    
+    @IBAction func AllUnreadSegementedControlChanged(_ sender: UISegmentedControl) {
+        let index = sender.selectedSegmentIndex
+        if index == 0 {
+            print("All selected")
+            self.andTerms = [RVQueryItem]()
+        } else {
+            print("Unread Only selected")
+            self.andTerms = [RVQueryItem(term: .readState, value: RVReadState.unread.rawValue as AnyObject, comparison: .eq)]
+        }
+        if let controller = self.searchController {
+            if controller.isActive {
+                self.doFilterSearch(searchController: searchController)
+                return
+            }
+        }
+        self.endSearch()
+    }
     override func viewDidLoad() {
         super.viewDidLoad()
         if let constraint = TopOuterViewTopConstraint { self.topOuterViewOriginalTopConstraint = constraint.constant }
@@ -713,6 +729,8 @@ extension RVBaseSLKViewController8 {
     override func didPressRightButton(_ sender: Any!) {
         
         if !setupSLKDatasource {
+            // This little trick validates any pending auto-correction or auto-spelling just after hitting the 'Send' button
+            self.textView.refreshFirstResponder()
             super.didPressRightButton(sender)
             return
         }

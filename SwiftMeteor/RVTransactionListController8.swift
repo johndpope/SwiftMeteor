@@ -12,24 +12,6 @@ class RVTransactionListController8: RVBaseListController8  {
     static let identifier = "RVTransactionListController8"
     
 
-    @IBAction func AllUnreadSegementedControlChanged(_ sender: UISegmentedControl) {
-        let index = sender.selectedSegmentIndex
-        if index == 0 {
-            print("All selected")
-            self.andTerms = [RVQueryItem]()
-        } else {
-            print("Unread Only selected")
-            self.andTerms = [RVQueryItem(term: .readState, value: RVReadState.unread.rawValue as AnyObject, comparison: .eq)]
-        }
-        if let controller = self.searchController {
-            if controller.isActive {
-                self.doFilterSearch(searchController: searchController)
-                return
-            }
-        }
-        self.endSearch()
-    }
-
     override var instanceConfiguration: RVBaseConfiguration8 { return RVTransactionListConfiguration8(scrollView: dsScrollView) }
     override func viewDidLoad() {
         self.queue.addOperation(RVControllerOperation(viewController: self , operation: {

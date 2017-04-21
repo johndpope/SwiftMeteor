@@ -32,12 +32,25 @@ class RVDSManagerDynamicTransactionList8<S: NSObject>: RVDSManager8<S> {
         return datasource
     }
     /* Query for Rows nested in a Section-Based list */
-    override var queryForDatasourceInstance: (RVQuery, RVError?) {
-        print("In \(self.classForCoder).queryForDadtasourceInstance")
+    override func queryForDatasourceInstance(model: S?) -> (RVQuery, RVError?) {
         let (query, error) = RVTransaction.baseQuery
-        query.addSort(field: .createdAt, order: .descending)
-        query.addAnd(term: .createdAt, value: Date() as AnyObject, comparison: .lte)
-        return (query, error)
+        if let error = error {
+            return (query, error)
+        } else {
+            var error: RVError? = nil
+            query.addSort(field: .createdAt, order: .descending)
+            query.addAnd(term: .createdAt, value: Date() as AnyObject, comparison: .lte)
+            if let model = model as? RVBaseModel {
+                if let _ = model.localId {
+                } else {
+                    error = RVError(message: "In \(self.classForCoder).queryForDatasourceInstance, no sectionModel")
+                }
+            } else {
+                error = RVError(message: "In \(self.classForCoder).queryForDatasourceInstance, no sectionModel")
+            }
+            return (query, error)
+        }
+
     }
         
 }

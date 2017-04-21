@@ -34,8 +34,8 @@ class RVDSManager5Transaction<S: NSObject>: RVDSManager5<S> {
         return datasource
     }
     /* Query for Rows nested in a Section-Based list */
-    override var queryForDatasourceInstance: (RVQuery, RVError?) {
-        print("In \(self.classForCoder).queryForDadtasourceInstance")
+    override func queryForDatasourceInstance(model: S?) -> (RVQuery, RVError?) {
+        print("In \(self.classForCoder).queryForDatasourceInstance")
         let (query, error) = RVTransaction.baseQuery
         query.addSort(field: .createdAt, order: .descending)
         query.addAnd(term: .createdAt, value: Date() as AnyObject, comparison: .lte)

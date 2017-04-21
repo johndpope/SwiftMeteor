@@ -32,12 +32,26 @@ class RVDSManagerDynamicGroupList8<S: NSObject>: RVDSManager8<S> {
         return datasource
     }
     /* Query for Rows nested in a Section-Based list */
-    override var queryForDatasourceInstance: (RVQuery, RVError?) {
-        print("In \(self.classForCoder).queryForDadtasourceInstance")
+    override func queryForDatasourceInstance(model: S?) -> (RVQuery, RVError?) {
+        //print("In \(self.classForCoder).queryForDatasourceInstance")
         let (query, error) = RVGroup.baseQuery
-        query.addSort(field: .createdAt, order: .descending)
-        query.addAnd(term: .createdAt, value: Date() as AnyObject, comparison: .lte)
-        return (query, error)
+        if let error = error {
+            return (query, error)
+        } else if let model = model as? RVBaseModel {
+            if let id = model.localId {
+                query.addSort(field: .createdAt, order: .descending)
+                query.addAnd(term: .createdAt, value: Date() as AnyObject, comparison: .lte)
+                query.addAnd(term: .parentId, value: id as AnyObject, comparison: .eq)
+                return (query, error)
+            } else {
+                let error = RVError(message: "In \(self.classForCoder).queryForDatasourceInstance, no sectionModel Id")
+                return (query, error)
+            }
+        } else {
+            let error = RVError(message: "In \(self.classForCoder).queryForDatasourceInstance, no sectionModel")
+            return (query, error)
+        }
+
     }
     
 }

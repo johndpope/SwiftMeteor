@@ -104,7 +104,7 @@ class RVDSManager5<S: NSObject>: RVBaseDatasource4<RVBaseDatasource4<S>> {
         print("In \(self.classForCoder).sectionModel. Needs to be overridden")
         return RVBaseDatasource4<S>(manager: self, datasourceType: datasourceType, maxSize: maxSize)
     }
-    var queryForDatasourceInstance: (RVQuery, RVError?) {
+    func queryForDatasourceInstance(model: S?) -> (RVQuery, RVError?) {
         print("In \(self.classForCoder).queryForDatasourceInstance, needs to be overridden")
         return (RVQuery(), RVError(message: "In \(self.classForCoder).queryForDatasourceInstance, needs to be overridden"))
     }
@@ -205,7 +205,10 @@ extension RVDSManager5 {
                 let operation = RVManagerExpandCollapseOperation5<S>( manager: self, operationType: .toggle, datasources: [datasource], callback: callback, all: false)
                 queue.addOperation(operation)
             } else {
-                let (query, error) = self.queryForDatasourceInstance
+                let (query, error) = self.queryForDatasourceInstance(model: datasource.sectionModel)
+                var groupTitle = "No title"
+                if let model = datasource.sectionModel as? RVBaseModel { groupTitle = model.title! }
+                //print("In \(self.classForCoder).toggle, datasource is \(datasource) \(groupTitle)")
                 if let error = error {
                     error.append(message: "In \(self.classForCoder).toggle, got error getting query")
                     callback([S](), error)
