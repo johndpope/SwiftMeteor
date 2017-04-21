@@ -31,11 +31,11 @@ class RVBaseCollection: AbstractCollection {
     var showResponse: Bool = false
     var front: Bool = false
     var isFront: Bool { return front }
+    var identifier: TimeInterval = Date().timeIntervalSince1970
+    var reference: RVBaseModel? = nil
     var _ignore: Bool = true
     var ignore: Bool {
-        get {
-           return RVSwiftDDP.sharedInstance.ignoreSubscriptions || _ignore 
-        }
+        get { return RVSwiftDDP.sharedInstance.ignoreSubscriptions || _ignore }
         set {
             _ignore = newValue
             if newValue {
@@ -45,47 +45,26 @@ class RVBaseCollection: AbstractCollection {
             }
         }
     }
-    
-    func ignoreIncoming(notification: Notification) {
-        self.ignore = true
+    func ignoreIncoming(notification: Notification) { self.ignore = true }
+    func populate(id: String, fields: NSDictionary) -> RVBaseModel { return RVBaseModel(id: id, fields: fields) }
+    var isSubscriptionCancelled: Bool {
+        if let test = RVSwiftDDP.sharedInstance.subscriptionsCancelled[self.collection] {
+            return test
+        }
+        return false
     }
-    
-    var identifier: TimeInterval = Date().timeIntervalSince1970
-    var reference: RVBaseModel? = nil
-    
     public typealias basicCallback = () -> Void
+    
+    
+    
+    
     init(collection: RVModelType) {
         self.collection = collection
         super.init(name: collection.rawValue)
     }
 
-    func populate(id: String, fields: NSDictionary) -> RVBaseModel { return RVBaseModel(id: id, fields: fields) }
-    func addListener(name: String) {
-        if let _ = listeners.index(where: {notification in return notification == name}) {
-            // do nothing
-        } else {
-            var newListeners = self.listeners.map { $0 }
-            newListeners.append(name)
-            self.listeners = newListeners
-        }
-    }
-    func removeListener(name: String) {
-        var newListeners = self.listeners.map { $0 }
-      //  newListeners.append(name)
-       // self.listeners = newListeners
-        if let index = newListeners.index(where: {notification in return notification == name}) {
-            newListeners.remove(at: index)
-            self.listeners = newListeners
-        } else {
-            // do nothing
-        }
-    }
-    func publish(eventType: eventType, model: RVBaseModel?, id: String) {
-        let listeners = self.listeners
-        for listener in listeners {
-            NotificationCenter.default.post(name: Notification.Name(rawValue: listener), object: model, userInfo: ["eventType": eventType.rawValue, "id": id])
-        }
-    }
+
+
     
     override public func documentWasAdded(_ collection: String, id: String, fields: NSDictionary?) {
        print("\(self.instanceType).documentWasAdded for collection: \(collection), id: \(id)")
@@ -124,9 +103,39 @@ class RVBaseCollection: AbstractCollection {
     }
 
     deinit {
-        print("In \(self.instanceType).deinit. about to call unsubscribe")
         NotificationCenter.default.removeObserver(self)
         if let id = self.subscriptionID { RVSwiftDDP.sharedInstance.unsubscribe(id: id) }
+    }
+}
+extension RVBaseCollection {
+    
+}
+extension RVBaseCollection {
+    func addListener(name: String) {
+        if let _ = listeners.index(where: {notification in return notification == name}) {
+            // do nothing
+        } else {
+            var newListeners = self.listeners.map { $0 }
+            newListeners.append(name)
+            self.listeners = newListeners
+        }
+    }
+    func removeListener(name: String) {
+        var newListeners = self.listeners.map { $0 }
+        //  newListeners.append(name)
+        // self.listeners = newListeners
+        if let index = newListeners.index(where: {notification in return notification == name}) {
+            newListeners.remove(at: index)
+            self.listeners = newListeners
+        } else {
+            // do nothing
+        }
+    }
+    func publish(eventType: eventType, model: RVBaseModel?, id: String) {
+        let listeners = self.listeners
+        for listener in listeners {
+            NotificationCenter.default.post(name: Notification.Name(rawValue: listener), object: model, userInfo: ["eventType": eventType.rawValue, "id": id])
+        }
     }
 }
 extension RVBaseCollection {

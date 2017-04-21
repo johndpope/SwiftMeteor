@@ -21,12 +21,7 @@ class RVBaseCollectionSubscription: RVBaseCollection, RVSubscription {
         // print("In \(self.instanceType).populate, have transaction \(transaction.createdAt!) TopParentId: \(transaction.topParentId)")
         return transaction
     }
-    var isSubscriptionCancelled: Bool {
-        if let test = RVSwiftDDP.sharedInstance.subscriptionsCancelled[self.collection] {
-            return test
-        }
-        return false
-    }
+
     override public func documentWasAdded(_ collection: String, id: String, fields: NSDictionary?) {
         if isSubscriptionCancelled {
             print("In \(self.classForCoder).documentWasAdded, subscriptionCancelled")

@@ -15,18 +15,24 @@ enum RVSubscriptionEventType: String {
     case removed    = "removed"
 }
 class RVBaseCollectionSubscription8: NSObject, MeteorCollectionType, RVSubscription {
-
+    var notificationName: Notification.Name { return Notification.Name("RVBaseaSubscriptionName.NEEDTOREPLACE") }
+    var unsubscribeNotificationName: Notification.Name  { return Notification.Name("RVBaseaUnsubscribeName.NEEDTOREPLACE") }
+    static let collectionNameKey = "CollectionNameKey"
+    var collection: RVModelType { return self.modelType }
+    var query: RVQuery = RVQuery()
+    var instanceType: String { get { return String(describing: type(of: self)) } }
+    // var elements
+    open var subscriptionID: String? = nil
+    // listeners
+    let MaxOperations = 200
+    let queue = RVOperationQueue()
     fileprivate var _active: Bool = false
     var active: Bool { return _active }
-    var collection: RVModelType { return self.modelType }
+    var showResponse: Bool = false
+    // var front
+    var isFront: Bool = false
     var identifier: TimeInterval = Date().timeIntervalSince1970
     var reference: RVBaseModel? = nil
-    var instanceType: String { get { return String(describing: type(of: self)) } }
-    open var subscriptionID: String? = nil
-    open var modelType: RVModelType
-    open var name:String { return modelType.rawValue }
-    open let client = Meteor.client
-    var isFront: Bool = false
     var _ignore: Bool = true
     var ignore: Bool {
         get { return RVSwiftDDP.sharedInstance.ignoreSubscriptions || _ignore }
@@ -40,14 +46,6 @@ class RVBaseCollectionSubscription8: NSObject, MeteorCollectionType, RVSubscript
         }
     }
     func ignoreIncoming(notification: Notification) { self.ignore = true }
-    var showResponse: Bool = false
-    var notificationName: Notification.Name { return Notification.Name("RVBaseaSubscriptionName.NEEDTOREPLACE") }
-    var unsubscribeNotificationName: Notification.Name  { return Notification.Name("RVBaseaUnsubscribeName.NEEDTOREPLACE") }
-    let MaxOperations = 200
-    let queue = RVOperationQueue()
-    static let collectionNameKey = "CollectionNameKey"
-    var query: RVQuery = RVQuery()
-    
     func populate(id: String, fields: NSDictionary) -> RVBaseModel { return RVBaseModel(id: id, fields: fields) }
     var isSubscriptionCancelled: Bool {
         if let test = RVSwiftDDP.sharedInstance.subscriptionsCancelled[self.collection] {
@@ -55,11 +53,18 @@ class RVBaseCollectionSubscription8: NSObject, MeteorCollectionType, RVSubscript
         }
         return false
     }
+    // baseCallback
+    open var modelType: RVModelType
+    open var name:String { return modelType.rawValue }
+    open let client = Meteor.client
+
     public init(modelType: RVModelType, isFront: Bool = false, showResponse: Bool = false) {
         self.modelType      = modelType
         self.isFront        = isFront
         self.showResponse   = showResponse
         super.init()
+        Meteor.collections[modelType.rawValue] = self
+        /*
         if let existing: MeteorCollectionType = RVSwiftDDP.sharedInstance.existingMeteorSubscription(modelType: self.modelType) {
             if let _ = existing as? RVBaseCollectionSubscription8 {
                 print("In \(self.classForCoder).init unsubscring \(modelType.rawValue) because got new subscription")
@@ -74,7 +79,10 @@ class RVBaseCollectionSubscription8: NSObject, MeteorCollectionType, RVSubscript
             }
         }
         RVSwiftDDP.sharedInstance.addSubscription(subscription: self)
+ */
     }
+
+    
     func unsubscribe(callback: @escaping ()-> Void) -> Void {
         self.unsubscribe(subscription: self, callback: callback)
     }
@@ -109,7 +117,8 @@ class RVBaseCollectionSubscription8: NSObject, MeteorCollectionType, RVSubscript
     
     deinit {
         NotificationCenter.default.removeObserver(self)
-        if let existing = RVSwiftDDP.sharedInstance.removeSubscription(subscription: self) { existing.unsubscribe() }
+        if let id = self.subscriptionID { RVSwiftDDP.sharedInstance.unsubscribe(id: id) }
+        //if let existing = RVSwiftDDP.sharedInstance.removeSubscription(subscription: self) { existing.unsubscribe() }
     }
     
     /**
