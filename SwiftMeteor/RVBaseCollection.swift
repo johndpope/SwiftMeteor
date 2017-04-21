@@ -39,7 +39,7 @@ class RVBaseCollection: AbstractCollection {
         set {
             _ignore = newValue
             if newValue {
-                NotificationCenter.default.addObserver(self, selector: #selector(RVBaseCollectionSubscription8.ignoreIncoming(notification:)), name: RVNotification.ignoreSubscription, object: nil)
+                NotificationCenter.default.addObserver(self, selector: #selector(RVBaseCollection.ignoreIncoming(notification:)), name: RVNotification.ignoreSubscription, object: nil)
             } else {
                 NotificationCenter.default.removeObserver(self , name: RVNotification.ignoreSubscription, object: nil)
             }
@@ -179,7 +179,7 @@ extension RVBaseCollection {
     }
     
     func unsubscribe(callback: @escaping ()-> Void) -> Void {
-        if let id = self.subscriptionID {
+        if self.subscriptionID != nil {
             self.queue.cancelAllOperations()
             if let id = self.subscriptionID {
                 self.subscriptionID = nil

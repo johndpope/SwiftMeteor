@@ -86,7 +86,7 @@ class RVBaseCollectionSubscription8: NSObject, MeteorCollectionType, RVSubscript
             subscription.subscriptionID = nil
             callback()
             RVSwiftDDP.sharedInstance.unsubscribe(subscriptionId: id, callback: {
-                callback()
+              //  callback()
             })
             return
         } else {
