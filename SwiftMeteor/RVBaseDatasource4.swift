@@ -154,7 +154,7 @@ class RVBaseDatasource4<T:NSObject>: NSObject {
      //           callback()
                 
                 subscription.unsubscribe(callback: {
-                    print("In \(self.classForCoder).unsubscribe callback") // Neil this is the Tender Area
+                    //print("In \(self.classForCoder).unsubscribe callback") // Neil this is the Tender Area
                     self.subscriptionActive = false
                     callback()
                 })
@@ -223,13 +223,13 @@ class RVBaseDatasource4<T:NSObject>: NSObject {
         }
     }
     func receiveSubscriptionResponse(notification: NSNotification) {
-        print("In \(self.classForCoder).receiveSubscription")
+      //  print("In \(self.classForCoder).receiveSubscription")
         if let userInfo = notification.userInfo {
             if let payload = userInfo[RVPayload.payloadInfoKey] as? RVPayload<T> {
-                print("In \(self.classForCoder).receiveSubscription have payload \(payload.toString())")
+              //  print("In \(self.classForCoder).receiveSubscription have payload \(payload.toString())")
                 if let subscription = self.subscription {
                     if subscription.identifier == payload.subscription.identifier {
-                        print("In \(self.classForCoder).receiveSubscription subscriptions match")
+                     //   print("In \(self.classForCoder).receiveSubscription subscriptions match")
                         
                         let operation = RVSubcriptionResponseOperation<T>(datasource: self, subscription: subscription, incomingModels: payload.models, callback: { (models, error ) in
                             if let error = error {
@@ -929,7 +929,7 @@ class RVLoadOperation<T:NSObject>: RVAsyncOperation<T> {
         } else { return false}
     }
     func initiateSubscription(subscription: RVSubscription, query: RVQuery, reference: T?, callback: @escaping () -> Void) {
-        print("In \(self.classForCoder).initiateSubscription \(String(describing: reference))")
+     //   print("In \(self.classForCoder).initiateSubscription \(String(describing: reference))")
         self.datasource.subscriptionActive = true
         DispatchQueue.main.async {
             self.datasource.listenToSubscriptionNotification(subscription: subscription)
@@ -1388,7 +1388,7 @@ class RVLoadOperation<T:NSObject>: RVAsyncOperation<T> {
                     }
                     tableView.beginUpdates()
                     if sizedModels.count >= 0 {
-                        print("In \(self.classForCoder).insert, have \(models.count) \(String(describing: models.first))")
+                       // print("In \(self.classForCoder).insert, have \(models.count) \(String(describing: models.first))")
                         if let indexPaths = tableView.indexPathsForVisibleRows { if let indexPath = indexPaths.last { originalRow = indexPath.row } }
                         
                         // print("In \(self.classForCoder).insert, subscriptionOperation = \(self.subscriptionOperation)")

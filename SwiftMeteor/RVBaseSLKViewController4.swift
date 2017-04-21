@@ -652,7 +652,7 @@ extension RVBaseSLKViewController4 {
         //  self.showCameraMenu()
     }
     func createTransaction(text: String, callback: @escaping()-> Void) {
-        print("In \(self.classForCoder).createTransaction")
+      //  print("In \(self.classForCoder).createTransaction")
         let transaction = RVTransaction()
         if let loggedInUser = RVCoreInfo2.shared.loggedInUserProfile {
             transaction.targetUserProfileId = loggedInUser.localId
@@ -666,9 +666,9 @@ extension RVBaseSLKViewController4 {
         transaction.create { (model, error) in
             if let error = error {
                 error.printError()
-            } else if let transaction = model as? RVTransaction {
-                print("In \(self.instanceType).createTransaction, created transaction \(transaction.localId ?? " no LocalId") \(transaction.createdAt?.description ?? " no createdAt")")
-                print("TargetUserProfileId: \(String(describing: transaction.targetUserProfileId)), domainId: \(String(describing: transaction.domainId))")
+            } else if let _ = model as? RVTransaction {
+              //  print("In \(self.instanceType).createTransaction, created transaction \(transaction.localId ?? " no LocalId") \(transaction.createdAt?.description ?? " no createdAt")")
+                //print("TargetUserProfileId: \(String(describing: transaction.targetUserProfileId)), domainId: \(String(describing: transaction.domainId))")
             } else {
                 print("In \(self.instanceType).createTransaction, no error, but no result ")
             }

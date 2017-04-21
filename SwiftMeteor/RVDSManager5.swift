@@ -47,13 +47,13 @@ class RVDSManager5<S: NSObject>: RVBaseDatasource4<RVBaseDatasource4<S>> {
         return datasourceResults
     }
     override func receiveSubscriptionResponse(notification: NSNotification) {
-        print("In \(self.classForCoder).receiveSubscription")
+       // print("In \(self.classForCoder).receiveSubscription")
         if let userInfo = notification.userInfo {
             if let payload = userInfo[RVPayload.payloadInfoKey] as? RVPayload<S> {
-                print("In \(self.classForCoder).receiveSubscription have payload \(payload.toString())")
+              //  print("In \(self.classForCoder).receiveSubscription have payload \(payload.toString())")
                 if let subscription = self.subscription {
                     if subscription.identifier == payload.subscription.identifier {
-                        print("In \(self.classForCoder).receiveSubscription subscriptions match")
+                     //   print("In \(self.classForCoder).receiveSubscription subscriptions match")
                         
                         let datasourceResults = self.createDatasourceFromModels(models: payload.models)
                          //   let datasource = self.createDatasourceFromModel(model: model)

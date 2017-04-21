@@ -151,7 +151,7 @@ class RVBaseModel: MeteorDocument {
             if let fields = objects[RVKeys.image.rawValue] as? [String: AnyObject] {
                 let image = RVImage(fields: fields)
                 if image.validRecord && !image.deleted {
-                                        print("In \(self.classForCoder).image valid")
+                    print("In \(self.classForCoder).image valid")
                     self._image = image
                     self.objects.removeValue(forKey: RVKeys.image.rawValue)
                     return image

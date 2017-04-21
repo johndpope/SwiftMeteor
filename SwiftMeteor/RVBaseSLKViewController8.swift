@@ -58,6 +58,8 @@ class RVBaseSLKViewController8: SLKTextViewController {
             return configuration
         }
     }
+    let queue = RVOperationQueue()
+    
     var instanceConfiguration: RVBaseConfiguration8 { return RVBaseConfiguration8(scrollView: dsScrollView) }
     // var configuration:      RVBaseConfiguration8 = RVBaseConfiguration8(scrollView: nil)
     var manager:            RVDSManager5<RVBaseModel> { get { return configuration.manager }}
@@ -111,7 +113,6 @@ class RVBaseSLKViewController8: SLKTextViewController {
         updateTableViewInsetHeight()
         putTopViewOnTop()
         
-        //standard()
         configuration.initializeDatasource(sectionDatasourceType: .main, mainAndTerms: self.andTerms) { (error) in
             if let error = error {
                 error.printError()
@@ -120,34 +121,7 @@ class RVBaseSLKViewController8: SLKTextViewController {
         
         makeTableViewTransparent()
     }
-    /*
-     func standard() {
-     if !sectionTest {
-     let (query, _) = configuration.topQuery()
-     configuration.loadTop(query: query, callback: { (error) in
-     if let error = error {
-     error.printError()
-     } else {
-     self.loadMain(callback: { (error) in
-     if let error = error {
-     error.printError()
-     }
-     })
-     }
-     
-     })
-     } else {
-     doSectionTest(callback: { (error) in
-     if let error = error {
-     error.printError()
-     }
-     })
-     }
-     }
-     func doSectionTest(callback: @escaping(RVError?) -> Void ) {
-     print("In \(self.instanceType).doSectionTest need to override")
-     }
-     */
+
     func makeTableViewTransparent() {
         if let tableView = self.tableView {
             makeTransparent(view: tableView)
@@ -157,47 +131,34 @@ class RVBaseSLKViewController8: SLKTextViewController {
     func performSearch(searchText: String, field: RVKeys, order: RVSortOrder = .ascending) {
         if lastSearchTerm == searchText { return }
         lastSearchTerm = searchText.lowercased()
-        self.configuration.loadSearch(searchText: searchText, field: field, order: order, andTerms: self.andTerms) { (error ) in
+        self.configuration.loadSearch(searchText: searchText.lowercased(), field: field, order: order, andTerms: self.andTerms) { (error ) in
             if let error = error {
                 error.printError()
             } else {
-
+                
             }
         }
-        
-        /*
-         let matchTerm = RVQueryItem(term: field, value: searchText.lowercased() as AnyObject, comparison: .regex)
-         let andTerms = [RVQueryItem]()
-         let (query, error) = self.configuration.filterQuery(andTerms: andTerms, matchTerm: matchTerm, sortTerm: RVSortTerm(field: field, order: order))
-         if let error = error {
-         error.printError()
-         } else {
-         self.zeroTopView()
-         self.configuration.loadSearch(query: query) { (error) in
-         if let error = error {
-         error.printError()
-         }
-         }
-         }
-         */
     }
     func endSearch() {
-        self.searchSectionTableViewOffset = 0.0
-        topOuterViewAdditionalTop = 0.0
-        self.searchControllerContainerView.isHidden = true
-        self.updateOuterTopTopConstraint()
-        self.doingSearch = false
-        self.configuration.endSearch(mainAndTerms: self.andTerms) { (error) in
-          //  print("In \(self.classForCoder).returned from endSearch")
-            if let error = error {
-                error.append(message: "In \(self.instanceType).endSearch2, got error ")
-                error.printError()
-            } else {
-                self.expandTopView()
-              //  self.searchControllerContainerView.isHidden = true
-                self.lastSearchTerm = self._lastSearchTerm
+        self.queue.addOperation(RVControllerOperation(viewController: self, operation: {
+            self.searchSectionTableViewOffset = 0.0
+            self.topOuterViewAdditionalTop = 0.0
+            self.searchControllerContainerView.isHidden = true
+            self.updateOuterTopTopConstraint()
+            self.doingSearch = false
+            self.configuration.endSearch(mainAndTerms: self.andTerms) { (error) in
+                //  print("In \(self.classForCoder).returned from endSearch")
+                if let error = error {
+                    error.append(message: "In \(self.instanceType).endSearch2, got error ")
+                    error.printError()
+                } else {
+                    self.expandTopView()
+                    //  self.searchControllerContainerView.isHidden = true
+                    self.lastSearchTerm = self._lastSearchTerm
+                }
             }
-        }
+        }))
+
     }
     
     deinit {
@@ -326,16 +287,18 @@ extension RVBaseSLKViewController8 {
 // RVFirstViewHeaderCell
 extension RVBaseSLKViewController8: RVFirstViewHeaderCellDelegate {
     func expandCollapseButtonTouched(view: RVFirstViewHeaderCell) {
-        if let datasource = view.datasource4 {
-            manager.toggle(datasource: datasource, callback: { (models, error ) in
-                if let error = error {
-                    error.append(message: "In \(self.classForCoder).expandCollapseBUtton line #\(#line), got error")
-                    error.printError()
-                } else {
-                    // print("In \(self.classForCoder).expandCollapseButtonTouched. Successful return")
-                }
-            })
-        }
+        self.queue.addOperation(RVControllerOperation(viewController: self, operation: {
+            if let datasource = view.datasource4 {
+                self.manager.toggle(datasource: datasource, callback: { (models, error ) in
+                    if let error = error {
+                        error.append(message: "In \(self.classForCoder).expandCollapseBUtton line #\(#line), got error")
+                        error.printError()
+                    } else {
+                        // print("In \(self.classForCoder).expandCollapseButtonTouched. Successful return")
+                    }
+                })
+            }
+        }))
     }
     override func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
         if let headerCell = tableView.dequeueReusableHeaderFooterView(withIdentifier: RVFirstViewHeaderCell.identifier) as? RVFirstViewHeaderCell {
@@ -368,8 +331,7 @@ extension RVBaseSLKViewController8 {
         
     }
     func reconnectedNotification(notification: Notification) {
-        DispatchQueue.main.async {
-            print("IN \(self.classForCoder).reconnectedNotification, doing initialize()")
+        self.queue.addOperation(RVControllerOperation(viewController: self, operation: {
             if self.doingSearch {
                 self.doSearchInner()
             } else {
@@ -380,8 +342,7 @@ extension RVBaseSLKViewController8 {
                     }
                 })
             }
-            
-        }
+        }))
     }
     func stateDidChange(_ notification: Notification) {
        // print("In \(self.instanceType).stateDidChange")
@@ -603,16 +564,19 @@ extension RVBaseSLKViewController8: UISearchResultsUpdating {
         }
     }
     func doFilterSearch(searchController: UISearchController) {
-        self.doingSearch = true
-        if self.searchScopes.count > 1 {
-            let offset: CGFloat = 42.0
-            self.searchSectionTableViewOffset = offset
-            topOuterViewAdditionalTop = offset
-            self.updateOuterTopTopConstraint()
-        }
-        self.compressTopView()
-        //   self.zeroTopView()
-        doSearchInner()
+        self.queue.addOperation(RVControllerOperation(viewController: self , operation: {
+            self.doingSearch = true
+            if self.searchScopes.count > 1 {
+                let offset: CGFloat = 42.0
+                self.searchSectionTableViewOffset = offset
+                self.topOuterViewAdditionalTop = offset
+                self.updateOuterTopTopConstraint()
+            }
+            self.compressTopView()
+            //   self.zeroTopView()
+            self.doSearchInner()
+        }))
+
     }
     func doSearchInner() {
         let searchBar = searchController.searchBar

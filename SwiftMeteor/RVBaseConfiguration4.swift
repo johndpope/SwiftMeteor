@@ -195,6 +195,7 @@ class RVBaseConfiguration4 {
         loadDatasource(datasource: mainDatasource, query: query, callback: callback)
     }
     func loadSearch(searchText: String, field: RVKeys, order: RVSortOrder = .ascending, andTerms: [RVQueryItem], callback: @escaping(RVError?)->Void) {
+        
         let matchTerm = RVQueryItem(term: field, value: searchText.lowercased() as AnyObject, comparison: .regex)
       //  let andTerms = [RVQueryItem]()
         let (query, error) = self.filterQuery(andTerms: andTerms, matchTerm: matchTerm, sortTerm: RVSortTerm(field: field, order: order))
