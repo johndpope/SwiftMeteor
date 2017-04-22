@@ -8,14 +8,10 @@
 
 import UIKit
 class RVGroupListSubscription8: RVBaseCollectionSubscription8 {
-    override var notificationName: Notification.Name { return Notification.Name("GroupSubscription") }
     init(front: Bool = true, showResponse: Bool = false) {
-        super.init(modelType: .Group, isFront: front, showResponse: showResponse)
-     //   super.init(collection: .Group)
+        super.init(modelType: .Group, isFront: front, showResponse: showResponse) { (id, fields) -> RVBaseModel in
+            return RVGroup(id: id , fields: fields)
+        }
     }
-    override func populate(id: String, fields: NSDictionary) -> RVBaseModel {
-        let group = RVGroup(id: id , fields: fields)
-        print("In \(self.instanceType).populate, have Group \(group.createdAt!) parentId: \(String(describing: group.parentId))")
-        return group
-    }
+
 }

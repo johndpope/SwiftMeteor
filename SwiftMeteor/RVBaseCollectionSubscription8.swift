@@ -14,8 +14,9 @@ enum RVSubscriptionEventType: String {
     case changed    = "changed"
     case removed    = "removed"
 }
+typealias RVPopulate = (String, NSDictionary ) -> RVBaseModel
 class RVBaseCollectionSubscription8: NSObject, MeteorCollectionType, RVSubscription {
-    var notificationName: Notification.Name { return Notification.Name("RVBaseaSubscriptionName.NEEDTOREPLACE") }
+    var notificationName: Notification.Name //{ return Notification.Name("RVBaseaSubscriptionName.NEEDTOREPLACE") }
     var unsubscribeNotificationName: Notification.Name  { return Notification.Name("RVBaseaUnsubscribeName.NEEDTOREPLACE") }
     static let collectionNameKey = "CollectionNameKey"
     var collection: RVModelType { return self.modelType }
@@ -34,6 +35,7 @@ class RVBaseCollectionSubscription8: NSObject, MeteorCollectionType, RVSubscript
     var identifier: TimeInterval = Date().timeIntervalSince1970
     var reference: RVBaseModel? = nil
     var _ignore: Bool = true
+    var populateInner: RVPopulate
     var ignore: Bool {
         get { return RVSwiftDDP.sharedInstance.ignoreSubscriptions || _ignore }
         set {
@@ -46,7 +48,8 @@ class RVBaseCollectionSubscription8: NSObject, MeteorCollectionType, RVSubscript
         }
     }
     func ignoreIncoming(notification: Notification) { self.ignore = true }
-    func populate(id: String, fields: NSDictionary) -> RVBaseModel { return RVBaseModel(id: id, fields: fields) }
+    //func populate(id: String, fields: NSDictionary) -> RVBaseModel { return RVBaseModel(id: id, fields: fields) }
+    func populate(id: String, fields: NSDictionary) -> RVBaseModel { return populateInner(id, fields) }
     var isSubscriptionCancelled: Bool {
         return false
     }
@@ -55,10 +58,12 @@ class RVBaseCollectionSubscription8: NSObject, MeteorCollectionType, RVSubscript
     open var name:String { return modelType.rawValue }
     open let client = Meteor.client
 
-    public init(modelType: RVModelType, isFront: Bool = false, showResponse: Bool = false) {
+    public init(modelType: RVModelType, isFront: Bool = false, showResponse: Bool = false, populate: @escaping RVPopulate) {
         self.modelType      = modelType
         self.isFront        = isFront
+        self.notificationName = Notification.Name("\(modelType.rawValue)Subscription")
         self.showResponse   = showResponse
+        self.populateInner  = populate
         super.init()
         Meteor.collections[modelType.rawValue] = self
         /*
