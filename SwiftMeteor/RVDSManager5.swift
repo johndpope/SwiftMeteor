@@ -206,8 +206,8 @@ extension RVDSManager5 {
                 queue.addOperation(operation)
             } else {
                 let (query, error) = self.queryForDatasourceInstance(model: datasource.sectionModel)
-                var groupTitle = "No title"
-                if let model = datasource.sectionModel as? RVBaseModel { groupTitle = model.title! }
+               // groupTitle = "No title"
+                //if let model = datasource.sectionModel as? RVBaseModel { groupTitle = model.title! }
                 //print("In \(self.classForCoder).toggle, datasource is \(datasource) \(groupTitle)")
                 if let error = error {
                     error.append(message: "In \(self.classForCoder).toggle, got error getting query")
