@@ -12,7 +12,7 @@ class RVTransactionConfiguration4: RVBaseConfiguration4 {
     
     override init(scrollView: UIScrollView? ) {
         super.init(scrollView: scrollView)
-        self.subscription           = RVTransactionSubscription(front: true, showResponse: false)
+        self.subscription           = RVTransactionSubscription8(front: true, showResponse: false)
         self.configurationName      = "RVTransactionConfiguration4"
         self.navigationBarTitle     = "Replace"
         self.navigationBarColor     = UIColor.facebookBlue()

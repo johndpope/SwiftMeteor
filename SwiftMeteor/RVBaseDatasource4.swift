@@ -8,9 +8,6 @@
 
 import UIKit
 
-typealias RVCallback<T:NSObject> = ([T], RVError?) -> Void
-typealias DSOperation = () -> Void
-
 enum RVExpandCollapseOperationType {
     case collapseOnly
     case expandOnly

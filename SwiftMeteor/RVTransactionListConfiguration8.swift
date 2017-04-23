@@ -12,7 +12,7 @@ class RVTransactionListConfiguration8: RVBaseConfiguration8 {
     
     override init(scrollView: UIScrollView? ) {
         super.init(scrollView: scrollView)
-        self.subscription           = RVTransactionSubscription(front: true, showResponse: false)
+        self.subscription           = RVTransactionSubscription8(front: true, showResponse: false)
         self.configurationName      = "RVTransactionListConfiguration8"
         self.navigationBarTitle     = "Transactions"
         self.navigationBarColor     = UIColor.facebookBlue()
