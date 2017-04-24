@@ -25,7 +25,7 @@ class RVBaseCollection: AbstractCollection {
     var subscriptionID: String? = nil
     var listeners = [String]()
     let MaxOperations = 200
-    let queue = RVOperationQueue()
+    let queue = RVOperationQueue(title: "RVBaseCollection queue")
     var _active: Bool = false
     var active: Bool { get { return _active } }
     var showResponse: Bool = false

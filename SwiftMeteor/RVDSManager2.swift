@@ -8,7 +8,7 @@
 
 import UIKit
 class RVDSManager2: RVDSManager {
-    let queue = RVOperationQueue()
+    let queue = RVOperationQueue(title: "RVDSManager2")
     override func section(datasource: RVBaseDataSource) -> Int { return super.section(datasource: datasource )}
     override func numberOfItems(section: Int) -> Int { return super.numberOfItems(section: section) }
     override func numberOfSections(scrollView: UIScrollView?) -> Int { return super.numberOfSections(scrollView: scrollView) }

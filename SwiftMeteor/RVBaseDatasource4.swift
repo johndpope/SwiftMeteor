@@ -47,7 +47,7 @@ class RVBaseDatasource4<T:NSObject>: NSObject {
     var instanceType: String { get { return String(describing: type(of: self)) } }
     let identifier = NSDate().timeIntervalSince1970
     var baseQuery: RVQuery? = nil
-    let queue = RVOperationQueue()
+    let queue = RVOperationQueue(title: "RVBaseDatasourc4 queue")
     var rowAnimation: UITableViewRowAnimation = UITableViewRowAnimation.automatic
     var elements = [T]()
     var sections = [RVBaseDatasource4<T>]()
@@ -66,6 +66,8 @@ class RVBaseDatasource4<T:NSObject>: NSObject {
     var notificationInstalled: Bool = false
     var elementsCount: Int { return elements.count}
     var sectionModel: T? = nil
+    var frontThrottleOK: Bool = true
+    var backThrottleOK: Bool = true
 
     weak var scrollView: UIScrollView? {
         willSet {
@@ -363,6 +365,7 @@ extension RVBaseDatasource4 {
         if self.datasourceType == .filter { return }
         DispatchQueue.main.async {
             if self.frontOperationActive { return }
+            //self.frontOperationActive = true
             let operation = RVLoadOperation(datasource: self, scrollView: scrollView, front: true, callback: { (models, error) in
                 if let error = error {
                     error.append(message: "In \(self.classForCoder).inFront RVBaseDatasource4 line \(#line) , got error")
@@ -380,6 +383,7 @@ extension RVBaseDatasource4 {
                // print("In \(self.classForCoder).inBack, backOperationActive")
                 return
             }
+        //    print("In \(self.classForCoder).inBack")
             let operation = RVLoadOperation(datasource: self, scrollView: scrollView, callback: { (models, error) in
                 if let error = error {
                     error.append(message: "In \(self.classForCoder).inBack, got error")
@@ -422,7 +426,10 @@ extension RVBaseDatasource4 {
         if physicalIndex < 0 {
             //print("In \(self.instanceType).item got physical index less than 0 \(physicalIndex). Offset is \(offset)")
             //print("In \(self.classForCoder).item calling inBack: index = \(index), count: \(elementsCount), offset: \(self.offset), backBuffer: \(self.backBufferSize)")
-            if OKtoRetrieve {inFront(scrollView: scrollView)}
+            if OKtoRetrieve && frontThrottleOK {
+                throttleFront()
+                inFront(scrollView: scrollView)
+            }
             if zeroCellModeOn && (index < zeroCellIndex) {
                 if let model = zeroCellModel as? RVBaseModel {
                     model.zeroCellModel = true
@@ -436,11 +443,17 @@ extension RVBaseDatasource4 {
         } else if physicalIndex < elementsCount {
             if (physicalIndex + self.backBufferSize) > elementsCount {
                 //print("In \(self.classForCoder).item calling inBack:  index = \(index), count: \(elementsCount), offset: \(self.offset), backBuffer: \(self.backBufferSize)")
-                if OKtoRetrieve {inBack(scrollView: scrollView) }
+                if OKtoRetrieve && backThrottleOK {
+                    throttleBack()
+                    inBack(scrollView: scrollView)
+                }
             }
             if physicalIndex < self.frontBufferSize {
                // print("In \(self.classForCoder).item calling inFront: index = \(index), count: \(elementsCount), offset: \(self.offset), backBuffer: \(self.backBufferSize)")
-                if OKtoRetrieve { inFront(scrollView: scrollView) }
+                if OKtoRetrieve && frontThrottleOK {
+                    throttleFront()
+                    inFront(scrollView: scrollView)
+                }
             }
             if zeroCellModeOn && (index < zeroCellIndex) {
                 return zeroCellModel
@@ -450,6 +463,18 @@ extension RVBaseDatasource4 {
             print("In \(self.instanceType).item physicalIndex of \(physicalIndex) exceeds or equals array size \(elementsCount). Offset is \(self.offset)")
             return nil
         }
+    }
+    func throttleFront() {
+        self.frontThrottleOK = false
+        Timer.scheduledTimer(withTimeInterval: 0.2, repeats: false, block: { (time) in
+            self.frontThrottleOK = true
+        })
+    }
+    func throttleBack() {
+        self.backThrottleOK = false
+        Timer.scheduledTimer(withTimeInterval: 0.2, repeats: false, block: { (time) in
+            self.backThrottleOK = true
+        })
     }
     func scroll(indexPath: IndexPath, scrollView: UIScrollView) {
         //print("in \(self.classForCoder).scroll \(index)")

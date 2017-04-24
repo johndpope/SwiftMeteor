@@ -18,6 +18,7 @@ class RVAsyncOperation<T:NSObject>: Operation {
     var callback: RVCallback<T>
     let itemsPlug = [T]()
     let invoked = Date()
+
     override var isAsynchronous: Bool { return true }
     
     override var isExecuting: Bool {
@@ -89,8 +90,12 @@ class RVAsyncOperation<T:NSObject>: Operation {
  */
 }
 class RVOperationQueue: OperationQueue {
-    override init() {
+    var maxSize: Int = 20
+    var title: String = " RVOperationQueue"
+    init(title: String = "RVOperationQueue", maxSize: Int = 20) {
         super.init()
+        self.title = title
+        self.maxSize = maxSize
         self.maxConcurrentOperationCount = 1
     }
     func test() {
@@ -110,10 +115,19 @@ class RVOperationQueue: OperationQueue {
         }
     }
     override func addOperation(_ op: Operation) {
-        if self.operationCount < 200 {
+        var title = "no title"
+        if let operation = op as? RVAsyncOperation<RVBaseModel> {
+            title = operation.title
+        }
+        if let operation = op as? RVAsyncOperation<RVBaseDatasource4<RVBaseModel>> {
+            title = operation.title
+        }
+        if self.operationCount < maxSize {
             super.addOperation(op)
         } else {
-            print("In \(self.classForCoder).addOperation. Count exceeds 20, not adding")
+            print("In \(self.title)queue.addOperation. Count exceeds \(maxSize), cancelling prior Operations, adding \(title)")
+            self.cancelAllOperations()
+            super.addOperation(op)
         }
     }
 }

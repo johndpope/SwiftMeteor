@@ -61,7 +61,7 @@ class RVBaseSLKViewController8: SLKTextViewController {
             return configuration
         }
     }
-    let queue = RVOperationQueue()
+    let queue = RVOperationQueue(title: "RVBaseSLKViewController8")
     
     var instanceConfiguration: RVBaseConfiguration8 { return RVBaseConfiguration8(scrollView: dsScrollView) }
     // var configuration:      RVBaseConfiguration8 = RVBaseConfiguration8(scrollView: nil)

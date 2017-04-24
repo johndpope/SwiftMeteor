@@ -155,16 +155,25 @@ extension RVDSManager5 {
             if physicalIndex < 0 {
                 //print("In \(self.instanceType).item got physical index less than 0 \(physicalIndex). Offset is \(offset)")
                 //print("In \(self.classForCoder).item calling inBack: index = \(index), count: \(elementsCount), offset: \(self.offset), backBuffer: \(self.backBufferSize)")
-                if OKtoRetrieve {inFront(scrollView: scrollView)}
+                if OKtoRetrieve && frontThrottleOK {
+                    throttleFront()
+                    inFront(scrollView: scrollView)
+                }
                 return
             } else if physicalIndex < elementsCount {
                 if (physicalIndex + self.backBufferSize) > elementsCount {
                     //print("In \(self.classForCoder).item calling inBack:  index = \(index), count: \(elementsCount), offset: \(self.offset), backBuffer: \(self.backBufferSize)")
-                    if OKtoRetrieve {inBack(scrollView: scrollView) }
+                    if OKtoRetrieve && backThrottleOK {
+                        throttleBack()
+                        inBack(scrollView: scrollView)
+                    }
                 }
                 if physicalIndex < self.frontBufferSize {
                     // print("In \(self.classForCoder).item calling inFront: index = \(index), count: \(elementsCount), offset: \(self.offset), backBuffer: \(self.backBufferSize)")
-                    if OKtoRetrieve { inFront(scrollView: scrollView) }
+                    if OKtoRetrieve && frontThrottleOK {
+                        throttleFront()
+                        inFront(scrollView: scrollView)
+                    }
                 }
                 return
             } else {

@@ -13,7 +13,7 @@ class RVStateDispatcher8 {
     var currentState:   RVBaseAppState8 = RVLoggedOutState8()
     var previousState:  RVBaseAppState8 = RVLoggedOutState8()
 
-    fileprivate let queue = RVOperationQueue()
+    fileprivate let queue = RVOperationQueue(title: "RVStateDispatcher8")
     static var shared: RVStateDispatcher8 = { return RVStateDispatcher8() }()
     func changeState(newState: RVBaseAppState8, returnToCenter: Bool = false) {
         queue.addOperation(RVChangeStateOperation8<RVBaseModel>(newState: newState, returnToCenter: returnToCenter))

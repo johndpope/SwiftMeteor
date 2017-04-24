@@ -12,7 +12,7 @@ import UIKit
 
 class RVDSManager4Z<T:NSObject>: NSObject {
     var instanceType: String { get { return String(describing: type(of: self)) } }
-    let queue = RVOperationQueue()
+    let queue = RVOperationQueue(title: "RVDSManager4Z")
     var elements = [RVBaseDatasource4<T>]()
     var offset = 0
     var virtualCount: Int {

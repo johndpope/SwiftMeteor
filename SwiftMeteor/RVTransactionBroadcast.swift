@@ -11,7 +11,7 @@ import SeaseAssist
 class RVTransactionBroadcast {
     var count = 0
     var instanceType: String { get { return String(describing: type(of: self)) } }
-    let queue = RVOperationQueue()
+    let queue = RVOperationQueue(title: "RVTransactionBroadcast")
     static var shared: RVTransactionBroadcast = {
         return RVTransactionBroadcast()
     }()

@@ -26,7 +26,7 @@ class RVBaseCollectionSubscription8: NSObject, MeteorCollectionType, RVSubscript
     open var subscriptionID: String? = nil
     // listeners
     let MaxOperations = 200
-    let queue = RVOperationQueue()
+    let queue = RVOperationQueue(title: "RVBaseColelctionSubscription8", maxSize: 100)
     fileprivate var _active: Bool = false
     var active: Bool { return _active }
     var showResponse: Bool = false
