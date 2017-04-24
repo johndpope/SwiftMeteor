@@ -86,4 +86,5 @@ class RVAsyncOperation8<T:NSObject>: RVAsyncOperation<T> {
             else if let modelCallback = self.modelCallback { modelCallback(models, error) }
         }
     }
+    
 }

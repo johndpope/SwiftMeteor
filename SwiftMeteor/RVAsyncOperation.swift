@@ -109,4 +109,11 @@ class RVOperationQueue: OperationQueue {
             }
         }
     }
+    override func addOperation(_ op: Operation) {
+        if self.operationCount < 20 {
+            super.addOperation(operation)
+        } else {
+            print("In \(self.classForCoder).addOperation. Count exceeds 20, not adding")
+        }
+    }
 }
