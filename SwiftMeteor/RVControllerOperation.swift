@@ -7,21 +7,20 @@
 //
 
 import UIKit 
-class RVControllerOperation<T: NSObject>: RVAsyncOperation<T> {
+class RVControllerOperation<T: NSObject>: RVAsyncOperation8<T> {
     weak var controller: UIViewController? = nil
-    var operation = {() in }
-    init(viewController: UIViewController?, operation: @escaping () -> Void) {
+    var closure = {(asynOp: RVControllerOperation<T>, error: RVError?) in }
+    init(title: String = "RVControllerOperation", viewController: UIViewController?, closure: @escaping (RVControllerOperation<T>, RVError?) -> Void) {
         self.controller = viewController
-        self.operation = operation
-        let callback = {(result: [T], error: RVError?) in }
-        super.init(title: "RVViewDidLoadOpertion", callback: callback)
+        self.closure = closure
+        super.init(title: "RVViewDidLoadOpertion")
     }
     override func asyncMain() {
         if !self.isCancelled {
             DispatchQueue.main.async {
+                let error: RVError? = self.timeout ? RVError(message: "In \(self.classForCoder).asyncMain, timed out") : nil
                 if let _ = self.controller {
-                    self.operation()
-                    self.completeOperation()
+                    self.closure(self, error )
                 } else {
                     self.completeOperation()
                 }

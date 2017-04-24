@@ -60,7 +60,10 @@ class RVError: NSError {
         output += "------------------------- End Error Message -----------------------------------\n"
         return output
     }
-    func printError() {
+    func printError(message: String = "") {
+        if message != "" {
+            self.messages.append(message)
+        }
         print(output())
     }
 }

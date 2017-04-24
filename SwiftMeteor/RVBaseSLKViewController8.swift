@@ -41,6 +41,9 @@ class RVBaseSLKViewController8: SLKTextViewController {
     var SLKshouldScrollToBottomAfterKeyboardShows: Bool { return configuration.SLKshouldScrollToBottomAfterKeyboardShows }
     var SLKshowTextInputBar: Bool                       { return configuration.SLKshowTextInputBar }
     var andTerms = [RVQueryItem]()
+    func errorMessage(message: String) -> RVError {
+        return RVError(message: "\(self.classForCoder).\(message)")
+    }
     // SLK Stuff
     var pipWindow: UIWindow? // for SLK
     var users: Array = ["Allen", "Anna", "Alicia", "Arnold", "Armando", "Antonio", "Brad", "Catalaya", "Christoph", "Emerson", "Eric", "Everyone", "Steve"] 
@@ -144,19 +147,26 @@ class RVBaseSLKViewController8: SLKTextViewController {
             makeTransparent(view: tableView.backgroundView)
         }
     }
-    func performSearch(searchText: String, field: RVKeys, order: RVSortOrder = .ascending) {
-        if lastSearchTerm == searchText { return }
+    func performSearch(operation: RVControllerOperation<NSObject>, searchText: String, field: RVKeys, order: RVSortOrder = .ascending) {
+        if lastSearchTerm == searchText {
+            operation.completeOperation()
+            return
+        }
         lastSearchTerm = searchText.lowercased()
         self.configuration.loadSearch(searchText: searchText.lowercased(), field: field, order: order, andTerms: self.andTerms) { (error ) in
             if let error = error {
                 error.printError()
-            } else {
-                
             }
+            operation.completeOperation()
         }
     }
     func endSearch() {
-        self.queue.addOperation(RVControllerOperation(viewController: self, operation: {
+        self.queue.addOperation(RVControllerOperation<NSObject>(title: "\(self.classForCoder).endSearch", viewController: self, closure: { (operation, error) in
+            if let error = error {
+                error.printError()
+                operation.completeOperation()
+                return
+            }
             self.searchSectionTableViewOffset = 0.0
             self.topOuterViewAdditionalTop = 0.0
             self.searchControllerContainerView.isHidden = true
@@ -172,6 +182,7 @@ class RVBaseSLKViewController8: SLKTextViewController {
                     //  self.searchControllerContainerView.isHidden = true
                     self.lastSearchTerm = self._lastSearchTerm
                 }
+                operation.completeOperation()
             }
         }))
 
@@ -303,16 +314,26 @@ extension RVBaseSLKViewController8 {
 // RVFirstViewHeaderCell
 extension RVBaseSLKViewController8: RVFirstViewHeaderCellDelegate {
     func expandCollapseButtonTouched(view: RVFirstViewHeaderCell) {
-        self.queue.addOperation(RVControllerOperation(viewController: self, operation: {
-            if let datasource = view.datasource4 {
-                self.manager.toggle(datasource: datasource, callback: { (models, error ) in
-                    if let error = error {
-                        error.append(message: "In \(self.classForCoder).expandCollapseBUtton line #\(#line), got error")
-                        error.printError()
-                    } else {
-                        // print("In \(self.classForCoder).expandCollapseButtonTouched. Successful return")
-                    }
-                })
+        self.queue.addOperation(RVControllerOperation<NSObject>(title: "\(self.classForCoder).expandCollapseButtonTouched", viewController: self, closure: { (operation, error) in
+            if let error = error {
+                error.printError(message: "In \(self.classForCoder).expandCollapseButtonTouched")
+                operation.completeOperation()
+                return
+            } else {
+                if let datasource = view.datasource4 {
+                    self.manager.toggle(datasource: datasource, callback: { (models, error ) in
+                        if let error = error {
+                            error.append(message: "In \(self.classForCoder).expandCollapseBUtton line #\(#line), got error")
+                            error.printError()
+                        } else {
+                            // print("In \(self.classForCoder).expandCollapseButtonTouched. Successful return")
+                        }
+                        operation.completeOperation()
+                    })
+                    return
+                } else {
+                    operation.completeOperation()
+                }
             }
         }))
     }
@@ -347,16 +368,22 @@ extension RVBaseSLKViewController8 {
         
     }
     func reconnectedNotification(notification: Notification) {
-        self.queue.addOperation(RVControllerOperation(viewController: self, operation: {
-            if self.doingSearch {
-                self.doSearchInner()
+        self.queue.addOperation(RVControllerOperation<NSObject>(title: "\(self.classForCoder).reconnectedNotification", viewController: self, closure: { (operation, error ) in
+            if let error = error {
+                error.printError(message: "In \(self.classForCoder).reconnectedNOtification")
+                operation.completeOperation()
             } else {
-                self.configuration.endSearch(mainAndTerms: self.andTerms, callback: { (error ) in
-                    if let error = error {
-                        error.append(message: "In \(self.instanceType).endSearch2, got error ")
-                        error.printError()
-                    }
-                })
+                if self.doingSearch {
+                    self.doSearchInner(operation: operation)
+                } else {
+                    self.configuration.endSearch(mainAndTerms: self.andTerms, callback: { (error ) in
+                        if let error = error {
+                            error.append(message: "In \(self.instanceType).endSearch2, got error ")
+                            error.printError()
+                        }
+                        operation.completeOperation()
+                    })
+                }
             }
         }))
     }
@@ -580,7 +607,7 @@ extension RVBaseSLKViewController8: UISearchResultsUpdating {
         }
     }
     func doFilterSearch(searchController: UISearchController) {
-        self.queue.addOperation(RVControllerOperation(viewController: self , operation: {
+        self.queue.addOperation(RVControllerOperation(title: "\(self.classForCoder).doFilterSearch", viewController: self , closure: { (operation, error) in
             self.doingSearch = true
             if self.searchScopes.count > 1 {
                 let offset: CGFloat = 42.0
@@ -590,11 +617,10 @@ extension RVBaseSLKViewController8: UISearchResultsUpdating {
             }
             self.compressTopView()
             //   self.zeroTopView()
-            self.doSearchInner()
+            self.doSearchInner(operation: operation)
         }))
-
     }
-    func doSearchInner() {
+    func doSearchInner(operation: RVControllerOperation<NSObject>) {
         let searchBar = searchController.searchBar
         let searchText = searchBar.text != nil ? searchBar.text! : ""
         var searchKey = RVKeys.title
@@ -609,7 +635,7 @@ extension RVBaseSLKViewController8: UISearchResultsUpdating {
         } else {
             searchBar.placeholder = "Search"
         }
-        performSearch(searchText: searchText, field: searchKey, order: self.defaultSortOrder )
+        performSearch(operation: operation, searchText: searchText, field: searchKey, order: self.defaultSortOrder )
     }
     func configureSearchController() {
         //print("In \(self.classForCoder).configureSearchController")
