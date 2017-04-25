@@ -38,7 +38,13 @@ class RVAsyncOperation8<T:NSObject>: RVAsyncOperation<T> {
             didChangeValue(forKey: key)
         }
     }
-
+    override func dealWithCallback(models: [T], error: RVError?) {
+        if      let emptyCallback = self.emptyCallback { emptyCallback() }
+        else if let errorCallback = self.errorCallback { errorCallback(error) }
+        else if let modelCallback = self.modelCallback { modelCallback(models, error) }
+        else if let callback = self.callback {callback(models, error) }
+        
+    }
     init(title: String = "RVAsyncOperation8", parent: NSObject? = nil) {
         super.init(title: title, callback: { (fake, error ) in }, parent: parent )
     }
@@ -72,18 +78,24 @@ class RVAsyncOperation8<T:NSObject>: RVAsyncOperation<T> {
         DispatchQueue.main.async {
             self.isFinished = true
             self.isExecuting = false
+            self.dealWithCallback(models: [T](), error: nil)
+            /*
             if      let emptyCallback = self.emptyCallback { emptyCallback() }
             else if let errorCallback = self.errorCallback { errorCallback(nil) }
             else if let modelCallback = self.modelCallback { modelCallback([T](), nil) }
+ */
         }
     }
     override func completeOperation(models: [T] = [T](), error: RVError?) {
         DispatchQueue.main.async {
             self.isFinished = true
             self.isExecuting = false
+            self.dealWithCallback(models: models, error: error)
+            /*
             if      let emptyCallback = self.emptyCallback { emptyCallback() }
             else if let errorCallback = self.errorCallback { errorCallback(error) }
             else if let modelCallback = self.modelCallback { modelCallback(models, error) }
+ */
         }
     }
     
