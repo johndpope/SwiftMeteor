@@ -84,10 +84,24 @@ class RVSwiftDDP: NSObject {
             }
         }
     }
-
-    var disconnectedTimer: Timer = Timer.scheduledTimer(withTimeInterval: 4.0, repeats: true) { (timer) in
-        UILabel.showMessage("Attempting to Connect", ofSize: 24.0, of: UIColor.candyGreen(), in: UIViewController.top().view, forDuration: 2.0)
+    fileprivate var _disconnectedTimer: Timer? = nil
+    var disconnectedTimer: Timer? {
+        get {
+            if let timer = self._disconnectedTimer { return timer }
+            self._disconnectedTimer = Timer.scheduledTimer(withTimeInterval: 4.0, repeats: true) { (timer) in
+                UILabel.showMessage("Attempting to Connect", ofSize: 24.0, of: UIColor.candyGreen(), in: UIViewController.top().view, forDuration: 2.0)
+            }
+            self._disconnectedTimer!.fire()
+            return self._disconnectedTimer
+        }
+        set {
+            if newValue == nil {
+                if let timer = self._disconnectedTimer { timer.invalidate() }
+                self._disconnectedTimer = nil
+            }
+        }
     }
+    
     var instanceType: String { get { return String(describing: type(of: self)) } }
     var appState: RVBaseAppState {
         get { return RVCoreInfo.sharedInstance.appState }
@@ -102,7 +116,7 @@ class RVSwiftDDP: NSObject {
     var loginListeners = RVListeners()
     var logoutListeners = RVListeners()
     var connected: Bool = false
-    var subscriptionsCancelled: [RVModelType: Bool] = [.transaction: true, .Group: true]
+    var subscriptionsCancelled: [RVModelType: Bool] = [.transaction: false , .Group: false]
     var ignoreSubscriptions: Bool = true {
         didSet {
             if ignoreSubscriptions {
@@ -135,9 +149,8 @@ class RVSwiftDDP: NSObject {
             self.connected = false
             self.ignoreSubscriptions = true
             //for (key, _) in self.subscriptionsCancelled { self.subscriptionsCancelled[key] = true }
-            self.disconnectedTimer = Timer.scheduledTimer(withTimeInterval: 4.0, repeats: true) { (timer) in
-                UILabel.showMessage("Attempting to Connect", ofSize: 24.0, of: UIColor.candyGreen(), in: UIViewController.top().view, forDuration: 2.0)
-            }
+            self.disconnectedTimer = nil
+            let _ = self.disconnectedTimer
             Timer.scheduledTimer(withTimeInterval: 10.0, repeats: true) { (timer) in
                 if !self.connected {
                     RVSwiftDDP.sharedInstance.connect()
@@ -161,11 +174,13 @@ class RVSwiftDDP: NSObject {
         if !self.connected {
             self.connected = true
             self.ignoreSubscriptions = false
+            /*
             for (key, _) in self.subscriptionsCancelled {
                 let model = key
                 self.subscriptionsCancelled[model] = false
                 
             }
+ */
             NotificationCenter.default.post(name: RVNotification.connected, object: nil, userInfo: nil)
         }
     }
@@ -236,20 +251,20 @@ class RVSwiftDDP: NSObject {
         if !self.connected {
             let time = Date()
             print("In \(self.classForCoder). attempting to connect at time \(time)")
-            for (key, _) in self.subscriptionsCancelled { self.subscriptionsCancelled[key] = true }
+          //  for (key, _) in self.subscriptionsCancelled { self.subscriptionsCancelled[key] = true }
             Meteor.connect(self.meteorURL, callback: {
-                self.disconnectedTimer.invalidate()
+                self.disconnectedTimer = nil
                 if !self.connected {
                     print("In \(self.classForCoder).connect, connected with attempt time of \(time) -----------")
                     self.connected = true
                     self.ignoreSubscriptions = false
-                    
+                    /*
                     for (key, _) in self.subscriptionsCancelled {
                         let model = key
                         self.subscriptionsCancelled[model] = false
                        
                     }
- 
+                    */
                     NotificationCenter.default.post(name: RVNotification.connected, object: nil, userInfo: nil)
                 }
             })
