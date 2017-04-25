@@ -78,7 +78,7 @@ class RVAsyncOperation8<T:NSObject>: RVAsyncOperation<T> {
         DispatchQueue.main.async {
             self.isFinished = true
             self.isExecuting = false
-            print("In \(self.classForCoder).completeOperation, line: \(#line), about to do dealWithCallback")
+           // print("In \(self.classForCoder).completeOperation, line: \(#line), about to do dealWithCallback")
             self.dealWithCallback(models: [T](), error: nil)
             /*
             if      let emptyCallback = self.emptyCallback { emptyCallback() }
@@ -91,7 +91,7 @@ class RVAsyncOperation8<T:NSObject>: RVAsyncOperation<T> {
         DispatchQueue.main.async {
             self.isFinished = true
             self.isExecuting = false
-            print("In \(self.classForCoder).completeOperation, line: \(#line), about to do dealWithCallback")
+          //  print("In \(self.classForCoder).completeOperation, line: \(#line), about to do dealWithCallback")
             self.dealWithCallback(models: models, error: error)
             /*
             if      let emptyCallback = self.emptyCallback { emptyCallback() }

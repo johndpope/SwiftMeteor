@@ -594,7 +594,7 @@ class RVForcedUnsubscribe<T: NSObject>: RVAsyncOperation<T> {
     }
     func finishUp(models: [T], error: RVError?) {
         DispatchQueue.main.async {
-            print("In \(self.classForCoder).finishUp, line: \(#line), about to do dealWithCallback")
+         //   print("In \(self.classForCoder).finishUp, line: \(#line), about to do dealWithCallback")
             self.dealWithCallback(models: models, error: error)
             self.completeOperation()
         }
@@ -829,7 +829,7 @@ class RVExpandCollapseOperation<T:NSObject>: RVLoadOperation<T> {
     }
     func finishUp(models: [T], error: RVError?) {
         DispatchQueue.main.async {
-            print("In \(self.classForCoder).finishUp, line: \(#line), about to do dealWithCallback")
+           // print("In \(self.classForCoder).finishUp, line: \(#line), about to do dealWithCallback")
             self.dealWithCallback(models: models, error: error)
             self.completeOperation()
         }
@@ -1563,7 +1563,7 @@ class RVLoadOperation<T:NSObject>: RVAsyncOperation<T> {
     func finishUp(items: [T], error: RVError?) {
         DispatchQueue.main.async {
           //  print("In \(self.classForCoder).finishUp")
-            print("In \(self.classForCoder).finishUp, line: \(#line), about to do dealWithCallback")
+           // print("In \(self.classForCoder).finishUp, line: \(#line), about to do dealWithCallback")
             self.dealWithCallback(models: items, error: error)
 
             Timer.scheduledTimer(withTimeInterval: 0.4, repeats: false , block: { (timer) in

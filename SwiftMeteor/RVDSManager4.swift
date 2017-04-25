@@ -143,7 +143,7 @@ class RVManagerRemoveSections4<T:NSObject>: RVAsyncOperation<T> {
     }
     func completeIt(error: RVError? = nil) {
         DispatchQueue.main.async {
-            print("In \(self.classForCoder).completeIt, line: \(#line), about to do dealWithCallback")
+         //   print("In \(self.classForCoder).completeIt, line: \(#line), about to do dealWithCallback")
             self.dealWithCallback(models: self.emptyResponse, error: error)
             self.completeOperation()
         }
@@ -261,7 +261,7 @@ class RVManagerAppendSections4<T: NSObject>: RVManagerRemoveSections4<T> {
         DispatchQueue.main.async {
             if let error = error {
                 self.datasources = [RVBaseDatasource4<T>]()
-                print("In \(self.classForCoder).complete, line: \(#line), about to do dealWithCallback")
+               // print("In \(self.classForCoder).complete, line: \(#line), about to do dealWithCallback")
                 self.dealWithCallback(models: self.emptyResponse, error: error)
                 self.completeOperation()
             } else if self.sectionsToBeRemoved.count > 0 {
@@ -269,7 +269,7 @@ class RVManagerAppendSections4<T: NSObject>: RVManagerRemoveSections4<T> {
                 self.innerAsyncMain()
             } else {
                 self.datasources = [RVBaseDatasource4<T>]()
-                print("In \(self.classForCoder).complete, line: \(#line), about to do dealWithCallback")
+          //      print("In \(self.classForCoder).complete, line: \(#line), about to do dealWithCallback")
                  self.dealWithCallback(models: self.emptyResponse, error: error)
 
                 self.completeOperation()
@@ -397,7 +397,7 @@ class RVManagerExpandCollapseOperation4<T: NSObject>: RVAsyncOperation<T> {
         if (self.manager != nil) && ( (self.datasources.count > 0) || self.all ) {
             if self.isCancelled {
                 DispatchQueue.main.async {
-                    print("In \(self.classForCoder).asyncMain, line: \(#line), about to do dealWithCallback")
+                  //  print("In \(self.classForCoder).asyncMain, line: \(#line), about to do dealWithCallback")
                     self.dealWithCallback()
                     self.completeOperation()
                 }
@@ -405,7 +405,7 @@ class RVManagerExpandCollapseOperation4<T: NSObject>: RVAsyncOperation<T> {
             } else { actualOperation() }
         } else {
             DispatchQueue.main.async {
-                print("In \(self.classForCoder).asyncMain, line: \(#line), about to do dealWithCallback")
+         //       print("In \(self.classForCoder).asyncMain, line: \(#line), about to do dealWithCallback")
                 self.dealWithCallback()
                 self.completeOperation()
             }
@@ -414,7 +414,7 @@ class RVManagerExpandCollapseOperation4<T: NSObject>: RVAsyncOperation<T> {
     }
     func actualOperation() {
         if self.isCancelled {
-            print("In \(self.classForCoder).actualOperation, line: \(#line), about to do dealWithCallback")
+         //   print("In \(self.classForCoder).actualOperation, line: \(#line), about to do dealWithCallback")
             self.dealWithCallback()
             completeOperation()
             return
@@ -430,13 +430,13 @@ class RVManagerExpandCollapseOperation4<T: NSObject>: RVAsyncOperation<T> {
                         if let error = error {
                             error.append(message: "In \(self.instanceType).actualOperation expand, got error")
                             DispatchQueue.main.async {
-                                print("In \(self.classForCoder).actualOperation, line: \(#line), about to do dealWithCallback")
+                           //     print("In \(self.classForCoder).actualOperation, line: \(#line), about to do dealWithCallback")
                                 self.dealWithCallback(models: models, error: error)
                                 self.completeOperation()
                             }
                         } else if self.count <= 0 {
                             DispatchQueue.main.async {
-                                print("In \(self.classForCoder).actualOperation, line: \(#line), about to do dealWithCallback")
+                             //   print("In \(self.classForCoder).actualOperation, line: \(#line), about to do dealWithCallback")
                                 self.dealWithCallback(models: models, error: error)
                                 self.completeOperation()
                             }
@@ -452,13 +452,13 @@ class RVManagerExpandCollapseOperation4<T: NSObject>: RVAsyncOperation<T> {
                         if let error = error {
                             error.append(message: "In \(self.instanceType).actualOperation collapse, got error")
                             DispatchQueue.main.async {
-                                print("In \(self.classForCoder).actualOperation, line: \(#line), about to do dealWithCallback")
+                          //      print("In \(self.classForCoder).actualOperation, line: \(#line), about to do dealWithCallback")
                                 self.dealWithCallback(models: models, error: error)
                                 self.completeOperation()
                             }
                         } else if self.count <= 0 {
                             DispatchQueue.main.async {
-                                print("In \(self.classForCoder).actualOperation, line: \(#line), about to do dealWithCallback")
+                            //    print("In \(self.classForCoder).actualOperation, line: \(#line), about to do dealWithCallback")
                                 self.dealWithCallback(models: models, error: error)
                                 self.completeOperation()
                             }
@@ -477,14 +477,14 @@ class RVManagerExpandCollapseOperation4<T: NSObject>: RVAsyncOperation<T> {
                         if let error = error {
                             error.append(message: "In \(self.instanceType).actualOperation toggle, got error")
                             DispatchQueue.main.async {
-                                print("In \(self.classForCoder).actualOperation, line: \(#line), about to do dealWithCallback")
+                               // print("In \(self.classForCoder).actualOperation, line: \(#line), about to do dealWithCallback")
                                 self.dealWithCallback(models: models, error: error)
 
                                 self.completeOperation()
                             }
                         } else if self.count <= 0 {
                             DispatchQueue.main.async {
-                                print("In \(self.classForCoder).actualOperation, line: \(#line), about to do dealWithCallback")
+                             //   print("In \(self.classForCoder).actualOperation, line: \(#line), about to do dealWithCallback")
                                 self.dealWithCallback(models: models, error: error)
                                 
                                 self.completeOperation()
@@ -497,7 +497,7 @@ class RVManagerExpandCollapseOperation4<T: NSObject>: RVAsyncOperation<T> {
         } else {
             let error = RVError(message: "In \(self.instanceType).actualOperation, no manager")
             DispatchQueue.main.async {
-                print("In \(self.classForCoder).actualOperation, line: \(#line), about to do dealWithCallback")
+               // print("In \(self.classForCoder).actualOperation, line: \(#line), about to do dealWithCallback")
                 self.dealWithCallback(models: self.emptyResponse, error: error)
                 self.completeOperation()
             }

@@ -565,7 +565,7 @@ class RVManagerCollapse5<T: NSObject>: RVAsyncOperation<T> {
     }
     func completeIt(models: [T] = [T](), error: RVError? = nil) {
         DispatchQueue.main.async {
-            print("In \(self.classForCoder).completeIt, line: \(#line), about to do dealWithCallback")
+         //   print("In \(self.classForCoder).completeIt, line: \(#line), about to do dealWithCallback")
             self.dealWithCallback(models: self.emptyResponse, error: error)
             self.completeOperation()
         }
@@ -680,7 +680,7 @@ class RVManagerRemoveSections5<T: NSObject>: RVAsyncOperation<T> {
     }
     func completeIt(models: [T] = [T](), error: RVError? = nil) {
         DispatchQueue.main.async {
-            print("In \(self.classForCoder).completeIt, line: \(#line), about to do dealWithCallback")
+          //  print("In \(self.classForCoder).completeIt, line: \(#line), about to do dealWithCallback")
             self.dealWithCallback(models: models, error: error)
             self.completeOperation()
         }
