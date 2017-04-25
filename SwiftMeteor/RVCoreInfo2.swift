@@ -68,7 +68,7 @@ class RVCoreInfo2 {
     var appState: RVBaseAppState2 = RVLoggedOutState2()
     var loggedIn: Bool {
         get {
-            if !RVSwiftDDP.sharedInstance.connected { return false }
+           // if !RVSwiftDDP.sharedInstance.connected { return false }
             if domain == nil { return false }
             if loggedInUserProfile == nil { return false }
             if rootGroup == nil { return false }
@@ -86,16 +86,21 @@ class RVCoreInfo2 {
         self.loggedInSuccess        = false
     }
     @objc func connected(notification: NSNotification) {
-        print("In \(self.instanceType).connected notification handler")
+      //  print("In \(self.instanceType).connected notification handler")
         if self.loggedIn {
             print("In \(self.instanceType).connected, already logged in -----------------")
+            /*
             for (key, _) in RVSwiftDDP.sharedInstance.subscriptionsCancelled {
                 let model = key
                 RVSwiftDDP.sharedInstance.subscriptionsCancelled[model] = false
             }
+ */
+            RVStateDispatcher8.shared.reconnected()
+            /*
             DispatchQueue.main.async {
                 NotificationCenter.default.post(name: RVBaseCoreInfo8.reconnectedNotification, object: self , userInfo: nil)
             }
+ */
             
         } else {
             self.getDomain2 { (error) in

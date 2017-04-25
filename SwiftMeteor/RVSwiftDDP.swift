@@ -37,19 +37,11 @@ class RVSwiftDDP: NSObject {
         case DDP_USER_DID_LOGOUT = "DDP_USER_DID_LOGOUT"// Notification Name
     }
     let meteorClient = Meteor.client
-    func existingMeteorSubscription(modelType: RVModelType) -> MeteorCollectionType? {
-        if let collection = Meteor.collection(modelType.rawValue) { return collection }
-        return nil
-    }
+
     func addSubscription(subscription: RVBaseCollectionSubscription8) {
         Meteor.collections[subscription.modelType.rawValue] = subscription
     }
-    func removeSubscription(subscription: RVBaseCollectionSubscription8) -> RVBaseCollectionSubscription8? {
-        if let sub = Meteor.collections.removeValue(forKey: subscription.modelType.rawValue) {
-            if let sub = sub as? RVBaseCollectionSubscription8 { return sub}
-        }
-        return nil
-    }
+
     func subscribe(subscription: RVBaseCollectionSubscription8, params: [AnyObject], callback: @escaping () -> Void ) -> Void {
         if let id = subscription.subscriptionID {
             print("In \(self.classForCoder).subscribe attempting to subscribe when already subscribed. id: \(id)")
@@ -151,7 +143,7 @@ class RVSwiftDDP: NSObject {
             //for (key, _) in self.subscriptionsCancelled { self.subscriptionsCancelled[key] = true }
             self.disconnectedTimer = nil
             let _ = self.disconnectedTimer
-            Timer.scheduledTimer(withTimeInterval: 10.0, repeats: true) { (timer) in
+            Timer.scheduledTimer(withTimeInterval: 20.0, repeats: true) { (timer) in
                 if !self.connected {
                     RVSwiftDDP.sharedInstance.connect()
                 } else {
@@ -172,8 +164,8 @@ class RVSwiftDDP: NSObject {
     func ddpConnected(notification: NSNotification) {
         print("In \(self.classForCoder).ddpConnected ")
         if !self.connected {
-            self.connected = true
-            self.ignoreSubscriptions = false
+         //   self.connected = true
+         //   self.ignoreSubscriptions = false
             /*
             for (key, _) in self.subscriptionsCancelled {
                 let model = key
@@ -181,7 +173,8 @@ class RVSwiftDDP: NSObject {
                 
             }
  */
-            NotificationCenter.default.post(name: RVNotification.connected, object: nil, userInfo: nil)
+            RVStateDispatcher8.shared.connectAction()
+           // NotificationCenter.default.post(name: RVNotification.connected, object: nil, userInfo: nil)
         }
     }
     func getId() -> String {
@@ -256,8 +249,8 @@ class RVSwiftDDP: NSObject {
                 self.disconnectedTimer = nil
                 if !self.connected {
                     print("In \(self.classForCoder).connect, connected with attempt time of \(time) -----------")
-                    self.connected = true
-                    self.ignoreSubscriptions = false
+                  //  self.connected = true
+                  //  self.ignoreSubscriptions = false
                     /*
                     for (key, _) in self.subscriptionsCancelled {
                         let model = key
@@ -265,7 +258,8 @@ class RVSwiftDDP: NSObject {
                        
                     }
                     */
-                    NotificationCenter.default.post(name: RVNotification.connected, object: nil, userInfo: nil)
+                    RVStateDispatcher8.shared.connectAction()
+                   // NotificationCenter.default.post(name: RVNotification.connected, object: nil, userInfo: nil)
                 }
             })
         }
@@ -274,26 +268,31 @@ class RVSwiftDDP: NSObject {
         print("In \(self.classForCoder).logout")
         if Meteor.client.user() == nil {
             print("In \(self.classForCoder).logout, already logged out")
-            RVStateDispatcher8.shared.changeState(newState: RVLoggedOutState8())
+            
+             RVStateDispatcher8.shared.logoutNotification(userInfo: ["user": "unknown"])
+           // RVStateDispatcher8.shared.changeState(newState: RVLoggedOutState8())
            // RVStateDispatcher4.shared.changeState(newState: RVBaseAppState4(appState: .loggedOut))
             callback(nil)
-            logoutListeners.notifyListeners()
-            NotificationCenter.default.post(name: RVNotification.userDidLogout, object: nil, userInfo: nil)
-            return
+         //   logoutListeners.notifyListeners()
+         //   NotificationCenter.default.post(name: RVNotification.userDidLogout, object: nil, userInfo: nil)
+         //   return
         }
         Meteor.logout { (result, error) in
             print("In \(self.classForCoder).logout Meteor logout callback")
             if let error = error {
                 let rvError = RVError(message: "In \(self.classForCoder).logout, got DDPError", sourceError: error)
+                 RVStateDispatcher8.shared.logoutNotification(userInfo: ["user": "unknown"])
                 callback(rvError)
             } else if let result = result {
                 print("In \(self.classForCoder).logout, success. Result is \(result)")
+                 RVStateDispatcher8.shared.logoutNotification(userInfo: ["user": "unknown"])
                 callback(nil)
             } else {
                 //print("In \(self.classForCoder).logout, no error but no result")
+                 RVStateDispatcher8.shared.logoutNotification(userInfo: ["user": "unknown"])
                 callback(nil)
             }
-            RVStateDispatcher8.shared.changeState(newState: RVLoggedOutState8())
+          //  RVStateDispatcher8.shared.changeState(newState: RVLoggedOutState8())
            // RVStateDispatcher4.shared.changeState(newState: RVBaseAppState4(appState: .loggedOut))
         }
     }
@@ -358,7 +357,7 @@ class RVSwiftDDP: NSObject {
                 callback(nil, rvError)
                 return
             } else if let result = result as? [String : AnyObject] {
-                print("In \(self.classForCoder).loginWithUsername, no error got result")
+                print("In \(self.classForCoder).loginWithUsername, no error got result and credentials: \(result)")
                 RVBaseCoreInfo8.sharedInstance.loginCredentials = result
             //    RVCoreInfo.sharedInstance.loginCredentials = result
                 callback(result, nil)
@@ -375,6 +374,7 @@ class RVSwiftDDP: NSObject {
                 completionHandler(result, rvError)
                 return
             } else {
+                 print("In \(self.classForCoder).loginWithPassword, and credentials: \(String(describing: result))")
                 completionHandler(result, nil)
             }
         }
@@ -393,7 +393,9 @@ class RVSwiftDDP: NSObject {
 extension RVSwiftDDP: SwiftDDPDelegate {
     // Called as delegate by DDPClient
     func ddpUserDidLogin(_ user:String) {
+        RVStateDispatcher8.shared.gotLoginFromServer(serverUserName: user)
         // print("In \(self.instanceType).ddpUserDidLogin(), User did login as user \(user)")
+        /*
         RVBaseCoreInfo8.sharedInstance.completeLogin(username: user) { (error) in
             if let error = error {
                 error.append(message: "In \(self.instanceType).ddpUserDidLogin, got error")
@@ -403,15 +405,17 @@ extension RVSwiftDDP: SwiftDDPDelegate {
 
             }
         }
+ */
     }
     // Called as delegate by DDPClient
     func ddpUserDidLogout(_ user:String) {
     //    print("In \(self.instanceType).ddpUserDidLogout(), User \(user) did logout")
         //self.username = nil
-        RVBaseCoreInfo8.shared.logoutModels()
+        RVStateDispatcher8.shared.logoutNotification(userInfo: ["user": user])
+      //  RVBaseCoreInfo8.shared.logoutModels()
 
-        logoutListeners.notifyListeners()
-        NotificationCenter.default.post(name: RVNotification.userDidLogout, object: nil, userInfo: ["user": user])
+   //     logoutListeners.notifyListeners()
+   //     NotificationCenter.default.post(name: RVNotification.userDidLogout, object: nil, userInfo: ["user": user])
         
     }
 }
