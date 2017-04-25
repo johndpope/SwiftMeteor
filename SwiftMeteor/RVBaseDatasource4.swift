@@ -576,7 +576,7 @@ class RVForcedUnsubscribe<T: NSObject>: RVAsyncOperation<T> {
     }
     func finishUp(models: [T], error: RVError?) {
         DispatchQueue.main.async {
-            self.callback(models, error)
+            self.dealWithCallback(models: models, error: error)
             self.completeOperation()
         }
     }
@@ -810,7 +810,7 @@ class RVExpandCollapseOperation<T:NSObject>: RVLoadOperation<T> {
     }
     func finishUp(models: [T], error: RVError?) {
         DispatchQueue.main.async {
-            self.callback(models, error)
+            self.dealWithCallback(models: models, error: error)
             self.completeOperation()
         }
     }
@@ -1543,7 +1543,8 @@ class RVLoadOperation<T:NSObject>: RVAsyncOperation<T> {
     func finishUp(items: [T], error: RVError?) {
         DispatchQueue.main.async {
           //  print("In \(self.classForCoder).finishUp")
-            self.callback(items, error)
+            self.dealWithCallback(models: items, error: error)
+
             Timer.scheduledTimer(withTimeInterval: 0.4, repeats: false , block: { (timer) in
                 if (self.front) && ( self.subscriptionOperation == .none) { self.datasource.frontOperationActive = false }
                 else if (!self.front) && (self.subscriptionOperation == .none) {

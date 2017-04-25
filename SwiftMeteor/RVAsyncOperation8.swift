@@ -18,9 +18,6 @@ class RVAsyncOperation8<T:NSObject>: RVAsyncOperation<T> {
  //   var callback: RVCallback<T>
  //   let itemsPlug = [T]()
  //   let invoked = Date()
-    var emptyCallback: RVEmptyCallback? = nil
-    var errorCallback: RVErrorCallback? = nil
-    var modelCallback: RVModelCallback<T>? = nil
     override var isAsynchronous: Bool { return true }
     
     override var isExecuting: Bool {
@@ -41,20 +38,23 @@ class RVAsyncOperation8<T:NSObject>: RVAsyncOperation<T> {
             didChangeValue(forKey: key)
         }
     }
+
     init(title: String = "RVAsyncOperation8", parent: NSObject? = nil) {
         super.init(title: title, callback: { (fake, error ) in }, parent: parent )
     }
     init(title: String = "RVAsyncOperation8", parent: NSObject? = nil, emptyCallback: @escaping RVEmptyCallback) {
-        self.emptyCallback = emptyCallback
+
         super.init(title: title, callback: { (fake, error ) in }, parent: parent )
+        self.emptyCallback = emptyCallback
     }
     init(title: String = "RVAsyncOperation8", parent: NSObject? = nil, errorCallback: @escaping RVErrorCallback) {
-        self.errorCallback = errorCallback
+
         super.init(title: title, callback: { (fake, error ) in }, parent: parent )
+        self.errorCallback = errorCallback
     }
     init(title: String = "RVAsyncOperation8", parent: NSObject? = nil, modelCallback: @escaping RVModelCallback<T>) {
-        self.modelCallback = modelCallback
         super.init(title: title, callback: { (fake, error ) in }, parent: parent )
+        self.modelCallback = modelCallback
     }
     override func start() {
         isExecuting = true

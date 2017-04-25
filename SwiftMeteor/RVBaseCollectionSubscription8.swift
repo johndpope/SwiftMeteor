@@ -241,7 +241,8 @@ class RVModelSubscriptionBroadcast<T: NSObject>: RVAsyncOperation<T> {
         if !self.isCancelled {
             DispatchQueue.main.async {
                 if self.isCancelled {
-                    self.callback(self.emptyModels, nil)
+                    self.dealWithCallback()
+                    if let callback = self.callback { callback(self.emptyModels, nil) } // CALLBACK TO BE REMOVED
                     self.completeOperation()
                     return
                 }
@@ -249,12 +250,12 @@ class RVModelSubscriptionBroadcast<T: NSObject>: RVAsyncOperation<T> {
                 let payload = RVPayload(subscription: self.subscription, eventType: self.eventType, models: self.models, operation: self)
                 //print("In \(self.classForCoder).asyncMain posting notification \(self.subscription.notificationName) with itemId \(self.id)")
                 NotificationCenter.default.post(name: self.subscription.notificationName, object: self , userInfo: [RVPayload.payloadInfoKey: payload])
-                self.callback(self.emptyModels, nil)
+                if let callback = self.callback { callback(self.emptyModels, nil) } // CALLBACK TO BE REMOVED
                 self.completeOperation()
             }
             return
         } else {
-            self.callback(self.emptyModels, nil)
+            if let callback = self.callback { callback(self.emptyModels, nil) } // CALLBACK TO BE REMOVED
             self.completeOperation()
         }
     }

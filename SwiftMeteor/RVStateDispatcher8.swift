@@ -34,7 +34,7 @@ class RVChangeStateOperation8<T: NSObject>: RVAsyncOperation<T> {
         DispatchQueue.main.async {
             if self.isCancelled {
                 DispatchQueue.main.async {
-                    self.callback([T](), nil)
+                    self.dealWithCallback()
                     self.completeOperation()
                     return
                 }
@@ -44,7 +44,7 @@ class RVChangeStateOperation8<T: NSObject>: RVAsyncOperation<T> {
                     RVStateDispatcher8.shared.previousState = RVStateDispatcher8.shared.currentState
                     RVStateDispatcher8.shared.currentState = self.newState
                     self.deck.viewDeckChangeState(newState: self.newState, previousState: RVStateDispatcher8.shared.previousState, returnToCenter: self.returnToCenter) {  self.completeOperation() }
-                    self.callback([T](), nil)
+                    self.dealWithCallback()
                     self.completeOperation()
                 }
             }

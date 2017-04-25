@@ -15,7 +15,10 @@ class RVAsyncOperation<T:NSObject>: Operation {
     private var _executing: Bool = false
     private var _finished:  Bool = false
     var parent: NSObject? = nil
-    var callback: RVCallback<T>
+    var callback: RVCallback<T>?
+    var emptyCallback: RVEmptyCallback? = nil
+    var errorCallback: RVErrorCallback? = nil
+    var modelCallback: RVModelCallback<T>? = nil
     let itemsPlug = [T]()
     let invoked = Date()
 
@@ -39,6 +42,9 @@ class RVAsyncOperation<T:NSObject>: Operation {
             didChangeValue(forKey: key)
         }
     }
+    func dealWithCallback(models: [T] = [T](), error: RVError? = nil) {
+        if let callback = self.callback { callback(models,error) } // CALLBACK TO BE REMOVED
+    }
     init(title: String, callback: @escaping RVCallback<T>, parent: NSObject? = nil) {
         self.title = title
         self.parent = parent
@@ -60,7 +66,7 @@ class RVAsyncOperation<T:NSObject>: Operation {
     }
     func completeOperation(models: [T] = [T](), error: RVError? ) {
         DispatchQueue.main.async {
-            self.callback(models, error)
+            self.dealWithCallback(models: models, error: error )
             self.isFinished = true
             self.isExecuting = false
         }
