@@ -19,5 +19,6 @@ protocol RVSubscription: class {
     var ignore: Bool { get }
     func subscribe(query: RVQuery, reference: RVBaseModel?, callback: @escaping() -> Void) -> Void
     func unsubscribe(callback: @escaping ()-> Void) -> Void
+    func unsubscribe() -> Void
 //    func unsubscribe() -> Void
 }

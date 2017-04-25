@@ -120,7 +120,7 @@ class RVBaseCollectionSubscription8: NSObject, MeteorCollectionType, RVSubscript
     deinit {
         NotificationCenter.default.removeObserver(self)
         if let id = self.subscriptionID {
-            let _ = Meteor.collections.removeValue(forKey: self.modelType.rawValue)
+          //  let _ = Meteor.collections.removeValue(forKey: self.modelType.rawValue)
             RVSwiftDDP.sharedInstance.unsubscribe(id: id)
         }
         //if let existing = RVSwiftDDP.sharedInstance.removeSubscription(subscription: self) { existing.unsubscribe() }
@@ -241,6 +241,7 @@ class RVModelSubscriptionBroadcast<T: NSObject>: RVAsyncOperation<T> {
         if !self.isCancelled {
             DispatchQueue.main.async {
                 if self.isCancelled {
+                    print("In \(self.classForCoder).asyncMain, line: \(#line), about to do dealWithCallback")
                     self.dealWithCallback()
               //      if let callback = self.callback { callback(self.emptyModels, nil) } // CALLBACK TO BE REMOVED
                     self.completeOperation()
@@ -250,12 +251,14 @@ class RVModelSubscriptionBroadcast<T: NSObject>: RVAsyncOperation<T> {
                 let payload = RVPayload(subscription: self.subscription, eventType: self.eventType, models: self.models, operation: self)
                 //print("In \(self.classForCoder).asyncMain posting notification \(self.subscription.notificationName) with itemId \(self.id)")
                 NotificationCenter.default.post(name: self.subscription.notificationName, object: self , userInfo: [RVPayload.payloadInfoKey: payload])
+                print("In \(self.classForCoder).asyncMain, line: \(#line), about to do dealWithCallback")
                 self.dealWithCallback()
               //  if let callback = self.callback { callback(self.emptyModels, nil) } // CALLBACK TO BE REMOVED
                 self.completeOperation()
             }
             return
         } else {
+            print("In \(self.classForCoder).asyncMain, line: \(#line), about to do dealWithCallback")
             self.dealWithCallback()
            // if let callback = self.callback { callback(self.emptyModels, nil) } // CALLBACK TO BE REMOVED
             self.completeOperation()

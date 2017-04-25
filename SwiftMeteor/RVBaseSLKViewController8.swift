@@ -190,12 +190,9 @@ class RVBaseSLKViewController8: SLKTextViewController {
     
     deinit {
         NotificationCenter.default.removeObserver(self)
-        configuration.removeAllSections { (models, error) in
-            if let error = error {
-                error.append(message: "In \(self.instanceType).deinit got error removing All Sections")
-                error.printError()
-            }
-        }
+        manager.unsubscribe ()
+        manager.cancelAllOperations()
+       // configuration.removeAllSections()
     }
     func makeTransparent(view: UIView?) {
         if let view = view {

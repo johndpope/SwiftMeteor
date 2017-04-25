@@ -89,6 +89,13 @@ class RVBaseConfiguration4 {
         self.SLKshouldScrollToBottomAfterKeyboardShows = false
         self.SLKshowTextInputBar                       = true
     }
+    func removeAllSections() {
+        self.manager.removeAllSections { (models, error) in
+            if let error = error {
+                error.printError()
+            }
+        }
+    }
     func removeAllSections(callback: @escaping RVCallback<RVBaseModel>) {
         self.manager.removeAllSections(callback: callback)
     }

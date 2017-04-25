@@ -110,34 +110,38 @@ class RVViewDeck8: NSObject {
     }
     func viewDeckChangeState(newState: RVBaseAppState8, previousState: RVBaseAppState8, returnToCenter: Bool, callback: @escaping()-> Void) {
       //  print("In \(self.classForCoder).viewDeckChangeState \(newState) and previousState is: \(previousState)")
-        if !returnToCenter {
-            let newPath = newState.path
-            let previousPath = previousState.path
-            if newPath.top != previousPath.top {
-                switch (newPath.top) {
-                case .leftMenu:
-                   // print("In \(self.classForCoder).viewDeckChangeState, previousState is \(previousState)")
-                    self.statePriorToMenu = previousState
-                    self.toggleSide(side: .left)
-                case .loggedOut:
-                    evaluateNewController(targetTop: .loggedOut)
-                    self.toggleSide(side: .center)
-                case .main:
-                    evaluateNewController(targetTop: .main)
-                    self.toggleSide(side: .center)
-
+      //  DispatchQueue.main.async {
+            if !returnToCenter {
+                let newPath = newState.path
+                let previousPath = previousState.path
+                if newPath.top != previousPath.top {
+                    switch (newPath.top) {
+                    case .leftMenu:
+                        // print("In \(self.classForCoder).viewDeckChangeState, previousState is \(previousState)")
+                        self.statePriorToMenu = previousState
+                        self.toggleSide(side: .left)
+                    case .loggedOut:
+                        self.evaluateNewController(targetTop: .loggedOut)
+                        self.toggleSide(side: .center)
+                    case .main:
+                        self.evaluateNewController(targetTop: .main)
+                        self.toggleSide(side: .center)
+                        
+                    }
                 }
+            } else {
+                self.toggleSide(side: .center)
             }
-        } else {
-            self.toggleSide(side: .center)
-        }
-        finishup(newState: newState, previousState: previousState, callback: callback)
+            self.finishup(newState: newState, previousState: previousState, callback: callback)
+     //   }
     }
     func finishup(newState: RVBaseAppState8, previousState: RVBaseAppState8, callback: @escaping() -> Void) {
-        NotificationCenter.default.post(name: RVNotification.AppStateChanged, object: self, userInfo: [RVViewDeck8.previousStateKey: previousState, RVViewDeck8.newStateKey: newState])
         DispatchQueue.main.async {
             callback()
+            NotificationCenter.default.post(name: RVNotification.AppStateChanged, object: self, userInfo: [RVViewDeck8.previousStateKey: previousState, RVViewDeck8.newStateKey: newState])
+
         }
+        
     }
     func evaluateNewController(targetTop: RVTop) {
         if !RVControllers8.shared.sameController(targetTop: targetTop, controller: self.centerViewController) {
