@@ -104,7 +104,7 @@ class RVBaseConfiguration4 {
         return RVTransaction.baseQuery
     }
     func baseMainQuery() -> (RVQuery, RVError?) {
-        print("In \(self.instanceType).baseMainQuery(). Needs to be overridden")
+       // print("In \(self.instanceType).baseMainQuery(). Needs to be overridden")
         return RVTransaction.baseQuery
     }
     func baseFilterQuery() -> (RVQuery, RVError?) {

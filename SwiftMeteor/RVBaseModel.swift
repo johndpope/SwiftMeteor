@@ -1103,7 +1103,7 @@ extension RVBaseModel {
 
     }
     class func meteorMethod(request: RVCrud) -> String {
-        return "\(RVMeteorMethod.Prefix)\(collectionType().rawValue)\(RVMeteorMethod.Separator)\(request.rawValue)"
+        return "\(RVMeteorMethod.Prefix.lowercased())\(collectionType().rawValue.lowercased())\(RVMeteorMethod.Separator)\(request.rawValue.lowercased())"
     }
     class func bulkQuery(query: RVQuery, callback: @escaping(_ items: [RVBaseModel], _ error: RVError?)-> Void) {
         if let appDomainId = RVBaseModel.appDomainId {

@@ -57,7 +57,7 @@ class RVGroupDynamicListConfiguration8: RVBaseConfiguration8 {
         return (query, nil)
     }
     override func baseMainQuery() -> (RVQuery, RVError?) {
-        print("In \(self.instanceType).baseMainQuery()")
+       // print("In \(self.instanceType).baseMainQuery()")
         let (query, error) = RVGroup.baseQuery
    //     query.addAnd(term: .special, value: RVSpecial.root.rawValue as AnyObject , comparison: .eq)
         if let root = core.rootGroup {
