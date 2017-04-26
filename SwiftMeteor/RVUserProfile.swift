@@ -17,7 +17,10 @@ class RVUserProfile: RVInterest {
     override class var bulkQueryMethod: RVMeteorMethods { get { return RVMeteorMethods.userProfileBulkQuery } }
 
     override class func modelFromFields(fields: [String: AnyObject]) -> RVBaseModel { return RVUserProfile(fields: fields) }
-    
+    override func initializeProperties() {
+        super.initializeProperties()
+        self.everywhere = true
+    }
     var firstName: String? {
         get { return getString(key: .firstName) }
         set {
@@ -239,6 +242,7 @@ class RVUserProfile: RVInterest {
         }
     }
     class func getOrCreateUsersUserProfile(callback: @escaping (_ profile: RVUserProfile?, _ error: RVError?) -> Void ) {
+        print("IN \(self.classForCoder()).getOrCreate")
         let profile = RVUserProfile()
         profile.username = RVBaseCoreInfo8.sharedInstance.username
         var fields = profile.dirties
@@ -253,6 +257,10 @@ class RVUserProfile: RVInterest {
              //   let rvError = RVError(message: "In RVUserProfile.getOrCreateUsersUserProfile \(#line) got DDPError for id: \(profile.localId ?? "No localId")", sourceError: error)
                 callback(nil, error)
             } else if let fields = result as? [String: AnyObject] {
+                callback(RVUserProfile(fields: fields), nil)
+                return
+                //print("In \(type(of: self)).getOrCreate, have fields \(fields)")
+                /*
                 if let _ = fields["newProfile"] as? Bool {
                     print("In \(type(of: self)).getOrCreate, have a new Profile")
                     if let id = fields["_id"] as? String {
@@ -280,10 +288,28 @@ class RVUserProfile: RVInterest {
                     callback(RVUserProfile(fields: fields), nil)
                     return
                 }
+ */
             } else {
                 print("In RVUserProfile.getOrCreateUsersUserProfile \(#line), no error but no result. id = \(profile.localId ?? " no localId")")
                 callback(nil, nil)
             }
+        }
+    }
+    
+    
+    override class var baseQuery: (RVQuery, RVError?) {
+        get {
+            let query = RVQuery()
+            var error: RVError? = nil
+            query.addAnd(term: .modelType, value: RVModelType.userProfile.rawValue as AnyObject, comparison: .eq)
+            query.addAnd(term: .deleted, value: false as AnyObject, comparison: .eq)
+            query.limit = 10
+            if let domainId = RVTransaction.appDomainId {
+                query.addAnd(term: .domainId, value: domainId as AnyObject, comparison: .eq)
+            } else {
+                error = RVError(message: "In \(self.classForCoder).basicQuery, no domainId")
+            }
+            return (query, error)
         }
     }
 }

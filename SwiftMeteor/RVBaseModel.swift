@@ -814,6 +814,7 @@ class RVBaseModel: MeteorDocument {
 }
 extension RVBaseModel {
     class func retrieveInstance(id: String, callback: @escaping (_ item: RVBaseModel? , _ error: RVError?) -> Void) {
+        print("In \(self.classForCoder()).retrieve meteorMethod: \(meteorMethod(request: .read))")
         Meteor.call(meteorMethod(request: .read), params: [ id as AnyObject]) { (result: Any?, error: DDPError?) in
      //   Meteor.call(findMethod.rawValue, params: [ id as AnyObject]) { (result: Any?, error: DDPError?) in
             if let error = error {
@@ -1106,6 +1107,7 @@ extension RVBaseModel {
     }
     class func bulkQuery(query: RVQuery, callback: @escaping(_ items: [RVBaseModel], _ error: RVError?)-> Void) {
         if let appDomainId = RVBaseModel.appDomainId {
+            
             query.addAnd(term: .domainId, value: appDomainId as AnyObject, comparison: .eq)
         }
 

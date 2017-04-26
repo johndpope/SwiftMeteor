@@ -373,10 +373,11 @@ class RVSwiftDDP: NSObject {
                 let rvError = RVError(message: "In \(self.instanceType).loginWithPassword, got Meteor Error for email \(email) password \(password)", sourceError: error)
                 completionHandler(result, rvError)
                 return
-            } else {
+            } else if let result = result as? [String : AnyObject] {
                  print("In \(self.classForCoder).loginWithPassword, and credentials: \(String(describing: result))")
-                completionHandler(result, nil)
+                RVBaseCoreInfo8.sharedInstance.loginCredentials = result
             }
+             completionHandler(result, nil)
         }
     }
 

@@ -68,6 +68,10 @@
 		282E07451E3170E100FB5C1F /* String+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 282E07441E3170E100FB5C1F /* String+Extension.swift */; };
 		282E07471E317A5A00FB5C1F /* RVMeteorUserConnection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 282E07461E317A5A00FB5C1F /* RVMeteorUserConnection.swift */; };
 		282E52131E95AD9300390F73 /* RVTransactionConfiguration4.swift in Sources */ = {isa = PBXBuildFile; fileRef = 282E52121E95AD9300390F73 /* RVTransactionConfiguration4.swift */; };
+		282F19FD1EB0451E006A1E4D /* RVUserListController8.swift in Sources */ = {isa = PBXBuildFile; fileRef = 282F19FC1EB0451E006A1E4D /* RVUserListController8.swift */; };
+		282F19FF1EB04941006A1E4D /* RVUserListState8.swift in Sources */ = {isa = PBXBuildFile; fileRef = 282F19FE1EB04941006A1E4D /* RVUserListState8.swift */; };
+		282F1A011EB0499A006A1E4D /* RVUserListConfiguration8.swift in Sources */ = {isa = PBXBuildFile; fileRef = 282F1A001EB0499A006A1E4D /* RVUserListConfiguration8.swift */; };
+		282F1A031EB049C5006A1E4D /* RVUserListDatasource8.swift in Sources */ = {isa = PBXBuildFile; fileRef = 282F1A021EB049C5006A1E4D /* RVUserListDatasource8.swift */; };
 		283460961E4661830009D606 /* RVMessageListState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 283460951E4661830009D606 /* RVMessageListState.swift */; };
 		283460991E46627C0009D606 /* RVMessageDatasource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 283460981E46627C0009D606 /* RVMessageDatasource.swift */; };
 		2834609D1E466C270009D606 /* RVMessageTableCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2834609C1E466C270009D606 /* RVMessageTableCell.swift */; };
@@ -347,6 +351,10 @@
 		282E07441E3170E100FB5C1F /* String+Extension.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "String+Extension.swift"; sourceTree = "<group>"; };
 		282E07461E317A5A00FB5C1F /* RVMeteorUserConnection.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RVMeteorUserConnection.swift; sourceTree = "<group>"; };
 		282E52121E95AD9300390F73 /* RVTransactionConfiguration4.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RVTransactionConfiguration4.swift; sourceTree = "<group>"; };
+		282F19FC1EB0451E006A1E4D /* RVUserListController8.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RVUserListController8.swift; sourceTree = "<group>"; };
+		282F19FE1EB04941006A1E4D /* RVUserListState8.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RVUserListState8.swift; sourceTree = "<group>"; };
+		282F1A001EB0499A006A1E4D /* RVUserListConfiguration8.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RVUserListConfiguration8.swift; sourceTree = "<group>"; };
+		282F1A021EB049C5006A1E4D /* RVUserListDatasource8.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RVUserListDatasource8.swift; sourceTree = "<group>"; };
 		283460951E4661830009D606 /* RVMessageListState.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RVMessageListState.swift; sourceTree = "<group>"; };
 		283460981E46627C0009D606 /* RVMessageDatasource.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RVMessageDatasource.swift; sourceTree = "<group>"; };
 		2834609C1E466C270009D606 /* RVMessageTableCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RVMessageTableCell.swift; sourceTree = "<group>"; };
@@ -777,6 +785,10 @@
 		282D255B1EA311540048148F /* Users */ = {
 			isa = PBXGroup;
 			children = (
+				282F19FC1EB0451E006A1E4D /* RVUserListController8.swift */,
+				282F19FE1EB04941006A1E4D /* RVUserListState8.swift */,
+				282F1A001EB0499A006A1E4D /* RVUserListConfiguration8.swift */,
+				282F1A021EB049C5006A1E4D /* RVUserListDatasource8.swift */,
 			);
 			name = Users;
 			sourceTree = "<group>";
@@ -1544,6 +1556,7 @@
 				284C258C1EA7FEB500473699 /* RVMeteor.swift in Sources */,
 				28DE2D991DFE481900EFEECB /* RVBaseModel.swift in Sources */,
 				2815FDF91E56C5EE00A7B829 /* RVMemberViewController.swift in Sources */,
+				282F1A031EB049C5006A1E4D /* RVUserListDatasource8.swift in Sources */,
 				28D7372B1E7F6E000096E0A3 /* RVViewDeck4.swift in Sources */,
 				28F53E711DEB5F71009641F0 /* SecondViewController.swift in Sources */,
 				2806BAFD1E6D05B6005CA637 /* RVTransactionAppState.swift in Sources */,
@@ -1553,8 +1566,10 @@
 				283D370D1E3D256C00ADCBBA /* RVWatchGroupTableCell.swift in Sources */,
 				289A45F71E47AEBE001BBB29 /* RVUserListState.swift in Sources */,
 				282D25601EA311BA0048148F /* RVBaseDatasource8.swift in Sources */,
+				282F19FD1EB0451E006A1E4D /* RVUserListController8.swift in Sources */,
 				286CA32B1E327F8200B081B8 /* RVUserNotificationSetting.swift in Sources */,
 				286F1D6C1EA53B1000EA2979 /* RVDSManagerDynamicGroupList8.swift in Sources */,
+				282F1A011EB0499A006A1E4D /* RVUserListConfiguration8.swift in Sources */,
 				284012081E881F4900CDE8BD /* RVDSArray4.swift in Sources */,
 				284FBAD01DEC13B600446C86 /* RVBaseViewController.swift in Sources */,
 				287ABCE11E7E4B47009FDA39 /* RVFilterTerms.swift in Sources */,
@@ -1632,6 +1647,7 @@
 				2842903D1E89859100672B46 /* RVTransactionDatasource44.swift in Sources */,
 				28DE2D9B1DFE665400EFEECB /* RVModelType.swift in Sources */,
 				286CA3251E327BF200B081B8 /* RVGoogleDataProvider.swift in Sources */,
+				282F19FF1EB04941006A1E4D /* RVUserListState8.swift in Sources */,
 				284B31A41E406A5300E2118D /* RVMessageAuthorViewController.swift in Sources */,
 				28E315F31E43D1DF00AFFFD1 /* RVLoginViewController.swift in Sources */,
 				286F1D641EA532DC00EA2979 /* RVGroupDynamicListConfiguration8.swift in Sources */,
