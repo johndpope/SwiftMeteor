@@ -242,7 +242,7 @@ class RVUserProfile: RVInterest {
         }
     }
     class func getOrCreateUsersUserProfile(callback: @escaping (_ profile: RVUserProfile?, _ error: RVError?) -> Void ) {
-        print("IN \(self.classForCoder()).getOrCreate")
+       // print("IN \(self.classForCoder()).getOrCreate")
         let profile = RVUserProfile()
         profile.username = RVBaseCoreInfo8.sharedInstance.username
         var fields = profile.dirties

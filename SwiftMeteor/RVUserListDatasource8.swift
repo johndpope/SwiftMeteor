@@ -9,7 +9,7 @@
 import UIKit
 class RVUserListDatasource8<T: NSObject>: RVBaseDatasource8<T> {
     override func retrieve(query: RVQuery, callback: @escaping RVCallback<T>) {
-        print("In \(self.classForCoder).retrieve")
+       // print("In \(self.classForCoder).retrieve")
         RVUserProfile.bulkQuery(query: query) { (models, error) in
             if let error = error {
                 error.append(message: "In \(self.classForCoder).retrieve, got Meteor Error")
