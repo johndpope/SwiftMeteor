@@ -1105,6 +1105,40 @@ extension RVBaseModel {
     class func meteorMethod(request: RVCrud) -> String {
         return "\(RVMeteorMethod.Prefix.lowercased())\(collectionType().rawValue.lowercased())\(RVMeteorMethod.Separator)\(request.rawValue.lowercased())"
     }
+    class func bulkQuery2<T>(query: RVQuery, callback: @escaping RVCallback<T>) {
+        if let appDomainId = RVBaseModel.appDomainId { query.addAnd(term: .domainId, value: appDomainId as AnyObject, comparison: .eq) }
+        
+        let (filters, projection) = query.query()
+        //print("In RVBaseModel.bulkQuery")
+        Meteor.call(meteorMethod(request: .list), params: [filters as AnyObject, projection as AnyObject]) { (result: Any?, error : DDPError?) in
+            //        Meteor.call(bulkQueryMethod.rawValue, params: [filters as AnyObject, projection as AnyObject]) { (result: Any?, error : DDPError?) in
+            // print("In RVBaseModel.bulkQuery has response \(error), \(result)")
+            DispatchQueue.main.async {
+                var models = [T]()
+                if let error = error {
+                    let rvError = RVError(message: "In RVBaseModel.bulkQuery, got Meteor Error", sourceError: error)
+                    callback(models , rvError)
+                    return
+                } else if let items = result as? [[String: AnyObject]] {
+                    for fields in items {
+                        if let model = modelFromFields(fields: fields) as? T {
+                            models.append(model)
+                        } else {
+                            print("In \(self.classForCoder()).bulkQuery<T>, model did not match type \(T.self)")
+                        }
+                    }
+                    callback(models, nil)
+                    return
+                } else if let results = result {
+                    let rvError = RVError(message: "In RVBaseModel.bulkQuery, no error, but results are not array type. \nResults are: \(results)")
+                    callback(models, rvError)
+                } else {
+                    print("In RVBaseModel.bulkQuery, no error but no results")
+                    callback(models, nil)
+                }
+            }
+        }
+    }
     class func bulkQuery(query: RVQuery, callback: @escaping(_ items: [RVBaseModel], _ error: RVError?)-> Void) {
         if let appDomainId = RVBaseModel.appDomainId {
             
