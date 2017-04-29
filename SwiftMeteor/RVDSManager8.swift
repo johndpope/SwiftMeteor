@@ -7,6 +7,6 @@
 //
 
 import UIKit
-class RVDSManager8<S: NSObject>: RVDSManager5<S> {
+class RVDSManager8<S: RVSubbaseModel>: RVDSManager5<S> {
     
 }

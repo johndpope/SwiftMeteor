@@ -8,15 +8,15 @@
 
 import UIKit
 class RVGroupListController: RVTransactionListViewController {
-    var manager4 = RVDSManager5<RVBaseModel>(scrollView: nil, managerType: .filter, dynamicSections: false)
-    var configuration4 = RVTransactionConfiguration4(scrollView: nil)
+    var manager4 = RVDSManager5<RVGroup>(scrollView: nil, managerType: .filter, dynamicSections: false)
+    var configuration4 = RVTransactionConfiguration4<RVGroup>(scrollView: nil)
     var lastSearchTerm: String = "DummyValue"
     override var installSearchControllerInTableView: Bool { get { return false }}
     
 
     override func viewDidLoad() {
         //manager4 = RVDSManager5<RVBaseModel>(scrollView: self.dsScrollView)
-        configuration4 = RVTransactionConfiguration4(scrollView: self.dsScrollView)
+        configuration4 = RVTransactionConfiguration4<RVGroup>(scrollView: self.dsScrollView)
         super.viewDidLoad()
         if let tableView = self.tableView {
             tableView.separatorStyle = .singleLine
@@ -119,8 +119,8 @@ class RVGroupListController: RVTransactionListViewController {
         
     }
     override func expandCollapseButtonTouched(view: RVFirstViewHeaderCell) {
-        if let datasource = view.datasource4 {
-            configuration4.manager.toggle(datasource: datasource) { (models, error) in
+        if let datasource = view.datasource4 as? RVBaseDatasource4<RVGroup> {
+            configuration4.manager.toggle(datasource: datasource ) { (models, error) in
                 if let error = error {
                     error.printError()
                 } else {
@@ -129,8 +129,8 @@ class RVGroupListController: RVTransactionListViewController {
             }
         }
 
-        if let datasource = view.datasource4 {
-            manager4.toggle(datasource: datasource, callback: { (models, error) in
+        if let datasource = view.datasource4 as? RVBaseDatasource4<RVGroup> {
+            manager4.toggle(datasource: datasource , callback: { (models, error) in
                 if let error = error {
                     error.printError()
                 } else {

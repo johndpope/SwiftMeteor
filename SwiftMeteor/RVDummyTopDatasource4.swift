@@ -7,7 +7,7 @@
 //
 
 import Foundation
-class RVDummyTopDatasource4<T:NSObject>: RVBaseDatasource4<T> {
+class RVDummyTopDatasource4<T:RVSubbaseModel>: RVBaseDatasource4<T> {
     override func retrieve(query: RVQuery, callback: @escaping RVCallback<T>) {
         var models = [T]()
         if elements.count < 2 {

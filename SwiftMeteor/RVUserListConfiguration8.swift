@@ -8,10 +8,10 @@
 
 import Foundation
 import UIKit
-class RVUserListConfiguration8: RVBaseConfiguration8 {
+class RVUserListConfiguration8<T: RVSubbaseModel>: RVBaseConfiguration8<T> {
     
     
-    override init(scrollView: UIScrollView? ) {
+    required init(scrollView: UIScrollView? ) {
         super.init(scrollView: scrollView)
       //  self.subscription           = RVTransactionSubscription8(front: true, showResponse: false)
         self.configurationName      = "RVUserListConfiguration8"
@@ -39,16 +39,16 @@ class RVUserListConfiguration8: RVBaseConfiguration8 {
         self.SLKshouldScrollToBottomAfterKeyboardShows = false
         self.SLKshowTextInputBar                       = true
     }
-    override var topDatasource: RVBaseDatasource4<RVBaseModel>? {
-        return RVDummyTopDatasource4<RVBaseModel>(manager: self.manager, datasourceType: .top, maxSize: 100)
+    override var topDatasource: RVBaseDatasource4<T>? {
+        return RVDummyTopDatasource4<T>(manager: self.manager, datasourceType: .top, maxSize: 100)
     }
-    override var mainDatasource: RVBaseDatasource4<RVBaseModel> {
-        let datasource = RVUserListDatasource8<RVBaseModel>(manager: self.manager, datasourceType: .main, maxSize: 80)
+    override var mainDatasource: RVBaseDatasource4<T> {
+        let datasource = RVUserListDatasource8<T>(manager: self.manager, datasourceType: .main, maxSize: 80)
       //  datasource.subscription = self.subscription
         return datasource
     }
-    override var filterDatasource: RVBaseDatasource4<RVBaseModel> {
-        return RVUserListDatasource8<RVBaseModel>(manager: self.manager, datasourceType: .filter, maxSize: self.mainDatasourceMaxSize)
+    override var filterDatasource: RVBaseDatasource4<T> {
+        return RVUserListDatasource8<T>(manager: self.manager, datasourceType: .filter, maxSize: self.mainDatasourceMaxSize)
     }
     override func baseTopQuery() -> (RVQuery, RVError?) {
         let query = RVQuery()

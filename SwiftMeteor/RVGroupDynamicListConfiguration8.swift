@@ -7,10 +7,10 @@
 //
 
 import UIKit
-class RVGroupDynamicListConfiguration8: RVBaseConfiguration8 {
+class RVGroupDynamicListConfiguration8<T: RVSubbaseModel>: RVBaseConfiguration8<T> {
 
     
-    override init(scrollView: UIScrollView? ) {
+    required init(scrollView: UIScrollView? ) {
         super.init(scrollView: scrollView)
         self.subscription           = RVGroupListSubscription8(front: true, showResponse: false)
         self.configurationName      = "RVGroupDynamicListConfiguration8"
@@ -28,7 +28,7 @@ class RVGroupDynamicListConfiguration8: RVBaseConfiguration8 {
         self.mainDatasourceMaxSize      = 300
         self.filterDatasourceMaxSize    = 300
         self.searchScopes               = [[RVKeys.title.rawValue: RVKeys.title], [RVKeys.fullName.rawValue: RVKeys.fullName]]
-        self.manager = RVDSManagerDynamicGroupList8(scrollView: scrollView, maxSize: 80, managerType: .main, dynamicSections: true, useZeroCell: true)
+        self.manager = RVDSManagerDynamicGroupList8<T>(scrollView: scrollView, maxSize: 80, managerType: .main, dynamicSections: true, useZeroCell: true)
         self.manager.subscription = RVGroupListSubscription8(front: true, showResponse: false)
         
     }
@@ -40,16 +40,16 @@ class RVGroupDynamicListConfiguration8: RVBaseConfiguration8 {
         self.SLKshouldScrollToBottomAfterKeyboardShows = false
         self.SLKshowTextInputBar                       = true
     }
-    override var topDatasource: RVBaseDatasource4<RVBaseModel>? {
-        return RVDummyTopDatasource4<RVBaseModel>(manager: self.manager, datasourceType: .top, maxSize: 100)
+    override var topDatasource: RVBaseDatasource4<T>? {
+        return RVDummyTopDatasource4<T>(manager: self.manager, datasourceType: .top, maxSize: 100)
     }
-    override var mainDatasource: RVBaseDatasource4<RVBaseModel> {
-        let datasource = RVGroupListDatasource8<RVBaseModel>(manager: self.manager, datasourceType: .main, maxSize: 80)
+    override var mainDatasource: RVBaseDatasource4<T> {
+        let datasource = RVGroupListDatasource8<T>(manager: self.manager, datasourceType: .main, maxSize: 80)
         datasource.subscription = self.subscription
         return datasource
     }
-    override var filterDatasource: RVBaseDatasource4<RVBaseModel> {
-        return RVGroupListDatasource8<RVBaseModel>(manager: self.manager, datasourceType: .filter, maxSize: self.mainDatasourceMaxSize)
+    override var filterDatasource: RVBaseDatasource4<T> {
+        return RVGroupListDatasource8<T>(manager: self.manager, datasourceType: .filter, maxSize: self.mainDatasourceMaxSize)
     }
     override func baseTopQuery() -> (RVQuery, RVError?) {
         let query = RVQuery()

@@ -24,7 +24,7 @@ class RVGroupListController8: RVBaseListController8  {
         }
     }
     
-    override var instanceConfiguration: RVBaseConfiguration8 { return RVGroupDynamicListConfiguration8(scrollView: dsScrollView) }
+    override var instanceConfiguration: RVListControllerConfigurationProtocol { return RVGroupDynamicListConfiguration8<RVGroup>(scrollView: dsScrollView) }
     
     
     override func viewDidLoad() {

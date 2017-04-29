@@ -8,7 +8,7 @@
 
 import Foundation
 
-class RVDSManager5Transaction<S: NSObject>: RVDSManager5<S> {
+class RVDSManager5Transaction<S: RVSubbaseModel>: RVDSManager5<S> {
 
     override func retrieveSectionModels(query: RVQuery, callback: @escaping ([S], RVError?) -> Void) {
         RVTransaction.bulkQuery(query: query) { (models, error) in

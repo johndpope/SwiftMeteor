@@ -7,7 +7,7 @@
 //
 
 import Foundation
-class RVTransactionDatasource4<T: NSObject>: RVBaseDatasource4<T> {
+class RVTransactionDatasource4<T: RVSubbaseModel>: RVBaseDatasource4<T> {
     
     
     var basicQuery: (RVQuery, RVError?) {

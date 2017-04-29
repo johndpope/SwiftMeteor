@@ -10,7 +10,7 @@ import UIKit
 
 class RVGroupListControllerBySection: RVGroupListController4 {
     
-    override var instanceConfiguration: RVBaseConfiguration4 { return RVTransactionConfiguration4DynamicSections(scrollView: dsScrollView) }
+    override var instanceConfiguration: RVListControllerConfigurationProtocol { return RVTransactionConfiguration4DynamicSections<RVGroup>(scrollView: dsScrollView) }
     
 
 }

@@ -9,7 +9,7 @@
 import UIKit
 import SlackTextViewController
 
-class RVBaseConfiguration4 {
+class RVBaseConfiguration4<T: RVSubbaseModel>: RVListControllerConfigurationProtocol {
     var NOTOPDATASOURCE: Bool = true // NEIL PLUG
     var instanceType: String { get { return String(describing: type(of: self)) } }
     var dynamicSections: Bool = false
@@ -24,7 +24,7 @@ class RVBaseConfiguration4 {
     var filterDatasourceMaxSize: Int = 300
     var topAreaMaxHeights: [CGFloat] = [0.0, 0.0, 0.0]
     var topAreaMinHeights: [CGFloat] = [0.0, 0.0, 0.0]
-    let LAST_SORT_STRING = "ZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZ"
+    var LAST_SORT_STRING = "ZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZ"
     var subscription: RVSubscription? = nil
     
     var topTopMinimumHeight: CGFloat = 0.0
@@ -38,7 +38,7 @@ class RVBaseConfiguration4 {
     var searchScopes: [[String : RVKeys]]     = [[RVKeys.title.rawValue: RVKeys.title], [RVKeys.fullName.rawValue: RVKeys.fullName]]
     var defaultSortOrder: RVSortOrder = .ascending
     var installSearchControllerInTableView: Bool = false
-    var manager: RVDSManager5<RVBaseModel> = RVDSManager5<RVBaseModel>(scrollView: nil, managerType: .filter, dynamicSections: false)
+    var manager: RVDSManager5<T> = RVDSManager5<T>(scrollView: nil, managerType: .filter, dynamicSections: false)
     var navigationBarColor: UIColor = UIColor.facebookBlue()
     
     // SLK
@@ -50,17 +50,17 @@ class RVBaseConfiguration4 {
     var SLKshowTextInputBar: Bool                       = true
     
     
-    var topDatasource: RVBaseDatasource4<RVBaseModel>? {
+    var topDatasource: RVBaseDatasource4<T>? {
         return nil
     }
-    var mainDatasource: RVBaseDatasource4<RVBaseModel> {
-        return RVBaseDatasource4<RVBaseModel>(manager: self.manager, datasourceType: .main , maxSize: self.mainDatasourceMaxSize)
+    var mainDatasource: RVBaseDatasource4<T> {
+        return RVBaseDatasource4<T>(manager: self.manager, datasourceType: .main , maxSize: self.mainDatasourceMaxSize)
     }
-    var filterDatasource: RVBaseDatasource4<RVBaseModel> {
-        return RVBaseDatasource4<RVBaseModel>(manager: self.manager, datasourceType: .filter, maxSize: self.filterDatasourceMaxSize)
+    var filterDatasource: RVBaseDatasource4<T> {
+        return RVBaseDatasource4<T>(manager: self.manager, datasourceType: .filter, maxSize: self.filterDatasourceMaxSize)
     }
     
-    init(scrollView: UIScrollView? ) {
+    required init(scrollView: UIScrollView? ) {
         /*
          self.subscription          = nil
         self.configurationName      = "RVBaseConfiguration4"
@@ -78,7 +78,7 @@ class RVBaseConfiguration4 {
         self.filterDatasourceMaxSize    = 300
         self.searchScopes               = [[RVKeys.title.rawValue: RVKeys.title], [RVKeys.fullName.rawValue: RVKeys.fullName]]
          */
-        self.manager = RVDSManager5<RVBaseModel>(scrollView: scrollView, managerType: .filter, dynamicSections: false)
+        self.manager = RVDSManager5<T>(scrollView: scrollView, managerType: .filter, dynamicSections: false)
         configureSLK()
     }
     func configureSLK() {
@@ -96,8 +96,10 @@ class RVBaseConfiguration4 {
             }
         }
     }
-    func removeAllSections(callback: @escaping RVCallback<RVBaseModel>) {
-        self.manager.removeAllSections(callback: callback)
+    func removeAllSections(callback: @escaping (RVError?) -> Void) {
+        self.manager.removeAllSections { (models, error) in
+            callback(error)
+        }
     }
     func baseTopQuery() -> (RVQuery, RVError?) {
         print("In \(self.instanceType).baseTopQuery(). Needs to be overridden")
@@ -266,7 +268,7 @@ class RVBaseConfiguration4 {
         
     }
  
-    func loadDatasource(datasource: RVBaseDatasource4<RVBaseModel>, query: RVQuery, callback: @escaping(RVError?)->Void) {
+    func loadDatasource(datasource: RVBaseDatasource4<T>, query: RVQuery, callback: @escaping(RVError?)->Void) {
         //print("In \(self.instanceType).loadDatasource before append")
         manager.appendSections(datasources: [datasource], sectionTypesToRemove: [.main, .filter]) { (models, error) in
             if let error = error {
@@ -352,5 +354,39 @@ class RVBaseConfiguration4 {
             })
         }
     }
+    func numberOfSections(tableView: UITableView) -> Int {
+        return manager.numberOfSections
+    }
+    func numberOfItems(section: Int) -> Int {
+        return manager.numberOfItems(section: section)
+    }
+    func item(indexPath: IndexPath, scrollView: UIScrollView?) -> RVBaseModel? {
+        if let item = manager.item(indexPath: indexPath, scrollView: scrollView) as? RVBaseModel { return item}
+        return nil
+    }
+    func datasourceInSection(section: Int) -> AnyObject?  {
+        return manager.datasourceInSection(section: section)
+    }
+    func toggle(datasource: AnyObject, callback: @escaping (RVError?) -> Void) {
+        if let datasource = datasource as? RVBaseDatasource4<T> {
+            manager.toggle(datasource: datasource) { (models, error) in
+                callback(error)
+            }
+        } else {
+            let rvError = RVError(message: "In \(self.instanceType).toggle, datasource did not cast \(datasource)")
+            callback(rvError)
+        }
 
+    }
+    func unsubscribe() {
+        manager.unsubscribe ()
+    }
+    func cancelAllOperations() {
+        manager.cancelAllOperations()
+    }
+    func scrolling(indexPath: IndexPath, scrollView: UIScrollView) -> Void  {
+        manager.scrolling(indexPath: indexPath, scrollView: scrollView)
+    }
+    var managerDynamicSections: Bool { return manager.dynamicSections }
+    
 }

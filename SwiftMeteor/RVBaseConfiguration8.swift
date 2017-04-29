@@ -7,6 +7,6 @@
 //
 
 import Foundation
-class RVBaseConfiguration8: RVBaseConfiguration4 {
+class RVBaseConfiguration8<T: RVSubbaseModel>: RVBaseConfiguration4<T> {
     var core: RVBaseCoreInfo8 { return RVBaseCoreInfo8.sharedInstance }
 }

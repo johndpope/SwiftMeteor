@@ -28,7 +28,7 @@ enum RVDatasourceType: String {
     case subscribe  = "Subscribe"
     case unknown    = "Unknown"
 }
-class RVBaseDatasource4<T:NSObject>: NSObject {
+class RVBaseDatasource4<T:RVSubbaseModel>: RVSubbaseModel {
     let FAKESECTION = 1234567
     var sectionMode: Bool = false
     var sectionDatasourceMode: Bool = false
@@ -120,7 +120,7 @@ class RVBaseDatasource4<T:NSObject>: NSObject {
     
     func retrieve(query: RVQuery, callback: @escaping RVCallback<T>) {
       //  print("In RVBaseDatasource4.retrieve, need to override")
-        RVBaseModel.bulkQuery(query: query) { (models, error) in
+        T.bulkQuery(query: query) { (models, error) in
             if let error = error {
                 error.append(message: "In \(self.classForCoder).")
                 callback([T](), error)
@@ -138,7 +138,12 @@ class RVBaseDatasource4<T:NSObject>: NSObject {
         self.manager = manager
         self.datasourceType = datasourceType
         self.maxArraySize = ((maxSize < 500) && (maxSize > 50)) ? maxSize : 500
-        super.init()
+        super.init(id: "", fields: [String: AnyObject]() as NSDictionary)
+    }
+    
+    required init(id: String, fields: NSDictionary?) {
+        super.init(id: id, fields: fields )
+        print("In \(self.classForCoder).init. Don't use this init")
     }
 
     func cancelAllOperations() { self.queue.cancelAllOperations()}
@@ -206,12 +211,13 @@ class RVBaseDatasource4<T:NSObject>: NSObject {
             }
         }
     }
+
     func subscribe(scrollView: UIScrollView?, front: Bool) {
         if !self.subscriptionActive {
-          //  print("In \(self.classForCoder).subscribe, passed !subsciprtionActive --------------")
+           // print("In \(self.classForCoder).subscribe, passed !subsciprtionActive --------------")
             //subscription.reference = self.items.first
             if let subscription = self.subscription {
-             //    print("In \(self.classForCoder).subscribe, have subscription")
+             //    print("In \(self.classForCoder).subscribe, have subscription \(subscription)")
                 if (subscription.isFront && front) || (!subscription.isFront && !front) {
                //     print("Neil check this \(self.classForCoder).subscribe, took out subscriptionOperation flag")
                     let operation = RVSubscribeOperation<T>(datasource: self, subscription: subscription, callback: { (models, error) in
@@ -242,18 +248,20 @@ class RVBaseDatasource4<T:NSObject>: NSObject {
     func receiveSubscriptionResponse(notification: NSNotification) {
       //  print("In \(self.classForCoder).receiveSubscription")
         if let userInfo = notification.userInfo {
-            if let payload = userInfo[RVPayload.payloadInfoKey] as? RVPayload<T> {
+            if let payload = userInfo[RVPayload.payloadInfoKey] as? RVPayload<RVBaseModel> {
               //  print("In \(self.classForCoder).receiveSubscription have payload \(payload.toString())")
                 if let subscription = self.subscription {
                     if subscription.identifier == payload.subscription.identifier {
                      //   print("In \(self.classForCoder).receiveSubscription subscriptions match")
-                        
-                        let operation = RVSubcriptionResponseOperation<T>(datasource: self, subscription: subscription, incomingModels: payload.models, callback: { (models, error ) in
-                            if let error = error {
-                                error.printError()
-                            }
-                        })
-                        self.queue.addOperation(operation)
+                        if let models = payload.models as? [T] {
+                            let operation = RVSubcriptionResponseOperation<T>(datasource: self, subscription: subscription, incomingModels: models, callback: { (models, error ) in
+                                if let error = error {
+                                    error.printError()
+                                }
+                            })
+                            self.queue.addOperation(operation)
+                        }
+
                     } else {
                         print("In \(self.classForCoder).receiveSubscription payload identifier = \(payload.subscription.identifier) vs. subscriptionIdentifier: \(subscription.identifier)")
                     }
@@ -272,34 +280,7 @@ class RVBaseDatasource4<T:NSObject>: NSObject {
         self.elements = [T]()
         self.offset = 0
     }
-
-    deinit {
-        //print("In \(self.classForCoder).deinit")
-        self.unwindSubscriptions()
-        self.cancelAllOperations()
-    }
-}
-
-extension RVBaseDatasource4 {
-    func stripCandidate(candidate: RVBaseModel? ) -> [RVKeys : AnyObject] {
-        var strip = [RVKeys:AnyObject]()
-        if let candidate = candidate {
-            if let createdAt = candidate.createdAt { strip[.createdAt] = createdAt as AnyObject }
-            if let updatedAt = candidate.updatedAt { strip[.updatedAt] = updatedAt as AnyObject }
-            if let comment = candidate.comment {
-                strip[.comment] = comment as AnyObject
-                strip[.commentLowercase] = comment.lowercased() as AnyObject
-            }
-            if let handle = candidate.handle {
-                strip[.handle] = handle as AnyObject
-                strip[.handleLowercase] = handle.lowercased() as AnyObject
-            }
-            if let title = candidate.title { strip[.title] = title as AnyObject }
-            if let fullName = candidate.fullName { strip[.fullName] = fullName as AnyObject }
-        }
-        return strip
-    }
-    func updateSortTerm(query: RVQuery, front: Bool = false, candidate: NSObject? = nil) -> RVQuery {
+    func updateSortTerm(query: RVQuery, front: Bool = false, candidate: T? = nil) -> RVQuery {
         if (query.sortTerms.count == 0) || (query.sortTerms.count > 1) {
             print("In \(self.classForCoder).updateSortTerms, erroneous number of sort Tersm: sortTerms are: \(query.sortTerms)")
         }
@@ -316,26 +297,26 @@ extension RVBaseDatasource4 {
             if front { sortDate = (sortTerm.order == .descending) ? query.decadeAgo : Date() }
             
             var finalValue: AnyObject = sortString as AnyObject
-
+            
             var strip = [RVKeys : AnyObject]()
             if let candidate = candidate {
                 if let candidate = candidate as? RVBaseModel {
                     //print("In \(self.classForCoder).updateSortTerm, have candidate \(candidate)")
                     strip = self.stripCandidate(candidate: candidate)
-                } else if let datasource = candidate as? RVBaseDatasource4<RVBaseModel> {
-               //     print("In \(self.classForCoder).updateSortTerm, candidate is a RVBaseDatasource4<T>")
-                    if let sectionModel = datasource.sectionModel {
-                    //    print("In \(self.classForCoder).updateSortTerm, have sectionModel")
+                } else if let datasource = candidate as? RVBaseDatasource4 {
+                    //     print("In \(self.classForCoder).updateSortTerm, candidate is a RVBaseDatasource4<T>")
+                    if let sectionModel = datasource.sectionModel as? RVBaseModel {
+                        //    print("In \(self.classForCoder).updateSortTerm, have sectionModel")
                         strip = self.stripCandidate(candidate: sectionModel)
                     } else {
                         print("In \(self.classForCoder).updateSortTerm, do not have sectionModel")
                     }
                     
                 } else {
-                    print("In \(self.classForCoder).updateSortTerm, some unknown candidate \(candidate)")
+                    print("In \(self.classForCoder).updateSortTerm, some unknown candidate \(candidate) \nand \(T.self)")
                 }
             } else {
-               // print("In \(self.classForCoder).updateSortTerm, no candidate")
+                // print("In \(self.classForCoder).updateSortTerm, no candidate")
             }
             if let value = strip[sortTerm.field] { finalValue = value }
             else if let andTerm = query.findAndTerm(term: sortTerm.field) { finalValue = andTerm.value as AnyObject }
@@ -344,7 +325,7 @@ extension RVBaseDatasource4 {
                 if let date = strip[sortTerm.field] { finalValue = date }
                 else if let andTerm = query.findAndTerm(term: sortTerm.field) { finalValue = andTerm.value as AnyObject }
                 else { finalValue = sortDate as AnyObject }
-             //   if (strip[sortTerm.field] == nil ) && (query.findAndTerm(term: sortTerm.field) == nil ) { finalValue = sortDate as AnyObject }
+            //   if (strip[sortTerm.field] == nil ) && (query.findAndTerm(term: sortTerm.field) == nil ) { finalValue = sortDate as AnyObject }
             case .commentLowercase, .comment, .handleLowercase, .handle, .title, .fullName:
                 break
             default:
@@ -356,6 +337,34 @@ extension RVBaseDatasource4 {
         }
         return query
     }
+
+    deinit {
+        //print("In \(self.classForCoder).deinit")
+        self.unwindSubscriptions()
+        self.cancelAllOperations()
+    }
+}
+
+extension RVBaseDatasource4 {
+    func stripCandidate(candidate: RVBaseModel? ) -> [RVKeys : AnyObject] {
+        var strip = [RVKeys:AnyObject]()
+        if let candidate = candidate  {
+            if let createdAt = candidate.createdAt { strip[.createdAt] = createdAt as AnyObject }
+            if let updatedAt = candidate.updatedAt { strip[.updatedAt] = updatedAt as AnyObject }
+            if let comment = candidate.comment {
+                strip[.comment] = comment as AnyObject
+                strip[.commentLowercase] = comment.lowercased() as AnyObject
+            }
+            if let handle = candidate.handle {
+                strip[.handle] = handle as AnyObject
+                strip[.handleLowercase] = handle.lowercased() as AnyObject
+            }
+            if let title = candidate.title { strip[.title] = title as AnyObject }
+            if let fullName = candidate.fullName { strip[.fullName] = fullName as AnyObject }
+        }
+        return strip
+    }
+
     var numberOfElements: Int { get { return virtualCount } }
     var virtualCount: Int {
         get {
@@ -554,7 +563,7 @@ extension RVBaseDatasource4 {
 }
 
 
-class RVForcedUnsubscribe<T: NSObject>: RVAsyncOperation<T> {
+class RVForcedUnsubscribe<T: RVSubbaseModel>: RVAsyncOperation<T> {
     weak var datasource: RVBaseDatasource4<T>? = nil
     weak var scrollView: UIScrollView? = nil
     var emptyModels = [T]()
@@ -600,7 +609,7 @@ class RVForcedUnsubscribe<T: NSObject>: RVAsyncOperation<T> {
         }
     }
 }
-class RVExpandCollapseOperation<T:NSObject>: RVLoadOperation<T> {
+class RVExpandCollapseOperation<T:RVSubbaseModel>: RVLoadOperation<T> {
     var operationType: RVExpandCollapseOperationType
     var query: RVQuery
     var emptyModels = [T]()
@@ -835,13 +844,13 @@ class RVExpandCollapseOperation<T:NSObject>: RVLoadOperation<T> {
         }
     }
 }
-class RVSubscribeOperation<T:NSObject>: RVLoadOperation<T> {
+class RVSubscribeOperation<T:RVSubbaseModel>: RVLoadOperation<T> {
     init(datasource: RVBaseDatasource4<T>, subscription: RVSubscription, callback: @escaping RVCallback<T>) {
         super.init(title: "SubscriptionOperation", datasource: datasource, scrollView: datasource.scrollView, front: subscription.isFront, callback: callback)
         self.subscriptionOperation = .subscribe
     }
 }
-class RVSubcriptionResponseOperation<T:NSObject>: RVLoadOperation<T> {
+class RVSubcriptionResponseOperation<T:RVSubbaseModel>: RVLoadOperation<T> {
 
     var incomingModels: [T]
     var responseType: RVEventType
@@ -908,7 +917,7 @@ class RVSubcriptionResponseOperation<T:NSObject>: RVLoadOperation<T> {
         }
     }
 }
-class RVLoadOperation<T:NSObject>: RVAsyncOperation<T> {
+class RVLoadOperation<T:RVSubbaseModel>: RVAsyncOperation<T> {
     enum SubscriptionOperation {
         case none
         case subscribe
@@ -919,7 +928,7 @@ class RVLoadOperation<T:NSObject>: RVAsyncOperation<T> {
     var datasource: RVBaseDatasource4<T>
     weak var scrollView: UIScrollView?
 
-    var reference: T? = nil
+    var reference: RVSubbaseModel? = nil
     var front: Bool
     var subscriptionOperation: SubscriptionOperation = .none
     var referenceMatch: Bool {
@@ -978,13 +987,13 @@ class RVLoadOperation<T:NSObject>: RVAsyncOperation<T> {
             if let reference = reference as? RVBaseModel? {
              //   print("In \(self.classForCoder).initiateSubscripton with reference #\(#line)")
                 subscription.subscribe(query: query, reference: reference, callback: callback)
-            } else if let referenceDatasource = reference as? RVBaseDatasource4<RVBaseModel> {
+            } else if let referenceDatasource = reference as? RVBaseDatasource4<RVGroup> {
                // print("In \(self.classForCoder).initiateSubscription, passed casting Reference: \(reference?.description ?? "No reference") for subscription \(subscription)")
                 let model = subscription.isFront ? referenceDatasource.frontElement : referenceDatasource.backElement
-             //   if let model = model as? RVBaseModel? {
+           //     if let model = model as? RVBaseModel? {
                // print("In \(self.classForCoder).initiateSubscripton after model #\(#line)")
                     subscription.subscribe(query: query , reference: model , callback: callback)
-             //   }
+           //     }
                 
             
             } else {
@@ -1049,7 +1058,12 @@ class RVLoadOperation<T:NSObject>: RVAsyncOperation<T> {
                // print("In \(self.classForCoder).InnerMain, about to do retrieve. Front: \(self.front)")
                 query = query.duplicate()
                 self.reference = self.front ? datasource.frontElement : datasource.backElement
-                var query = datasource.updateSortTerm(query: query, front: self.front, candidate: self.reference)
+                if let reference = self.reference as? T {
+                    query = datasource.updateSortTerm(query: query, front: self.front, candidate: reference)
+                } else if reference != nil  {
+                    print("In \(self.instanceType).innerMain, failed to cast \(String(describing: reference))")
+                }
+                
                 query = query.updateQuery4(front: self.front)
                 if self.isCancelled {
                     finishUp(items: itemsPlug , error: nil)
@@ -1065,15 +1079,15 @@ class RVLoadOperation<T:NSObject>: RVAsyncOperation<T> {
                             self.finishUp(items: itemsPlug, error: error)
                             return
                         } else {
-                       //     if let reference = reference as? RVBaseModel? {
+                            if let reference = reference as? T? {
                                 self.initiateSubscription(subscription: subscription, query: query, reference: reference, callback: {
                                     self.finishUp(items: self.itemsPlug, error: nil)
                                 })
-                        //    } else {
-                        //        let error = RVError(message: "In \(self.classForCoder).InnerMain, attempting a subscription with SectionDatasource. Not Implemented")
-                        //        self.finishUp(items: self.itemsPlug, error: error)
-                       //         return
-                       //     }
+                            } else {
+                                let error = RVError(message: "In \(self.classForCoder).InnerMain, attempting a subscription with SectionDatasource. Not Implemented")
+                                self.finishUp(items: self.itemsPlug, error: error)
+                                return
+                            }
 
                             return
                         }

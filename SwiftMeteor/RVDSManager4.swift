@@ -10,7 +10,7 @@ import UIKit
 
 
 
-class RVDSManager4Z<T:NSObject>: NSObject {
+class RVDSManager4Z<T:RVSubbaseModel>: NSObject {
     var instanceType: String { get { return String(describing: type(of: self)) } }
     let queue = RVOperationQueue(title: "RVDSManager4Z")
     var elements = [RVBaseDatasource4<T>]()
@@ -128,7 +128,7 @@ class RVDSManager4Z<T:NSObject>: NSObject {
 }
 
 
-class RVManagerRemoveSections4<T:NSObject>: RVAsyncOperation<T> {
+class RVManagerRemoveSections4<T:RVSubbaseModel>: RVAsyncOperation<T> {
     weak var manager: RVDSManager4Z<T>? = nil
     var datasources: [RVBaseDatasource4<T>]
 
@@ -250,7 +250,7 @@ class RVManagerRemoveSections4<T:NSObject>: RVAsyncOperation<T> {
     }
 }
 
-class RVManagerAppendSections4<T: NSObject>: RVManagerRemoveSections4<T> {
+class RVManagerAppendSections4<T: RVSubbaseModel>: RVManagerRemoveSections4<T> {
     var sectionTypesToRemove: [RVDatasourceType]
     var sectionsToBeRemoved: [RVBaseDatasource4<T>] = [RVBaseDatasource4<T>]()
     init(title: String = "Add Sections", manager: RVDSManager4Z<T>, datasources: [RVBaseDatasource4<T>], sectionTypesToRemove: [RVDatasourceType] = Array<RVDatasourceType>(), callback: @escaping RVCallback<T>) {
@@ -372,7 +372,7 @@ class RVManagerAppendSections4<T: NSObject>: RVManagerRemoveSections4<T> {
     }
 }
 
-class RVManagerExpandCollapseOperation4<T: NSObject>: RVAsyncOperation<T> {
+class RVManagerExpandCollapseOperation4<T: RVSubbaseModel>: RVAsyncOperation<T> {
     enum OperationType {
         case expand
         case collapse

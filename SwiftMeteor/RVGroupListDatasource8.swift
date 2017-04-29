@@ -7,7 +7,8 @@
 //
 
 import UIKit
-class RVGroupListDatasource8<T: NSObject>: RVBaseDatasource8<T> {
+class RVGroupListDatasource8<T: RVSubbaseModel>: RVBaseDatasource8<T> {
+    /*
     override func retrieve(query: RVQuery, callback: @escaping RVCallback<T>) {
         RVGroup.bulkQuery(query: query) { (models, error) in
             if let error = error {
@@ -24,4 +25,5 @@ class RVGroupListDatasource8<T: NSObject>: RVBaseDatasource8<T> {
             }
         }
     }
+ */
 }

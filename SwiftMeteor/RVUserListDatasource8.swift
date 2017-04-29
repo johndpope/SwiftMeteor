@@ -7,7 +7,7 @@
 //
 
 import UIKit
-class RVUserListDatasource8<T: NSObject>: RVBaseDatasource8<T> {
+class RVUserListDatasource8<T: RVSubbaseModel>: RVBaseDatasource8<T> {
     
     override func retrieve(query: RVQuery, callback: @escaping RVCallback<T>) {
         RVUserProfile.bulkQuery2(query: query, callback: callback)

@@ -9,9 +9,9 @@
 import UIKit
 import SwiftDDP
 
-class RVBaseModel: MeteorDocument {
-    class func modelFromFields(fields: [String: AnyObject]) -> RVBaseModel { return RVBaseModel(fields: fields) }
-    class func collectionType() -> RVModelType { return RVModelType.baseModel }
+class RVBaseModel: RVSubbaseModel {
+
+
     func searchCountryForModel() -> RVCountry { return RVCountry.UnitedStates }
     static let UpdateNotificationName = Notification.Name("RVModelUpdated")
     class var insertMethod: RVMeteorMethods { get { return RVMeteorMethods.InsertBase } }
@@ -1102,9 +1102,7 @@ extension RVBaseModel {
         }
 
     }
-    class func meteorMethod(request: RVCrud) -> String {
-        return "\(RVMeteorMethod.Prefix.lowercased())\(collectionType().rawValue.lowercased())\(RVMeteorMethod.Separator)\(request.rawValue.lowercased())"
-    }
+
     class func bulkQuery2<T>(query: RVQuery, callback: @escaping RVCallback<T>) {
         if let appDomainId = RVBaseModel.appDomainId { query.addAnd(term: .domainId, value: appDomainId as AnyObject, comparison: .eq) }
         
@@ -1139,39 +1137,7 @@ extension RVBaseModel {
             }
         }
     }
-    class func bulkQuery(query: RVQuery, callback: @escaping(_ items: [RVBaseModel], _ error: RVError?)-> Void) {
-        if let appDomainId = RVBaseModel.appDomainId {
-            
-            query.addAnd(term: .domainId, value: appDomainId as AnyObject, comparison: .eq)
-        }
 
-        let (filters, projection) = query.query()
-        //print("In RVBaseModel.bulkQuery")
-        Meteor.call(meteorMethod(request: .list), params: [filters as AnyObject, projection as AnyObject]) { (result: Any?, error : DDPError?) in
-//        Meteor.call(bulkQueryMethod.rawValue, params: [filters as AnyObject, projection as AnyObject]) { (result: Any?, error : DDPError?) in
-           // print("In RVBaseModel.bulkQuery has response \(error), \(result)")
-            DispatchQueue.main.async {
-                if let error = error {
-                    let rvError = RVError(message: "In RVBaseModel.bulkQuery, got Meteor Error", sourceError: error)
-                    callback([RVBaseModel]() , rvError)
-                    return
-                } else if let items = result as? [[String: AnyObject]] {
-                    var models = [RVBaseModel]()
-                    for fields in items {
-                        models.append(modelFromFields(fields: fields))
-                    }
-                    callback(models, nil)
-                    return
-                } else if let results = result {
-                    print("In RVBaseModel.bulkQuery, no error, but results are: \n\(results)")
-                    callback([RVBaseModel](), nil)
-                } else {
-                    print("In RVBaseModel.bulkQuery, no error but no results")
-                    callback([RVBaseModel](), nil)
-                }
-            }
-        }
-    }
     class func deleteAll( callback: @escaping(_ error: RVError?) -> Void ) {
         Meteor.call(meteorMethod(request: .deleteAll), params: [[RVKeys.specialCode.rawValue: RVBaseModel.coreInfo.specialCode]]) { (result, error: DDPError?) in
             DispatchQueue.main.async {

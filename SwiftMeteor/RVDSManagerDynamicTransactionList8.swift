@@ -7,7 +7,7 @@
 //
 
 import Foundation
-class RVDSManagerDynamicTransactionList8<S: NSObject>: RVDSManager8<S> {
+class RVDSManagerDynamicTransactionList8<S: RVSubbaseModel>: RVDSManager8<S> {
     override func retrieveSectionModels(query: RVQuery, callback: @escaping ([S], RVError?) -> Void) {
         RVTransaction.bulkQuery(query: query) { (models, error) in
             if let error = error {

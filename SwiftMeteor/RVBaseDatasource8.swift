@@ -7,6 +7,6 @@
 //
 
 import Foundation
-class RVBaseDatasource8<T:NSObject>: RVBaseDatasource4<T> {
+class RVBaseDatasource8<T:RVSubbaseModel>: RVBaseDatasource4<T> {
     
 }

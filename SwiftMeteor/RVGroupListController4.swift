@@ -12,7 +12,7 @@ import UIKit
 class RVGroupListController4: RVBaseSLKViewController4 {
     
  
-    override var instanceConfiguration: RVBaseConfiguration4 { return RVTransactionConfiguration4(scrollView: dsScrollView) }
+    override var instanceConfiguration: RVListControllerConfigurationProtocol { return RVTransactionConfiguration4<RVGroup>(scrollView: dsScrollView) }
     override func viewDidLoad() {
         if let tableView = self.tableView {
             tableView.separatorStyle = .singleLine

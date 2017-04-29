@@ -7,7 +7,7 @@
 //
 
 import UIKit
-class RVDSManagerDynamicGroupList8<S: NSObject>: RVDSManager8<S> {
+class RVDSManagerDynamicGroupList8<S: RVSubbaseModel>: RVDSManager8<S> {
     override func retrieveSectionModels(query: RVQuery, callback: @escaping ([S], RVError?) -> Void) {
         RVGroup.bulkQuery(query: query) { (models, error) in
             if let error = error {

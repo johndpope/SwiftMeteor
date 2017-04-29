@@ -11,7 +11,7 @@ import UIKit
 class RVUserListController8: RVBaseListController8  {
     
     
-    override var instanceConfiguration: RVBaseConfiguration8 { return RVUserListConfiguration8(scrollView: dsScrollView) }
+    override var instanceConfiguration: RVListControllerConfigurationProtocol{ return RVUserListConfiguration8<RVUserProfile>(scrollView: dsScrollView) }
 
     override func viewDidLoad() {
         self.queue.addOperation(RVControllerOperation<NSObject>(title: "\(self.classForCoder).viewDidLoad", viewController: self, closure: { (operation, error) in

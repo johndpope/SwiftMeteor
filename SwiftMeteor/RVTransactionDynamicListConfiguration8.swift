@@ -7,11 +7,11 @@
 //
 
 import UIKit
-class RVTransactionDynamicListConfiguration8: RVTransactionListConfiguration8 {
+class RVTransactionDynamicListConfiguration8<T: RVSubbaseModel>: RVTransactionListConfiguration8<T> {
 
-    override init(scrollView: UIScrollView?) {
+    required init(scrollView: UIScrollView?) {
         super.init(scrollView: scrollView)
-        self.manager = RVDSManager5Transaction(scrollView: scrollView, maxSize: 80, managerType: .main, dynamicSections: true, useZeroCell: true)
+        self.manager = RVDSManager5Transaction<T>(scrollView: scrollView, maxSize: 80, managerType: .main, dynamicSections: true, useZeroCell: true)
         self.manager.subscription = RVTransactionSubscription8(front: true, showResponse: false)
     }
 

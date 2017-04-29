@@ -8,9 +8,8 @@
 
 import UIKit
 import SlackTextViewController
-
 class RVBaseSLKViewController4: SLKTextViewController {
-    var sectionManager = RVDSManager5<RVBaseModel>(scrollView: nil, managerType: .main, dynamicSections: false)
+    var sectionManager = RVDSManager5<RVSubbaseModel>(scrollView: nil, managerType: .main, dynamicSections: false)
     var sectionTest: Bool = false
     var instanceType: String { get { return String(describing: type(of: self)) } }
     var dsScrollView: UIScrollView? {return self.tableView }
@@ -43,8 +42,10 @@ class RVBaseSLKViewController4: SLKTextViewController {
     var emojis: Array = ["-1", "m", "man", "machine", "block-a", "block-b", "bowtie", "boar", "boat", "book", "bookmark", "neckbeard", "metal", "fu", "feelsgood"]
     var setupSLKDatasource: Bool = true
     var searchResult: [String]? // for SLKTextViewController, not sure why
-    var _configuration: RVBaseConfiguration4? = nil
-    var configuration: RVBaseConfiguration4 {
+    
+
+    var _configuration: RVListControllerConfigurationProtocol? = nil
+    var configuration: RVListControllerConfigurationProtocol {
         get {
             if let c = _configuration { return c }
             let configuration = instanceConfiguration
@@ -52,9 +53,10 @@ class RVBaseSLKViewController4: SLKTextViewController {
             return configuration    
         }
     }
-    var instanceConfiguration: RVBaseConfiguration4 { return RVBaseConfiguration4(scrollView: dsScrollView) }
+
+    var instanceConfiguration: RVListControllerConfigurationProtocol { return RVBaseConfiguration4<RVSubbaseModel>(scrollView: dsScrollView) }
     // var configuration:      RVBaseConfiguration4 = RVBaseConfiguration4(scrollView: nil)
-    var manager:            RVDSManager5<RVBaseModel> { get { return configuration.manager }}
+//    var manager:            RVDSManager5<RVSubbaseModel> { get { return configuration.manager }}
     let searchController    = UISearchController(searchResultsController: nil)
     var searchScopes:       [[String: RVKeys]] { get { return configuration.searchScopes } }
     var defaultSortOrder:   RVSortOrder { get { return configuration.defaultSortOrder }}
@@ -83,7 +85,7 @@ class RVBaseSLKViewController4: SLKTextViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
        //sectionManager = RVDSManager5Transaction<RVBaseModel>(scrollView: self.dsScrollView, maxSize: 80, managerType: .main, dynamicSections: false)
-        sectionManager = configuration.manager
+   //     sectionManager = configuration.manager
         commonInit()
         configureNavBar()
         configureSearchController()
@@ -176,12 +178,7 @@ class RVBaseSLKViewController4: SLKTextViewController {
 
     deinit {
         NotificationCenter.default.removeObserver(self)
-        configuration.removeAllSections { (models, error) in
-            if let error = error {
-                error.append(message: "In \(self.instanceType).deinit got error removing All Sections")
-                error.printError()
-            }
-        }
+        configuration.removeAllSections()
     }
     func makeTransparent(view: UIView?) {
         if let view = view {
@@ -200,10 +197,10 @@ class RVBaseSLKViewController4: SLKTextViewController {
     
 // UITableViewDatasource
     override func numberOfSections(in tableView: UITableView) -> Int {
-        return manager.numberOfSections
+        return configuration.numberOfSections(tableView: tableView)
     }
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return manager.numberOfItems(section: section)
+        return configuration.numberOfItems(section: section)
     }
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         if tableView == self.tableView {
@@ -214,7 +211,7 @@ class RVBaseSLKViewController4: SLKTextViewController {
     }
     func primaryCellForRowAtIndexPath(tableView: UITableView, _ indexPath: IndexPath) -> UITableViewCell {
        // print("In \(self.classForCoder).primaryCell for indexPath \(indexPath.section) \(indexPath.row)")
-        if let item = manager.item(indexPath: indexPath, scrollView: tableView) {
+        if let item = configuration.item(indexPath: indexPath, scrollView: tableView)  {
             if (indexPath.row == 0) && (item.zeroCellModel) {
                 //print("In \(self.classForCoder).primaryCellForRowAtIndexPath \(indexPath),  item \(item.zeroCellModel)")
                 if let cell = tableView.dequeueReusableCell(withIdentifier: RVZeroTableCell.identifier, for: indexPath) as? RVZeroTableCell {
@@ -239,16 +236,31 @@ class RVBaseSLKViewController4: SLKTextViewController {
         }
         cell.transform = tableView.transform
         //    cell.item = manager4.item(indexPath: indexPath)
-        cell.item = manager.item(indexPath: indexPath, scrollView: tableView)
+        if let item = configuration.item(indexPath: indexPath, scrollView: tableView) {
+                  cell.item = item 
+        }
+
         //cell.configureSubviews()
         return cell
     }
     override func tableView(_ tableView: UITableView, willDisplayHeaderView view: UIView, forSection section: Int) {
         if let headerCell = view as? RVFirstViewHeaderCell {
           //  print("In \(self.classForCoder).willDisplayHeaderView")
-            if let datasource = manager.datasourceInSection(section: section) {
+            if let datasource = configuration.datasourceInSection(section: section) {
                 headerCell.datasource4 = datasource
-                headerCell.configure(model: datasource.sectionModel)
+
+                
+                var model: RVBaseModel?
+                if let datasource = datasource as? RVBaseDatasource4<RVBaseModel> {
+                    model = datasource.sectionModel
+                } else if let datasource = datasource as? RVBaseDatasource4<RVGroup> {
+                    model = datasource.sectionModel
+                } else if let datasource = datasource as? RVBaseDatasource4<RVTransaction> {
+                    model = datasource.sectionModel
+                }
+                
+                headerCell.configure(model: model)
+                
             }
             headerCell.delegate = self
           //  headerCell.configure(model: nil)
@@ -262,11 +274,11 @@ class RVBaseSLKViewController4: SLKTextViewController {
   
                 if let indexPaths = tableView.indexPathsForVisibleRows {
                     if let first = indexPaths.first {
-                        configuration.manager.scrolling(indexPath: first, scrollView: tableView)
+                        configuration.scrolling(indexPath: first, scrollView: tableView)
                         //  self.manager4.scrolling(indexPath: first, scrollView: tableView)
                     }
                     if let last = indexPaths.last {
-                        configuration.manager.scrolling(indexPath: last, scrollView: tableView)
+                        configuration.scrolling(indexPath: last, scrollView: tableView)
                         //   self.manager4.scrolling(indexPath: last, scrollView: tableView)
                     }
                 }
@@ -276,7 +288,7 @@ class RVBaseSLKViewController4: SLKTextViewController {
         super.scrollViewDidScroll(scrollView)
     }
     override func scrollViewDidEndDragging(_ scrollView: UIScrollView, willDecelerate decelerate: Bool) {
-        if configuration.manager.dynamicSections {
+        if configuration.managerDynamicSections {
         }
         super.scrollViewDidEndDragging(scrollView, willDecelerate: decelerate)
     }
@@ -287,7 +299,7 @@ extension RVBaseSLKViewController4 {
         return 35.0
     }
     override func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        if let item = manager.item(indexPath: indexPath, scrollView: tableView) {
+        if let item = configuration.item(indexPath: indexPath, scrollView: tableView)  {
             if (indexPath.row == 0) && (item.zeroCellModel) {
                 return 9.0
             }
@@ -300,8 +312,9 @@ extension RVBaseSLKViewController4 {
 // RVFirstViewHeaderCell
 extension RVBaseSLKViewController4: RVFirstViewHeaderCellDelegate {
     func expandCollapseButtonTouched(view: RVFirstViewHeaderCell) {
-        if let datasource = view.datasource4 {
-            manager.toggle(datasource: datasource, callback: { (models, error ) in
+        if let datasource = view.datasource4 as? RVBaseDatasource4<RVSubbaseModel> {
+            
+            configuration.toggle(datasource: datasource, callback: { error  in
                 if let error = error {
                     error.append(message: "In \(self.classForCoder).expandCollapseBUtton line #\(#line), got error")
                     error.printError()
@@ -330,8 +343,10 @@ extension RVBaseSLKViewController4 {
         }
         if let tableView = self.tableView {
             tableView.separatorStyle = .singleLine
-            let nib = UINib(nibName: RVTransactionTableViewCell.identifier, bundle: nil)
-            tableView.register(nib, forCellReuseIdentifier: RVTransactionTableViewCell.identifier)
+   //         let nib = Bundle.main.loadNibNamed(RVTransactionTableViewCell.identifier, owner: nil, options: nil)
+   //         let nib = UINib(nibName: RVTransactionTableViewCell.identifier, bundle: nil)
+    //        tableView.register(nib, forCellReuseIdentifier: RVTransactionTableViewCell.identifier)
+            tableView.register(RVTransactionTableViewCell.self, forCellReuseIdentifier: RVTransactionTableViewCell.identifier)
             tableView.register(RVFirstViewHeaderCell.self, forHeaderFooterViewReuseIdentifier: RVFirstViewHeaderCell.identifier)
         }
         self.autoCompletionView.register(RVMessageTableViewCell.classForCoder(), forCellReuseIdentifier: RVMessageTableViewCell.AutoCompletionCellIdentifier)
@@ -501,7 +516,7 @@ extension RVBaseSLKViewController4 {
     }
 
     func loadMainOld(callback: @escaping(RVError?) -> Void) {
-        let (query, error) = self.configuration.mainQuery()
+        let (query, error) = self.configuration.mainQuery(andTerms: [RVQueryItem](), sortTerm: RVSortTerm(field: .createdAt, order: .descending))
         if let error = error {
             error.append(message: "In \(self.instanceType).loadMain, got error creating Query")
             callback(error)

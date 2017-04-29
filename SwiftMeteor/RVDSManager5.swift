@@ -7,7 +7,7 @@
 //
 
 import UIKit
-class RVDSManager5<S: NSObject>: RVBaseDatasource4<RVBaseDatasource4<S>> {
+class RVDSManager5<S: RVSubbaseModel>: RVBaseDatasource4<RVBaseDatasource4<S>> {
 
     var lastSection: Int = -1
     let emtpySectionResults = [RVBaseDatasource4<S>]()
@@ -20,6 +20,12 @@ class RVDSManager5<S: NSObject>: RVBaseDatasource4<RVBaseDatasource4<S>> {
         self.dynamicSections = dynamicSections
         self.useZeroCell = useZeroCell
     }
+    
+    required init(id: String, fields: NSDictionary?) {
+        super.init(id: "", fields: NSDictionary())
+    }
+    
+    
     var numberOfSections: Int { return numberOfElements } // Unique to RVDSManagers
     override func retrieve(query: RVQuery, callback: @escaping ([RVBaseDatasource4<S>], RVError?) -> Void) {
         
@@ -49,23 +55,25 @@ class RVDSManager5<S: NSObject>: RVBaseDatasource4<RVBaseDatasource4<S>> {
     override func receiveSubscriptionResponse(notification: NSNotification) {
        // print("In \(self.classForCoder).receiveSubscription")
         if let userInfo = notification.userInfo {
-            if let payload = userInfo[RVPayload.payloadInfoKey] as? RVPayload<S> {
+            if let payload = userInfo[RVPayload.payloadInfoKey] as? RVPayload<RVBaseModel> {
               //  print("In \(self.classForCoder).receiveSubscription have payload \(payload.toString())")
                 if let subscription = self.subscription {
                     if subscription.identifier == payload.subscription.identifier {
                      //   print("In \(self.classForCoder).receiveSubscription subscriptions match")
-                        
-                        let datasourceResults = self.createDatasourceFromModels(models: payload.models)
-                         //   let datasource = self.createDatasourceFromModel(model: model)
+                        if let models = payload.models as? [S] {
+                            let datasourceResults = self.createDatasourceFromModels(models: models)
+                            //   let datasource = self.createDatasourceFromModel(model: model)
                             //let operation = RVSubcriptionResponseOperation<RVBaseDatasource4<S>>(datasource: self, subscription: subscription, incomingModels: [RVBaseDatasource4<S>](), callback: { (models , error) in })
-                        
+                            
                             let operation = RVSubcriptionResponseOperation<RVBaseDatasource4<S>>(datasource: self, subscription: subscription, incomingModels: datasourceResults, callback: { (models, error ) in
                                 if let error = error {
                                     error.printError()
                                 }
                             })
- 
+                            
                             self.queue.addOperation(operation)
+                        }
+
                         
 
                     } else {
@@ -301,7 +309,7 @@ extension RVDSManager5 {
     }
 
 }
-class RVManagerExpandCollapseOperation5<T: NSObject> : RVAsyncOperation<T> {
+class RVManagerExpandCollapseOperation5<T: RVSubbaseModel> : RVAsyncOperation<T> {
     enum OperationType {
         case expand
         case collapse
@@ -396,7 +404,7 @@ class RVManagerExpandCollapseOperation5<T: NSObject> : RVAsyncOperation<T> {
     }
     
 }
-class RVManagerAppendSections5<T: NSObject> : RVManagerRemoveSections5<T> {
+class RVManagerAppendSections5<T: RVSubbaseModel> : RVManagerRemoveSections5<T> {
     var sectionTypesToRemove: [RVDatasourceType]
     var sectionsToBeRemoved: [RVBaseDatasource4<T>] = [RVBaseDatasource4<T>]()
     init(title: String = "Add Sections", manager: RVDSManager5<T>, datasources: [RVBaseDatasource4<T>], sectionTypesToRemove: [RVDatasourceType] = Array<RVDatasourceType>(), callback: @escaping RVCallback<T>) {
@@ -515,7 +523,7 @@ class RVManagerAppendSections5<T: NSObject> : RVManagerRemoveSections5<T> {
     }
     
 }
-class RVManagerCollapse5<T: NSObject>: RVAsyncOperation<T> {
+class RVManagerCollapse5<T: RVSubbaseModel>: RVAsyncOperation<T> {
     var all: Bool = false
     var datasourcesToCollapse: [RVBaseDatasource4<T>]
     var datasourceToExclude: RVBaseDatasource4<T>?
@@ -571,7 +579,7 @@ class RVManagerCollapse5<T: NSObject>: RVAsyncOperation<T> {
         }
     }
 }
-class RVManagerRemoveSections5<T: NSObject>: RVAsyncOperation<T> {
+class RVManagerRemoveSections5<T: RVSubbaseModel>: RVAsyncOperation<T> {
     weak var manager: RVDSManager5<T>? = nil
     var datasources: [RVBaseDatasource4<T>]
     var all: Bool = false

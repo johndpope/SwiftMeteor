@@ -12,7 +12,7 @@ class RVTransactionListController8: RVBaseListController8  {
     static let identifier = "RVTransactionListController8"
     
 
-    override var instanceConfiguration: RVBaseConfiguration8 { return RVTransactionListConfiguration8(scrollView: dsScrollView) }
+    override var instanceConfiguration: RVListControllerConfigurationProtocol { return RVTransactionListConfiguration8<RVTransaction>(scrollView: dsScrollView) }
     override func viewDidLoad() {
         self.queue.addOperation(RVControllerOperation(title: "\(self.classForCoder).viewDidLoad", viewController: self, closure: { (operation, error) in
             if let error = error {
