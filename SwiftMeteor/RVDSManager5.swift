@@ -52,6 +52,20 @@ class RVDSManager5<S: RVSubbaseModel>: RVBaseDatasource4<RVBaseDatasource4<S>> {
         }
         return datasourceResults
     }
+    override func datasourceTest(candidate: RVSubbaseModel? ) -> RVBaseModel? {
+    
+        if let candidate = candidate as? RVBaseDatasource4<S> {
+            print("In \(self.classForCoder).datasourceTest, passed")
+            if let model = candidate.sectionModel as? RVBaseModel {
+                print("In \(self.classForCoder).datasourceTest, have model")
+                return model
+            }
+            return nil
+        } else {
+            print("In \(self.classForCoder).datasourceTest, failed \(String(describing: candidate))")
+            return nil}
+    }
+
     override func receiveSubscriptionResponse(notification: NSNotification) {
        // print("In \(self.classForCoder).receiveSubscription")
         if let userInfo = notification.userInfo {

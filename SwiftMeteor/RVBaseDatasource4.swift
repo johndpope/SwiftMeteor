@@ -280,6 +280,9 @@ class RVBaseDatasource4<T:RVSubbaseModel>: RVSubbaseModel {
         self.elements = [T]()
         self.offset = 0
     }
+    func datasourceTest(candidate: RVSubbaseModel? ) -> RVBaseModel? {
+        return nil
+    }
     func updateSortTerm(query: RVQuery, front: Bool = false, candidate: T? = nil) -> RVQuery {
         if (query.sortTerms.count == 0) || (query.sortTerms.count > 1) {
             print("In \(self.classForCoder).updateSortTerms, erroneous number of sort Tersm: sortTerms are: \(query.sortTerms)")
@@ -303,17 +306,18 @@ class RVBaseDatasource4<T:RVSubbaseModel>: RVSubbaseModel {
                 if let candidate = candidate as? RVBaseModel {
                     //print("In \(self.classForCoder).updateSortTerm, have candidate \(candidate)")
                     strip = self.stripCandidate(candidate: candidate)
-                } else if let datasource = candidate as? RVBaseDatasource4 {
+                } else if let sectionModel = self.datasourceTest(candidate: candidate) {
                     //     print("In \(self.classForCoder).updateSortTerm, candidate is a RVBaseDatasource4<T>")
-                    if let sectionModel = datasource.sectionModel as? RVBaseModel {
+                //    if let sectionModel = datasource.sectionModel as? RVBaseModel {
                         //    print("In \(self.classForCoder).updateSortTerm, have sectionModel")
                         strip = self.stripCandidate(candidate: sectionModel)
-                    } else {
-                        print("In \(self.classForCoder).updateSortTerm, do not have sectionModel")
-                    }
+                //    } else {
+                //        print("In \(self.classForCoder).updateSortTerm, do not have sectionModel")
+                //    }
                     
                 } else {
                     print("In \(self.classForCoder).updateSortTerm, some unknown candidate \(candidate) \nand \(T.self)")
+                    //self.datasourceTest(candidate: candidate)
                 }
             } else {
                 // print("In \(self.classForCoder).updateSortTerm, no candidate")
@@ -337,7 +341,9 @@ class RVBaseDatasource4<T:RVSubbaseModel>: RVSubbaseModel {
         }
         return query
     }
-
+    func useless() {
+        
+    }
     deinit {
         //print("In \(self.classForCoder).deinit")
         self.unwindSubscriptions()
