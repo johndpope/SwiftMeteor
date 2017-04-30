@@ -84,7 +84,7 @@ class RVDSManager5<S: RVSubbaseModel>: RVBaseDatasource4<RVBaseDatasource4<S>> {
     override func receiveSubscriptionResponse(notification: NSNotification) {
        // print("In \(self.classForCoder).receiveSubscription")
         if let userInfo = notification.userInfo {
-            if let payload = userInfo[RVPayload.payloadInfoKey] as? RVPayload<RVBaseModel> {
+            if let payload = userInfo[RVPayload.payloadInfoKey] as? RVPayload<S> {
               //  print("In \(self.classForCoder).receiveSubscription have payload \(payload.toString())")
                 if let subscription = self.subscription {
                     if subscription.identifier == payload.subscription.identifier {
@@ -112,7 +112,7 @@ class RVDSManager5<S: RVSubbaseModel>: RVBaseDatasource4<RVBaseDatasource4<S>> {
                     print("In \(self.classForCoder).receiveSubscription but don't have a subscription")
                 }
             } else {
-                print("In \(self.classForCoder).receiveSubscription no payload \(String(describing: userInfo[RVPayload.payloadInfoKey]))\nT is: \(S.self)")
+                print("In \(self.classForCoder).RVDSManager5.receiveSubscription no payload \(String(describing: userInfo[RVPayload.payloadInfoKey]))\nT is: \(S.self)")
             }
         } else {
             print("In \(self.classForCoder).receivedSubscription, no userInfo")

@@ -29,7 +29,8 @@ class RVGroupDynamicListConfiguration8<T: RVSubbaseModel>: RVBaseConfiguration8<
         self.filterDatasourceMaxSize    = 300
         self.searchScopes               = [[RVKeys.title.rawValue: RVKeys.title], [RVKeys.fullName.rawValue: RVKeys.fullName]]
         self.manager = RVDSManagerDynamicGroupList8<T>(scrollView: scrollView, maxSize: 80, managerType: .main, dynamicSections: true, useZeroCell: true)
-        self.manager.subscription = RVGroupListSubscription8(front: true, showResponse: false)
+  //      self.manager.subscription = RVGroupListSubscription8(front: true, showResponse: false)
+        self.manager.subscription = RVCollectionSubscription<RVGroup>(isFront: true, showResponse: false)
         
     }
     override func configureSLK() {

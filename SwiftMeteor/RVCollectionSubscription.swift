@@ -195,6 +195,7 @@ extension RVCollectionSubscription: MeteorCollectionType {
         
         if self.subscriptionID != nil {
             if self.collection.rawValue == collection {
+                print("In \(self.classForCoder).finishUp, have Collection \(collection) \(id)")
                 var models = [M]()
                 if cleared != nil {
                     print("In \(self.classForCoder).finishUp, clearedArray is not null..... not implemented")

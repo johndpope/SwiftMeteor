@@ -249,7 +249,7 @@ class RVModelSubscriptionBroadcast<T: NSObject>: RVAsyncOperation<T> {
                 }
                 if self.subscription.showResponse { self.showAnAlert(alertType: 0) }
                 let payload = RVPayload<T>(subscription: self.subscription, eventType: self.eventType, models: self.models, operation: self)
-                //print("In \(self.classForCoder).asyncMain posting notification \(self.subscription.notificationName) with itemId \(self.id)")
+                print("In \(self.classForCoder).asyncMain posting notification \(self.subscription.notificationName) with itemId \(self.id)")
                 NotificationCenter.default.post(name: self.subscription.notificationName, object: self , userInfo: [RVPayload.payloadInfoKey: payload])
               //  print("In \(self.classForCoder).asyncMain, line: \(#line), about to do dealWithCallback")
                 self.dealWithCallback()
