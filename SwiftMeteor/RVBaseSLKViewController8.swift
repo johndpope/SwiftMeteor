@@ -745,6 +745,7 @@ extension RVBaseSLKViewController8 {
     
     // Notifies the view controller that the keyboard changed status.
     override func didChangeKeyboardStatus(_ status: SLKKeyboardStatus) {
+        /*
         switch status {
         case .willShow:
             print("Will Show Keyboard")
@@ -755,6 +756,7 @@ extension RVBaseSLKViewController8 {
         case .didHide:
             print("Did Hide Keyboard")
         }
+ */
     }
     
     // Notifies the view controller that the text will update.

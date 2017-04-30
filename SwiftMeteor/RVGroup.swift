@@ -127,7 +127,7 @@ extension RVGroup {
         }
     }
 override func create(callback: @escaping (RVBaseModel?, RVError?) -> Void) {
-    print("In \(self.classForCoder).create override where allSubgroup is created")
+   // print("In \(self.classForCoder).create override where allSubgroup is created")
     let allSubgroup = RVGroup()
     allSubgroup.setParent(parent: self)
     let title = self.title == nil ? "No Title" : self.title!
@@ -166,8 +166,8 @@ override func create(callback: @escaping (RVBaseModel?, RVError?) -> Void) {
                             error.append(message: "In \(self.classForCoder).create, successfully created topGroup, but error creating allSubgroup")
                             callback(nil, error)
                             return
-                        } else if let allSubgroup = allSubgroup {
-                            allSubgroup.printAllSubgroup()
+                        } else if let _ = allSubgroup {
+                         //   allSubgroup.printAllSubgroup()
                             callback(topGroup, nil)
                             return
                         } else {

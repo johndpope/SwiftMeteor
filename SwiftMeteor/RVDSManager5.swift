@@ -89,7 +89,7 @@ class RVDSManager5<S: RVSubbaseModel>: RVBaseDatasource4<RVBaseDatasource4<S>> {
                 if let subscription = self.subscription {
                     if subscription.identifier == payload.subscription.identifier {
                      //   print("In \(self.classForCoder).receiveSubscription subscriptions match")
-                        if let models = payload.models as? [S] {
+                        let models = payload.models
                             let datasourceResults = self.createDatasourceFromModels(models: models)
                             //   let datasource = self.createDatasourceFromModel(model: model)
                             //let operation = RVSubcriptionResponseOperation<RVBaseDatasource4<S>>(datasource: self, subscription: subscription, incomingModels: [RVBaseDatasource4<S>](), callback: { (models , error) in })
@@ -101,7 +101,7 @@ class RVDSManager5<S: RVSubbaseModel>: RVBaseDatasource4<RVBaseDatasource4<S>> {
                             })
                             
                             self.queue.addOperation(operation)
-                        }
+                      //  }
 
                         
 
