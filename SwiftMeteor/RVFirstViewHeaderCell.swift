@@ -76,7 +76,7 @@ class RVFirstViewHeaderCell: UITableViewHeaderFooterView {
 }
 extension RVFirstViewHeaderCell: RVFirstHeaderContentViewDelegate {
     func expandCollapseButtonTouched(button: UIButton) -> Void {
-        //print("In \(self.classForCoder).expandCollapseButtonTouched")
+        print("In \(self.classForCoder).expandCollapseButtonTouched")
         if let delegate = delegate {
             delegate.expandCollapseButtonTouched(view: self)
         }

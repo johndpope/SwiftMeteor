@@ -270,7 +270,7 @@ class RVBaseSLKViewController8: SLKTextViewController {
                 } else if let datasource = datasource as? RVBaseDatasource4<RVTransaction> {
                     model = datasource.sectionModel
                 }
-                
+               // print("In \(self.classForCoder).willDisplay with model \(String(describing: model)) \(model?.title)")
                 headerCell.configure(model: model)
                 
             }
@@ -312,11 +312,17 @@ extension RVBaseSLKViewController8 {
     }
     override func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         if let item = configuration.item(indexPath: indexPath, scrollView: tableView) {
+        
             if (indexPath.row == 0) && (item.zeroCellModel) {
+                print("In \(self.classForCoder).heightForRow, have item and item is zeroCellModel")
                 return 9.0
+            } else {
+                print("In \(self.classForCoder).heightForRow, have item and item is NOT zeroCellModel")
+                return 70.0
             }
             
         }
+         print("In \(self.classForCoder).heightForRow, do NOT have item")
         return 70.0
     }
     
@@ -324,13 +330,16 @@ extension RVBaseSLKViewController8 {
 // RVFirstViewHeaderCell
 extension RVBaseSLKViewController8: RVFirstViewHeaderCellDelegate {
     func expandCollapseButtonTouched(view: RVFirstViewHeaderCell) {
+        print("In \(self.classForCoder).expandCollapseButton ")
         self.queue.addOperation(RVControllerOperation<NSObject>(title: "\(self.classForCoder).expandCollapseButtonTouched", viewController: self, closure: { (operation, error) in
             if let error = error {
                 error.printError(message: "In \(self.classForCoder).expandCollapseButtonTouched")
                 operation.completeOperation()
                 return
             } else {
+                print("In \(self.classForCoder).expandCollapseButton  just before test \(view.datasource4)")
                 if let datasource = view.datasource4 as? RVBaseDatasource4<RVSubbaseModel> {
+                     print("In \(self.classForCoder).expandCollapseButton  passed test")
                     self.configuration.toggle(datasource: datasource, callback: { (error ) in
                         if let error = error {
                             error.append(message: "In \(self.classForCoder).expandCollapseBUtton line #\(#line), got error")
@@ -342,6 +351,7 @@ extension RVBaseSLKViewController8: RVFirstViewHeaderCellDelegate {
                     })
                     return
                 } else {
+                     print("In \(self.classForCoder).expandCollapseButton  failed test")
                     operation.completeOperation()
                 }
             }
