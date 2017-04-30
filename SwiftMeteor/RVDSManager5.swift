@@ -137,9 +137,18 @@ class RVDSManager5<S: RVSubbaseModel>: RVBaseDatasource4<RVBaseDatasource4<S>> {
         }
     }
 
+    /*
     func sectionDatasourceInstance(datasourceType: RVDatasourceType, maxSize: Int) -> RVBaseDatasource4<S> {
         print("In \(self.classForCoder).sectionModel. Needs to be overridden")
         return RVBaseDatasource4<S>(manager: self, datasourceType: datasourceType, maxSize: maxSize)
+    }
+ */
+    
+    /* Datasource for Rows nested in a Section-Based list */
+    func sectionDatasourceInstance(datasourceType: RVDatasourceType, maxSize: Int) -> RVBaseDatasource4<S> {
+        let datasource = RVBaseDatasource8<S>(manager: self, datasourceType: datasourceType, maxSize: maxSize)
+        // datasource.subscription = RVTransactionSubscription(front: true, showResponse: false)
+        return datasource
     }
     func queryForDatasourceInstance(model: S?) -> (RVQuery, RVError?) {
         print("In \(self.classForCoder).queryForDatasourceInstance, needs to be overridden")
