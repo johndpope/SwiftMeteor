@@ -283,6 +283,9 @@ class RVBaseDatasource4<T:RVSubbaseModel>: RVSubbaseModel {
     func datasourceTest(candidate: RVSubbaseModel? ) -> RVBaseModel? {
         return nil
     }
+    func sectionModelReference(reference: RVSubbaseModel?, front: Bool) -> RVBaseModel? {
+        return nil
+    }
     func updateSortTerm(query: RVQuery, front: Bool = false, candidate: T? = nil) -> RVQuery {
         if (query.sortTerms.count == 0) || (query.sortTerms.count > 1) {
             print("In \(self.classForCoder).updateSortTerms, erroneous number of sort Tersm: sortTerms are: \(query.sortTerms)")
@@ -521,6 +524,7 @@ extension RVBaseDatasource4 {
     }
     var frontElement: T? {
         get {
+           // print("In \(self.classForCoder).frontElement, elementCount = \(elementsCount) \(self.numberOfElements)")
             if elementsCount == 0 { return nil }
             else { return elements[0] }
         }
@@ -985,6 +989,7 @@ class RVLoadOperation<T:RVSubbaseModel>: RVAsyncOperation<T> {
             return false
         } else { return false}
     }
+
     func initiateSubscription(subscription: RVSubscription, query: RVQuery, reference: T?, callback: @escaping () -> Void) {
      //   print("In \(self.classForCoder).initiateSubscription \(String(describing: reference))")
         self.datasource.subscriptionActive = true
@@ -993,19 +998,23 @@ class RVLoadOperation<T:RVSubbaseModel>: RVAsyncOperation<T> {
             if let reference = reference as? RVBaseModel? {
              //   print("In \(self.classForCoder).initiateSubscripton with reference #\(#line)")
                 subscription.subscribe(query: query, reference: reference, callback: callback)
-            } else if let referenceDatasource = reference as? RVBaseDatasource4<RVGroup> {
+       //     } else if let model = self.datasource.sectionModelReference(reference: reference, front: subscription.isFront) {
+            } else {
+                let model = self.datasource.sectionModelReference(reference: reference, front: subscription.isFront)
+            
                // print("In \(self.classForCoder).initiateSubscription, passed casting Reference: \(reference?.description ?? "No reference") for subscription \(subscription)")
-                let model = subscription.isFront ? referenceDatasource.frontElement : referenceDatasource.backElement
+             //   let model = subscription.isFront ? referenceDatasource.frontElement : referenceDatasource.backElement
            //     if let model = model as? RVBaseModel? {
                // print("In \(self.classForCoder).initiateSubscripton after model #\(#line)")
+                print("In \(self.classForCoder).initiateSubscription model is \(String(describing: model))")
                     subscription.subscribe(query: query , reference: model , callback: callback)
            //     }
-                
-            
-            } else {
-                print("In \(self.classForCoder).initiateSubscription, failed casting reference to RVBaseModel. Reference: \(reference?.description ?? "No reference"), Generic Type is \(type(of: T.self))")
-                callback()
             }
+            
+   //         } else {
+   //             print("In \(self.classForCoder).initiateSubscription, failed casting reference to RVBaseModel. Reference: \(reference?.description ?? "No reference"), Generic Type is \(type(of: T.self))")
+                //callback()
+         //   }
             
         }
     }
