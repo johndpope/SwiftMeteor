@@ -42,7 +42,7 @@ class RVSwiftDDP: NSObject {
         Meteor.collections[subscription.modelType.rawValue] = subscription
     }
 
-    func subscribe(subscription: RVBaseCollectionSubscription8, params: [AnyObject], callback: @escaping () -> Void ) -> Void {
+    func subscribe(subscription: RVSubscription, params: [AnyObject], callback: @escaping () -> Void ) -> Void {
         if let id = subscription.subscriptionID {
             print("In \(self.classForCoder).subscribe attempting to subscribe when already subscribed. id: \(id)")
             self.unsubscribe(id: id)

@@ -10,6 +10,8 @@ import UIKit
 protocol RVSubscription: class {
     var notificationName: Notification.Name { get }
     var unsubscribeNotificationName: Notification.Name { get }
+    var modelType: RVModelType { get }
+    var subscriptionID: String? { get set }
     var active: Bool { get }
     var collection: RVModelType { get }
     var showResponse: Bool { get }

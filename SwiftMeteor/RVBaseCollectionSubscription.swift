@@ -9,6 +9,8 @@
 import Foundation
 import UIKit
 class RVBaseCollectionSubscription: RVBaseCollection, RVSubscription {
+    var modelType: RVModelType { return RVModelType.baseModel }
+
 
     init(collection: RVModelType, front: Bool = true, showResponse: Bool = false) {
         super.init(collection: collection)
