@@ -37,11 +37,10 @@ class RVBaseDatasource4<T:RVSubbaseModel>: RVSubbaseModel {
     var zeroCellModeOn: Bool = false 
     var zeroCellIndex: Int = 1
     var zeroCellModel: T? {
-        let model = RVBaseModel()
-        model.title = "Zero Cell"
-        model.createdAt = Date()
-        if let model = model as? T { return model }
-        return nil
+        let model = T(id: "Bogus", fields: NSDictionary())
+ //       model.title = "Zero Cell"
+ //       model.createdAt = Date()
+        return model 
     }
     let LAST_SORT_STRING = "ZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZ"
     var instanceType: String { get { return String(describing: type(of: self)) } }
@@ -436,7 +435,7 @@ extension RVBaseDatasource4 {
         if type(of: RVBaseDatasource4<T>.self) == type(of: self) {
             print("IN \(self.instanceType).element, types matched")
         }
-       // print("IN \(self.classForCoder).element \(indexPath)")
+      // print("IN \(self.classForCoder).element \(indexPath)")
         let index = indexPath.row
         if updateLast { self.lastItemIndex = index }
         if index < 0 {
@@ -457,11 +456,15 @@ extension RVBaseDatasource4 {
         }
         var physicalIndex = index - offset
         if zeroCellModeOn {
+            
             physicalIndex = physicalIndex - zeroCellIndex
+         //   print("In \(self.classForCoder).element \(indexPath) zeroCellMode is on. PhyscialIndex: \(physicalIndex)")
+        } else {
+        //    print("In \(self.classForCoder).element \(indexPath) zeroCellMode is off")
         }
         if physicalIndex < 0 {
             //print("In \(self.instanceType).item got physical index less than 0 \(physicalIndex). Offset is \(offset)")
-            //print("In \(self.classForCoder).item calling inBack: index = \(index), count: \(elementsCount), offset: \(self.offset), backBuffer: \(self.backBufferSize)")
+          //  print("In \(self.classForCoder).item calling inBack: index = \(index), count: \(elementsCount), virtualCount: \(virtualCount), offset: \(self.offset), backBuffer: \(self.backBufferSize)")
             if OKtoRetrieve && frontThrottleOK {
                 throttleFront()
                 inFront(scrollView: scrollView)

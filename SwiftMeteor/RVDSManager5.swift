@@ -47,6 +47,7 @@ class RVDSManager5<S: RVSubbaseModel>: RVBaseDatasource4<RVBaseDatasource4<S>> {
             datasource.sectionModel = model
             datasource.sectionMode = true
             datasource.collapsed = true
+           // print("In \(self.classForCoder).createDatasourceFromModels \(self.useZeroCell), \(self.sectionDatasourceType.rawValue)")
             if self.useZeroCell && (self.sectionDatasourceType != .filter) { datasource.zeroCellModeOn = true }
             datasourceResults.append(datasource)
         }
@@ -161,6 +162,7 @@ extension RVDSManager5 {
     }
     func item(indexPath: IndexPath, scrollView: UIScrollView?, updateLast: Bool = true) -> S? {
         // func element(indexPath: IndexPath) ->  T? {
+      //  print("IN \(self.classForCoder).item \(indexPath)")
         let section = indexPath.section
         if let datasource = datasourceInSection(section: section) {
             return datasource.element(indexPath: indexPath, scrollView: scrollView)
@@ -221,9 +223,11 @@ extension RVDSManager5 {
     func datasourceInSection(section: Int) -> RVBaseDatasource4<S>? {
         if (section >= 0) && (section < self.virtualCount) {
             grabMoreSections(section: section)
-           // print("In \(self.instanceType).datasourceInSection, sectionIndex: \(section), virtualCount is \(self.virtualCount) ")
+
             let physical = section - offset
+         //  print("In \(self.instanceType).datasourceInSection, sectionIndex: \(section), virtualCount is \(self.virtualCount), elementsCount: \(elements.count), physical \(physical) ")
             if (physical >= 0) && (physical < elementsCount) {
+              //  print("In \(self.instanceType).datasourceInSection, sectionIndex: \(section), returning \(elements[physical]) ")
                 return elements[physical]
             } else {
                 // Neil retreive sections

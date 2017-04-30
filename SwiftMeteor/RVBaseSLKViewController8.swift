@@ -314,15 +314,15 @@ extension RVBaseSLKViewController8 {
         if let item = configuration.item(indexPath: indexPath, scrollView: tableView) {
         
             if (indexPath.row == 0) && (item.zeroCellModel) {
-                print("In \(self.classForCoder).heightForRow, have item and item is zeroCellModel")
+               // print("In \(self.classForCoder).heightForRow, have item and item is zeroCellModel")
                 return 9.0
             } else {
-                print("In \(self.classForCoder).heightForRow, have item and item is NOT zeroCellModel")
+               // print("In \(self.classForCoder).heightForRow, have item and item is NOT zeroCellModel")
                 return 70.0
             }
             
         }
-         print("In \(self.classForCoder).heightForRow, do NOT have item. Row: \(indexPath.row)")
+      //   print("In \(self.classForCoder).heightForRow, do NOT have item. Row: \(indexPath.row)")
         return 70.0
     }
     
@@ -339,7 +339,7 @@ extension RVBaseSLKViewController8: RVFirstViewHeaderCellDelegate {
             } else {
                // print("In \(self.classForCoder).expandCollapseButton  just before test \(String(describing: view.datasource4))")
                 if let datasource = view.datasource4 {
-                     print("In \(self.classForCoder).expandCollapseButton  passed test")
+                  //   print("In \(self.classForCoder).expandCollapseButton  passed test")
                     self.configuration.toggle(datasource: datasource, callback: { (error ) in
                         if let error = error {
                             error.append(message: "In \(self.classForCoder).expandCollapseBUtton line #\(#line), got error")
