@@ -27,7 +27,7 @@ class RVDSManagerDynamicGroupList8<S: RVSubbaseModel>: RVDSManager8<S> {
     }
     /* Datasource for Rows nested in a Section-Based list */
     override func sectionDatasourceInstance(datasourceType: RVDatasourceType, maxSize: Int) -> RVBaseDatasource4<S> {
-        let datasource = RVGroupListDatasource8<S>(manager: self, datasourceType: datasourceType, maxSize: maxSize)
+        let datasource = RVBaseDatasource8<S>(manager: self, datasourceType: datasourceType, maxSize: maxSize)
         // datasource.subscription = RVTransactionSubscription(front: true, showResponse: false)
         return datasource
     }

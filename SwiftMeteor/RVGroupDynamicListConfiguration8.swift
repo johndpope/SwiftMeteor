@@ -45,12 +45,12 @@ class RVGroupDynamicListConfiguration8<T: RVSubbaseModel>: RVBaseConfiguration8<
         return RVDummyTopDatasource4<T>(manager: self.manager, datasourceType: .top, maxSize: 100)
     }
     override var mainDatasource: RVBaseDatasource4<T> {
-        let datasource = RVGroupListDatasource8<T>(manager: self.manager, datasourceType: .main, maxSize: 80)
+        let datasource = RVBaseDatasource8<T>(manager: self.manager, datasourceType: .main, maxSize: 80)
         datasource.subscription = self.subscription
         return datasource
     }
     override var filterDatasource: RVBaseDatasource4<T> {
-        return RVGroupListDatasource8<T>(manager: self.manager, datasourceType: .filter, maxSize: self.mainDatasourceMaxSize)
+        return RVBaseDatasource8<T>(manager: self.manager, datasourceType: .filter, maxSize: self.mainDatasourceMaxSize)
     }
     override func baseTopQuery() -> (RVQuery, RVError?) {
         let query = RVQuery()
