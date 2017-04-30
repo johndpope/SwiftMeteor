@@ -364,7 +364,7 @@ class RVBaseConfiguration4<T: RVSubbaseModel>: RVListControllerConfigurationProt
         if let item = manager.item(indexPath: indexPath, scrollView: scrollView) as? RVBaseModel { return item}
         return nil
     }
-    func datasourceInSection(section: Int) -> AnyObject?  {
+    func datasourceInSection(section: Int) -> RVSubbaseModel?  {
         return manager.datasourceInSection(section: section)
     }
     func toggle(datasource: AnyObject, callback: @escaping (RVError?) -> Void) {

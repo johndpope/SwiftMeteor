@@ -322,7 +322,7 @@ extension RVBaseSLKViewController8 {
             }
             
         }
-         print("In \(self.classForCoder).heightForRow, do NOT have item")
+         print("In \(self.classForCoder).heightForRow, do NOT have item. Row: \(indexPath.row)")
         return 70.0
     }
     
@@ -330,15 +330,15 @@ extension RVBaseSLKViewController8 {
 // RVFirstViewHeaderCell
 extension RVBaseSLKViewController8: RVFirstViewHeaderCellDelegate {
     func expandCollapseButtonTouched(view: RVFirstViewHeaderCell) {
-        print("In \(self.classForCoder).expandCollapseButton ")
+     //   print("In \(self.classForCoder).expandCollapseButton ")
         self.queue.addOperation(RVControllerOperation<NSObject>(title: "\(self.classForCoder).expandCollapseButtonTouched", viewController: self, closure: { (operation, error) in
             if let error = error {
                 error.printError(message: "In \(self.classForCoder).expandCollapseButtonTouched")
                 operation.completeOperation()
                 return
             } else {
-                print("In \(self.classForCoder).expandCollapseButton  just before test \(view.datasource4)")
-                if let datasource = view.datasource4 as? RVBaseDatasource4<RVSubbaseModel> {
+               // print("In \(self.classForCoder).expandCollapseButton  just before test \(String(describing: view.datasource4))")
+                if let datasource = view.datasource4 {
                      print("In \(self.classForCoder).expandCollapseButton  passed test")
                     self.configuration.toggle(datasource: datasource, callback: { (error ) in
                         if let error = error {

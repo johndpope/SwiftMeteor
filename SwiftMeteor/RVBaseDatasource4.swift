@@ -1006,7 +1006,7 @@ class RVLoadOperation<T:RVSubbaseModel>: RVAsyncOperation<T> {
              //   let model = subscription.isFront ? referenceDatasource.frontElement : referenceDatasource.backElement
            //     if let model = model as? RVBaseModel? {
                // print("In \(self.classForCoder).initiateSubscripton after model #\(#line)")
-                print("In \(self.classForCoder).initiateSubscription model is \(String(describing: model))")
+               // print("In \(self.classForCoder).initiateSubscription model is \(String(describing: model))")
                     subscription.subscribe(query: query , reference: model , callback: callback)
            //     }
             }
