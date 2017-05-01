@@ -472,6 +472,10 @@ extension RVBaseDatasource4 {
                     self.throttleBack()
                     self.inBack(scrollView: scrollView)
                 }
+                if (self.virtualCount < (self.backBufferSize)) && self.frontThrottleOK {
+                    self.throttleFront()
+                    self.inFront(scrollView: scrollView)
+                }
             } else if (index - self.offset) < self.frontBufferSize {
                 if self.frontThrottleOK {
                     self.throttleFront()
