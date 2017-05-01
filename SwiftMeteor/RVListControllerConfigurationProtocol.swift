@@ -77,6 +77,7 @@ protocol RVListControllerConfigurationProtocol: class {
     func numberOfSections(tableView: UITableView) -> Int
     func numberOfItems(section: Int) -> Int
     func item(indexPath: IndexPath, scrollView: UIScrollView?) -> RVBaseModel?
+    func itemWithoutTrigger(indexPath: IndexPath, scrollView: UIScrollView?) -> RVBaseModel?
     func datasourceInSection(section: Int) -> RVSubbaseModel?
     func toggle(datasource: AnyObject, callback: @escaping (RVError?) -> Void)
     func unsubscribe () -> Void

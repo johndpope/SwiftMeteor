@@ -26,7 +26,10 @@ class RVDSManager5<S: RVSubbaseModel>: RVBaseDatasource4<RVBaseDatasource4<S>> {
     }
     
     
-    var numberOfSections: Int { return numberOfElements } // Unique to RVDSManagers
+    var numberOfSections: Int {
+        print("In \(self.classForCoder)RVDSManager5.numberOfSections \(self.numberOfElements)")
+        return numberOfElements
+    } // Unique to RVDSManagers
     override func retrieve(query: RVQuery, callback: @escaping ([RVBaseDatasource4<S>], RVError?) -> Void) {
         
         self.retrieveSectionModels(query: query) { (models: [S], error) in
@@ -120,8 +123,8 @@ class RVDSManager5<S: RVSubbaseModel>: RVBaseDatasource4<RVBaseDatasource4<S>> {
         
     }
     func retrieveSectionModels(query: RVQuery, callback: @escaping ([S], RVError?) -> Void) {
-        print("In \(self.classForCoder).retrieveSectionModels base class RVDSManager5, need to override ")
-        RVBaseModel.bulkQuery(query: query) { (models, error) in
+        //print("In \(self.classForCoder).retrieveSectionModels base class RVDSManager5, need to override ")
+        S.bulkQuery(query: query) { (models, error) in
             if let error = error {
                 error.append(message: "In \(self.classForCoder).retrieve, got Meteor Error")
                 callback([S](), error)
@@ -150,10 +153,36 @@ class RVDSManager5<S: RVSubbaseModel>: RVBaseDatasource4<RVBaseDatasource4<S>> {
         // datasource.subscription = RVTransactionSubscription(front: true, showResponse: false)
         return datasource
     }
+    /*
     func queryForDatasourceInstance(model: S?) -> (RVQuery, RVError?) {
         print("In \(self.classForCoder).queryForDatasourceInstance, needs to be overridden")
         return (RVQuery(), RVError(message: "In \(self.classForCoder).queryForDatasourceInstance, needs to be overridden"))
     }
+    */
+    /* Query for Rows nested in a Section-Based list */
+    func queryForDatasourceInstance(model: S?) -> (RVQuery, RVError?) {
+        //print("In \(self.classForCoder).queryForDatasourceInstance")
+        let (query, error) = S.baseQuery
+        if let error = error {
+            return (query, error)
+        } else if let model = model as? RVBaseModel {
+            if let id = model.localId {
+                query.addSort(field: .createdAt, order: .descending)
+                query.addAnd(term: .createdAt, value: Date() as AnyObject, comparison: .lte)
+                query.addAnd(term: .parentId, value: id as AnyObject, comparison: .eq)
+                return (query, error)
+            } else {
+                let error = RVError(message: "In \(self.classForCoder).queryForDatasourceInstance, no sectionModel Id")
+                return (query, error)
+            }
+        } else {
+            let error = RVError(message: "In \(self.classForCoder).queryForDatasourceInstance, no sectionModel")
+            return (query, error)
+        }
+        
+    }
+    
+    
 }
 // RVDSManager Unique
 extension RVDSManager5 {
@@ -166,19 +195,31 @@ extension RVDSManager5 {
     func numberOfItems(section: Int) -> Int {
        // print("In \(self.classForCoder).numberOfItems in section: \(section)")
         if let datasource = self.datasourceInSection(section: section) {
+            print("In \(self.classForCoder).RVDSManager5.numberOfItems with datasource \(datasource) \(datasource.numberOfElements)")
             return datasource.numberOfElements
         } else { return 0 }
     }
     func item(indexPath: IndexPath, scrollView: UIScrollView?, updateLast: Bool = true) -> S? {
         // func element(indexPath: IndexPath) ->  T? {
-      //  print("IN \(self.classForCoder).item \(indexPath)")
+        print("IN \(self.classForCoder).item \(indexPath)")
         let section = indexPath.section
         if let datasource = datasourceInSection(section: section) {
-            return datasource.element(indexPath: indexPath, scrollView: scrollView)
+            return datasource.elementZ(indexPath: indexPath, scrollView: scrollView)
         } else {
             return nil
         }
     }
+    func itemWithoutTrigger(indexPath: IndexPath, scrollView: UIScrollView?) -> S? {
+        // func element(indexPath: IndexPath) ->  T? {
+      // print("IN \(self.classForCoder).itemWithoutTrigger \(indexPath)")
+        let section = indexPath.section
+        if let datasource = datasourceInSection(section: section) {
+            return datasource.elementWithoutTrigger(indexPath: indexPath, scrollView: scrollView)
+        } else {
+            return nil
+        }
+    }
+    
     func grabMoreSections(section: Int) {
         if !self.dynamicSections { return }
         if section == self.lastSection { return }
@@ -201,7 +242,7 @@ extension RVDSManager5 {
             let physicalIndex = section - offset
             if physicalIndex < 0 {
                 //print("In \(self.instanceType).item got physical index less than 0 \(physicalIndex). Offset is \(offset)")
-                //print("In \(self.classForCoder).item calling inBack: index = \(index), count: \(elementsCount), offset: \(self.offset), backBuffer: \(self.backBufferSize)")
+                print("In \(self.classForCoder).grabMoreSections calling inBack: index = \(index), count: \(elementsCount), offset: \(self.offset), backBuffer: \(self.backBufferSize)")
                 if OKtoRetrieve && frontThrottleOK {
                     throttleFront()
                     inFront(scrollView: scrollView)
@@ -209,14 +250,14 @@ extension RVDSManager5 {
                 return
             } else if physicalIndex < elementsCount {
                 if (physicalIndex + self.backBufferSize) > elementsCount {
-                    //print("In \(self.classForCoder).item calling inBack:  index = \(index), count: \(elementsCount), offset: \(self.offset), backBuffer: \(self.backBufferSize)")
+                    print("In \(self.classForCoder).grabMoreSections calling inBack:  index = \(index), count: \(elementsCount), offset: \(self.offset), backBuffer: \(self.backBufferSize)")
                     if OKtoRetrieve && backThrottleOK {
                         throttleBack()
                         inBack(scrollView: scrollView)
                     }
                 }
                 if physicalIndex < self.frontBufferSize {
-                    // print("In \(self.classForCoder).item calling inFront: index = \(index), count: \(elementsCount), offset: \(self.offset), backBuffer: \(self.backBufferSize)")
+                     print("In \(self.classForCoder).grabMoreSections calling inFront: index = \(index), count: \(elementsCount), offset: \(self.offset), backBuffer: \(self.backBufferSize)")
                     if OKtoRetrieve && frontThrottleOK {
                         throttleFront()
                         inFront(scrollView: scrollView)

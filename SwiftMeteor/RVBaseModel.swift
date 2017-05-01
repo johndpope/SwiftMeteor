@@ -764,7 +764,7 @@ class RVBaseModel: RVSubbaseModel {
             print("In \(self.classForCoder).setOwner, ownerModelTYpe is \(owner.modelType.rawValue)")
         }
     }
-    class var baseQuery: (RVQuery, RVError?) {
+    override class var baseQuery: (RVQuery, RVError?) {
        // let query = RVQuery()
        // query.addAnd(term: .deleted, value: false as AnyObject, comparison: .eq)
        // return query

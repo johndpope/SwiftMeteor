@@ -364,6 +364,10 @@ class RVBaseConfiguration4<T: RVSubbaseModel>: RVListControllerConfigurationProt
         if let item = manager.item(indexPath: indexPath, scrollView: scrollView) as? RVBaseModel { return item}
         return nil
     }
+    func itemWithoutTrigger(indexPath: IndexPath, scrollView: UIScrollView?) -> RVBaseModel? {
+        if let item = manager.itemWithoutTrigger(indexPath: indexPath, scrollView: scrollView) as? RVBaseModel { return item }
+        return nil
+    }
     func datasourceInSection(section: Int) -> RVSubbaseModel?  {
         return manager.datasourceInSection(section: section)
     }

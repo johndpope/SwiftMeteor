@@ -123,7 +123,7 @@ class RVOperationQueue: OperationQueue {
     }
     override func addOperation(_ op: Operation) {
         var title = "no title"
-        if let operation = op as? RVAsyncOperation<RVBaseModel> {
+        if let operation = op as? RVAsyncOperation<RVSubbaseModel> {
             title = operation.title
         }
         if let operation = op as? RVAsyncOperation<RVBaseDatasource4<RVBaseModel>> {
@@ -132,9 +132,30 @@ class RVOperationQueue: OperationQueue {
         if self.operationCount < maxSize {
             super.addOperation(op)
         } else {
-            print("In \(self.title)queue.addOperation. Count exceeds \(maxSize), cancelling prior Operations, adding \(title)")
+            print("In \(self.title).addOperation. Count exceeds \(maxSize), cancelling prior Operations, adding \(title) Non-Generic")
             self.cancelAllOperations()
             super.addOperation(op)
+        }
+    }
+    func endRun(operation: Operation) {
+        super.addOperation(operation)
+    }
+}
+class RVDSOperationQueue<T: RVSubbaseModel>: RVOperationQueue {
+    override func addOperation(_ op: Operation) {
+        var title = "no title"
+        if let operation = op as? RVAsyncOperation<T> {
+            title = operation.title
+        }
+        if let operation = op as? RVAsyncOperation<RVBaseDatasource4<T>> {
+            title = operation.title
+        }
+        if self.operationCount < maxSize {
+            super.endRun(operation: op)
+        } else {
+            print("In \(self.title).addOperation. Count exceeds \(maxSize), cancelling prior Operations, adding \(title) ")
+            self.cancelAllOperations()
+            super.endRun(operation: op)
         }
     }
 }

@@ -211,12 +211,15 @@ class RVBaseSLKViewController8: SLKTextViewController {
     
     // UITableViewDatasource
     override func numberOfSections(in tableView: UITableView) -> Int {
+        print("In \(self.classForCoder).RVBaseSLKViewController.numberOfSections")
         return configuration.numberOfSections(tableView: tableView)
     }
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        print("In \(self.classForCoder).numberOfRows for \(section)")
         return configuration.numberOfItems(section: section)
     }
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        print("In \(self.classForCoder).cellForRow \(indexPath)")
         if tableView == self.tableView {
             return primaryCellForRowAtIndexPath(tableView: tableView, indexPath)
         } else {
@@ -259,7 +262,7 @@ class RVBaseSLKViewController8: SLKTextViewController {
     }
     override func tableView(_ tableView: UITableView, willDisplayHeaderView view: UIView, forSection section: Int) {
         if let headerCell = view as? RVFirstViewHeaderCell {
-            //  print("In \(self.classForCoder).willDisplayHeaderView")
+              print("In \(self.classForCoder).willDisplayHeaderView")
             if let datasource = configuration.datasourceInSection(section: section) {
                 headerCell.datasource4 = datasource
                 var model: RVBaseModel?
@@ -281,6 +284,7 @@ class RVBaseSLKViewController8: SLKTextViewController {
     }
     
     override func scrollViewDidScroll(_ scrollView: UIScrollView) {
+      //  print("in \(self.classForCoder).scrollViewDidScroll")
         if let tableView = scrollView as? UITableView {
             if tableView == self.dsScrollView {
                 
@@ -311,7 +315,8 @@ extension RVBaseSLKViewController8 {
         return 35.0
     }
     override func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        if let item = configuration.item(indexPath: indexPath, scrollView: tableView) {
+        //print("In \(self.classForCoder).heightForROws \(indexPath)")
+        if let item = configuration.itemWithoutTrigger(indexPath: indexPath, scrollView: tableView) {
         
             if (indexPath.row == 0) && (item.zeroCellModel) {
                // print("In \(self.classForCoder).heightForRow, have item and item is zeroCellModel")

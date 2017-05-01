@@ -62,19 +62,21 @@ class RVDSManager4Z<T:RVSubbaseModel>: NSObject {
         }
     }
     func element(indexPath: IndexPath, scrollView: UIScrollView?, updateLast: Bool = true) -> T? {
+        print("In \(self.classForCoder).element \(indexPath)")
    // func element(indexPath: IndexPath) ->  T? {
         let section = indexPath.section
         if let datasource = datasourceInSection(section: section) {
-            return datasource.element(indexPath: indexPath, scrollView: scrollView)
+            return datasource.elementZ(indexPath: indexPath, scrollView: scrollView)
         } else {
             return nil
         }
     }
     func item(indexPath: IndexPath, scrollView: UIScrollView?, updateLast: Bool = true) -> T? {
+         print("In \(self.classForCoder).itme \(indexPath)")
         // func element(indexPath: IndexPath) ->  T? {
         let section = indexPath.section
         if let datasource = datasourceInSection(section: section) {
-            return datasource.element(indexPath: indexPath, scrollView: scrollView)
+            return datasource.elementZ(indexPath: indexPath, scrollView: scrollView)
         } else {
             return nil
         }

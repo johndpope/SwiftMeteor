@@ -13,6 +13,36 @@ class RVSubbaseModel: RVMeteorDocument {
     required init(id: String, fields: NSDictionary?) {
         super.init(id: id, fields: fields )
     }
+    
+    class var baseQuery: (RVQuery, RVError?) {
+        // let query = RVQuery()
+        // query.addAnd(term: .deleted, value: false as AnyObject, comparison: .eq)
+        // return query
+        
+        
+        get {
+            let query = RVQuery()
+            var error: RVError? = nil
+            //query.addAnd(term: .modelType, value: RVModelType.transaction.rawValue as AnyObject, comparison: .eq)
+            query.addAnd(term: .deleted, value: false as AnyObject, comparison: .eq)
+            //query.addAnd(term: .deleted, value: false as AnyObject, comparison: .eq)
+            //query.limit = 10
+            if let loggedInUserId = RVTransaction.loggedInUserId {
+                query.addAnd(term: .targetUserProfileId, value: loggedInUserId as AnyObject, comparison: .eq)
+            } else {
+                error = RVError(message: "In \(self.classForCoder).basicQuery, no loggedInUserId")
+            }
+            if let domainId = RVTransaction.appDomainId {
+                query.addAnd(term: .domainId, value: domainId as AnyObject, comparison: .eq)
+            } else {
+                error = RVError(message: "In \(self.classForCoder).basicQuery, no domainId")
+            }
+            return (query, error)
+        }
+        
+        
+    }
+    
     class func meteorMethod(request: RVCrud) -> String {
         return "\(RVMeteorMethod.Prefix.lowercased())\(collectionType().rawValue.lowercased())\(RVMeteorMethod.Separator)\(request.rawValue.lowercased())"
     }

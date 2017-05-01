@@ -8,6 +8,7 @@
 
 import UIKit
 class RVDSManagerDynamicGroupList8<S: RVSubbaseModel>: RVDSManager8<S> {
+    /*
     override func retrieveSectionModels(query: RVQuery, callback: @escaping ([S], RVError?) -> Void) {
         RVGroup.bulkQuery(query: query) { (models, error) in
             if let error = error {
@@ -25,6 +26,7 @@ class RVDSManagerDynamicGroupList8<S: RVSubbaseModel>: RVDSManager8<S> {
             }
         }
     }
+ */
     /*
     /* Datasource for Rows nested in a Section-Based list */
     override func sectionDatasourceInstance(datasourceType: RVDatasourceType, maxSize: Int) -> RVBaseDatasource4<S> {
@@ -33,6 +35,8 @@ class RVDSManagerDynamicGroupList8<S: RVSubbaseModel>: RVDSManager8<S> {
         return datasource
     }
  */
+    
+    /*
     /* Query for Rows nested in a Section-Based list */
     override func queryForDatasourceInstance(model: S?) -> (RVQuery, RVError?) {
         //print("In \(self.classForCoder).queryForDatasourceInstance")
@@ -55,5 +59,6 @@ class RVDSManagerDynamicGroupList8<S: RVSubbaseModel>: RVDSManager8<S> {
         }
 
     }
+ */
     
 }

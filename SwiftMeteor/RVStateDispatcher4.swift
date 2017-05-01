@@ -9,7 +9,7 @@
 import Foundation
 class RVStateDispatcher4 {
     var instanceType: String { get { return String(describing: type(of: self)) } }
-    fileprivate let queue = RVOperationQueue()
+    fileprivate let queue = RVOperationQueue(title: "RVStateDispatcher4")
     static var shared: RVStateDispatcher4 = {
         return RVStateDispatcher4()
     }()

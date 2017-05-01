@@ -46,7 +46,7 @@ class RVBaseDatasource4<T:RVSubbaseModel>: RVSubbaseModel {
     var instanceType: String { get { return String(describing: type(of: self)) } }
     let identifier = NSDate().timeIntervalSince1970
     var baseQuery: RVQuery? = nil
-    let queue = RVOperationQueue(title: "RVBaseDatasourc4 queue")
+    let queue = RVDSOperationQueue<T>(title: "RVBaseDatasourc4 queue ##")
     var rowAnimation: UITableViewRowAnimation = UITableViewRowAnimation.automatic
     var elements = [T]()
     var sections = [RVBaseDatasource4<T>]()
@@ -77,8 +77,16 @@ class RVBaseDatasource4<T:RVSubbaseModel>: RVSubbaseModel {
     }
     var offset: Int = 0 {
         willSet {
+            print("In \(self.classForCoder).offset being set to \(newValue) from \(self.offset)")
             if newValue < 0 { print("In \(self.classForCoder) ERROR. attemtp to set Offset to a negative number \(newValue)") }
             //print("In \(self.classForCoder).offset setting to \(newValue) and arraysize is \(elementsCount)")
+            if newValue > 0 {
+                if let subscription = self.subscription {
+                    if subscription.isFront {
+                        self.unsubscribe()
+                    }
+                }
+            }
         }
     }
     var datasourceType: RVDatasourceType = .unknown
@@ -396,7 +404,7 @@ extension RVBaseDatasource4 {
         }
     }
     func inFront(scrollView: UIScrollView?) {
-        //print("In \(self.classForCoder).inFront. ........................................... #######")
+        print("In \(self.classForCoder).inFront. ........................................... #######")
         if self.datasourceType == .filter { return }
         DispatchQueue.main.async {
             if self.frontOperationActive { return }
@@ -406,36 +414,81 @@ extension RVBaseDatasource4 {
                     error.append(message: "In \(self.classForCoder).inFront RVBaseDatasource4 line \(#line) , got error")
                     error.printError()
                 } else {
-                    //print("In \(self.classForCoder).inFront, success")
+                    print("In \(self.classForCoder).inFront, success")
                 }
             })
             self.queue.addOperation(operation)
         }
     }
     func inBack(scrollView: UIScrollView?) {
+                    print("In \(self.classForCoder).inBack")
         DispatchQueue.main.async {
             if self.backOperationActive {
-               // print("In \(self.classForCoder).inBack, backOperationActive")
+                print("In \(self.classForCoder).inBack, backOperationActive")
                 return
             }
-        //    print("In \(self.classForCoder).inBack")
+            print("In \(self.classForCoder).inBack queueing operation")
             let operation = RVLoadOperation(datasource: self, scrollView: scrollView, callback: { (models, error) in
                 if let error = error {
                     error.append(message: "In \(self.classForCoder).inBack, got error")
                     error.printError()
                 } else {
-                    //print("In \(self.classForCoder).inBack, success")
+                    print("In \(self.classForCoder).inBack, success")
                 }
             })
             self.queue.addOperation(operation)
         }
     }
-    
-    func element(indexPath: IndexPath, scrollView: UIScrollView?, updateLast: Bool = true) -> T? {
+    func elementWithoutTrigger(indexPath: IndexPath, scrollView: UIScrollView? ) -> T? {
+        let index = indexPath.row
+        if index < 0 {
+            print("In \(self.instanceType).item, got negative index \(index)")
+            return nil
+        } else if index >= self.virtualCount  {
+            print("In \(self.instanceType).item, index \(index) greaterthan virtualCount: \(self.virtualCount)")
+            return nil
+        } else if self.zeroCellModeOn && (index < self.zeroCellIndex) {
+            return self.zeroCellModel
+        } else {
+            var physicalIndex = index - self.offset
+            if self.zeroCellModeOn { physicalIndex = physicalIndex - zeroCellIndex }
+            if physicalIndex < 0 {
+                return nil
+            } else if physicalIndex < self.elementsCount {
+                return self.elements[physicalIndex]
+            } else {
+                print("In \(self.classForCoder).RVBaseDatasource4.element(indexPath... physicalIndex \(physicalIndex), greater than elementsCount: \(elementsCount); offset = \(self.offset), zeroCellModeOn: \(self.zeroCellModeOn)")
+                return nil
+            }
+        }
+    }
+    func elementZ(indexPath: IndexPath, scrollView: UIScrollView? ) -> T? {
+        print("In \(self.classForCoder).RVBaseDatasource4.elementZ, \(indexPath) offset: \(self.offset), virtualCount: \(self.virtualCount)")
+        let index = indexPath.row
+        if (index >= 0) && (index < self.virtualCount) {
+            self.lastItemIndex = index
+            if index + self.backBufferSize > self.virtualCount {
+                if self.backThrottleOK {
+                    self.throttleBack()
+                    self.inBack(scrollView: scrollView)
+                }
+            } else if (index - self.offset) < self.frontBufferSize {
+                if self.frontThrottleOK {
+                    self.throttleFront()
+                    self.inFront(scrollView: scrollView)
+                }
+            }
+        }
+        return elementWithoutTrigger(indexPath: indexPath, scrollView: scrollView)
+    }
+    /*
+    func element(indexPath: IndexPath, scrollView: UIScrollView?, updateLast: Bool = true, donotTriggerLoading: Bool = false) -> T? {
         if type(of: RVBaseDatasource4<T>.self) == type(of: self) {
             print("IN \(self.instanceType).element, types matched")
         }
       // print("IN \(self.classForCoder).element \(indexPath)")
+        
+        print("In \(self.classForCoder).element, indexPath: \(indexPath), offset: \(offset), count: \(elementsCount), virtualCount: \(virtualCount),  backBuffer: \(self.backBufferSize) and doNotTriggerLoading: \(donotTriggerLoading)")
         let index = indexPath.row
         if updateLast { self.lastItemIndex = index }
         if index < 0 {
@@ -445,12 +498,14 @@ extension RVBaseDatasource4 {
             print("In \(self.instanceType).item, index \(index) greater than virtualCount: \(self.virtualCount)")
             return nil
         }
-
+        var subscriptionFront: Bool = true
         var OKtoRetrieve: Bool = !self.collapsed
-        if self.subscription != nil {
+        if let subscription = self.subscription {
             if self.subscriptionActive {
-                if self.elementsCount >= self.maxArraySize {
-                    OKtoRetrieve = false
+                subscriptionFront = subscription.isFront
+                if (self.elementsCount >= self.maxArraySize) {
+                   // print("In \(self.classForCoder).element, setting OK to retrieve to false")
+                    //OKtoRetrieve = false
                 }
             }
         }
@@ -464,10 +519,13 @@ extension RVBaseDatasource4 {
         }
         if physicalIndex < 0 {
             //print("In \(self.instanceType).item got physical index less than 0 \(physicalIndex). Offset is \(offset)")
-          //  print("In \(self.classForCoder).item calling inBack: index = \(index), count: \(elementsCount), virtualCount: \(virtualCount), offset: \(self.offset), backBuffer: \(self.backBufferSize)")
-            if OKtoRetrieve && frontThrottleOK {
-                throttleFront()
-                inFront(scrollView: scrollView)
+            print("In \(self.classForCoder).element physicalIndex less than zero: index = \(index), offset: \(offset), count: \(elementsCount), virtualCount: \(virtualCount), offset: \(self.offset), backBuffer: \(self.backBufferSize) and doNotTriggerLoading: \(donotTriggerLoading)")
+            print("OK to Retrieve \(OKtoRetrieve), \(subscriptionFront), \(frontThrottleOK)")
+            if ( (OKtoRetrieve) || (!OKtoRetrieve && !subscriptionFront) ) && frontThrottleOK  {
+                if !donotTriggerLoading {
+                    throttleFront()
+                    inFront(scrollView: scrollView)
+                }
             }
             if zeroCellModeOn && (index < zeroCellIndex) {
                 if let model = zeroCellModel as? RVBaseModel {
@@ -481,17 +539,24 @@ extension RVBaseDatasource4 {
             return nil
         } else if physicalIndex < elementsCount {
             if (physicalIndex + self.backBufferSize) > elementsCount {
-                //print("In \(self.classForCoder).item calling inBack:  index = \(index), count: \(elementsCount), offset: \(self.offset), backBuffer: \(self.backBufferSize)")
-                if OKtoRetrieve && backThrottleOK {
-                    throttleBack()
-                    inBack(scrollView: scrollView)
+             //   print("In \(self.classForCoder).item calling inBack:  index = \(index), count: \(elementsCount), offset: \(self.offset), backBuffer: \(self.backBufferSize)")
+                if (OKtoRetrieve  || (!OKtoRetrieve && subscriptionFront) )  && backThrottleOK {
+                    
+                  //  print("In \(self.classForCoder).item passed test, calling inBack")
+                    if !donotTriggerLoading {
+                        print("In \(self.classForCoder).element passed test, calling inBack")
+                        throttleBack()
+                        inBack(scrollView: scrollView)
+                    }
+                    
                 }
-            }
-            if physicalIndex < self.frontBufferSize {
+            } else if physicalIndex < self.frontBufferSize {
                // print("In \(self.classForCoder).item calling inFront: index = \(index), count: \(elementsCount), offset: \(self.offset), backBuffer: \(self.backBufferSize)")
                 if OKtoRetrieve && frontThrottleOK {
-                    throttleFront()
-                    inFront(scrollView: scrollView)
+                    if !donotTriggerLoading {
+                        throttleFront()
+                        inFront(scrollView: scrollView)
+                    }
                 }
             }
             if zeroCellModeOn && (index < zeroCellIndex) {
@@ -503,6 +568,7 @@ extension RVBaseDatasource4 {
             return nil
         }
     }
+ */
     func throttleFront() {
         self.frontThrottleOK = false
         Timer.scheduledTimer(withTimeInterval: 0.2, repeats: false, block: { (time) in
@@ -516,8 +582,9 @@ extension RVBaseDatasource4 {
         })
     }
     func scroll(indexPath: IndexPath, scrollView: UIScrollView) {
-        //print("in \(self.classForCoder).scroll \(index)")
-        let _ = self.element(indexPath: indexPath, scrollView: scrollView, updateLast: false)
+  //      print("in \(self.classForCoder).scroll \(indexPath)")
+ //       let _ = self.element(indexPath: indexPath, scrollView: scrollView, updateLast: false)
+ //       let _ = self.elementWithoutTrigger(indexPath: indexPath, scrollView: scrollView )
     }
  
     func cloneItems() -> [T] {
@@ -901,6 +968,7 @@ class RVSubcriptionResponseOperation<T:RVSubbaseModel>: RVLoadOperation<T> {
                         return
                     } else {
                         self.cleanup(models: self.incomingModels, callback: { (models, error) in
+                            print("In \(self.classForCoder).asyncMain before RefreshViews")
                             self.refreshViews { self.finishUp(items: models, error: nil) }
                         })
                         return
@@ -995,6 +1063,10 @@ class RVLoadOperation<T:RVSubbaseModel>: RVAsyncOperation<T> {
 
     func initiateSubscription(subscription: RVSubscription, query: RVQuery, reference: T?, callback: @escaping () -> Void) {
      //   print("In \(self.classForCoder).initiateSubscription \(String(describing: reference))")
+        if subscription.isFront && self.datasource.offset > 0 {
+            callback()
+            return
+        }
         self.datasource.subscriptionActive = true
         DispatchQueue.main.async {
             self.datasource.listenToSubscriptionNotification(subscription: subscription)
@@ -1115,6 +1187,7 @@ class RVLoadOperation<T:RVSubbaseModel>: RVAsyncOperation<T> {
                         return
                     }
                 } else if self.subscriptionOperation == .response {
+                    print("In \(self.classForCoder).InnerMain subscriptionResponse")
                     let error = RVError(message: "In \(self.classForCoder).InnerMain \(#line), erroneously have Response subscriptionOperation")
                     self.finishUp(items: itemsPlug, error: error)
                     return
@@ -1130,7 +1203,7 @@ class RVLoadOperation<T:RVSubbaseModel>: RVAsyncOperation<T> {
                             return
                         }
                         else if models.count > 0 {
-                           // print("In \(self.classForCoder).InnerMain, have \(models.count) models")
+                           print("In \(self.classForCoder).InnerMain, have \(models.count) models")
                             self.insert(models: models, callback: { (models, error) in
                                 if let error = error {
                                     error.append(message: "In \(self.instanceType).main, got error doing insert")
@@ -1139,10 +1212,13 @@ class RVLoadOperation<T:RVSubbaseModel>: RVAsyncOperation<T> {
                                 } else {
                                     if models.count > 0 {
                                         self.cleanup(models: models, callback: { (models, error) in
+                                            print("In \(self.classForCoder).InnerMain, after cleanup before refresh")
                                             self.refreshViews {
+                                                print("In \(self.classForCoder).InnerMain, after refresh before finishUp")
                                                 self.finishUp(items: models, error: nil)
                                             }
                                         })
+                                        return
                                     } else {
                                         self.finishUp(items: models , error: nil)
                                     }
@@ -1170,12 +1246,15 @@ class RVLoadOperation<T:RVSubbaseModel>: RVAsyncOperation<T> {
     }
 
     func innerCleanup() -> (indexPaths: [IndexPath], sectionIndexes: IndexSet) {
+        /*
         if let subscription = self.datasource.subscription {
             if self.datasource.subscriptionActive {
                 if subscription.isFront { return innerCleanup2(front: false)}
                 else { return innerCleanup2(front: true) }
             }
         }
+ */
+        print("In \(self.classForCoder).innerCleanup(), lastItemIndex = \(self.datasource.lastItemIndex)")
         if self.datasource.lastItemIndex < (self.datasource.virtualCount / 2) { return innerCleanup2(front: false) }
         else { return innerCleanup2(front: true) }
     }
@@ -1192,13 +1271,16 @@ class RVLoadOperation<T:RVSubbaseModel>: RVAsyncOperation<T> {
                         if visibleIndexPaths.count > 0 {
                             var section = -1
                             for indexPath in visibleIndexPaths {
-                                //print("In \(self.classForCoder).refreshViews indexPath \(indexPath.section) \(indexPath.row)")
+                        //        print("In \(self.classForCoder).refreshViews indexPath \(indexPath.section) \(indexPath.row)")
                                 if indexPath.section == self.datasource.section {
+                                    
                                     if let cell = tableView.cellForRow(at: indexPath) as? RVItemRetrieve {
-                                        if let item = self.datasource.element(indexPath: indexPath, scrollView: tableView) as? RVBaseModel {
+                                        if let item = self.datasource.elementWithoutTrigger(indexPath: indexPath, scrollView: tableView ) as? RVBaseModel {
+                                  //      if let item = self.datasource.element(indexPath: indexPath, scrollView: tableView, updateLast: false, donotTriggerLoading: true) as? RVBaseModel {
                                             cell.item = item
                                         }
                                     }
+ 
                                 }
                                 if section != indexPath.section {
                                     section = indexPath.section
@@ -1209,6 +1291,7 @@ class RVLoadOperation<T:RVSubbaseModel>: RVAsyncOperation<T> {
                                     }
                                 }
                             }
+                            print("IN \(self.classForCoder).refreshViews, endUpdate")
                             tableView.endUpdates()
                             callback()
                             return
@@ -1230,7 +1313,8 @@ class RVLoadOperation<T:RVSubbaseModel>: RVAsyncOperation<T> {
                             for indexPath in visibleIndexPaths {
                                 if indexPath.section == self.datasource.section {
                                     if let cell = collectionView.cellForItem(at: indexPath) as? RVItemRetrieve {
-                                        if let item = self.datasource.element(indexPath: indexPath, scrollView: collectionView) as? RVBaseModel {
+                                        if let item = self.datasource.elementWithoutTrigger(indexPath: indexPath, scrollView: collectionView) as? RVBaseModel {
+                                      //  if let item = self.datasource.element(indexPath: indexPath, scrollView: collectionView) as? RVBaseModel {
                                             cell.item = item
                                         }
                                     }
@@ -1254,12 +1338,14 @@ class RVLoadOperation<T:RVSubbaseModel>: RVAsyncOperation<T> {
         }
     }
     func innerCleanup2(front: Bool) -> (indexPaths: [IndexPath], sectionIndexes: IndexSet) {
+        print("In \(self.classForCoder).innerCleanup2 Froint: \(front)")
         var indexPaths = [IndexPath]()
         var sectionIndexes = [Int]()
         var clone = self.datasource.cloneItems()
         let excess = clone.count - self.datasource.maxArraySize
         if (excess <= 0) { return (indexPaths: indexPaths, sectionIndexes: IndexSet(sectionIndexes) ) }
         else {
+             print("In \(self.classForCoder).innerCleanup2 excess is \(excess) and front: \(front)")
             let virtualMax = self.datasource.virtualCount-1
             let section = !self.datasource.sectionDatasourceMode ? self.datasource.section : self.datasource.FAKESECTION
             let arrayCount = clone.count - 1
@@ -1272,6 +1358,7 @@ class RVLoadOperation<T:RVSubbaseModel>: RVAsyncOperation<T> {
                     clone.remove(at: arrayCount - i)
                 }
                 self.datasource.elements = clone
+                print("In \(self.classForCoder).innerCleanup2 \(clone.count) indexPathCount: \(indexPaths.count)")
                 return (indexPaths: indexPaths, sectionIndexes: IndexSet(sectionIndexes) )
             } else {
                 var slicedArray = [T]()
@@ -1292,6 +1379,7 @@ class RVLoadOperation<T:RVSubbaseModel>: RVAsyncOperation<T> {
                 callback(models, nil)
                 return
             } else if let tableView = self.scrollView as? UITableView {
+                print("In \(self.classForCoder).RVBaseDatasource4.cleanup, maxSize: \(maxSize), elementsCount: \(self.datasource.elementsCount)")
                 tableView.beginUpdates()
                 let paths = self.innerCleanup()
                 if (paths.indexPaths.count > 0) && (!self.datasource.collapsed) {
@@ -1352,7 +1440,7 @@ class RVLoadOperation<T:RVSubbaseModel>: RVAsyncOperation<T> {
         return (indexPaths: indexPaths, sectionIndexes: IndexSet(sectionIndexes))
     }
     func frontHandler(newModels: [T]) -> (indexPaths: [IndexPath], sectionIndexes: IndexSet) {
-        //print("In \(self.classForCoder).frontHandler")
+        print("In \(self.classForCoder).frontHandler")
         var indexPaths = [IndexPath]()
         var sectionIndexes = [Int]()
         if newModels.count == 0 { return (indexPaths, IndexSet(sectionIndexes)) }
@@ -1431,7 +1519,7 @@ class RVLoadOperation<T:RVSubbaseModel>: RVAsyncOperation<T> {
         }
     }
     func insert(models: [T], callback: @escaping RVCallback<T>) {
-       // print("In \(self.classForCoder).insert with models: \(models.count) \(self.front)")
+       print("In \(self.classForCoder).insert with models: \(models.count) Froutn: \(self.front) type: \(self.datasource.datasourceType.rawValue)")
         DispatchQueue.main.async {
             if self.isCancelled {
                 callback(models, nil)
@@ -1456,7 +1544,7 @@ class RVLoadOperation<T:RVSubbaseModel>: RVAsyncOperation<T> {
                 }
                 Timer.scheduledTimer(withTimeInterval: delay, repeats: false, block: { (timer) in
                     if self.isCancelled {
-                        tableView.isScrollEnabled = true
+                        tableView.isScrollEnabled = originalScrollEnabled
                         callback(sizedModels, nil)
                         return
                     }
@@ -1473,7 +1561,9 @@ class RVLoadOperation<T:RVSubbaseModel>: RVAsyncOperation<T> {
                             var sectionIndexes = IndexSet()
                             //print("In \(self.classForCoder).insert, tableView reference match")
                             if self.front {
+                                
                                 let paths = self.frontHandler(newModels: sizedModels)
+                                //let paths = (indexPaths: [IndexPath](), sectionIndexes: IndexSet())
                                 indexPaths = paths.indexPaths
                                 sectionIndexes = paths.sectionIndexes
                             }
