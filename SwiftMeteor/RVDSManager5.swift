@@ -31,14 +31,16 @@ class RVDSManager5<S: RVSubbaseModel>: RVBaseDatasource4<RVBaseDatasource4<S>> {
         return numberOfElements
     } // Unique to RVDSManagers
     override func retrieve(query: RVQuery, callback: @escaping ([RVBaseDatasource4<S>], RVError?) -> Void) {
-        
+        print("In \(self.classForCoder).retrieve override for \(self.classForCoder)")
         self.retrieveSectionModels(query: query) { (models: [S], error) in
+             print("In \(self.classForCoder).retrieve override for \(self.classForCoder) with error \(String(describing: error)), models: \(models)")
             if let error = error {
                 error.append(message: "In \(self.instanceType).retrieve got error from retriveSectionModels")
                 callback(self.emtpySectionResults, error)
                 return
             } else {
                 let datasourceResults = self.createDatasourceFromModels(models: models)
+                print("In \(self.classForCoder). with datasourceResults: \(datasourceResults)")
                 callback(datasourceResults, nil)
             }
         }
@@ -194,8 +196,8 @@ extension RVDSManager5 {
     }
     func numberOfItems(section: Int) -> Int {
        // print("In \(self.classForCoder).numberOfItems in section: \(section)")
-        if let datasource = self.datasourceInSection(section: section) {
-            print("In \(self.classForCoder).RVDSManager5.numberOfItems with datasource \(datasource) \(datasource.numberOfElements)")
+        if let datasource = self.datasourceInSection(section: section, trigger: false) {
+            //print("In \(self.classForCoder).RVDSManager5.numberOfItems with datasource \(datasource) \(datasource.numberOfElements)")
             return datasource.numberOfElements
         } else { return 0 }
     }
@@ -203,6 +205,7 @@ extension RVDSManager5 {
         // func element(indexPath: IndexPath) ->  T? {
         print("IN \(self.classForCoder).item \(indexPath)")
         let section = indexPath.section
+        self.lastItemIndex = section
         if let datasource = datasourceInSection(section: section) {
             return datasource.elementZ(indexPath: indexPath, scrollView: scrollView)
         } else {
@@ -231,18 +234,19 @@ extension RVDSManager5 {
             print("In \(self.instanceType).grabMoreSections, index \(index) GTE virtual Count \(self.virtualCount)")
             return
         } else {
-            var OKtoRetrieve: Bool = true
+            let OKtoRetrieve: Bool = true
             if self.subscription != nil {
                 if self.subscriptionActive {
                     if self.elementsCount >= self.maxArraySize {
-                        OKtoRetrieve = false
+                        
+                        // OKtoRetrieve = false
                     }
                 }
             }
             let physicalIndex = section - offset
             if physicalIndex < 0 {
                 //print("In \(self.instanceType).item got physical index less than 0 \(physicalIndex). Offset is \(offset)")
-                print("In \(self.classForCoder).grabMoreSections calling inBack: index = \(index), count: \(elementsCount), offset: \(self.offset), backBuffer: \(self.backBufferSize)")
+                print("In \(self.classForCoder).grabMoreSections calling inFront: index = \(physicalIndex), count: \(elementsCount), offset: \(self.offset), frontBuffer: \(self.frontBufferSize) frontThrottleOK: \(frontThrottleOK)")
                 if OKtoRetrieve && frontThrottleOK {
                     throttleFront()
                     inFront(scrollView: scrollView)
@@ -250,14 +254,14 @@ extension RVDSManager5 {
                 return
             } else if physicalIndex < elementsCount {
                 if (physicalIndex + self.backBufferSize) > elementsCount {
-                    print("In \(self.classForCoder).grabMoreSections calling inBack:  index = \(index), count: \(elementsCount), offset: \(self.offset), backBuffer: \(self.backBufferSize)")
+                    print("In \(self.classForCoder).grabMoreSections calling inBack:  index = \(physicalIndex), count: \(elementsCount), offset: \(self.offset), backBuffer: \(self.backBufferSize), OK to Retrieve \(OKtoRetrieve), backThrottleOK: \(backThrottleOK)")
                     if OKtoRetrieve && backThrottleOK {
                         throttleBack()
                         inBack(scrollView: scrollView)
                     }
                 }
                 if physicalIndex < self.frontBufferSize {
-                     print("In \(self.classForCoder).grabMoreSections calling inFront: index = \(index), count: \(elementsCount), offset: \(self.offset), backBuffer: \(self.backBufferSize)")
+                     print("In \(self.classForCoder).grabMoreSections calling inFront: index = \(physicalIndex), count: \(elementsCount), offset: \(self.offset), frontBuffer: \(self.frontBufferSize) frontThrottleOK: \(frontThrottleOK)")
                     if OKtoRetrieve && frontThrottleOK {
                         throttleFront()
                         inFront(scrollView: scrollView)
@@ -270,9 +274,10 @@ extension RVDSManager5 {
             
         }
     }
-    func datasourceInSection(section: Int) -> RVBaseDatasource4<S>? {
+
+    func datasourceInSection(section: Int, trigger: Bool = true) -> RVBaseDatasource4<S>? {
         if (section >= 0) && (section < self.virtualCount) {
-            grabMoreSections(section: section)
+            if (trigger) {grabMoreSections(section: section) }
 
             let physical = section - offset
          //  print("In \(self.instanceType).datasourceInSection, sectionIndex: \(section), virtualCount is \(self.virtualCount), elementsCount: \(elements.count), physical \(physical) ")
@@ -344,6 +349,7 @@ extension RVDSManager5 {
         }
     }
     func restartSectionDatasource(sectionsDatasourceType: RVDatasourceType, query: RVQuery, datasourceType: RVDatasourceType, callback: @escaping RVCallback<RVBaseDatasource4<S>>) {
+        print("In \(self.classForCoder).restrateSectoinDatasource with datasourceType: \(sectionsDatasourceType)")
         if !self.dynamicSections {
             print("In \(self.classForCoder).restartSectionDatasource, erroneously attempted to restart a datasource that is not in sectionMode")
         }

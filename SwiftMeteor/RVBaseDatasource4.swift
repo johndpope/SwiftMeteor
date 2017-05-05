@@ -92,7 +92,7 @@ class RVBaseDatasource4<T:RVSubbaseModel>: RVSubbaseModel {
     var datasourceType: RVDatasourceType = .unknown
     var manager: RVDSManager5<T>?
 
-    fileprivate var lastItemIndex: Int = 0
+    var lastItemIndex: Int = 0
     fileprivate let TargetBackBufferSize: Int = 20
     fileprivate let TargetFrontBufferSize: Int = 20
     var backBufferSize: Int {
@@ -417,6 +417,7 @@ extension RVBaseDatasource4 {
                     print("In \(self.classForCoder).inFront, success")
                 }
             })
+            print("In \(self.classForCoder).RVBaseDatasource4.inFront, doing load operation. for \(self), \(operation.invoked.timeIntervalSince1970) ")
             self.queue.addOperation(operation)
         }
     }
@@ -430,7 +431,7 @@ extension RVBaseDatasource4 {
             print("In \(self.classForCoder).inBack queueing operation")
             let operation = RVLoadOperation(datasource: self, scrollView: scrollView, callback: { (models, error) in
                 if let error = error {
-                    error.append(message: "In \(self.classForCoder).inBack, got error")
+                    error.append(message: "In \(self.classForCoder).InnerMain, no query")
                     error.printError()
                 } else {
                     print("In \(self.classForCoder).inBack, success")
@@ -463,10 +464,11 @@ extension RVBaseDatasource4 {
         }
     }
     func elementZ(indexPath: IndexPath, scrollView: UIScrollView? ) -> T? {
-        print("In \(self.classForCoder).RVBaseDatasource4.elementZ, \(indexPath) offset: \(self.offset), virtualCount: \(self.virtualCount)")
+        print("In \(self.classForCoder).RVBaseDatasource4.elementZ, \(indexPath) offset: \(self.offset), virtualCount: \(self.virtualCount) \(self) dyanmicSection \(self.dynamicSections) sectionMode: \(self.sectionDatasourceMode)")
         let index = indexPath.row
         if (index >= 0) && (index < self.virtualCount) {
-            self.lastItemIndex = index
+            if self.dynamicSections { self.lastItemIndex = indexPath.section }
+            else {self.lastItemIndex = index }
             if index + self.backBufferSize > self.virtualCount {
                 if self.backThrottleOK {
                     self.throttleBack()
@@ -627,6 +629,7 @@ extension RVBaseDatasource4 {
     func restart(scrollView: UIScrollView?, query: RVQuery, sectionsDatasourceType: RVDatasourceType = .main, callback: @escaping RVCallback<T>) {
       //  print("In \(self.classForCoder).sectionCollapse")
         self.shutDown()
+        print("In \(self.classForCoder).RVBaseDatasource4.restart with \(self), \(sectionsDatasourceType.rawValue)")
         self.queue.addOperation(RVExpandCollapseOperation(datasource: self, scrollView: scrollView, operationType: .collapseZeroExpandAndLoad, query: query, sectionsDatasourceType: sectionsDatasourceType, callback: callback))
     }
     func collapseZeroAndExpand(scrollView: UIScrollView?, query: RVQuery, callback: @escaping RVCallback<T>) {
@@ -779,11 +782,12 @@ class RVExpandCollapseOperation<T:RVSubbaseModel>: RVLoadOperation<T> {
                         return
                     } else {
                         if self.datasource.dynamicSections {
-                            //print("In \(self.classForCoder).asyncMain, have dynamicSections")
+                            print("In \(self.classForCoder).asyncMain, have dynamicSections")
                             self.datasource.sectionDatasourceType = self.sectionsDatasourceType
                         }
                         if let tableView = self.scrollView as? UITableView {
                             tableView.beginUpdates()
+                            print("In \(self.classForCoder).asyncMain \(operationType)")
                             if !self.isCancelled {
                                 let paths = self.handleCollapse()
                                 if paths.indexPaths.count > 0 {
@@ -798,7 +802,7 @@ class RVExpandCollapseOperation<T:RVSubbaseModel>: RVLoadOperation<T> {
                             }
                             if (operationType == .collapseZeroExpandAndLoad) {
                                // print("In \(self.classForCoder).main, about to do InnerMain, collapsed = \(self.datasource.collapsed)")
-                                //print("In \(self.instanceType).asyncMain line \(#line) just before assigning query operationType: \(self.operationType), query: \(self.query)")
+                            print("In \(self.instanceType).asyncMain line \(#line) just before assigning query operationType: \(self.operationType), query: \(self.query)")
                                 self.datasource.baseQuery = self.query
                                 self.InnerMain()
                             } else {
@@ -1040,7 +1044,7 @@ class RVLoadOperation<T:RVSubbaseModel>: RVAsyncOperation<T> {
         InnerMain()
     }
     func unsubscribeByArea() {
-       // print("In \(self.classForCoder).unsubscribeByArea")
+        print("In \(self.classForCoder).unsubscribeByArea for \(self)")
         if let subscription = self.datasource.subscription {
             if subscription.isFront && self.front {
                 self.datasource.unsubscribe{}
@@ -1098,7 +1102,7 @@ class RVLoadOperation<T:RVSubbaseModel>: RVAsyncOperation<T> {
         }
     }
     func InnerMain() {
-        //print("In \(self.classForCoder).InnerMain")
+        print("In \(self.classForCoder).InnerMain with \(self.datasource) \(self.invoked.timeIntervalSince1970) front: \(self.front), scrollView \(String(describing: self.scrollView)) query: \(String(describing: self.datasource.baseQuery))")
         if self.isCancelled {
             finishUp(items: itemsPlug, error: nil)
             return
@@ -1132,7 +1136,7 @@ class RVLoadOperation<T:RVSubbaseModel>: RVAsyncOperation<T> {
                         self.finishUp(items: self.itemsPlug, error: nil)
                         return
                     } else {
-                    //    print("In \(self.classForCoder).InnerMain, about to call unsubscribeByArea self.front = \(self.front)")
+                        print("In \(self.classForCoder).InnerMain, frontArea about to call unsubscribeByArea self.front = \(self.front)")
                         self.unsubscribeByArea()
                         self.datasource.frontOperationActive = true
                     }
@@ -1144,12 +1148,12 @@ class RVLoadOperation<T:RVSubbaseModel>: RVAsyncOperation<T> {
                         self.finishUp(items: self.itemsPlug, error: nil)
                         return
                     } else {
-                 //       print("In \(self.classForCoder).InnerMain about to call unsubscribeByArea self.front is \(self.front)")
+                        print("In \(self.classForCoder).InnerMain, backArea about to call unsubscribeByArea self.front =  \(self.front) \(self.invoked.timeIntervalSince1970)")
                         self.unsubscribeByArea()
                         self.datasource.backOperationActive = true
                     }
                 }
-               // print("In \(self.classForCoder).InnerMain, about to do retrieve. Front: \(self.front)")
+                print("In \(self.classForCoder).InnerMain, about to do retrieve for datasource: \(self.datasource), Front: \(self.front)")
                 query = query.duplicate()
                 self.reference = self.front ? datasource.frontElement : datasource.backElement
                 if let reference = self.reference as? T {
@@ -1163,6 +1167,7 @@ class RVLoadOperation<T:RVSubbaseModel>: RVAsyncOperation<T> {
                     finishUp(items: itemsPlug , error: nil)
                     return
                 }
+                print("In \(self.classForCoder).InnerMain wiht datasource: \(self.datasource), front \(self.front), passedQuery subscriptionOperation \(self.subscriptionOperation) \(self.invoked.timeIntervalSince1970)")
                 if self.subscriptionOperation == .subscribe {
                     if let subscription = self.datasource.subscription {
                         if self.datasource.subscriptionActive { // || (subscription.isFront && self.datasource.offset != 0) {
@@ -1196,8 +1201,9 @@ class RVLoadOperation<T:RVSubbaseModel>: RVAsyncOperation<T> {
                     self.finishUp(items: itemsPlug, error: error)
                     return
                 } else {
+                    print("In \(self.classForCoder).InnerMain, before innerRetrieve callback for \(self.datasource) \(self.invoked.timeIntervalSince1970)")
                     datasource.innerRetrieve(query: query, callback: { (models, error) in
-                        //print("In \(self.classForCoder).InnerMain, datasource.innerRetrieve callback")
+                        print("In \(self.classForCoder).InnerMain, datasource.innerRetrieve callback \(self.datasource) \(self.invoked.timeIntervalSince1970)")
                         if self.isCancelled {
                             self.finishUp(items: models, error: error)
                             return
@@ -1240,7 +1246,7 @@ class RVLoadOperation<T:RVSubbaseModel>: RVAsyncOperation<T> {
                 }
             } else {
                 //print("In \(self.classForCoder).InnerMain, no query")
-                let error = RVError(message: "In \(self.classForCoder).InnerMain, no query")
+                let error = RVError(message: "In \(self.classForCoder).InnerMain, no query \(self.datasource)")
                 self.finishUp(items: itemsPlug , error: error)
             }
         }
@@ -1258,7 +1264,7 @@ class RVLoadOperation<T:RVSubbaseModel>: RVAsyncOperation<T> {
             }
         }
  */
-        print("In \(self.classForCoder).innerCleanup(), lastItemIndex = \(self.datasource.lastItemIndex)")
+        print("In \(self.classForCoder).innerCleanup(), lastItemIndex = \(self.datasource.lastItemIndex) \(self)")
         if self.datasource.lastItemIndex < (self.datasource.virtualCount / 2) { return innerCleanup2(front: false) }
         else { return innerCleanup2(front: true) }
     }
@@ -1376,6 +1382,7 @@ class RVLoadOperation<T:RVSubbaseModel>: RVAsyncOperation<T> {
     func cleanup(models: [T], callback: @escaping([T], RVError?)-> Void) {
         DispatchQueue.main.async {
             let maxSize = self.datasource.maxArraySize
+            print("In \(self.classForCoder).cleanup with \(models.count) models \(self.invoked.timeIntervalSince1970) \(self.datasource)")
             if self.datasource.elementsCount <= maxSize {
                 callback(models, nil)
                 return
@@ -1554,7 +1561,7 @@ class RVLoadOperation<T:RVSubbaseModel>: RVAsyncOperation<T> {
                     }
                     tableView.beginUpdates()
                     if sizedModels.count >= 0 {
-                       // print("In \(self.classForCoder).insert, have \(models.count) \(String(describing: models.first))")
+                       print("In \(self.classForCoder).insert, have \(models.count) \(String(describing: models.first))")
                         if let indexPaths = tableView.indexPathsForVisibleRows { if let indexPath = indexPaths.last { originalRow = indexPath.row } }
                         
                         // print("In \(self.classForCoder).insert, subscriptionOperation = \(self.subscriptionOperation)")
@@ -1576,7 +1583,7 @@ class RVLoadOperation<T:RVSubbaseModel>: RVAsyncOperation<T> {
                                 indexPaths = paths.indexPaths
                                 sectionIndexes = paths.sectionIndexes
                             }
-                            //print("In \(self.classForCoder).insert numberOfIndexPaths = \(indexPaths.count)")
+                            print("In \(self.classForCoder).insert numberOfIndexPaths = \(indexPaths.count) numberOfsectionIndexes \(sectionIndexes)")
                             if  (!self.datasource.collapsed)  {
                                 if (!self.datasource.sectionDatasourceMode) && (indexPaths.count > 0) {
                                     tableView.insertRows(at: indexPaths, with: UITableViewRowAnimation.middle)

@@ -215,7 +215,7 @@ class RVBaseSLKViewController8: SLKTextViewController {
         return configuration.numberOfSections(tableView: tableView)
     }
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        print("In \(self.classForCoder).numberOfRows for \(section)")
+        //print("In \(self.classForCoder).numberOfRows for \(section)")
         return configuration.numberOfItems(section: section)
     }
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
@@ -263,7 +263,7 @@ class RVBaseSLKViewController8: SLKTextViewController {
     override func tableView(_ tableView: UITableView, willDisplayHeaderView view: UIView, forSection section: Int) {
         if let headerCell = view as? RVFirstViewHeaderCell {
               print("In \(self.classForCoder).willDisplayHeaderView")
-            if let datasource = configuration.datasourceInSection(section: section) {
+            if let datasource = configuration.datasourceInSection(section: section, trigger: false) {
                 headerCell.datasource4 = datasource
                 var model: RVBaseModel?
                 if let datasource = datasource as? RVBaseDatasource4<RVBaseModel> {

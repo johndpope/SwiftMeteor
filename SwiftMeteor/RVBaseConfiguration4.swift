@@ -287,7 +287,9 @@ class RVBaseConfiguration4<T: RVSubbaseModel>: RVListControllerConfigurationProt
     }
     func initializeDatasource(sectionDatasourceType: RVDatasourceType, mainAndTerms: [RVQueryItem], callback: @escaping(RVError?) -> Void) {
     //    if let subscription = self.subscription { subscription.unsubscribe {} }
+        //print("IN \(self.instanceType).initializeDatasource with dynamicSections: \(manager.dynamicSections)")
         if !manager.dynamicSections {
+            
             let (query, _) = self.topQuery()
             self.loadTop(query: query, callback: { (error) in
                 if let error = error {()
@@ -334,7 +336,7 @@ class RVBaseConfiguration4<T: RVSubbaseModel>: RVListControllerConfigurationProt
         }
     }
     func loadDynamicSections(sectionDatasourceType: RVDatasourceType, callback: @escaping(RVError?) -> Void) {
-        //print("In \(self.instanceType).loadDynamicSections(sectionDatasourceType")
+        print("In \(self.instanceType).loadDynamicSections(sectionDatasourceType with manager: \(self.manager)")
         var (query, error) = self.mainQuery(andTerms: [RVQueryItem](), sortTerm: RVSortTerm(field: .createdAt, order: .descending))
         query = query.duplicate()
         //query.addSort(field: .createdAt, order: .ascending)
@@ -368,8 +370,8 @@ class RVBaseConfiguration4<T: RVSubbaseModel>: RVListControllerConfigurationProt
         if let item = manager.itemWithoutTrigger(indexPath: indexPath, scrollView: scrollView) as? RVBaseModel { return item }
         return nil
     }
-    func datasourceInSection(section: Int) -> RVSubbaseModel?  {
-        return manager.datasourceInSection(section: section)
+    func datasourceInSection(section: Int, trigger: Bool = true) -> RVSubbaseModel?  {
+        return manager.datasourceInSection(section: section, trigger: trigger)
     }
     func toggle(datasource: AnyObject, callback: @escaping (RVError?) -> Void) {
         if let datasource = datasource as? RVBaseDatasource4<T> {
