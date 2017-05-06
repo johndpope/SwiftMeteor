@@ -48,6 +48,7 @@ protocol RVListControllerConfigurationProtocol: class {
     var SLKisKeyboardPanningEnabled: Bool               { get set}
     var SLKshouldScrollToBottomAfterKeyboardShows: Bool { get set}
     var SLKshowTextInputBar: Bool                       { get set}
+    var zeroCellModeOn: Bool { get }
     
     
 //    var topDatasource: RVBaseDatasource4<T>? { get set}

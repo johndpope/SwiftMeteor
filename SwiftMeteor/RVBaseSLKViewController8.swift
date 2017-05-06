@@ -315,10 +315,10 @@ extension RVBaseSLKViewController8 {
         return 35.0
     }
     override func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        //print("In \(self.classForCoder).heightForROws \(indexPath)")
+        print("In \(self.classForCoder).heightForROws \(indexPath)")
         if let item = configuration.itemWithoutTrigger(indexPath: indexPath, scrollView: tableView) {
         
-            if (indexPath.row == 0) && (item.zeroCellModel) {
+            if (indexPath.row == 0) && ((item.zeroCellModel) || configuration.zeroCellModeOn) {
                // print("In \(self.classForCoder).heightForRow, have item and item is zeroCellModel")
                 return 9.0
             } else {

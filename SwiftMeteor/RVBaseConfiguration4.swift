@@ -49,7 +49,9 @@ class RVBaseConfiguration4<T: RVSubbaseModel>: RVListControllerConfigurationProt
     var SLKshouldScrollToBottomAfterKeyboardShows: Bool = false
     var SLKshowTextInputBar: Bool                       = true
     
-    
+    var zeroCellModeOn: Bool {
+        return self.manager.useZeroCell
+    }
     var topDatasource: RVBaseDatasource4<T>? {
         return nil
     }

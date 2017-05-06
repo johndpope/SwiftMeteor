@@ -199,6 +199,8 @@ extension RVDSManager5 {
         if let datasource = self.datasourceInSection(section: section, trigger: false) {
             //print("In \(self.classForCoder).RVDSManager5.numberOfItems with datasource \(datasource) \(datasource.numberOfElements)")
             return datasource.numberOfElements
+        } else if self.useZeroCell {
+            return 1
         } else { return 0 }
     }
     func item(indexPath: IndexPath, scrollView: UIScrollView?, updateLast: Bool = true) -> S? {
