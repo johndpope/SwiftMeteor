@@ -326,6 +326,8 @@ extension RVBaseSLKViewController8 {
                 return 70.0
             }
             
+        } else if (indexPath.row == 0) && configuration.zeroCellModeOn {
+            return 9.0
         }
       //   print("In \(self.classForCoder).heightForRow, do NOT have item. Row: \(indexPath.row)")
         return 70.0

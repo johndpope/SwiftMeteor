@@ -1040,7 +1040,7 @@ class RVLoadOperation<T:RVSubbaseModel>: RVAsyncOperation<T> {
         super.init(title: "\(title) with front: \(front)", callback: callback, parent: nil)
     }
     override func asyncMain() {
-       // print("In \(self.classForCoder).asyncMain line \(#line)")
+        print("In \(self.classForCoder).asyncMain line \(#line)")
         InnerMain()
     }
     func unsubscribeByArea() {
@@ -1130,9 +1130,11 @@ class RVLoadOperation<T:RVSubbaseModel>: RVAsyncOperation<T> {
                 } else if self.front {
                     // Used for bulk queries. Avoids multiple bulk queries being issued
                     if self.datasource.frontOperationActive {
+                        print("In \(self.classForCoder).InnerMain() frontOperation activie")
                         self.finishUp(items: self.itemsPlug, error: nil)
                         return
                     } else if subscriptionActive(front: true) {
+                        print("In \(self.classForCoder).InnerMain() front subscription activie and offset \(self.datasource.offset) \(self.datasource)")
                         self.finishUp(items: self.itemsPlug, error: nil)
                         return
                     } else {
@@ -1255,7 +1257,7 @@ class RVLoadOperation<T:RVSubbaseModel>: RVAsyncOperation<T> {
         //print("In \(self.classForCoder).deinit")
     }
 
-    func innerCleanup() -> (indexPaths: [IndexPath], sectionIndexes: IndexSet) {
+    func innerCleanup(models: [T]) -> (indexPaths: [IndexPath], sectionIndexes: IndexSet) {
         /*
         if let subscription = self.datasource.subscription {
             if self.datasource.subscriptionActive {
@@ -1264,8 +1266,8 @@ class RVLoadOperation<T:RVSubbaseModel>: RVAsyncOperation<T> {
             }
         }
  */
-        print("In \(self.classForCoder).innerCleanup(), lastItemIndex = \(self.datasource.lastItemIndex) \(self)")
-        if self.datasource.lastItemIndex < (self.datasource.virtualCount / 2) { return innerCleanup2(front: false) }
+        print("In \(self.classForCoder).innerCleanup(), lastItemIndex = \(self.datasource.lastItemIndex) virtualCount: \(self.datasource.virtualCount) \(self)")
+        if self.datasource.lastItemIndex < ((self.datasource.virtualCount - models.count) / 2) { return innerCleanup2(front: false) }
         else { return innerCleanup2(front: true) }
     }
     func refreshViews(callback: @escaping () -> Void) {
@@ -1392,7 +1394,7 @@ class RVLoadOperation<T:RVSubbaseModel>: RVAsyncOperation<T> {
             } else if let tableView = self.scrollView as? UITableView {
                 print("In \(self.classForCoder).RVBaseDatasource4.cleanup, maxSize: \(maxSize), elementsCount: \(self.datasource.elementsCount)")
                 tableView.beginUpdates()
-                let paths = self.innerCleanup()
+                let paths = self.innerCleanup(models: models)
                 if (paths.indexPaths.count > 0) && (!self.datasource.collapsed) {
                     if !self.datasource.sectionDatasourceMode {
                         tableView.deleteRows(at: paths.indexPaths, with: self.datasource.rowAnimation)
@@ -1406,7 +1408,7 @@ class RVLoadOperation<T:RVSubbaseModel>: RVAsyncOperation<T> {
                 return
             } else if let collectionView = self.scrollView as? UICollectionView {
                 collectionView.performBatchUpdates({
-                    let paths = self.innerCleanup()
+                    let paths = self.innerCleanup(models: models)
                     if (paths.indexPaths.count > 0 ) && (!self.datasource.collapsed) {
                         if !self.datasource.sectionDatasourceMode {
                             collectionView.deleteItems(at: paths.indexPaths)
@@ -1420,7 +1422,7 @@ class RVLoadOperation<T:RVSubbaseModel>: RVAsyncOperation<T> {
                     return
                 })
             } else if self.scrollView == nil {
-                let _ = self.innerCleanup()
+                let _ = self.innerCleanup(models: models)
                 callback(models, nil)
                 return
             } else {
