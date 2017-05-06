@@ -1377,6 +1377,18 @@ class RVLoadOperation<T:RVSubbaseModel>: RVAsyncOperation<T> {
                 for i in excess..<clone.count { slicedArray.append(clone[i]) }
                 self.datasource.elements = slicedArray
                 self.datasource.offset = self.datasource.offset + excess
+                if let tableView = self.scrollView as? UITableView {
+                    if self.datasource.sectionDatasourceMode {
+                        tableView.beginUpdates()
+                        if excess == 1 {
+                            tableView.reloadSection(self.datasource.offset - 1)
+                        } else {
+                           tableView.reloadSections(self.datasource.offset - excess, to: self.datasource.offset - 1) 
+                        }
+                        
+                        tableView.endUpdates()
+                    }
+                }
                 return (indexPaths: indexPaths, sectionIndexes: IndexSet(sectionIndexes) )
             }
         }
