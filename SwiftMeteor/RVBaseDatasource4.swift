@@ -1383,7 +1383,7 @@ class RVLoadOperation<T:RVSubbaseModel>: RVAsyncOperation<T> {
                         if excess == 1 {
                             tableView.reloadSection(self.datasource.offset - 1)
                         } else {
-                           tableView.reloadSections(self.datasource.offset - excess, to: self.datasource.offset - 1) 
+                           tableView.reloadSections(self.datasource.offset - excess, to: self.datasource.offset - 1)
                         }
                         
                         tableView.endUpdates()
