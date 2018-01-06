@@ -836,7 +836,7 @@ extension RVBaseModel {
         }
     }
     /*
-    class func deleteAll(callback: @escaping (_ error: RVError?) -> Void ) {
+    class func deleteAll(callback: @escapideeeeeeng (_ error: RVError?) -> Void ) {
         Meteor.call(meteorMethod(request: .deleteAll), params: [Any]()) { (results, error) in
 
             if let error = error {

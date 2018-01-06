@@ -126,14 +126,14 @@ extension RVGroup {
             }
         }
     }
-override func create(callback: @escaping (RVBaseModel?, RVError?) -> Void) {
-   // print("In \(self.classForCoder).create override where allSubgroup is created")
-    let allSubgroup = RVGroup()
-    allSubgroup.setParent(parent: self)
-    let title = self.title == nil ? "No Title" : self.title!
-    allSubgroup.title = "\(title) All Subgroup"
-    allSubgroup.special = .all
-  //  print("IN \(self.classForCoder).create about to get loggedInUser. and modelType is: \(RVBaseModel.loggedInUser!.objects[RVKeys.modelType.rawValue])")
+    override func create(callback: @escaping (RVBaseModel?, RVError?) -> Void) {
+        // print("In \(self.classForCoder).create override where allSubgroup is created")
+        let allSubgroup = RVGroup()
+        allSubgroup.setParent(parent: self)
+        let title = self.title == nil ? "No Title" : self.title!
+        allSubgroup.title = "\(title) All Subgroup"
+        allSubgroup.special = .all
+        //  print("IN \(self.classForCoder).create about to get loggedInUser. and modelType is: \(RVBaseModel.loggedInUser!.objects[RVKeys.modelType.rawValue])")
     if let owner = RVBaseModel.loggedInUser {
         self.setOwner(owner: owner)
         allSubgroup.setOwner(owner: owner)
